@@ -6,10 +6,14 @@
 
 ## Run
 ### Client
+```ini
 cd client
 npm install
 npm run dev
+```
 
 ### Server
+```ini
 cd server/ims-server
 ./gradlew bootRun
+```

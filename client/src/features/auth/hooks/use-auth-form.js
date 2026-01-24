@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 const registerDefaultValue = {
   name: '',
   password: '',
+  confirmPassword: '',
 };
 
 const loginDefaultValue = {

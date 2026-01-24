@@ -1,4 +1,4 @@
-import z from "zod";
+import z from 'zod';
 
 const passwordBase = z
   .string()
@@ -14,7 +14,7 @@ export const registerSchema = z
       .min(2, '이름은 최소 2자리 이상이어야 합니다.')
       .max(10, '이름은 최대 10자리 이하여야 합니다.'),
     password: passwordBase,
-    confirmPassword: passwordBase,
+    confirmPassword: z.string().min(1, '필드가 비어있습니다.'),
   })
   .refine((v) => v.password === v.confirmPassword, {
     path: ['confirmPassword'],

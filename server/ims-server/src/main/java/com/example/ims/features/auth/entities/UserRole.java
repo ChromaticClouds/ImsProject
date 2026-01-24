@@ -1,6 +1,6 @@
 package com.example.ims.features.auth.entities;
 
-public enum AuthRole {
+public enum UserRole {
     ORDER,
     INBOUND,
     OUTBOUND,

@@ -15,10 +15,10 @@ export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
-        defaultTheme='dark'
+        defaultTheme='system'
         storageKey='vite=-ui-theme'
       >
-        <Toaster position='top-center' />
+        <Toaster theme='system' position='top-center' />
         <Outlet />
       </ThemeProvider>
     </QueryClientProvider>

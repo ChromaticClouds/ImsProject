@@ -8,15 +8,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ims.features.auth.dto.AuthRequest;
+import com.example.ims.features.auth.dto.AuthResponse;
+import com.example.ims.features.auth.services.AuthService;
 import com.example.ims.global.response.ApiResponse;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
+    private final AuthService service;
+
     @PostMapping("login")
-    public ResponseEntity<ApiResponse<Void>> loginUser(@RequestBody AuthRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> loginUser(@RequestBody AuthRequest request) {
+        AuthResponse response = service.authenticate(request);
+
         return ResponseEntity.status(HttpStatus.OK)
-            .body(ApiResponse.success("Login Request Received"));
+            .body(ApiResponse.success("안녕하세요, " + response.getName() + "님", response));
     }
 }

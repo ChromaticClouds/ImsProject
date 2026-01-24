@@ -16,6 +16,7 @@
  * @typedef {object} RegisterFormSchema
  * @property {string} name
  * @property {string} password
+ * @property {string} confirmPassword
  */
 
 /**

@@ -6,7 +6,7 @@ import { queryClient } from "@/app/providers/query-client.js";
 export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="system" storageKey="vite=-ui-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="vite=-ui-theme">
         <Outlet />
       </ThemeProvider>
     </QueryClientProvider>

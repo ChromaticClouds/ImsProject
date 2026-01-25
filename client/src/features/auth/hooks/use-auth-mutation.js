@@ -4,6 +4,7 @@
  * Hooks
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -27,8 +28,9 @@ export const useAuthMutation = (mutationFn, options = {}) => {
       navigate('/');
     },
     onError: (e) => {
-      toast.error(e.message);
-      console.error(e);
-    }
+      if (e instanceof HTTPError) {
+        e.response.json().then(e => toast.success(e.message));
+      }
+    },
   });
 };

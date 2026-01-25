@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ims.features.auth.dto.AuthRequest;
 import com.example.ims.features.auth.dto.AuthResponse;
+import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.auth.services.AuthService;
 import com.example.ims.global.response.ApiResponse;
 
@@ -22,7 +23,8 @@ public class AuthController {
     private final AuthService service;
 
     @PostMapping("login")
-    public ResponseEntity<ApiResponse<AuthResponse>> loginUser(@RequestBody AuthRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> loginUser(@RequestBody AuthRequest request)
+            throws UserNotFoundException {
         AuthResponse response = service.authenticate(request);
 
         return ResponseEntity.status(HttpStatus.OK)

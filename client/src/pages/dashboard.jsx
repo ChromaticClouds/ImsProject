@@ -3,7 +3,7 @@
 /**
  * Components
  */
-import { AppSidebar } from '@/components/common/app-sidebar.js';
+import { AppSidebar } from '@/components/common/app-sidebar.jsx';
 import { BackGround } from '@/components/common/background.js';
 import { Outlet } from 'react-router-dom';
 

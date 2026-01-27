@@ -28,7 +28,7 @@ export const AppSidebar = () => {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Card className='p-1 flex justify-center border-0 cursor-pointer hover:bg-muted/50'>
+        <Card className='p-1 flex h-max justify-center cursor-pointer hover:bg-muted/50'>
           <Link to='/dashboard'>
             <Logo />
           </Link>

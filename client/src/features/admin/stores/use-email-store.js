@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { create } from 'zustand';
 
 /**
@@ -5,7 +6,7 @@ import { create } from 'zustand';
  * @property {string} value
  * @property {(email: string) => void} setValue
  * @property {string[]} emails
- * @property {(email: string) => void} addEmail
+ * @property {(email: string) => 'OK' | 'DUPLICATE' | 'EMPTY'} addEmail
  * @property {(index: number) => void} deleteEmail
  * @property {() => void} deleteLastEmail
  */
@@ -13,12 +14,25 @@ import { create } from 'zustand';
 /**
  * @type {import("zustand").UseBoundStore<import("zustand").StoreApi<EmailStoreState>>}
  */
-export const useEmailStore = create((set) => ({
+export const useEmailStore = create((set, get) => ({
   value: '',
-  setValue: (email) => set({ email }),
   emails: [],
-  addEmail: (email) => set((prev) => prev.emails.push(email)),
+
+  setValue: (value) => set({ value }),
+
+  addEmail: (email) => {
+    const normalized = email.trim().toLowerCase();
+    if (!normalized) return 'EMPTY';
+
+    const { emails } = get();
+    if (emails.includes(normalized)) return 'DUPLICATE';
+
+    set({ emails: [...emails, normalized] });
+    return 'OK';
+  },
+
   deleteEmail: (index) =>
-    set((prev) => prev.emails.filter((_, i) => i !== index)),
-  deleteLastEmail: () => set((prev) => prev.emails.slice(0, -1)),
+    set((state) => ({
+      emails: state.emails.filter((_, i) => i !== index),
+    })),
 }));

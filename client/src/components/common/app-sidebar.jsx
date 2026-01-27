@@ -28,7 +28,7 @@ export const AppSidebar = () => {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Card className='p-1 flex h-max justify-center cursor-pointer hover:bg-muted/50'>
+        <Card className='p-2 flex h-max justify-center cursor-pointer hover:bg-muted/50'>
           <Link to='/dashboard'>
             <Logo />
           </Link>
@@ -80,8 +80,8 @@ export const AppSidebar = () => {
                 title='조직도'
                 Icon={UsersIcon}
                 children={[
-                  { title: '조직도', url: '/dashboard/users/group' },
-                  { title: '사용자 설정', url: '/dashboard/users/setting' },
+                  { title: '조직도', url: '/dashboard/user/group' },
+                  { title: '사용자 설정', url: '/dashboard/user/setting' },
                 ]}
               />
             </SidebarMenu>

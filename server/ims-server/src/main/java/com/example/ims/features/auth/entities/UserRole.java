@@ -1,7 +1,8 @@
 package com.example.ims.features.auth.entities;
 
 public enum UserRole {
-    ORDER,
+    PLACE_ORDER,
     INBOUND,
+    RECEIVE_ORDER,
     OUTBOUND,
 }

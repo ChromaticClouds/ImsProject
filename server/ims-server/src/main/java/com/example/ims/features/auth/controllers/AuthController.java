@@ -34,9 +34,7 @@ public class AuthController {
 
     @PostMapping("register")
     public ResponseEntity<ApiResponse<Void>> registerUser(@RequestBody RegisterRequest request) {
-        System.out.println(request.getName());
-        
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success("안녕하세요, " + request.getName() + "님"));
     }
 }

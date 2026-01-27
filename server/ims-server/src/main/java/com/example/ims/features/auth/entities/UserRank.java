@@ -1,7 +1,7 @@
 package com.example.ims.features.auth.entities;
 
 public enum UserRank {
-    FIRST_MODERATOR,
-    SECOND_MODERATOR,
+    FIRST_ADMIN,
+    SECOND_ADMIN,
     EMPLOYEE
 }

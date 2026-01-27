@@ -3,6 +3,7 @@
 /**
  * Components
  */
+import { Logo } from '@/assets/logo.jsx';
 import { Button } from '@/components/ui/button.js';
 import {
   Card,
@@ -30,7 +31,9 @@ export const AuthHeader = ({ children }) => {
 
   return (
     <div className='flex flex-col gap-6 w-full max-w-sm'>
-      <p className='text-center text-3xl font-bold'></p>
+      <div className='w-full flex justify-center'>
+        <Logo />
+      </div>
       <Card>
         <CardHeader>
           <div className='flex flex-col gap-6'>

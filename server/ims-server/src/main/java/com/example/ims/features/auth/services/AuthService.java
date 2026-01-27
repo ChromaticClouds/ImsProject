@@ -2,7 +2,7 @@ package com.example.ims.features.auth.services;
 
 import org.springframework.stereotype.Service;
 
-import com.example.ims.features.auth.dto.AuthRequest;
+import com.example.ims.features.auth.dto.LoginRequest;
 import com.example.ims.features.auth.dto.AuthResponse;
 import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.auth.exceptions.AuthError;
@@ -17,7 +17,7 @@ public class AuthService {
 
     private final AuthRepository repository;
 
-    public AuthResponse authenticate(AuthRequest request) throws UserNotFoundException {
+    public AuthResponse loginUser(LoginRequest request) throws UserNotFoundException {
         User user = repository.findByEid(request.getEid())
             .orElseThrow(() -> new UserNotFoundException(AuthError.USER_NOT_FOUND));
         

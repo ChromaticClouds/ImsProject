@@ -11,7 +11,9 @@ export const Dashboard = () => {
   return (
     <BackGround direction='row'>
       <AppSidebar />
-      <Outlet />
+      <main className='w-full h-full flex flex-col'>
+        <Outlet />
+      </main>
     </BackGround>
   );
 };

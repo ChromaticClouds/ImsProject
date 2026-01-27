@@ -1,4 +1,7 @@
 import {
+  HomeIcon,
+  CalendarIcon,
+  MegaphoneIcon,
   PackageIcon,
   ArrowBigUpDashIcon,
   ArrowBigDownDashIcon,
@@ -7,6 +10,24 @@ import {
   HandshakeIcon,
   ChartAreaIcon,
 } from 'lucide-react';
+
+export const SIDEBAR_MAIN_ITEMS = [
+  {
+    title: '메인 페이지',
+    url: '/dashboard',
+    Icon: HomeIcon,
+  },
+  {
+    title: '공지사항',
+    url: '/dashboard/notice',
+    Icon: MegaphoneIcon,
+  },
+  {
+    title: '투두리스트',
+    url: '/dashboard/todo',
+    Icon: CalendarIcon,
+  },
+];
 
 export const SIDEBAR_PRODUCT_ITEMS = [
   {

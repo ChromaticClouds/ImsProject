@@ -14,8 +14,8 @@ import { SidebarProvider } from '@/components/ui/sidebar.js';
 
 export const App = () => {
   return (
-    <SidebarProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <SidebarProvider>
         <ThemeProvider
           defaultTheme='system'
           storageKey='vite=-ui-theme'
@@ -26,7 +26,7 @@ export const App = () => {
           />
           <Outlet />
         </ThemeProvider>
-      </QueryClientProvider>
-    </SidebarProvider>
+      </SidebarProvider>
+    </QueryClientProvider>
   );
 };

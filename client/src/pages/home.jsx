@@ -1,5 +1,6 @@
-import { fetchApiHealth } from "@/services/api/fetch.js";
-import { useQuery } from "@tanstack/react-query";
+import { Button } from '@/components/ui/button.js';
+import { fetchApiHealth } from '@/services/api/fetch.js';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * @typedef {{ data: ApiResponse }} ApiHealthData
@@ -8,18 +9,22 @@ import { useQuery } from "@tanstack/react-query";
 export const Home = () => {
   /** @type {ApiHealthData} */
   const { data } = useQuery({
-    queryKey: ["apiHealth"],
+    queryKey: ['apiHealth'],
     queryFn: fetchApiHealth,
-    refetchInterval: 1
+    refetchInterval: 1,
   });
 
-  return data && (
-    <>
-      <div>success: {data.success.toString()}</div>
-      <div>message: {data.message}</div>
-      {Object.entries(data.data).map(([k, v]) => (
-        <div key={k}>{k}: {v}</div>
-      ))}
-    </>
+  return (
+    data && (
+      <div>
+        <div>success: {data.success.toString()}</div>
+        <div>message: {data.message}</div>
+        {Object.entries(data.data).map(([k, v]) => (
+          <div key={k}>
+            {k}: {v}
+          </div>
+        ))}
+      </div>
+    )
   );
 };

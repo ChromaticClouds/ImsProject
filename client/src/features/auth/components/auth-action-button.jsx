@@ -19,7 +19,7 @@ export const AuthActionButton = () => {
         className='w-full cursor-pointer'
         form={mode === 'login' ? 'login' : 'register'}
       >
-        로그인
+        {mode === 'login' ? '로그인' : '회원가입'}
       </Button>
     </CardFooter>
   );

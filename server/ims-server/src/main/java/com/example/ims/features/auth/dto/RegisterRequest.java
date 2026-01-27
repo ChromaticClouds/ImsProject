@@ -7,7 +7,8 @@ import lombok.ToString;
 @Getter
 @ToString
 @NoArgsConstructor
-public class AuthRequest {
-    private String eid;
+public class RegisterRequest {
+    private String name;
     private String password;
+    private String confirmPassword;
 }

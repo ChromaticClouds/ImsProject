@@ -15,4 +15,5 @@ public class ResendProperties {
 
     @NotBlank(message = "RESEND_API_KEY가 설정되지 않았습니다.")
     private String apiKey;
+    private String fromEmail;
 }

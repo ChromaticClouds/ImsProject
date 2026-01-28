@@ -25,7 +25,7 @@ public class InvitationController {
     
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> invite(@RequestBody @Valid EmailRequest request) 
-        throws ResendException {
+            throws ResendException {
         service.invite(request);
 
         return ResponseEntity.status(HttpStatus.OK)

@@ -8,7 +8,7 @@ import { create } from 'zustand';
  * @property {string[]} emails
  * @property {(email: string) => 'OK' | 'DUPLICATE' | 'EMPTY'} addEmail
  * @property {(index: number) => void} deleteEmail
- * @property {() => void} deleteLastEmail
+ * @property {() => void} deleteAllEmails
  */
 
 /**
@@ -23,8 +23,7 @@ export const useEmailStore = create((set, get) => ({
   addEmail: (email) => {
     const normalized = email.trim().toLowerCase();
     if (!normalized) return 'EMPTY';
-
-    const { emails } = get();
+    const emails = get().emails;
     if (emails.includes(normalized)) return 'DUPLICATE';
 
     set({ emails: [...emails, normalized] });
@@ -35,4 +34,6 @@ export const useEmailStore = create((set, get) => ({
     set((state) => ({
       emails: state.emails.filter((_, i) => i !== index),
     })),
+
+  deleteAllEmails: () => set(() => ({ emails: [], value: '' })),
 }));

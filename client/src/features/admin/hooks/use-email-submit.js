@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * Node modules
  */
@@ -17,13 +19,11 @@ import { ERROR } from '@/services/error.js';
 
 export const useEmailSubmit = () => {
   const emails = useEmailStore((s) => s.emails);
+  const deleteAllEmails = useEmailStore((s) => s.deleteAllEmails);
 
   return {
     emails,
 
-    /**
-     * @param {React.FormEvent<HTMLFormElement>} e
-     */
     handleEmailSubmit: async () => {
       if (emails.length === 0)
         return toast.error('초대할 이메일을 입력해주세요.');
@@ -35,6 +35,8 @@ export const useEmailSubmit = () => {
 
         if (response.success)
           toast.success(response.message ?? '초대 메일을 발송했습니다.');
+
+        deleteAllEmails();
       } catch (err) {
         if (err instanceof HTTPError) {
           const errResponse = /** @type {ApiResponse} */ (

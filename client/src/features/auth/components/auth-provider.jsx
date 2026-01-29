@@ -9,6 +9,7 @@ import { createContext } from "react";
 import { useAuthForm } from "@/features/auth/hooks/use-auth-form.js";
 import { useLocation } from "react-router-dom";
 import { useContext } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * @typedef {'login' | 'register'} AuthMode
@@ -53,6 +54,10 @@ export const AuthProvider = ({ children }) => {
   const authForm = useAuthForm();
 
   const isLogin = location.pathname.includes('login');
+
+  const { isError } = useQuery({
+    enabled: !isLogin
+  });
 
   /** @type {AuthContextValue} */
   const value = isLogin

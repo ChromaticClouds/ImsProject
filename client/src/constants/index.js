@@ -5,6 +5,7 @@ import {
   PackageIcon,
   ArrowBigUpDashIcon,
   ArrowBigDownDashIcon,
+  ArrowDownUpIcon,
   FileInputIcon,
   FileOutputIcon,
   HandshakeIcon,
@@ -54,6 +55,11 @@ export const SIDEBAR_PRODUCT_ITEMS = [
     title: '출고',
     url: '#',
     Icon: ArrowBigUpDashIcon,
+  },
+  {
+    title: '조정',
+    url: '#',
+    Icon: ArrowDownUpIcon,
   },
 ];
 

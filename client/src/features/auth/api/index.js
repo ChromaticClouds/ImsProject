@@ -16,3 +16,10 @@ export const loginUser = (loginForm) =>
  */
 export const registerUser = (registerForm) =>
   api.post('auth/register', { json: registerForm }).json();
+
+/**
+ * @param {string} token 
+ * @return {Promise<ApiResponse<void>>}
+ */
+export const verifyToken = (token) =>
+  api.get('auth/token', { json: { token } }).json();

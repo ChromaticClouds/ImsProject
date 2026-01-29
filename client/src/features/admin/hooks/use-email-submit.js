@@ -28,6 +28,9 @@ export const useEmailSubmit = () => {
       if (emails.length === 0)
         return toast.error('초대할 이메일을 입력해주세요.');
 
+      if (emails.length >= 10)
+        return toast.error('초대 메일 입력은 한 번에 10개를 초과할 수 없습니다.');
+
       try {
         const response = /** @type {ApiResponse} */ (
           await api.post('invitation', { json: { emails } }).json()

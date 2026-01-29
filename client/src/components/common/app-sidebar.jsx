@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * Components
  */
@@ -26,7 +28,7 @@ import { Link } from 'react-router-dom';
 
 export const AppSidebar = () => {
   return (
-    <Sidebar>
+    <Sidebar collapsible='icon'>
       <SidebarHeader>
         <Card className='p-2 flex h-max justify-center cursor-pointer hover:bg-muted/50'>
           <Link to='/dashboard'>

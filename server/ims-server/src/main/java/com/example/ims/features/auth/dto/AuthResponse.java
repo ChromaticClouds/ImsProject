@@ -18,7 +18,7 @@ public class AuthResponse {
         this.eid = user.getEid();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.rank = user.getRank();
-        this.role = user.getRole();
+        this.rank = user.getUserRank();
+        this.role = user.getUserRole();
     }
 }

@@ -8,10 +8,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
 public class User {
@@ -26,8 +28,8 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserRank rank;
+    private UserRank userRank;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private UserRole userRole;
 }

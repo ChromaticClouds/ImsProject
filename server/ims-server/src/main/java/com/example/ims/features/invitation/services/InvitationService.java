@@ -6,7 +6,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.invitation.dto.EmailRequest;
+import com.example.ims.features.invitation.repositories.InvitationRepository;
 import com.example.ims.features.invitation.stores.InvitationTokenStore;
 import com.example.ims.global.config.ResendProperties;
 import com.resend.Resend;
@@ -19,31 +21,37 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class InvitationService {
 
-    private static final Duration INVITE_TTL = Duration.ofMinutes(5);
+    private static final Duration INVITE_TTL 
+        = Duration.ofMinutes(5);
 
-    private final InvitationTokenStore tokenStore;
     private final ResendProperties props;
+    private final InvitationTokenStore tokenStore;
+    private final InvitationRepository repository;
 
     public void invite(EmailRequest request) throws ResendException {
-        List<String> emails = request.getEmails();
-
         Resend resend = new Resend(props.getApiKey());
 
-        for (String email: emails) {
-            String token = UUID.randomUUID().toString();
-            tokenStore.save(token, email, INVITE_TTL);
-            sendInvite(resend, email, token);
-        }
+        List<CreateEmailOptions> batch = request.getEmails()
+            .stream()
+            .map(email -> {
+                User user = new User();
+                user.setEmail(email);
+                String token = UUID.randomUUID().toString();
+                tokenStore.save(token, email, INVITE_TTL);
+                repository.save(user);
+                return getEmailOptions(resend, email, token);
+            }).toList();
+
+        resend.batch().send(batch);
     }
 
-    public void sendInvite(Resend resend, String email, String token) throws ResendException {
-        CreateEmailOptions param = CreateEmailOptions.builder()
+    public CreateEmailOptions getEmailOptions(
+            Resend resend, String email, String token) {
+        return CreateEmailOptions.builder()
             .from(props.getFromEmail())
             .to(email)
             .subject("Get the code!")
             .html(token)
             .build();
-
-        resend.emails().send(param);
     }
 }

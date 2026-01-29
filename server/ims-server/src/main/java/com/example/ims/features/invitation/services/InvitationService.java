@@ -6,7 +6,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.invitation.dto.EmailRequest;
+import com.example.ims.features.invitation.repositories.InvitationRepository;
 import com.example.ims.features.invitation.stores.InvitationTokenStore;
 import com.example.ims.global.config.ResendProperties;
 import com.resend.Resend;
@@ -22,8 +24,9 @@ public class InvitationService {
     private static final Duration INVITE_TTL 
         = Duration.ofMinutes(5);
 
-    private final InvitationTokenStore tokenStore;
     private final ResendProperties props;
+    private final InvitationTokenStore tokenStore;
+    private final InvitationRepository repository;
 
     public void invite(EmailRequest request) throws ResendException {
         Resend resend = new Resend(props.getApiKey());
@@ -31,8 +34,11 @@ public class InvitationService {
         List<CreateEmailOptions> batch = request.getEmails()
             .stream()
             .map(email -> {
+                User user = new User();
+                user.setEmail(email);
                 String token = UUID.randomUUID().toString();
                 tokenStore.save(token, email, INVITE_TTL);
+                repository.save(user);
                 return getEmailOptions(resend, email, token);
             }).toList();
 

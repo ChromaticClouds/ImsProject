@@ -1,3 +1,2 @@
-2026/01/20-14:14:22.344 5d50 Reusing MANIFEST C:\Users\kddo3\Documents\ims-project\server\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
-2026/01/20-14:14:22.354 5d50 Recovering log #3
-2026/01/20-14:14:22.357 5d50 Reusing old log C:\Users\kddo3\Documents\ims-project\server\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/000003.log 
+2026/01/31-12:47:21.117 6d60 Creating DB C:\Users\kddo3\Documents\ims-workspace\ImsProject\server\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb since it was missing.
+2026/01/31-12:47:21.164 6d60 Reusing MANIFEST C:\Users\kddo3\Documents\ims-workspace\ImsProject\server\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001

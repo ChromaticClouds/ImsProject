@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.ims.features.auth.entities.User;
+import com.example.ims.features.invitation.Invitation;
+import com.example.ims.features.invitation.dto.InvitationMailPayload;
 import com.example.ims.global.config.ResendProperties;
 import com.example.ims.global.external.resend.ResendClient;
 import com.resend.core.exception.ResendException;
@@ -19,13 +20,13 @@ public class InvitationMailSender {
     private final ResendClient resendClient;
     private final ResendProperties props;
 
-    public void createInvitation(List<User> users) throws ResendException {
-        List<CreateEmailOptions> batch = users.stream()
-            .map(user -> CreateEmailOptions.builder()
+    public void createInvitation(List<InvitationMailPayload> payloads) throws ResendException {
+        List<CreateEmailOptions> batch = payloads.stream()
+            .map(payload -> CreateEmailOptions.builder()
                 .from(props.getFromEmail())
-                .to(user.getEmail())
-                .subject("Get the code!")
-                .html("anything")
+                .to(payload.getUser().getEmail())
+                .subject("IMS PROJECT 초대장이 도착했습니다.")
+                .html(new Invitation(payload.getToken(), props.getBaseUrl()).getMailContents())
                 .build())
             .toList();
 

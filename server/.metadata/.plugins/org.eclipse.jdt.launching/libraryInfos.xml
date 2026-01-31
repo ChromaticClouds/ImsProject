@@ -11,6 +11,8 @@
             <entry path="null"/>
         </endorsedDirs>
     </libraryInfo>
+    <libraryInfo home="C:\Program Files\Eclipse Adoptium\jdk-21.0.6.7-hotspot" version="21.0.6"/>
     <libraryInfo home="C:\Program Files\Java\jdk-21" version="21.0.9"/>
+    <libraryInfo home="C:\Program Files\Java\jdk-25.0.1" version="25.0.1"/>
     <libraryInfo home="C:\sts-4.32.2.RELEASE\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_21.0.9.v20251105-0741\jre" version="21.0.9"/>
 </libraryInfos>

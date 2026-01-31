@@ -66,7 +66,7 @@ export const SIDEBAR_PRODUCT_ITEMS = [
 export const SIDEBAR_ADDITIONAL_ITEMS = [
   {
     title: '거래처',
-    url: '#',
+    url: '/dashboard/vendor',
     Icon: HandshakeIcon,
   },
   {

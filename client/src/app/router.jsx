@@ -9,6 +9,9 @@ import { Auth } from '@/pages/auth.jsx';
 import { Dashboard } from '@/pages/dashboard/dashboard.jsx';
 import { Main } from '@/pages/dashboard/main.jsx';
 import { UserSetting } from '@/pages/dashboard/user-settiing.jsx';
+import { VendorList } from '@/pages/vendor/vendor-list.jsx';
+import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
+
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +30,13 @@ export const router = createBrowserRouter([
             path: 'user',
             children: [{ path: 'setting', element: <UserSetting /> }],
           },
+          {
+            path: 'vendor',
+            children: [
+          { index: true, element: <VendorList /> }, 
+          { path: 'create', element: <VendorCreate /> } 
+      ],
+    },
         ],
       },
     ],

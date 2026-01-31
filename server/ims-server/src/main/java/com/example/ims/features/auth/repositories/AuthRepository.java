@@ -8,5 +8,6 @@ import com.example.ims.features.auth.entities.User;
 
 public interface AuthRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByEid(String name);
+    Optional<User> findByEid(String eid);
+    Optional<User> findByEmail(String email);
 }

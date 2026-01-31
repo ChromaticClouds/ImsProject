@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ims.features.invitation.dto.EmailRequest;
-import com.example.ims.features.invitation.services.InvitationService;
+import com.example.ims.features.invitation.services.InvitationCreator;
 import com.example.ims.global.response.ApiResponse;
 import com.resend.core.exception.ResendException;
 
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class InvitationController {
 
-    private final InvitationService service;
+    private final InvitationCreator service;
     
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> invite(@RequestBody @Valid EmailRequest request) 

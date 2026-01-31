@@ -1,13 +1,20 @@
 // @ts-check
 
-import { Button } from '@/components/ui/button';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationLink,
+} from '@/components/ui/pagination';
 
 /**
  * 페이지네이션 정보 객체
  *
  * @typedef {object} PageInfo
- * @property {number} page         - 현재 페이지 (API 기준, 1-base)
- * @property {number} totalPages  - 전체 페이지 수
+ * @property {number} page        - 현재 페이지 (API 기준, 1-base)
+ * @property {number} totalPages - 전체 페이지 수
  */
 
 /**
@@ -15,50 +22,58 @@ import { Button } from '@/components/ui/button';
  *
  * @typedef {object} VendorPaginationProps
  * @property {PageInfo} pageInfo
- *   - 서버에서 내려온 페이지 정보
  * @property {(page: number) => void} onChange
- *   - 페이지 변경 시 호출되는 콜백
- *   - 전달되는 page 값은 API 기준 (1-base)
  */
 
 /**
- * 거래처 목록 페이지네이션 컴포넌트
+ * 거래처 목록 페이지네이션 (shadcn/ui 기반)
  *
- * 📌 역할
- * - 이전 / 다음 버튼을 통해 페이지 이동
- * - 현재 페이지와 전체 페이지 수를 표시
- *
- * 📌 전제
+ * - shadcn Pagination 컴포넌트 사용
  * - page 값은 항상 1-base
- * - 페이지 변경 시 onChange 콜백을 통해
- *   상위 컴포넌트가 URL / 상태를 갱신한다
- *
- * @param {VendorPaginationProps} props
  */
 export const VendorPagination = ({ pageInfo, onChange }) => {
   const { page, totalPages } = pageInfo;
 
+  if (totalPages <= 1) return null;
+
   return (
-    <div className='flex justify-center gap-2'>
-      <Button
-        variant='outline'
-        disabled={page <= 1}
-        onClick={() => onChange(page - 1)}
-      >
-        이전
-      </Button>
+    <Pagination>
+      <PaginationContent>
+        {/* 이전 버튼 */}
+        <PaginationItem>
+          <PaginationPrevious
+            aria-disabled={page <= 1}
+            onClick={() => {
+              if (page > 1) onChange(page - 1);
+            }}
+          />
+        </PaginationItem>
 
-      <span className='px-4 py-2'>
-        {page} / {totalPages}
-      </span>
+        {/* 현재 페이지 표시 (숫자 버튼) */}
+        {Array.from({ length: totalPages }).map((_, i) => {
+          const p = i + 1;
+          return (
+            <PaginationItem key={p}>
+              <PaginationLink
+                isActive={p === page}
+                onClick={() => onChange(p)}
+              >
+                {p}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        })}
 
-      <Button
-        variant='outline'
-        disabled={page >= totalPages}
-        onClick={() => onChange(page + 1)}
-      >
-        다음
-      </Button>
-    </div>
+        {/* 다음 버튼 */}
+        <PaginationItem>
+          <PaginationNext
+            aria-disabled={page >= totalPages}
+            onClick={() => {
+              if (page < totalPages) onChange(page + 1);
+            }}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   );
 };

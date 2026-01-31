@@ -26,3 +26,39 @@
  * @property {string} email
  * @property {string} role
  */
+
+/**
+ * @typedef {'Supplier' | 'Seller'} VendorType
+ */
+
+/** 거래처 목록 타입
+ * @typedef {object} Vendor
+ * @property {number} id
+ * @property {VendorType} type
+ * @property {string=} vendorName
+ * @property {string=} telephone
+ * @property {string=} email
+ * @property {string=} address
+ */
+
+/**
+ * @typedef {object} PageInfo
+ * @property {number} page
+ * @property {number} size
+ * @property {number} totalElements
+ * @property {number} totalPages
+ */
+
+/**
+ * @typedef {object} VendorSearch
+ * @property {number} page
+ * @property {string=} type
+ * @property {string=} keyword
+ */
+
+/**
+ * Spring Pageable 형태 응답 가정
+ * @typedef {Object} VendorListResponse
+ * @property {Vendor[]=} list
+ * @property {PageInfo} pageInfo
+ */

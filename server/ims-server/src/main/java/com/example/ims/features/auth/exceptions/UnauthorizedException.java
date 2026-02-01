@@ -2,11 +2,11 @@ package com.example.ims.features.auth.exceptions;
 
 import com.example.ims.global.exception.BusinessException;
 
-public class UserNotFoundException extends BusinessException {
-    
+public class UnauthorizedException extends BusinessException {
+
 	private static final long serialVersionUID = 1L;
 
-	public UserNotFoundException(String message) {
-        super(message);
-    }
+	public UnauthorizedException() {
+		super(AuthError.UNAUTORIZED);
+	}
 }

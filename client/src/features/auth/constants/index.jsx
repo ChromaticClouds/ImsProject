@@ -1,6 +1,3 @@
-import { Label } from '@/components/ui/label.js';
-import { Link } from 'react-router-dom';
-
 export const AUTH_HEADER_MAP = {
   login: {
     title: '로그인 해주세요',
@@ -25,17 +22,6 @@ export const AUTH_FIELD_MAP = /** @type {const} */ ({
       name: 'password',
       type: 'password',
       label: '비밀번호',
-      renderLabel: ({ label }) => (
-        <div className='flex items-center'>
-          <Label htmlFor='password'>{label}</Label>
-          <Link
-            to='/forgot-password'
-            className='ml-auto inline-block text-sm underline-offset-4 hover:underline'
-          >
-            비밀번호를 잊으셨나요?
-          </Link>
-        </div>
-      ),
     },
   ],
 

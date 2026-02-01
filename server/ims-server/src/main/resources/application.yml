@@ -31,3 +31,8 @@ resend:
   api-key: ${RESEND_API_KEY}
   from-email: ${RESEND_FROM_EMAIL}
   base-url: ${RESEND_URL}
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-exp-minutes: 30
+  refresh-exp-days: 14

@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * Hooks
  */
@@ -32,14 +34,13 @@ const loginDefaultValue = {
 export const useAuthForm = () => {
   const { mutate: login } = useAuthMutation(loginUser, {
     onSuccess: (...args) => {
+      console.log(args[0]);
       toast.success(args[0].message);
-    },
+    }
   });
 
   const { mutate: register } = useAuthMutation(registerUser, {
-    onSuccess: (...args) => {
-      toast.success(args[0].message);
-    },
+    onSuccess: (...args) => toast.success(args[0].message)
   });
 
   return {

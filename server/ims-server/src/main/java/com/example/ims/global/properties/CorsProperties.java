@@ -1,4 +1,4 @@
-package com.example.ims.global.config;
+package com.example.ims.global.properties;
 
 import java.util.List;
 

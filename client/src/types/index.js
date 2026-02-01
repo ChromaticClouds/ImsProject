@@ -28,6 +28,15 @@
  */
 
 /**
+ * @typedef {object} User
+ * @property {string} eid
+ * @property {string} email
+ * @property {string} name
+ * @property {string} rank
+ * @property {string} role
+ */
+
+/**
  * @typedef {'Supplier' | 'Seller'} VendorType
  */
 

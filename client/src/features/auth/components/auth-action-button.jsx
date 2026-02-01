@@ -1,26 +1,49 @@
+// @ts-check
+
 import { Button } from '@/components/ui/button.js';
 import { CardFooter } from '@/components/ui/card.js';
-import { useAuthContext } from '@/features/auth/components/auth-provider.jsx';
+import { Spinner } from '@/components/ui/spinner.js';
+import { useAuthContext } from '@/features/auth/providers/auth-provider.jsx';
 
-/**
- * @typedef {'login' | 'register'} AuthActionType
- */
-
-/**
- * @param {{ type: AuthActionType }} props
- */
 export const AuthActionButton = () => {
-  const { mode } = useAuthContext();
+  const { form, mode } = useAuthContext();
 
-  return (
-    <CardFooter className='flex-col gap-2'>
-      <Button
-        type='submit'
-        className='w-full cursor-pointer'
-        form={mode === 'login' ? 'login' : 'register'}
-      >
-        {mode === 'login' ? '로그인' : '회원가입'}
-      </Button>
-    </CardFooter>
+  const buttonText = mode === 'login' ? '로그인' : '회원가입';
+
+  return mode === 'register' ? (
+    <form.Subscribe
+      selector={(state) => [
+        state.canSubmit,
+        state.isSubmitting,
+        state.isTouched,
+      ]}
+    >
+      {([canSubmit, isSubmitting, isTouched]) => (
+        <CardFooter className='flex-col gap-2'>
+          <Button
+            type='submit'
+            form='register'
+            disabled={!canSubmit || isSubmitting || !isTouched}
+            className='w-full'
+          >
+            {isSubmitting ? <Spinner /> : buttonText}
+          </Button>
+        </CardFooter>
+      )}
+    </form.Subscribe>
+  ) : (
+    <form.Subscribe selector={(state) => [state.isSubmitting]}>
+      {([isSubmitting]) => (
+        <CardFooter className='flex-col gap-2'>
+          <Button
+            type='submit'
+            form={mode === 'login' ? 'login' : 'register'}
+            className='w-full'
+          >
+            {isSubmitting ? <Spinner /> : buttonText}
+          </Button>
+        </CardFooter>
+      )}
+    </form.Subscribe>
   );
 };

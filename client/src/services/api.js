@@ -3,6 +3,8 @@ import ky from "ky";
 export const api = ky.create({
   prefixUrl: import.meta.env.VITE_SERVER_URL,
   timeout: 30000,
+  credentials: 'include',
+  retry: 0
 }); // 기본 API 클라이언트
 
 /**

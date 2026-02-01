@@ -4,7 +4,9 @@ import com.example.ims.global.exception.BusinessException;
 
 public class AuthFailException extends BusinessException {
 
-    public AuthFailException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public AuthFailException(String message) {
         super(message);
     }
 }

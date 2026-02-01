@@ -2,7 +2,7 @@
 
 import { CardContent } from '@/components/ui/card.js';
 import { FieldGroup } from '@/components/ui/field.js';
-import { useAuthContext } from '@/features/auth/components/auth-provider.jsx';
+import { useAuthContext } from '@/features/auth/providers/auth-provider.jsx';
 
 /**
  * @param {React.PropsWithChildren} props

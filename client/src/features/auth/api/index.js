@@ -18,8 +18,8 @@ export const registerUser = (registerForm) =>
   api.post('auth/register', { json: registerForm }).json();
 
 /**
- * @param {string} token 
- * @return {Promise<ApiResponse<void>>}
+ * @param {string} token
+ * @return {Promise<ApiResponse>}
  */
 export const verifyToken = (token) =>
-  api.get('auth/token', { json: { token } }).json();
+  api.get('invitation/token', { searchParams: { token } }).json();

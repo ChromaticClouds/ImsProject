@@ -6,10 +6,14 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.example.ims.features.auth.dto.InviteVerifyResponse;
 import com.example.ims.features.auth.entities.User;
+import com.example.ims.features.auth.exceptions.AuthError;
+import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.auth.repositories.AuthRepository;
 import com.example.ims.features.invitation.dto.EmailRequest;
 import com.example.ims.features.invitation.dto.InvitationMailPayload;
+import com.example.ims.features.invitation.exceptions.InvalidInvitationTokenException;
 import com.example.ims.features.invitation.stores.InvitationTokenStore;
 import com.resend.core.exception.ResendException;
 
@@ -17,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class InvitationCreator {
+public class InvitationService {
 
     private static final Duration INVITE_TTL 
         = Duration.ofHours(24);
@@ -48,5 +52,20 @@ public class InvitationCreator {
         });
 
         return new InvitationMailPayload(found, token);
+    }
+
+    public InviteVerifyResponse verifyInviteToken (String token) {
+        String email = tokenStore.findEmailByToken(token)
+            .orElseThrow(InvalidInvitationTokenException::new);
+
+        System.out.println(email);
+
+        User user = repository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException(AuthError.USER_NOT_FOUND));
+
+        return new InviteVerifyResponse(
+            user.getStatus(),
+            user.getEmail()
+        );
     }
 }

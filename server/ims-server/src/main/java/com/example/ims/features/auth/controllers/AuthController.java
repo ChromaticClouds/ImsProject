@@ -1,22 +1,26 @@
 package com.example.ims.features.auth.controllers;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ims.features.auth.dto.AuthResponse;
-import com.example.ims.features.auth.dto.InviteVerifyResponse;
 import com.example.ims.features.auth.dto.LoginRequest;
+import com.example.ims.features.auth.dto.AuthResult;
 import com.example.ims.features.auth.dto.RegisterRequest;
 import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.auth.services.AuthService;
+import com.example.ims.features.auth.stores.RefreshTokenCookieStore;
 import com.example.ims.global.response.ApiResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,10 +33,17 @@ public class AuthController {
     @PostMapping("login")
     public ResponseEntity<ApiResponse<AuthResponse>> loginUser(@RequestBody LoginRequest request)
             throws UserNotFoundException {
-        AuthResponse response = service.loginUser(request);
+        AuthResult result = service.loginUser(request);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("안녕하세요, " + response.getName() + "님", response));
+        ResponseCookie refreshCookie = 
+            RefreshTokenCookieStore.store(result.refreshToken(), true);
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+            .body(ApiResponse.success(
+                "안녕하세요, " + result.user().getName() + "님", 
+                new AuthResponse(result.user(), result.accessToken())
+            ));
     }
 
     @PostMapping("register")
@@ -40,11 +51,21 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("안녕하세요, " + request.getName() + "님"));
     }
-
-    @GetMapping("token")
-    public ResponseEntity<ApiResponse<InviteVerifyResponse>> verifyToken(
-            @RequestParam("token") String token) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(ApiResponse.success(service.verifyInviteToken(token)));
+    
+    @GetMapping("refresh")
+    public ResponseEntity<ApiResponse<AuthResponse>> reIsssueToken(
+    	@CookieValue("refreshToken") String refreshToken
+    ) {
+    	AuthResult result = service.refresh(refreshToken);
+    	
+    	ResponseCookie refreshCookie = 
+        		RefreshTokenCookieStore.store(result.refreshToken(), true);
+    	
+    	return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+            .body(ApiResponse.success(
+        		null, 
+        		new AuthResponse(result.user(), result.accessToken())
+        	));
     }
 }

@@ -1,4 +1,4 @@
-package com.example.ims.global.config;
+package com.example.ims.global.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;

@@ -11,6 +11,8 @@ import { Main } from '@/pages/dashboard/main.jsx';
 import { UserSetting } from '@/pages/dashboard/user-settiing.jsx';
 import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
 import { VendorList } from '@/pages/vendor/vendor-list.jsx';
+import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
+import { AuthBootstrap } from '@/app/auth-bootstrap.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -20,20 +22,27 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'login', element: <Auth /> },
       { path: 'register', element: <Auth /> },
+
       {
-        path: 'dashboard',
-        element: <Dashboard />,
+        loader: authBootstrapLoader,
+        element: <AuthBootstrap />,
         children: [
-          { index: true, element: <Main /> },
           {
-            path: 'user',
-            children: [{ path: 'setting', element: <UserSetting /> }],
-          },
-          {
-            path: 'vendor',
+            path: 'dashboard',
+            element: <Dashboard />,
             children: [
-              { index: true, element: <VendorList /> },
-              { path: 'create', element: <VendorCreate /> },
+              { index: true, element: <Main /> },
+              {
+                path: 'user/setting',
+                element: <UserSetting />,
+              },
+              {
+                path: 'vendor',
+                children: [
+                  { index: true, element: <VendorList /> },
+                  { path: 'create', element: <VendorCreate /> },
+                ],
+              },
             ],
           },
         ],

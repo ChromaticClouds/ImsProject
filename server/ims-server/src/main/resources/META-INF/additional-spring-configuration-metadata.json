@@ -28,5 +28,20 @@
     "name": "resend.base-url",
     "type": "java.lang.String",
     "description": "A description for 'resend.base-url'"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  },
+  {
+    "name": "jwt.access-exp-minutes",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.access-exp-minutes'"
+  },
+  {
+    "name": "jwt.refresh-exp-days",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.refresh-exp-days'"
   }
 ]}

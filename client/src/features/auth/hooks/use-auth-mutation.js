@@ -3,6 +3,7 @@
 /**
  * Hooks
  */
+import { ERROR } from '@/services/error.js';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
@@ -25,12 +26,14 @@ export const useAuthMutation = (mutationFn, options = {}) => {
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
       options.onSuccess(...args);
-      navigate('/');
+      navigate('/dashboard');
     },
-    onError: (e) => {
+    onError: async (e) => {
       if (e instanceof HTTPError) {
-        e.response.json().then(e => toast.success(e.message));
+        return e.response.json().then(e => toast.error(e.message));
       }
+
+      toast.error(ERROR.SERVER_ERROR);
     },
   });
 };

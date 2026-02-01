@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card.js';
-import { useAuthContext } from '@/features/auth/components/auth-provider.jsx';
+import { useAuthContext } from '@/features/auth/providers/auth-provider.jsx';
 import { AUTH_HEADER_MAP } from '@/features/auth/constants/index.jsx';
 
 /**
@@ -44,15 +44,15 @@ export const AuthHeader = ({ children }) => {
             </div>
           </div>
           <CardAction>
-            <Button
-              variant='link'
-              className='cursor-pointer'
-              onClick={() =>
-                navigate(`/${mode === 'login' ? 'register' : 'login'}`)
-              }
-            >
-              {buttonText}
-            </Button>
+            {mode === 'register' && (
+              <Button
+                variant='link'
+                className='cursor-pointer'
+                onClick={() => navigate('login')}
+              >
+                {buttonText}
+              </Button>
+            )}
           </CardAction>
         </CardHeader>
         {children}

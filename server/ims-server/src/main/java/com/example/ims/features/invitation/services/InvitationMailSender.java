@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.ims.features.invitation.Invitation;
 import com.example.ims.features.invitation.dto.InvitationMailPayload;
-import com.example.ims.global.config.ResendProperties;
 import com.example.ims.global.external.resend.ResendClient;
+import com.example.ims.global.properties.ResendProperties;
 import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 

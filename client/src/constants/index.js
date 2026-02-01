@@ -75,3 +75,18 @@ export const SIDEBAR_ADDITIONAL_ITEMS = [
     Icon: ChartAreaIcon,
   },
 ];
+
+export const RANK_LABEL = {
+  FIRST_ADMIN: '총괄 책임자',
+  SECOND_ADMIN: '창고 관리자',
+  EMPLOYEE: '사원',
+};
+
+export const ROLE_LABEL = {
+  NONE: '권한 없음',
+  INBOUND: '입고',
+  PLACE_ORDER: '발주',
+  OUTBOUND: '출고',
+  RECIEVE_ORDER: '주문 수신',
+  ALL: '전체 권한',
+};

@@ -5,6 +5,9 @@
  * @property {string} [className]
  */
 
+/**
+ * @param {LogoProps} param0  
+ */
 export const Logo = ({ variant = 'default', size = 42, className = '' }) => {
   return (
     <span

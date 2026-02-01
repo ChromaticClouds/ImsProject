@@ -6,11 +6,13 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  useSidebar,
 } from '@/components/ui/sidebar';
 
 import {
@@ -25,6 +27,7 @@ import { UsersIcon } from 'lucide-react';
 import { Logo } from '@/assets/logo.jsx';
 import { Card } from '@/components/ui/card.js';
 import { Link } from 'react-router-dom';
+import { UserMenu } from '@/components/common/user-menu.jsx';
 
 export const AppSidebar = () => {
   return (
@@ -32,7 +35,7 @@ export const AppSidebar = () => {
       <SidebarHeader>
         <Card className='p-2 flex h-max justify-center cursor-pointer hover:bg-muted/50'>
           <Link to='/dashboard'>
-            <Logo />
+            <Logo variant='default' />
           </Link>
         </Card>
       </SidebarHeader>
@@ -90,6 +93,10 @@ export const AppSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter>
+        <UserMenu />
+      </SidebarFooter>
     </Sidebar>
   );
 };

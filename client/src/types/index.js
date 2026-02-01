@@ -33,8 +33,8 @@
  * @property {string} eid
  * @property {string} email
  * @property {string} name
- * @property {string} rank
- * @property {string} role
+ * @property {'FIRST_ADMIN' | 'SECOND_ADMIN' | 'EMPLOYEE'} rank
+ * @property {'NONE' | 'INBOUND' | 'PLACE_ORDER' | 'OUTBOUND' | 'RECIEVE_ORDER' | 'ALL'} role
  */
 
 /**

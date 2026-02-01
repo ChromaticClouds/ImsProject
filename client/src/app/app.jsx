@@ -12,7 +12,7 @@ import { Outlet } from 'react-router-dom';
  * Utils
  */
 import { queryClient } from '@/app/providers/query-client.js';
-import { SidebarProvider } from '@/components/ui/sidebar.js';
+import { SidebarProvider, useSidebar } from '@/components/ui/sidebar.js';
 
 export const App = () => {
   return (

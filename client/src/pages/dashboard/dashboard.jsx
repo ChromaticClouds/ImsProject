@@ -5,15 +5,16 @@
  */
 import { AppSidebar } from '@/components/common/app-sidebar.jsx';
 import { BackGround } from '@/components/common/background.js';
+import { MainBackground } from '@/components/common/main-background.jsx';
 import { Outlet } from 'react-router-dom';
 
 export const Dashboard = () => {
   return (
     <BackGround direction='row'>
       <AppSidebar />
-      <main className='w-full h-full flex flex-col'>
+      <MainBackground>
         <Outlet />
-      </main>
+      </MainBackground>
     </BackGround>
   );
 };

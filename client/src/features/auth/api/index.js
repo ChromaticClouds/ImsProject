@@ -4,18 +4,18 @@
 import { api } from '@/services/api.js';
 
 /**
- * @param {LoginFormSchema} loginForm
+ * @param {LoginFormSchema} form
  * @return {Promise<ApiResponse<AuthResponse>>}
  */
-export const loginUser = (loginForm) =>
-  api.post('auth/login', { json: loginForm }).json();
+export const loginUser = (form) =>
+  api.post('auth/login', { json: form }).json();
 
 /**
- * @param {RegisterFormSchema} registerForm
+ * @param {RegisterFormSchema} form
  * @return {Promise<ApiResponse<AuthResponse>>}
  */
-export const registerUser = (registerForm) =>
-  api.post('auth/register', { json: registerForm }).json();
+export const registerUser = (form) =>
+  api.post('auth/register', { json: form }).json();
 
 /**
  * @param {string} token

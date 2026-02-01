@@ -5,6 +5,7 @@
  */
 import { useForm } from '@tanstack/react-form';
 import { useAuthMutation } from '@/features/auth/hooks/use-auth-mutation.js';
+import { useSearchParams } from 'react-router-dom';
 
 /**
  * Schemas
@@ -32,22 +33,22 @@ const loginDefaultValue = {
 };
 
 export const useAuthForm = () => {
+  const [params] = useSearchParams();
+  const token = params.get('token');
+
   const { mutate: login } = useAuthMutation(loginUser, {
-    onSuccess: (...args) => {
-      console.log(args[0]);
-      toast.success(args[0].message);
-    }
+    onSuccess: (...args) => toast.success(args[0].message),
   });
 
   const { mutate: register } = useAuthMutation(registerUser, {
-    onSuccess: (...args) => toast.success(args[0].message)
+    onSuccess: (...args) => toast.success(args[0].message),
   });
 
   return {
     register: useForm({
       defaultValues: registerDefaultValue,
       validators: { onChange: registerSchema },
-      onSubmit: ({ value }) => register(value),
+      onSubmit: ({ value }) => register({ ...value, token }),
     }),
     login: useForm({
       defaultValues: loginDefaultValue,

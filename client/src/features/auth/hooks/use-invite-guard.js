@@ -21,9 +21,7 @@ export const useInviteGuard = () => {
 
   if (isLogin) return { status: 'login' };
 
-  if (!token) return { status: 'invalid-access' };
-
-  if (query.isError) return { status: 'invalid-access' };
+  if (!token || query.isError) return { status: 'invalid-access' };
 
   return { status: 'register' };
 };

@@ -24,7 +24,9 @@ import { RANK_LABEL, ROLE_LABEL } from '@/constants/index.js';
 /**
  * Assets
  */
-import { LogOutIcon, LockIcon, ChevronUpIcon } from 'lucide-react';
+import { LockIcon, ChevronUpIcon } from 'lucide-react';
+import { LogOutDialog } from '@/features/auth/components/log-out-dialog.jsx';
+import { PasswordChangeDialog } from '@/features/auth/components/password-change-dialog.jsx';
 
 export const UserMenu = () => {
   const [open, setOpen] = useState(false);
@@ -76,7 +78,7 @@ export const UserMenu = () => {
 
           {/* 권한 배지 */}
           <div className='flex flex-wrap gap-1 pt-2'>
-            <Badge variant='secondary'>{RANK_LABEL[user.rank]}</Badge>
+            <Badge variant='default'>{RANK_LABEL[user.rank]}</Badge>
 
             <Badge variant='secondary'>{ROLE_LABEL[user.role]}</Badge>
           </div>
@@ -87,23 +89,9 @@ export const UserMenu = () => {
 
         {/* 액션 */}
         <div className='flex flex-col gap-2 p-2'>
-          <Button
-            variant='ghost'
-            size='sm'
-            className='justify-start'
-          >
-            <LockIcon />
-            <span>비밀번호 변경</span>
-          </Button>
+          <PasswordChangeDialog />
 
-          <Button
-            variant='ghost'
-            size='sm'
-            className='justify-start text-destructive'
-          >
-            <LogOutIcon />
-            <span>로그아웃</span>
-          </Button>
+          <LogOutDialog />
         </div>
       </PopoverContent>
     </Popover>

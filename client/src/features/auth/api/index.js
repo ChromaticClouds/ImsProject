@@ -23,3 +23,8 @@ export const registerUser = (form) =>
  */
 export const verifyToken = (token) =>
   api.get('invitation/token', { searchParams: { token } }).json();
+
+/**
+ * @returns {Promise<ApiResponse<RefreshResponse>>}
+ */
+export const refreshToken = () => api.get('auth/refresh', { retry: 1 }).json();

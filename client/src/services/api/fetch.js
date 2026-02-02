@@ -1,3 +1,4 @@
+import { refreshToken } from "@/features/auth/api/index.js";
 import { useAuthStore } from "@/features/auth/stores/use-auth-store.js";
 import { api } from "@/services/api.js";
 import { toast } from "sonner";
@@ -9,7 +10,7 @@ export const bootStrapAuth = async () => {
     /**
      * @type {ApiResponse<{ user: User, token: string }>}
      */
-    const result = await api.get('auth/refresh', { retry: 1 }).json();
+    const result = await refreshToken();
 
     useAuthStore
       .getState()

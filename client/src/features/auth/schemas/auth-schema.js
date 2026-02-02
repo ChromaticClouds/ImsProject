@@ -1,6 +1,6 @@
 import z from 'zod';
 
-const passwordBase = z
+export const passwordBase = z
   .string()
   .min(8, '비밀번호는 최소 8자리 이상이어야 합니다.')
   .max(32, '비밀번호는 최대 32자 이하여야 합니다.')

@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "module": "commonjs",
-    "target": "es6",
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "bundler",
     "typeRoots": ["src/types", "node_modules/@types"],
     "baseUrl": ".",
     "paths": {

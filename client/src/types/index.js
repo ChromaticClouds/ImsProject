@@ -38,6 +38,12 @@
  */
 
 /**
+ * @typedef {object} RefreshResponse
+ * @property {User} user
+ * @property {string} token
+ */
+
+/**
  * @typedef {'Supplier' | 'Seller'} VendorType
  */
 

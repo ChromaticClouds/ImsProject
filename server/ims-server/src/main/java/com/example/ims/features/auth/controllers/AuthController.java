@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.ims.features.auth.dto.AuthPartial;
 import com.example.ims.features.auth.dto.AuthResponse;
 import com.example.ims.features.auth.dto.LoginRequest;
 import com.example.ims.features.auth.dto.AuthResult;
@@ -20,7 +21,6 @@ import com.example.ims.features.auth.services.AuthService;
 import com.example.ims.features.auth.stores.RefreshTokenCookieStore;
 import com.example.ims.global.response.ApiResponse;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -42,7 +42,7 @@ public class AuthController {
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
             .body(ApiResponse.success(
                 "안녕하세요, " + result.user().getName() + "님", 
-                new AuthResponse(result.user(), result.accessToken())
+                new AuthResponse(new AuthPartial(result.user()), result.accessToken())
             ));
     }
 
@@ -64,8 +64,8 @@ public class AuthController {
     	return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
             .body(ApiResponse.success(
-        		null, 
-        		new AuthResponse(result.user(), result.accessToken())
-        	));
+                "안녕하세요, " + result.user().getName() + "님", 
+                new AuthResponse(new AuthPartial(result.user()), result.accessToken())
+            ));
     }
 }

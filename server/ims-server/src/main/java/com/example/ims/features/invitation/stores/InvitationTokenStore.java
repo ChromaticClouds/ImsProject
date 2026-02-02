@@ -23,4 +23,8 @@ public class InvitationTokenStore {
         String email = redis.opsForValue().get(PREFIX + token);
         return Optional.ofNullable(email);
     }
+
+    public void delete(String token) {
+        redis.delete(token);
+    }
 }

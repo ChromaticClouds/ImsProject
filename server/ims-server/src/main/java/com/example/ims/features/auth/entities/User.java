@@ -1,5 +1,8 @@
 package com.example.ims.features.auth.entities;
 
+import com.example.ims.features.auth.exceptions.InvalidUserStateException;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -31,8 +34,21 @@ public class User {
     private UserRank userRank;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole userRole;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserStatus status;
+
+    public User register(String name, String password) {
+        if (this.status != UserStatus.PENDING) {
+            throw new InvalidUserStateException();
+        }
+
+        this.name = name;
+        this.password = password;
+        this.status = UserStatus.ACTIVE;
+        return this;
+    }
 }

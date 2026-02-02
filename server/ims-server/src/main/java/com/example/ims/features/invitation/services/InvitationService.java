@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.ims.features.auth.dto.InviteVerifyResponse;
 import com.example.ims.features.auth.entities.User;
-import com.example.ims.features.auth.exceptions.AuthError;
 import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.auth.repositories.AuthRepository;
 import com.example.ims.features.invitation.dto.EmailRequest;
@@ -61,7 +60,7 @@ public class InvitationService {
         System.out.println(email);
 
         User user = repository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException(AuthError.USER_NOT_FOUND));
+            .orElseThrow(UserNotFoundException::new);
 
         return new InviteVerifyResponse(
             user.getStatus(),

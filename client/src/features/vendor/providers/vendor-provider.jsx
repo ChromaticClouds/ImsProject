@@ -24,6 +24,8 @@ export const VendorProvider = ({ children }) => {
   const { search, setSearch } = useVendorSearch();
   const query = useVendors(search);
 
+  console.log(query.error);
+
   return (
     <VendorContext.Provider value={{ query, search, setSearch }}>
       {children}

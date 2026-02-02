@@ -12,7 +12,7 @@ import { UserSetting } from '@/pages/dashboard/user-settiing.jsx';
 import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
 import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
-import { AuthBootstrap } from '@/app/auth-bootstrap.jsx';
+import { AuthBootstrap } from '@/app/router/auth-bootstrap.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -35,6 +35,7 @@ export const router = createBrowserRouter([
               {
                 path: 'user/setting',
                 element: <UserSetting />,
+                handle: { permissions: ['ALL'] } 
               },
               {
                 path: 'vendor',

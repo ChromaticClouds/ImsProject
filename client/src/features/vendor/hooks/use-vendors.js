@@ -1,5 +1,5 @@
+import { fetchVendors } from '@/features/vendor/api/index.js';
 import { useQuery } from '@tanstack/react-query';
-import { fetchVendors } from '@/services/api';
 
 /**
  * 거래처 목록을 조회하는 서버 상태 훅

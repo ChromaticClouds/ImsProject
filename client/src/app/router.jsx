@@ -13,6 +13,7 @@ import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
 import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
 import { AuthBootstrap } from '@/app/auth-bootstrap.jsx';
+import { Product } from '@/pages/dashboard/product';
 
 export const router = createBrowserRouter([
   {
@@ -32,10 +33,7 @@ export const router = createBrowserRouter([
             element: <Dashboard />,
             children: [
               { index: true, element: <Main /> },
-              {
-                path: 'user/setting',
-                element: <UserSetting />,
-              },
+              { path: 'product', element: <Product /> },
               {
                 path: 'vendor',
                 children: [
@@ -44,6 +42,10 @@ export const router = createBrowserRouter([
                 ],
               },
             ],
+          },
+          {
+            path: 'user/setting',
+            element: <UserSetting />,
           },
         ],
       },

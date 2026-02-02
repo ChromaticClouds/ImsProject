@@ -1,5 +1,10 @@
-import { ProductCountChart } from "@/features/main/product-count-chart.jsx"
+import { ProductCountChart } from '@/features/main/product-count-chart.jsx';
 
 export const Main = () => {
-  return <ProductCountChart />
-}
+  return (
+    <div className=''>
+      <ProductCountChart />
+      
+    </div>
+  );
+};

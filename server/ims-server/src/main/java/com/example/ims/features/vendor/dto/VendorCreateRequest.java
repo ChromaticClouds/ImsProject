@@ -1,18 +1,31 @@
 package com.example.ims.features.vendor.dto;
 
+import java.util.List;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class VendorCreateRequest {
-
-    private String type;
+    private String type;        // "Supplier" | "Seller"
     private String vendorName;
     private String telephone;
     private String email;
     private String bossName;
     private String address;
     private String memo;
-    private String imageUrl;
+
+    // Supplier일 때만 사용
+    private List<VendorItemCreate> items;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class VendorItemCreate {
+        private Long productId;
+        private Integer purchasePrice;
+    }
 }
+

@@ -2,14 +2,25 @@ package com.example.ims.features.vendor.mapper;
 
 import java.util.List;
 
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.DeleteProvider;
+import org.apache.ibatis.annotations.UpdateProvider;
+import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.Update;
 
 import com.example.ims.features.vendor.dto.Vendor;
+import com.example.ims.features.vendor.dto.VendorCreateRequest;
 import com.example.ims.features.vendor.dto.VendorResponse;
+
+import com.example.ims.features.vendor.dto.VendorItemResponse;
+import com.example.ims.features.vendor.dto.VendorDetailResponse;
+import com.example.ims.features.vendor.dto.VendorDetailVendor;
 
 @Mapper
 public interface VendorMapper {
@@ -29,9 +40,55 @@ public interface VendorMapper {
     );
     
     @Insert("""
-    INSERT INTO vendor (type, vendor_name, telephone, email, boss_name, address, memo, image_url, created_at) 
-    VALUES (#{type}, #{vendorName}, #{telephone}, #{email}, #{bossName}, #{address}, #{memo}, #{imageUrl}, NOW())
+    INSERT INTO vendor (type, vendor_name, telephone, email, boss_name, address, memo, image_url, status, created_at) 
+    VALUES (#{type}, #{vendorName}, #{telephone}, #{email}, #{bossName}, #{address}, #{memo}, #{imageUrl}, 'ACTIVE', NOW())
     """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insertVendor(Vendor vendor);
+    
+    @Insert("""
+    		<script>
+    		  INSERT INTO vendor_item (product_id, vendor_id, purchase_price)
+    		  VALUES
+    		  <foreach collection="items" item="it" separator=",">
+    		    (#{it.productId}, #{vendorId}, #{it.purchasePrice})
+    		  </foreach>
+    		</script>
+    		""")
+    		int insertVendorItems(
+    		    @Param("vendorId") Long vendorId,
+    		    @Param("items") List<VendorCreateRequest.VendorItemCreate> items
+    		);
+    
+    @SelectProvider(type = VendorSqlProvider.class, method = "searchProducts")
+    List<Map<String, Object>> searchProducts(
+        @Param("keyword") String keyword,
+        @Param("excludeAssigned") boolean excludeAssigned
+    );
+    
+    @SelectProvider(type = VendorSqlProvider.class, method = "findVendorById")
+    VendorDetailVendor findVendorById(@Param("id") Long id);
+
+    @SelectProvider(type = VendorSqlProvider.class, method = "findVendorItems")
+    List<VendorItemResponse> findVendorItems(@Param("vendorId") Long vendorId);
+
+    @UpdateProvider(type = VendorSqlProvider.class, method = "updateVendor")
+    int updateVendor(@Param("id") Long id, @Param("req") VendorCreateRequest req);
+
+    @DeleteProvider(type = VendorSqlProvider.class, method = "deleteVendorById")
+    int deleteVendorById(@Param("id") Long id);
+
+    @DeleteProvider(type = VendorSqlProvider.class, method = "deleteVendorItemsByVendorId")
+    int deleteVendorItemsByVendorId(@Param("vendorId") Long vendorId);
+    
+    @Update("""
+            UPDATE vendor
+            SET status = 'DELETED'
+            WHERE id = #{id}
+              AND status = 'ACTIVE'
+        """)
+        int softDeleteVendor(@Param("id") Long id);
+
+    
+    
 }

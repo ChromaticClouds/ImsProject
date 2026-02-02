@@ -112,7 +112,7 @@ export function SupplierItemsSection({
                       onChange={onChangeUnitPrice(x.itemId)}
                       placeholder='단가'
                       inputMode='numeric'
-                      className='w-35'
+                      className='w-35 h-8'
                     />
                   )}
 

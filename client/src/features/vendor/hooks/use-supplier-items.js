@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useItemsSearch } from '@/features/vendor/hooks/use-items-search';
+import { useDebounce } from '@/hooks/use-debounce.js';
 
 /**
  * @typedef {{
@@ -20,21 +21,19 @@ export function useSupplierItems() {
     /** @type {SelectedItem[]} */ ([]),
   );
 
-  /** 품목 검색 API */
-  const { data: itemsData, isFetching: itemsLoading } =
-    useItemsSearch({
-      keyword: itemKeyword.trim(),
-      excludeAssigned: true,
-    });
+  const debouncedKeyword = useDebounce(itemKeyword.trim(), 500);
 
-  const items =
-    /** @type {{ id: number, name: string }[]} */ (itemsData ?? []);
+  /** 품목 검색 API */
+  const { data: itemsData, isFetching: itemsLoading } = useItemsSearch({
+    keyword: debouncedKeyword,
+    excludeAssigned: true,
+  });
+
+  const items = /** @type {{ id: number, name: string }[]} */ (itemsData ?? []);
 
   /** 이미 선택된 품목 제외 */
   const filteredItems = useMemo(() => {
-    const selectedSet = new Set(
-      selectedItems.map((x) => x.itemId),
-    );
+    const selectedSet = new Set(selectedItems.map((x) => x.itemId));
     return items.filter((it) => !selectedSet.has(it.id));
   }, [items, selectedItems]);
 
@@ -57,19 +56,13 @@ export function useSupplierItems() {
     const num = v ? Number(v) : 0;
 
     setSelectedItems((prev) =>
-      prev.map((x) =>
-        x.itemId === itemId
-          ? { ...x, unitPrice: num }
-          : x,
-      ),
+      prev.map((x) => (x.itemId === itemId ? { ...x, unitPrice: num } : x)),
     );
   };
 
   /** 품목 제거 */
   const onRemoveItem = (itemId) => {
-    setSelectedItems((prev) =>
-      prev.filter((x) => x.itemId !== itemId),
-    );
+    setSelectedItems((prev) => prev.filter((x) => x.itemId !== itemId));
   };
 
   return {

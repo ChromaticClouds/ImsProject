@@ -1,3 +1,5 @@
+// @ts-check
+
 import { useSearchParams } from 'react-router-dom';
 
 /**

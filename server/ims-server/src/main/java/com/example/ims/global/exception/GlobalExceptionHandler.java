@@ -30,3 +30,6 @@ public class GlobalExceptionHandler {
             .body(ApiResponse.fail(e.getMessage()));
     }
 }
+
+
+

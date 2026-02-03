@@ -1,4 +1,8 @@
-import { api, hooks } from "@/services/api.js";
+import { api, hooks } from '@/services/api.js';
 
-/** @returns {Promise<ApiResponse<PageResponse<User>>>} */
-export const fetchUsers = () => api.get('user/list', { hooks }).json();
+/**
+ * @param {number} page
+ * @returns {Promise<ApiResponse<PageResponse<User>>>}
+ */
+export const fetchUsers = (page) =>
+  api.get(`user/list?page=${page}`, { hooks }).json();

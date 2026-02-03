@@ -12,8 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.example.ims.features.auth.entities.UserRank;
-import com.example.ims.features.auth.entities.UserRole;
+import com.example.ims.features.auth.enums.UserRank;
+import com.example.ims.features.auth.enums.UserRole;
 import com.example.ims.features.user.dto.UserPrincipal;
 import com.example.ims.global.properties.JwtProperties;
 

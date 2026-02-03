@@ -1,4 +1,4 @@
-package com.example.ims.features.auth.entities;
+package com.example.ims.features.auth.enums;
 
 public enum UserRole {
     NONE,

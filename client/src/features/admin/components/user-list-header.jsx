@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 /**
  * Components
  */
@@ -18,15 +20,19 @@ import {
  * Assets
  */
 import { SearchIcon } from 'lucide-react';
+import { EmailDialog } from '@/features/admin/components/email-dialog.jsx';
+import { useUserList } from '@/features/admin/components/user-provider.jsx';
 
 export const UserListHeader = () => {
+  const { count } = useUserList();
+
   return (
     <React.Fragment>
       <CardHeader className='border-b'>
-        <CardTitle>
+        <CardTitle className='flex w-full gap-3 items-center'>
           <span>사용자 목록</span>
           <Badge>
-            240명  
+            {count} 명
           </Badge>  
         </CardTitle>
         <CardDescription>모든 사원 및 관리자들을 확인하세요</CardDescription>

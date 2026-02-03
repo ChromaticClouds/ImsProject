@@ -1,8 +1,8 @@
 package com.example.ims.features.auth.dto;
 
 import com.example.ims.features.auth.entities.User;
-import com.example.ims.features.auth.entities.UserRank;
-import com.example.ims.features.auth.entities.UserRole;
+import com.example.ims.features.auth.enums.UserRank;
+import com.example.ims.features.auth.enums.UserRole;
 
 import lombok.Getter;
 

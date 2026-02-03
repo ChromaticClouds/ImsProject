@@ -34,8 +34,9 @@ export const UserRow = ({ user }) => {
   const actions = getRowActions(user);
 
   return (
-    <TableRow id={String(user.id)} className='h-12'>
-      <TableCell className='px-8'>{user.name}</TableCell>
+    <TableRow id={String(user.id)} className='h-16'>
+      <TableCell />
+      <TableCell>{user.name}</TableCell>
       <TableCell>{user.email}</TableCell>
 
       {/* 직급 / 권한 / 설명 등 공통 표시 영역 */}

@@ -2,6 +2,9 @@ package com.example.ims.features.auth.entities;
 
 import com.example.ims.features.auth.exceptions.InvalidUserStateException;
 
+import com.example.ims.features.auth.enums.UserRank;
+import com.example.ims.features.auth.enums.UserRole;
+import com.example.ims.features.auth.enums.UserStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

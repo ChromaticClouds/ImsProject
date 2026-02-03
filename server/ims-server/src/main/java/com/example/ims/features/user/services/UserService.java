@@ -1,5 +1,6 @@
 package com.example.ims.features.user.services;
 
+import com.example.ims.features.user.dto.UserListResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,9 @@ public class UserService {
     
     private final UserRepository repository;
 
-    public PageResponse<User> getUserList(Pageable pageable) {
+    public PageResponse<UserListResponse> getUserList(Pageable pageable) {
         Page<User> users = repository.findAll(pageable);
-        return PageResponse.from(users);
+        Page<UserListResponse> listResponse = users.map(UserListResponse::from);
+        return PageResponse.from(listResponse);
     }
 }

@@ -12,15 +12,18 @@ import { useUsers } from '../hooks/use-users.js';
 import { useContext } from 'react';
 import { useMemo } from 'react';
 import { toUserRowModel } from '../schemas/user-model.js';
+import { useSearchParams } from 'react-router-dom';
 
 /**
  * @typedef {object} UserListContextValue
+ * @property {number} count
  * @property {ReturnType<typeof toUserRowModel>[]} users
  * @property {number} page
  * @property {number} totalPages
  * @property {number} totalElements
  * @property {boolean} isFirst
  * @property {boolean} isLast
+ * @property {boolean} isFetching
  */
 
 /**
@@ -38,11 +41,14 @@ export const useUserList = () => {
  * @param {React.PropsWithChildren} props
  */
 export const UserProvider = ({ children }) => {
-  const { data } = useUsers();
+  const [params] = useSearchParams();
+  const pageNumber = Number(params.get('page') ?? 1);
+
+  const { data, isFetching } = useUsers(pageNumber);
 
   const {
     content = [],
-    page = 0,
+    page = 1,
     totalPages = 0,
     totalElements = 0,
     isFirst = true,
@@ -56,12 +62,14 @@ export const UserProvider = ({ children }) => {
   return (
     <UserListContext.Provider
       value={{
+        count: totalElements,
         users,
         page,
         totalPages,
         totalElements,
         isFirst,
         isLast,
+        isFetching
       }}
     >
       {children}

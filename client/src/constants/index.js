@@ -101,7 +101,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 30,
     regDate: '2024-01-15',
-    image: 'https://picsum.photos/id/1/40/40',
+    boximage: 'https://picsum.photos/id/1/40/40',
+    singleimage: 'https://picsum.photos/id/1/40/40'
   },
   {
     id: 2,
@@ -112,7 +113,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 6,
     regDate: '2024-01-20',
-    image: 'https://picsum.photos/id/2/40/40',
+    boximage: 'https://picsum.photos/id/2/40/40',
+    singleimage: 'https://picsum.photos/id/2/40/40'
   },
   {
     id: 3,
@@ -123,7 +125,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 12,
     regDate: '2024-02-01',
-    image: 'https://picsum.photos/id/3/40/40',
+    boximage: 'https://picsum.photos/id/3/40/40',
+    singleimage: 'https://picsum.photos/id/3/40/40'
   },
   {
     id: 4,
@@ -134,7 +137,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 6,
     regDate: '2024-02-05',
-    image: 'https://picsum.photos/id/4/40/40',
+    boximage: 'https://picsum.photos/id/4/40/40',
+    singleimage: 'https://picsum.photos/id/4/40/40'
   },
   {
     id: 5,
@@ -145,7 +149,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 12,
     regDate: '2024-02-10',
-    image: 'https://picsum.photos/id/5/40/40',
+    boximage: 'https://picsum.photos/id/5/40/40',
+    singleimage: 'https://picsum.photos/id/5/40/40'
   },
   {
     id: 6,
@@ -156,7 +161,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 12,
     regDate: '2024-02-12',
-    image: 'https://picsum.photos/id/6/40/40',
+    boximage: 'https://picsum.photos/id/6/40/40',
+    singleimage: 'https://picsum.photos/id/6/40/40'
   },
   {
     id: 7,
@@ -167,7 +173,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 30,
     regDate: '2024-02-15',
-    image: 'https://picsum.photos/id/7/40/40',
+    boximage: 'https://picsum.photos/id/7/40/40',
+    singleimage: 'https://picsum.photos/id/7/40/40'
   },
   {
     id: 8,
@@ -178,7 +185,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 6,
     regDate: '2024-02-18',
-    image: 'https://picsum.photos/id/8/40/40',
+    boximage: 'https://picsum.photos/id/8/40/40',
+    singleimage: 'https://picsum.photos/id/8/40/40'
   },
   {
     id: 9,
@@ -189,7 +197,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 12,
     regDate: '2024-02-20',
-    image: 'https://picsum.photos/id/9/40/40',
+    boximage: 'https://picsum.photos/id/9/40/40',
+    singleimage: 'https://picsum.photos/id/9/40/40'
   },
   {
     id: 10,
@@ -200,7 +209,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 20,
     regDate: '2024-02-22',
-    image: 'https://picsum.photos/id/10/40/40',
+    boximage: 'https://picsum.photos/id/10/40/40',
+    singleimage: 'https://picsum.photos/id/10/40/40'
   },
   {
     id: 11,
@@ -211,7 +221,8 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 6,
     regDate: '2024-02-25',
-    image: 'https://picsum.photos/id/11/40/40',
+    boximage: 'https://picsum.photos/id/11/40/40',
+    singleimage: 'https://picsum.photos/id/11/40/40'
   },
   {
     id: 12,
@@ -222,6 +233,7 @@ export const MOCK_PRODUCTS = [
     sale_price :1500,
     boxQuantity: 30,
     regDate: '2024-02-28',
-    image: 'https://picsum.photos/id/12/40/40',
+    boximage: 'https://picsum.photos/id/12/40/40',
+    singleimage: 'https://picsum.photos/id/12/40/40'
   },
 ];

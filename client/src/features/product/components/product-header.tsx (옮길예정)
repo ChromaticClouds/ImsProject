@@ -1,0 +1,16 @@
+export const ProductHeader = ({
+  filters,
+  brandState,
+  setFilters,
+  setBrandState,
+  setAllBrands,
+}) => {
+  return (
+    <CardHeader className="flex flex-row items-center justify-between pb-7">
+      {/* 타이틀 영역 */}
+      {/* 필터 영역 */}
+    </CardHeader>
+  );
+};
+
+

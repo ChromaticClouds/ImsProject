@@ -2,6 +2,8 @@
 
 import { Filter, MoreHorizontal, Package2 } from 'lucide-react';
 
+import { useState } from 'react';
+
 /** shadcn/ui 컴포넌트 */
 import { Button } from '@/components/ui/button';
 import {
@@ -29,11 +31,24 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card';
+
 import { ProductPagination } from '@/features/product/components/product-pagination';
 import { useProductPagination } from '@/features/product/hooks/use-product-pagination';
+import { useProductSearch } from '@/features/product/hooks/use-product-serch';
+import { ProductSearch } from '@/features/product/components/product-search';
+import { MOCK_PRODUCTS } from '@/constants';
+import { useProductFilter } from '@/features/product/hooks/use-product-filter';
+import { Input } from '@/components/ui/input';
+import { ProductDetailDialog } from '@/features/product/components/product-dialog';
 
 export const Product = () => {
-  const pagination = useProductPagination();
+  const filter = useProductFilter(MOCK_PRODUCTS);
+  const search = useProductSearch();
+
+  const searchedList = search.applySearch(filter.filteredList);
+  const pagination = useProductPagination(searchedList);
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const {
     setFilters,
@@ -79,12 +94,12 @@ export const Product = () => {
               >
                 <DropdownMenuLabel>카테고리 선택</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.keys(filters).map((cat) => (
+                {Object.keys(filter.filters).map((cat) => (
                   <DropdownMenuCheckboxItem
                     key={cat}
-                    checked={filters[cat]}
+                    checked={filter.filters[cat]}
                     onCheckedChange={(checked) =>
-                      setFilters((prev) => ({ ...prev, [cat]: checked }))
+                      filter.setFilters((prev) => ({ ...prev, [cat]: checked }))
                     }
                   >
                     {cat}
@@ -133,16 +148,17 @@ export const Product = () => {
                       }}
                     >
                       선택
-                      <br /> 해제
+                      <br />
+                      해제
                     </Button>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.keys(brandState).map((brand) => (
+                {Object.keys(filter.brandState).map((brand) => (
                   <DropdownMenuCheckboxItem
                     key={brand}
                     onSelect={(e) => e.preventDefault()}
-                    checked={brandState[brand]}
+                    checked={filter.brandState[brand]}
                     onCheckedChange={(checked) =>
                       setBrandState((prev) => ({ ...prev, [brand]: checked }))
                     }
@@ -155,13 +171,27 @@ export const Product = () => {
           </div>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className='flex flex-col gap-4'>
+          {/* 🔍 검색 영역 */}
+          <div className='flex items-center gap-2'>
+            <Input
+              type='text'
+              placeholder='품목명 / 브랜드 / 코드 검색'
+              value={search.keyword}
+              onChange={(e) => {
+                search.setKeyword(e.target.value);
+                pagination.setCurrentPage(1); // ⭐ 검색 시 페이지 초기화
+              }}
+              className='h-9 w-64 rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary'
+            />
+          </div>
+
           <div className='rounded-md border'>
             <Table>
               <TableHeader>
                 <TableRow className='bg-muted/50'>
                   <TableHead className='w-[70px]'>이미지</TableHead>
-                  <TableHead>품목명</TableHead>
+                  <TableHead className='text-center'>품목명</TableHead>
                   <TableHead>품목 코드</TableHead>
                   <TableHead>주종</TableHead>
                   <TableHead>브랜드</TableHead>
@@ -170,24 +200,35 @@ export const Product = () => {
                   <TableHead className='w-[50px]'></TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
                 {paginatedList.length > 0 ? (
                   paginatedList.map((product) => (
                     <TableRow
                       key={product.id}
-                      className='hover:bg-muted/20 transition-colors'
+                      onClick={() => setSelectedProduct(product)}
+                      className='hover:bg-muted/20 transition-colors cursor-pointer'
                     >
                       <TableCell>
-                        <img
-                          src={product.image}
-                          alt=''
-                          className='w-10 h-10 rounded border bg-white object-cover'
-                        />
+                        <div className='flex items-center gap-2'>
+                          <img
+                            src={product.boximage}
+                            alt=''
+                            className='w-10 h-10 rounded border bg-white object-cover'
+                          />
+
+                          <img
+                            src={product.singleimage}
+                            alt=''
+                            className='w-10 h-10 rounded border bg-white object-cover'
+                          />
+                        </div>
                       </TableCell>
 
-                      <TableCell className='font-medium'>
+                      <TableCell className='font-medium text-center'>
                         {product.name}
                       </TableCell>
+
                       <TableCell className='text-muted-foreground font-mono text-xs'>
                         {product.code}
                       </TableCell>
@@ -210,6 +251,7 @@ export const Product = () => {
                       <TableCell className='text-right font-medium'>
                         {product.boxQuantity}개입
                       </TableCell>
+
                       <TableCell>
                         <Button
                           variant='ghost'
@@ -234,6 +276,7 @@ export const Product = () => {
               </TableBody>
             </Table>
           </div>
+
           <CardFooter>
             <ProductPagination
               currentPage={currentPage}
@@ -243,6 +286,11 @@ export const Product = () => {
           </CardFooter>
         </CardContent>
       </Card>
+
+      <ProductDetailDialog
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   );
 };

@@ -30,11 +30,13 @@
 
 /**
  * @typedef {object} User
+ * @property {number} id
  * @property {string} eid
  * @property {string} email
  * @property {string} name
- * @property {'FIRST_ADMIN' | 'SECOND_ADMIN' | 'EMPLOYEE'} rank
- * @property {'NONE' | 'INBOUND' | 'PLACE_ORDER' | 'OUTBOUND' | 'RECIEVE_ORDER' | 'ALL'} role
+ * @property {'FIRST_ADMIN' | 'SECOND_ADMIN' | 'EMPLOYEE'} userRank
+ * @property {'NONE' | 'INBOUND' | 'PLACE_ORDER' | 'OUTBOUND' | 'RECIEVE_ORDER' | 'ALL'} userRole
+ * @property {'PENDING' | 'ACTIVE' | 'DEACTIVE' | 'DELETED'} status
  */
 
 /**
@@ -55,6 +57,17 @@
  * @property {string=} telephone
  * @property {string=} email
  * @property {string=} address
+ */
+
+/**
+ * @template T
+ * @typedef {object} PageResponse
+ * @property {T[]} content
+ * @property {number} page        // 현재 페이지 (0부터)
+ * @property {number} totalPages   // 전체 페이지 수
+ * @property {number} totalElements // 전체 개수
+ * @property {boolean} isFirst
+ * @property {boolean} isLast
  */
 
 /**

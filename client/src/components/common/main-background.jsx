@@ -7,6 +7,7 @@ export const MainBackground = ({ children }) => {
       <section
         className="
           w-full
+          h-full
           max-w-7xl
           px-4
           py-4

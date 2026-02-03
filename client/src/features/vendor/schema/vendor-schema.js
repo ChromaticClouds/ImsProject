@@ -27,14 +27,44 @@ export const emailSchema = z
 
 export const addressSchema = z.string().trim().min(1, '미입력되었습니다.');
 
-export const vendorFormSchema = z.object({
-  type: z.enum(['Supplier', 'Seller']),
-
-  vendorName: vendorNameSchema,
-  telephone: phoneSchema,
-  email: emailSchema,
-  bossName: bossNameSchema,
-  address: addressSchema,
-
-  memo: z.any(),
+const itemSchema = z.object({
+  itemId: z.number(),
+  itemName: z.string(),
+  unitPrice: z.number().optional(),
 });
+
+export const vendorFormSchema = z
+  .object({
+    type: z.enum(['Supplier', 'Seller']),
+
+    vendorName: vendorNameSchema,
+    telephone: phoneSchema,
+    email: emailSchema,
+    bossName: bossNameSchema,
+    address: addressSchema,
+
+    memo: z.any(),
+
+    items: z.array(itemSchema),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type !== 'Supplier') return;
+
+    if (data.items.length === 0) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['items'],
+        message: '품목을 최소 1개 이상 선택해야 합니다.',
+      });
+    }
+
+    data.items.forEach((item, index) => {
+      if (!item.unitPrice || item.unitPrice < 1) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['items', index, 'unitPrice'],
+          message: '단가는 1원 이상 입력해야 합니다.',
+        });
+      }
+    });
+  });

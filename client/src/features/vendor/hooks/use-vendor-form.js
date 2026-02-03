@@ -1,20 +1,16 @@
 // @ts-check
 
-import { vendorFormSchema } from "@/features/vendor/schema/vendor-schema.js";
-import { useForm } from "@tanstack/react-form"
+import { vendorFormSchema } from '@/features/vendor/schema/vendor-schema.js';
+import { useForm } from '@tanstack/react-form';
 
 /**
- * @typedef {object} VendorDefaultValues
- * @property {'Supplier' | 'Seller'} type
- * @property {string} vendorName
- * @property {string} telephone
- * @property {string} email
- * @property {string} bossName
- * @property {string} address
- * @property {string} memo
+ * @typedef {object} VendorItem
+ * @property {number} itemId
+ * @property {string} itemName
+ * @property {number} unitPrice
  */
 
-/** @type {VendorDefaultValues} */
+/** @type {import('zod').infer<typeof vendorFormSchema>} */
 const defaultValues = {
   type: 'Supplier',
   vendorName: '',
@@ -23,16 +19,17 @@ const defaultValues = {
   bossName: '',
   address: '',
   memo: '',
+  items: [],
 };
 
 export const useVendorForm = () => {
   return useForm({
     defaultValues,
     validators: {
-      onChange: vendorFormSchema
+      onChange: vendorFormSchema,
     },
     onSubmit: ({ value }) => {
       console.log(value);
-    }
+    },
   });
-}
+};

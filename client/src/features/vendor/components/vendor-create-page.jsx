@@ -3,6 +3,7 @@
 /**
  * Components
  */
+import { AppHeader } from '@/components/common/app-header.jsx';
 import { Button } from '@/components/ui/button.js';
 import { FieldError } from '@/components/ui/field.js';
 import { Input } from '@/components/ui/input.js';
@@ -21,11 +22,14 @@ export function VendorCreatePage() {
   const { normalizePhone } = usePhoneFormat();
   const form = useVendorForm();
 
-  const supplierItems = useSupplierItems();
+  const supplierItems = useSupplierItems(form);
 
   return (
     <div className='max-w-2xl mx-auto space-y-8'>
-      <h1 className='text-2xl font-semibold'>거래처 등록</h1>
+      <AppHeader 
+        title='거래처 등록'
+        description='거래처를 등록해주세요.'
+      />
 
       <form
         className='space-y-8'
@@ -184,6 +188,7 @@ export function VendorCreatePage() {
             {(vendorType) => (
               <SupplierItemsSection
                 vendorType={vendorType}
+                form={form}
                 {...supplierItems}
               />
             )}

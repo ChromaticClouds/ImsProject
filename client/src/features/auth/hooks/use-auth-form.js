@@ -36,11 +36,11 @@ export const useAuthForm = () => {
   const [params] = useSearchParams();
   const token = params.get('token');
 
-  const { mutate: login } = useAuthMutation(loginUser, {
+  const { mutateAsync: login } = useAuthMutation(loginUser, {
     onSuccess: (...args) => toast.success(args[0].message),
   });
 
-  const { mutate: register } = useAuthMutation(registerUser, {
+  const { mutateAsync: register } = useAuthMutation(registerUser, {
     onSuccess: (...args) => toast.success(args[0].message),
   });
 
@@ -48,12 +48,16 @@ export const useAuthForm = () => {
     register: useForm({
       defaultValues: registerDefaultValue,
       validators: { onChange: registerSchema },
-      onSubmit: ({ value }) => register({ ...value, token }),
+      onSubmit: async ({ value }) => {
+        await register({ ...value, token });
+      },
     }),
     login: useForm({
       defaultValues: loginDefaultValue,
       validators: { onChange: loginSchema },
-      onSubmit: ({ value }) => login(value),
+      onSubmit: async ({ value }) => {
+        await login(value);
+      },
     }),
   };
 };

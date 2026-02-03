@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button.js';
-import { fetchApiHealth } from '@/services/api/fetch.js';
+import { fetchApiHealth } from '@/services/api/boot.js';
 import { useQuery } from '@tanstack/react-query';
 
 /**

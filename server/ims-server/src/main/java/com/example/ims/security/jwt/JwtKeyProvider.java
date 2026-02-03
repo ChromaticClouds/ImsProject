@@ -1,4 +1,4 @@
-package com.example.ims.features.auth.jwt;
+package com.example.ims.security.jwt;
 
 import java.nio.charset.StandardCharsets;
 

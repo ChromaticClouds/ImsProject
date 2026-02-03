@@ -1,7 +1,6 @@
 package com.example.ims.features.auth.controllers;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -47,9 +46,18 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<ApiResponse<Void>> registerUser(@RequestBody RegisterRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("안녕하세요, " + request.getName() + "님"));
+    public ResponseEntity<ApiResponse<AuthResponse>> registerUser(@RequestBody RegisterRequest request) {
+        AuthResult result = service.registerUser(request);
+
+        ResponseCookie refreshCookie = 
+            RefreshTokenCookieStore.store(result.refreshToken(), true);
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+            .body(ApiResponse.success(
+                "안녕하세요, " + result.user().getName() + "님", 
+                new AuthResponse(new AuthPartial(result.user()), result.accessToken())
+            ));
     }
     
     @GetMapping("refresh")
@@ -59,7 +67,7 @@ public class AuthController {
     	AuthResult result = service.refresh(refreshToken);
     	
     	ResponseCookie refreshCookie = 
-        		RefreshTokenCookieStore.store(result.refreshToken(), true);
+            RefreshTokenCookieStore.store(result.refreshToken(), true);
     	
     	return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())

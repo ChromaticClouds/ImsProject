@@ -1,3 +1,5 @@
+// @ts-check
+
 import { createBrowserRouter } from 'react-router-dom';
 
 /**
@@ -12,8 +14,8 @@ import { UserSetting } from '@/pages/dashboard/user-settiing.jsx';
 import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
 import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
-import { AuthBootstrap } from '@/app/auth-bootstrap.jsx';
 import { Product } from '@/pages/dashboard/product';
+import { AuthBootstrap } from '@/app/router/auth-bootstrap.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +36,11 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <Main /> },
               { path: 'product', element: <Product /> },
+              {
+                path: 'user/setting',
+                element: <UserSetting />,
+                handle: { permissions: ['ALL'] } 
+              },
               {
                 path: 'vendor',
                 children: [

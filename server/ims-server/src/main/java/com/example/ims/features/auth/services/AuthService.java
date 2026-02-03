@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.ims.features.auth.dto.LoginRequest;
-import com.example.ims.features.auth.dto.PasswordRequest;
 import com.example.ims.features.auth.dto.RegisterRequest;
 import com.example.ims.features.auth.dto.AuthResult;
 import com.example.ims.features.auth.entities.User;

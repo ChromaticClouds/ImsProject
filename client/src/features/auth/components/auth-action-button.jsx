@@ -32,12 +32,12 @@ export const AuthActionButton = () => {
       )}
     </form.Subscribe>
   ) : (
-    <form.Subscribe selector={(state) => [state.isSubmitting]}>
-      {([isSubmitting]) => (
+    <form.Subscribe selector={(state) => state.isSubmitting}>
+      {(isSubmitting) => (
         <CardFooter className='flex-col gap-2'>
           <Button
             type='submit'
-            form={mode === 'login' ? 'login' : 'register'}
+            form='login'
             className='w-full'
           >
             {isSubmitting ? <Spinner /> : buttonText}

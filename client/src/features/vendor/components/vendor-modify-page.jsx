@@ -1,9 +1,12 @@
 // @ts-check
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useCreateVendor } from '@/features/vendor/hooks/use-create-vendor';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { useVendorDetail } from '@/features/vendor/hooks/use-vendor-detail'; // 이미 쓰고 있는 상세 훅
+import { useUpdateVendor } from '@/features/vendor/hooks/use-update-vendor';
 import { useItemsSearch } from '@/features/vendor/hooks/use-items-search';
 
 /**
@@ -13,12 +16,9 @@ import { useItemsSearch } from '@/features/vendor/hooks/use-items-search';
  * @property {number} itemId
  * @property {string} itemName
  * @property {number} unitPrice
- */
-
-/**
- * @typedef {object} VendorCreateForm
+ *
+ * @typedef {object} VendorModifyForm
  * @property {VendorType} type
- * @property {string} 대표자명
  * @property {string} 거래처명
  * @property {string} 전화번호
  * @property {string} 이메일
@@ -44,14 +44,21 @@ function normalizePhone(value) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
 }
 
-export function VendorCreatePage() {
+export function VendorModifyPage() {
   const navigate = useNavigate();
-  const { mutateAsync, isPending, error } = useCreateVendor();
+  const queryClient = useQueryClient();
+  const { id } = useParams();
+  const vendorId = Number(id);
 
-  /** @type {[VendorCreateForm, Function]} */
+  const { data, isLoading, error } = useVendorDetail(vendorId);
+  const vendor = data?.vendor;
+  const vendorItems = data?.items ?? [];
+
+  const { mutateAsync: updateVendorMutate, isPending: updating } = useUpdateVendor();
+
+  /** @type {[VendorModifyForm, Function]} */
   const [form, setForm] = useState({
-    type: /** @type {VendorType} */ ('Supplier'),
-    대표자명: '',
+    type: /** @type {VendorType} */ ('Seller'),
     거래처명: '',
     전화번호: '',
     이메일: '',
@@ -60,7 +67,6 @@ export function VendorCreatePage() {
   });
 
   const [touched, setTouched] = useState({
-    대표자명: false,
     거래처명: false,
     전화번호: false,
     이메일: false,
@@ -70,14 +76,41 @@ export function VendorCreatePage() {
   const [itemKeyword, setItemKeyword] = useState('');
   const [selectedItems, setSelectedItems] = useState(/** @type {SelectedItem[]} */ ([]));
 
+  // 최초 로딩 시: 기존 vendor 데이터로 폼 자동 채우기 + 공급처면 품목/단가도 채우기
+  useEffect(() => {
+    if (!vendor) return;
+
+    setForm({
+      type: vendor.type, // 'Supplier'|'Seller'
+      거래처명: vendor.vendorName ?? '',
+      전화번호: vendor.telephone ?? '',
+      이메일: vendor.email ?? '',
+      주소: vendor.address ?? '',
+      메모: vendor.memo ?? '',
+    });
+
+    if (vendor.type === 'Supplier') {
+      setSelectedItems(
+        vendorItems.map((it) => ({
+          itemId: it.productId,
+          itemName: it.productName,
+          unitPrice: Number(it.purchasePrice ?? 0),
+        }))
+      );
+    } else {
+      setSelectedItems([]);
+    }
+  }, [vendor, vendorItems]);
+
+  // 품목 검색 (이미 다른 거래처에 지정된 품목 제외)
   const { data: itemsData, isFetching: itemsLoading } = useItemsSearch({
     keyword: itemKeyword.trim(),
     excludeAssigned: true,
   });
 
-  // itemsData는 [{id, name}] 배열이라고 가정
   const items = /** @type {{ id: number, name: string }[]} */ (itemsData ?? []);
 
+  // 검색 결과에서 이미 선택한 품목 제외
   const filteredItems = useMemo(() => {
     const selectedSet = new Set(selectedItems.map((x) => x.itemId));
     return items.filter((it) => !selectedSet.has(it.id));
@@ -92,9 +125,8 @@ export function VendorCreatePage() {
   /** @param {VendorType} type */
   const setType = (type) => {
     setForm((prev) => ({ ...prev, type }));
-
-    // 판매처로 바꾸면 품목/단가 숨김 + 상태 초기화
     if (type === 'Seller') {
+      // 판매처면 품목 영역 숨김 + 상태 초기화
       setItemKeyword('');
       setSelectedItems([]);
     }
@@ -104,18 +136,15 @@ export function VendorCreatePage() {
     setTouched((prev) => ({ ...prev, [key]: true }));
   };
 
+  // 필수값 검증
   const errors = useMemo(() => {
     /** @type {Record<string, string | undefined>} */
     const e = {};
 
-    const ceo = form.대표자명.trim();
     const name = form.거래처명.trim();
     const phone = form.전화번호.trim();
     const email = form.이메일.trim();
     const addr = form.주소.trim();
-
-    if (!ceo) e.대표자명 = '미입력되었습니다';
-    else if (ceo.length < 2 || ceo.length > 10) e.대표자명 = '대표자명은 2~10자만 허용됩니다';
 
     if (!name) e.거래처명 = '미입력되었습니다';
 
@@ -131,22 +160,18 @@ export function VendorCreatePage() {
   }, [form]);
 
   const isValidRequired = useMemo(() => {
-    return !errors.대표자명 && !errors.거래처명 && !errors.전화번호 && !errors.이메일 && !errors.주소;
+    return !errors.거래처명 && !errors.전화번호 && !errors.이메일 && !errors.주소;
   }, [errors]);
 
+  // 공급처일 때: 품목 1개 이상 + 단가 모두 > 0
+  const isValidSupplierItems = useMemo(() => {
+    if (form.type !== 'Supplier') return true;
+    if (selectedItems.length < 1) return false;
+    return selectedItems.every((x) => Number(x.unitPrice) > 0);
+  }, [form.type, selectedItems]);
 
-  const isSupplier = form.type === 'Supplier';
-
-  const isValidItemsForSupplier = useMemo(() => {
-    if (!isSupplier) return true; // 판매처는 통과
-
-    if (selectedItems.length === 0) return false;
-
-    return selectedItems.every((x) => Number.isFinite(x.unitPrice) && x.unitPrice > 0);
-  }, [isSupplier, selectedItems]);
-
-
-  const canSubmit = isValidRequired && isValidItemsForSupplier && !isPending;
+  // 완료 버튼 활성 조건
+  const canSubmit = isValidRequired && isValidSupplierItems && !updating;
 
   const onSelectItem = (it) => {
     setSelectedItems((prev) => [...prev, { itemId: it.id, itemName: it.name, unitPrice: 0 }]);
@@ -167,40 +192,37 @@ export function VendorCreatePage() {
     e.preventDefault();
 
     setTouched({
-      대표자명: true,
       거래처명: true,
       전화번호: true,
       이메일: true,
       주소: true,
     });
 
-    // 필수 입력 방어
+    
     if (!isValidRequired) {
       alert('미입력되었습니다');
       return;
     }
-
-
-    if (form.type === 'Supplier') {
-      if (selectedItems.length === 0) {
-        alert('공급처는 품목을 1개 이상 선택해야 합니다.');
-        return;
-      }
-      if (selectedItems.some((x) => !x.unitPrice || x.unitPrice <= 0)) {
-        alert('공급처는 선택된 모든 품목의 단가를 1원 이상 입력해야 합니다.');
-        return;
-      }
+    if (form.type === 'Supplier' && !isValidSupplierItems) {
+      alert('공급처는 품목 1개 이상 등록하고 단가를 모두 입력해야 합니다.');
+      return;
+    }
+    if (!Number.isFinite(vendorId)) {
+      alert('잘못된 거래처 ID입니다.');
+      return;
     }
 
     /** @type {any} */
     const payload = {
-      type: form.type,
+      type: form.type, // Supplier|Seller
       vendorName: form.거래처명.trim(),
       telephone: form.전화번호.trim(),
       email: form.이메일.trim(),
-      bossName: form.대표자명.trim(),
       address: form.주소.trim(),
       memo: form.메모?.trim() || null,
+
+      
+      bossName: vendor?.bossName ?? null,
 
       items: form.type === 'Supplier'
         ? selectedItems.map((x) => ({
@@ -211,23 +233,26 @@ export function VendorCreatePage() {
     };
 
     try {
-  const res = await mutateAsync(payload);
-  console.log('createVendor success:', res);
+  await updateVendorMutate({ id: vendorId, payload });
 
-  alert('등록되었습니다'); 
-
-  navigate('/dashboard/vendor');
+  alert('수정되었습니다');
+  navigate(`/dashboard/vendor/${vendorId}`); // ✅ 상세로 이동
 } catch (err) {
-  console.error('createVendor failed:', err);
-  alert(err?.message ?? '등록 중 오류가 발생했습니다.');
+  console.error('updateVendor failed:', err);
+  alert(err?.message ?? '수정 중 오류가 발생했습니다.');
 }
   };
 
+  if (isLoading) return <div>로딩 중...</div>;
+  if (error) return <div style={{ color: 'crimson' }}>에러: {error.message}</div>;
+  if (!vendor) return <div>거래처 정보를 찾을 수 없습니다.</div>;
+
   return (
     <div>
-      <h1>거래처 등록</h1>
+      <h1>거래처 수정</h1>
 
       <form onSubmit={onSubmit}>
+        {/* 공급처/판매처 라디오 */}
         <div>
           <span>구분</span>
           <br />
@@ -253,21 +278,7 @@ export function VendorCreatePage() {
           </label>
         </div>
 
-        <div>
-          <div>
-            <span>대표자명 *</span>
-            {touched.대표자명 && errors.대표자명 ? (
-              <span style={{ color: 'crimson', marginLeft: 8 }}>{errors.대표자명}</span>
-            ) : null}
-          </div>
-          <Input
-            value={form.대표자명}
-            onChange={setField('대표자명')}
-            onBlur={markTouched('대표자명')}
-            placeholder="2~10자"
-          />
-        </div>
-
+        {/* 거래처명 */}
         <div>
           <div>
             <span>거래처명 *</span>
@@ -278,6 +289,7 @@ export function VendorCreatePage() {
           <Input value={form.거래처명} onChange={setField('거래처명')} onBlur={markTouched('거래처명')} />
         </div>
 
+        {/* 전화번호 */}
         <div>
           <div>
             <span>전화번호 *</span>
@@ -294,6 +306,7 @@ export function VendorCreatePage() {
           />
         </div>
 
+        {/* 이메일 */}
         <div>
           <div>
             <span>이메일 *</span>
@@ -309,6 +322,7 @@ export function VendorCreatePage() {
           />
         </div>
 
+        {/* 주소 */}
         <div>
           <div>
             <span>주소 *</span>
@@ -319,11 +333,13 @@ export function VendorCreatePage() {
           <Input value={form.주소} onChange={setField('주소')} onBlur={markTouched('주소')} />
         </div>
 
+        {/* 메모 */}
         <div>
           <span>메모</span>
           <Input value={form.메모} onChange={setField('메모')} />
         </div>
 
+        {/* 공급처일 때만 품목/단가 */}
         {form.type === 'Supplier' ? (
           <div style={{ marginTop: 12 }}>
             <span style={{ fontWeight: 600 }}>품목 검색</span>
@@ -354,9 +370,7 @@ export function VendorCreatePage() {
                   {itemsLoading ? (
                     <div style={{ padding: 10 }}>검색 중...</div>
                   ) : filteredItems.length === 0 ? (
-                    <div style={{ padding: 10 }}>
-                      검색 결과가 없습니다
-                    </div>
+                    <div style={{ padding: 10 }}>검색 결과가 없습니다</div>
                   ) : (
                     filteredItems.map((it) => (
                       <button
@@ -380,6 +394,7 @@ export function VendorCreatePage() {
               ) : null}
             </div>
 
+            {/* 선택 품목 + 단가 수정 */}
             {selectedItems.length > 0 ? (
               <div style={{ marginTop: 10, display: 'grid', gap: 8 }}>
                 {selectedItems.map((x) => (
@@ -407,30 +422,24 @@ export function VendorCreatePage() {
               </div>
             ) : (
               <div style={{ fontSize: 12, color: '#666', marginTop: 8 }}>
-                단가 입력
+                공급처는 품목을 1개 이상 등록해야 합니다.
               </div>
             )}
-          </div>
-        ) : null}
 
-        {error ? (
-          <div style={{ color: 'crimson', marginTop: 10 }}>
-            등록 실패: {error.message}
-          </div>
-        ) : null}
-
-        {/* 공급처일 때 비활성화 사유 안내 */}
-        {form.type === 'Supplier' && !isValidItemsForSupplier ? (
-          <div style={{ color: 'crimson', marginTop: 10 }}>
-            
+            {!isValidSupplierItems ? (
+              <div style={{ color: 'crimson', marginTop: 8, fontSize: 12 }}>
+                품목 1개 이상 등록 + 단가를 모두 0보다 크게 입력해야 합니다.
+              </div>
+            ) : null}
           </div>
         ) : null}
 
         <div style={{ marginTop: 14 }}>
-          {/* Supplier: 필수+품목+단가 */}
-          <Button type="submit" disabled={!canSubmit} variant='default'>
-            {isPending ? '저장 중...' : '완료'}
+          <Button type="submit" disabled={!canSubmit}>
+            {updating ? '저장 중...' : '완료'}
           </Button>
+
+        
         </div>
       </form>
     </div>

@@ -76,7 +76,7 @@ public class VendorSqlProvider {
             SELECT("p.id, p.name");
             FROM("product p");
 
-            if (keyword != null) {
+            if (keyword != null && !keyword.isEmpty()) {
                 WHERE("p.name LIKE CONCAT('%', #{keyword}, '%')");
             }
 
@@ -87,7 +87,8 @@ public class VendorSqlProvider {
                         FROM vendor_item vi
                         JOIN vendor v ON v.id = vi.vendor_id
                         WHERE vi.product_id = p.id
-                          AND v.status = 'ACTIVE'
+                		AND vi.status = 'ACTIVE'
+                        AND v.status = 'ACTIVE'
                     )
                 """);
             }
@@ -111,6 +112,7 @@ public class VendorSqlProvider {
             FROM("vendor_item vi");
             INNER_JOIN("product p ON p.id = vi.product_id");
             WHERE("vi.vendor_id = #{vendorId}");
+            WHERE("vi.status = 'ACTIVE'");
             ORDER_BY("p.name ASC");
         }}.toString();
     }

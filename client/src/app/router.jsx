@@ -14,6 +14,10 @@ import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
 import { AuthBootstrap } from '@/app/auth-bootstrap.jsx';
 import { VendorDetail } from '@/pages/vendor/vendor-detail.jsx';
+import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
+import { InboundPending } from '@/pages/inbound/inbound-pending.jsx';
+import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
+
 
 
 export const router = createBrowserRouter([
@@ -44,8 +48,14 @@ export const router = createBrowserRouter([
                   { index: true, element: <VendorList /> },
                   { path: 'create', element: <VendorCreate /> },
                    { path: ':id', element: <VendorDetail /> },
+                   { path: 'modify/:id', element: <VendorModify /> },
                 ],
               },
+               { path: 'inbounds', children: [
+              { path: 'pending', element: <InboundPending /> },
+              { path: 'register/:orderNumber', element: <InboundRegister /> }
+              ]},
+             
             ],
           },
         ],

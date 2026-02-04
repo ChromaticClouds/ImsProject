@@ -59,9 +59,7 @@ public class VendorService {
 
         Long vendorId = dto.getId();
 
-        if ("Supplier".equals(request.getType())
-            && request.getItems() != null
-            && !request.getItems().isEmpty()) {
+        if ("Supplier".equals(request.getType())  && request.getItems() != null && !request.getItems().isEmpty()) {
 
             mapper.insertVendorItems(vendorId, request.getItems());
         }
@@ -93,22 +91,38 @@ public class VendorService {
 
     @Transactional
     public void updateVendor(Long id, VendorCreateRequest request) {
-        // 존재 확인
+
         VendorDetailVendor existing = mapper.findVendorById(id);
         if (existing == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found: " + id);
         }
 
-        // vendor 기본 정보 업데이트
+        // 1) vendor 기본 정보 업데이트
         mapper.updateVendor(id, request);
 
-        // 공급처면 items 갱신(단순하게 전체 삭제 후 재삽입)
-        mapper.deleteVendorItemsByVendorId(id);
+        // 2) 판매처면: 품목 연결을 모두 "DELETED" 처리하고 끝
+        if (!"Supplier".equals(request.getType())) {
+            mapper.softDeleteVendorItemsByVendorId(id);
+            return;
+        }
 
-        if ("Supplier".equals(request.getType())
-            && request.getItems() != null
-            && !request.getItems().isEmpty()) {
-            mapper.insertVendorItems(id, request.getItems()); // 너가 만들어둔 bulk insert 그대로 사용
+        // 3) 공급처면: 기존 연결을 일단 DELETED로 만든 뒤,
+        //    request.items에 있는 것들은 UPDATE(있으면) or INSERT(없으면) 해서 ACTIVE로 복구
+        mapper.softDeleteVendorItemsByVendorId(id);
+
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            return;
+        }
+
+        for (VendorCreateRequest.VendorItemCreate it : request.getItems()) {
+            Long vendorItemId = mapper.findVendorItemId(id, it.getProductId());
+
+            if (vendorItemId != null) {
+                mapper.updateVendorItemPrice(vendorItemId, it.getPurchasePrice());
+            } else {
+                // 기존 bulk insert 메서드 재사용해도 되지만, 단건 insert가 편함
+                mapper.insertVendorItems(id, List.of(it));
+            }
         }
     }
 

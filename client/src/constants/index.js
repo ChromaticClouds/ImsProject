@@ -43,7 +43,7 @@ export const SIDEBAR_PRODUCT_ITEMS = [
   },
   {
     title: '입고',
-    url: '#',
+    url: '/dashboard/inbounds/pending',
     Icon: ArrowBigDownDashIcon,
   },
   {

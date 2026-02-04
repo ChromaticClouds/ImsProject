@@ -21,5 +21,8 @@ export function useVendors(search) {
     queryFn: () => fetchVendors(search),
     keepPreviousData: true,
     staleTime: 5 * 60 * 1000,
+
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 }

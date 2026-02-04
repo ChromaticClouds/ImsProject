@@ -9,7 +9,7 @@ export function useCreateVendor() {
     mutationFn: (data) => createVendor(data),
     onSuccess: async () => {
       
-      await qc.invalidateQueries({ queryKey: ['vendors'] });
+      await qc.invalidateQueries({ queryKey: ['vendors'], exact: false});
     },
   });
 }

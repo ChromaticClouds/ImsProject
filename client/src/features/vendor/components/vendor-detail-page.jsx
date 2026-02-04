@@ -2,19 +2,18 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDeleteVendor } from '@/features/vendor/hooks/use-delete-vendor';
+import { useVendorDetail } from '@/features/vendor/hooks/use-vendor-detail';
 
-/**
- * @param {{ vendor: any, items: any[], onBack?: () => void }} props
- */
-export function VendorDetailPage({ vendor, items, onBack }) {
+export function VendorDetailPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const vendorId = Number(id);
 
+  const { data, isLoading, error } = useVendorDetail(vendorId);
   const { mutateAsync: deleteVendorMutate, isPending: deleting } = useDeleteVendor();
 
   const onDelete = async () => {
-    if (!Number.isFinite(vendorId)) {
+    if (!Number.isFinite(vendorId) || vendorId <= 0) {
       alert('잘못된 거래처 ID입니다.');
       return;
     }
@@ -25,11 +24,20 @@ export function VendorDetailPage({ vendor, items, onBack }) {
     try {
       await deleteVendorMutate(vendorId);
       alert('삭제되었습니다.');
-      navigate('/dashboard/vendor'); // 목록으로 이동
-    } catch (error) {
-      alert(`삭제 중 에러 발생: ${String(error?.message ?? error)}`);
+      navigate('/dashboard/vendor');
+    } catch (e) {
+      alert(`삭제 중 에러 발생: ${String(e?.message ?? e)}`);
     }
   };
+
+  if (!Number.isFinite(vendorId) || vendorId <= 0) return <div>잘못된 거래처 ID</div>;
+  if (isLoading) return <div>불러오는 중...</div>;
+  if (error) return <div>에러: {String(error?.message ?? error)}</div>;
+  if (!data) return <div>데이터가 없습니다.</div>;
+
+  //
+  const vendor = data.vendor ?? data?.data?.vendor ?? data; // 혹시 구조 다르면 방어
+  const items = data.items ?? data?.data?.items ?? [];
 
   return (
     <div>
@@ -60,7 +68,7 @@ export function VendorDetailPage({ vendor, items, onBack }) {
       ) : null}
 
       <div style={{ marginTop: 12 }}>
-        <Button onClick={() => navigate(`/dashboard/vendor/modify/${vendor.id}`)}>
+        <Button onClick={() => navigate(`/dashboard/vendor/modify/${vendorId}`)}>
           수정
         </Button>
         <br />
@@ -71,3 +79,4 @@ export function VendorDetailPage({ vendor, items, onBack }) {
     </div>
   );
 }
+

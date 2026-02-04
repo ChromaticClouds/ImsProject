@@ -35,7 +35,7 @@ import {
 import { ProductPagination } from '@/features/product/components/product-pagination';
 import { useProductPagination } from '@/features/product/hooks/use-product-pagination';
 import { useProductSearch } from '@/features/product/hooks/use-product-serch';
-import { ProductSearch } from '@/features/product/components/product-search';
+import { ProductSearch } from '@/features/product/components/product-search'; 
 import { MOCK_PRODUCTS } from '@/constants';
 import { useProductFilter } from '@/features/product/hooks/use-product-filter';
 import { Input } from '@/components/ui/input';
@@ -230,7 +230,7 @@ export const Product = () => {
                       </TableCell>
 
                       <TableCell className='text-muted-foreground font-mono text-xs'>
-                        {product.code}
+                        {product.product_code}
                       </TableCell>
 
                       <TableCell>

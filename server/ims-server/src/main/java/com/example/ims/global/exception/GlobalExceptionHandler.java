@@ -29,4 +29,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ApiResponse.fail(e.getMessage()));
     }
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleAll(Exception e) {
+        log.error("UNEXPECTED ERROR", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ApiResponse.fail("예기치 못한 오류가 발생했습니다. 나중에 다시 시도해주세요."));
+    }
+
 }
+
+
+

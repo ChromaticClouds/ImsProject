@@ -15,8 +15,13 @@ import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
 import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
 import { Product } from '@/pages/dashboard/product';
+
 import { AuthBootstrap } from '@/app/router/auth-bootstrap.jsx';
 import { Statistics } from '@/pages/dashboard/statistics.jsx';
+import { VendorDetail } from '@/pages/vendor/vendor-detail.jsx';
+import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
+import { InboundPending } from '@/pages/inbound/inbound-pending.jsx';
+import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -40,19 +45,31 @@ export const router = createBrowserRouter([
               {
                 path: 'user/setting',
                 element: <UserSetting />,
-                handle: { permissions: ['ALL'] } 
+                handle: { permissions: ['ALL'] },
               },
               {
                 path: 'vendor',
                 children: [
                   { index: true, element: <VendorList /> },
                   { path: 'create', element: <VendorCreate /> },
+                  { path: ':id', element: <VendorDetail /> },
+                  { path: 'modify/:id', element: <VendorModify /> },
                 ],
               },
               {
                 path: 'statistics',
-                element: <Statistics />
-              }
+                element: <Statistics />,
+              },
+              {
+                path: 'inbounds',
+                children: [
+                  { path: 'pending', element: <InboundPending /> },
+                  {
+                    path: 'register/:orderNumber',
+                    element: <InboundRegister />,
+                  },
+                ],
+              },
             ],
           },
         ],

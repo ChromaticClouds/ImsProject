@@ -34,7 +34,6 @@ public class Vendor {
         dto.bossName = req.getBossName();
         dto.address = req.getAddress();
         dto.memo = req.getMemo();
-        dto.imageUrl = req.getImageUrl();
         return dto;
     }
 }

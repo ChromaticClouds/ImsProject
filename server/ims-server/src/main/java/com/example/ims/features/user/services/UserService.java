@@ -46,6 +46,7 @@ public class UserService {
         User user = repository.findById(id)
             .orElseThrow(UserNotFoundException::new);
 
+        if (request.name() != null) user.setName(request.name());
         if (request.rank() != null) user.changeRank(request.rank());
         if (request.role() != null) user.changeRole(request.role());
         if (request.status() != null) user.setStatus(request.status());

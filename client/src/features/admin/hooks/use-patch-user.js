@@ -4,20 +4,30 @@ import { toast } from 'sonner';
 import { HTTPError } from 'ky';
 import { ERROR } from '@/services/error.js';
 
+/**
+ * @typedef {object} StatusRequest
+ * @property {string} [rank]
+ * @property {string} [role]
+ * @property {string} [status]
+ * @property {string} [name]
+ */
+
+/**
+ * @typedef {object} UserRequest
+ * @property {number} id
+ * @property {StatusRequest} body
+ */
+
 export const usePatchUser = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    /**
-     * @param {{ id: number, body: { rank?: string, role?: string, status?: string }}} props
-     */
+    /** @param {UserRequest} props */
     mutationFn: ({ id, body }) => patchUser(id, body),
 
     onSuccess: () => toast.success('요청이 성공적으로 처리되었습니다.'),
 
-    /**
-     * @param {{ id: number, body: { rank?: string, role?: string, status?: string }}} props
-     */
+    /** @param {UserRequest} props */
     onMutate: async ({ id, body }) => {
       await qc.cancelQueries({ queryKey: ['users'] });
 

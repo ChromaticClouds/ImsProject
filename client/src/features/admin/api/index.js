@@ -12,7 +12,7 @@ export const fetchUsers = (page, keyword) =>
 
 /**
  * @param {number} userId
- * @param {{ rank?: string; role?: string }} body
+ * @param {{ rank?: string; role?: string, status?: string, name?: string }} body
  */
 export const patchUser = (userId, body) =>
   api.patch(`user/${userId}`, { json: body, hooks }).json();

@@ -55,6 +55,11 @@ export const UserList = () => {
     mutate({ id: userId, body: { status: 'DELETED' } });
   };
 
+  /** @param {number} userId @param {string} newName */
+  const handleNameChange = (userId, newName) => {
+    mutate({ id: userId, body: { name: newName }});
+  };
+
   return (
     <Table>
       <UserTableHeader />
@@ -67,6 +72,7 @@ export const UserList = () => {
           onResend: handleResend,
           onLeave: handleLeave,
           onDelete: handleDelete,
+          onNameChange: handleNameChange
         })}
       </TableBody>
     </Table>
@@ -83,6 +89,7 @@ const renderTableBody = ({
   onResend,
   onLeave,
   onDelete,
+  onNameChange
 }) => {
   if (isFetching) return <UserSkeletonRows />;
 
@@ -99,6 +106,7 @@ const renderTableBody = ({
       onResend={onResend}
       onLeave={onLeave}
       onDelete={onDelete}
+      onNameChange={onNameChange}
     />
   ));
 };

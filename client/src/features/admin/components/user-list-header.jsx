@@ -27,7 +27,7 @@ import { useDebounce } from '@/hooks/use-debounce.js';
 export const UserListHeader = () => {
   const { count, setSearch } = useUserList();
   const [input, setInput] = React.useState('');
-  const debounced = useDebounce(input, 1000);
+  const debounced = useDebounce(input, 500);
 
   React.useEffect(() => {
     setSearch(debounced);

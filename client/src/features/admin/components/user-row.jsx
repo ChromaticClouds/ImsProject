@@ -7,10 +7,10 @@ import { TableRow, TableCell } from '@/components/ui/table.js';
 import { RankCell } from './rank-cell.jsx';
 import { RoleCell } from './roll-cell.jsx';
 import { UserActionsWrapper } from './user-action-wrapper.jsx';
+import { Badge } from '@/components/ui/badge.js';
+import { NameChangeDialog } from './name-change-dialog.jsx';
 
 import { toUserRowModel } from '../schemas/user-model.js';
-import { Badge } from '@/components/ui/badge.js';
-import { PencilIcon } from 'lucide-react';
 
 const DescriptionCell = ({ user, isPending }) => (
   <TableCell className='w-sm'>
@@ -26,6 +26,7 @@ const DescriptionCell = ({ user, isPending }) => (
  * onResend: (id: number) => void
  * onLeave: (id: number) => void
  * onDelete: (id: number) => void
+ * onNameChange: (id: number, newName: string) => void
  * }} props
  */
 export const UserRow = ({
@@ -35,6 +36,7 @@ export const UserRow = ({
   onResend,
   onLeave,
   onDelete,
+  onNameChange,
 }) => {
   const isPending = user.status === 'PENDING';
 
@@ -44,12 +46,12 @@ export const UserRow = ({
       className='h-16'
     >
       <TableCell />
-      <TableCell>
-        <div className='flex gap-2 items-center'>
-          <span>{user.name}</span>
-          <PencilIcon size={16} />
-        </div>
-      </TableCell>
+
+      <NameChangeDialog
+        user={user}
+        onNameChange={onNameChange}
+      />
+
       <TableCell>{user.email}</TableCell>
 
       {/* 직급 / 권한 / 설명 등 공통 표시 영역 */}

@@ -5,6 +5,7 @@ import com.example.ims.features.auth.enums.UserRole;
 import com.example.ims.features.auth.enums.UserStatus;
 
 public record UpdateUserRequest(
+    String name,
     UserRole role,
     UserRank rank,
     UserStatus status

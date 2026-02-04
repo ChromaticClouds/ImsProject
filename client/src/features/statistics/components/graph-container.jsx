@@ -8,18 +8,26 @@ import {
 
 /**
  * @typedef {'third' | 'wide' | 'full'} GraphWidth
+ * @typedef {'sm' | 'md' | 'lg'} GraphHeight
  *
  * @typedef {object} GraphContainerProps
  * @property {string} title
  * @property {string} [description]
  * @property {React.ReactNode} children
  * @property {GraphWidth} [width]
+ * @property {GraphHeight} staticHeight
  */
 
 const WIDTH_CLASS = {
-  third: 'col-span-10 lg:col-span-3',
-  wide: 'col-span-10 lg:col-span-7',
-  full: 'col-span-10',
+  third: 'col-span-10 lg:col-span-3 overflow-hidden overflow-x-auto',
+  wide: 'col-span-10 lg:col-span-7 overflow-hidden overflow-x-auto',
+  full: 'col-span-10 overflow-hidden overflow-x-auto',
+};
+
+const HEIGHT_CLASS = {
+  sm: 'h-40',
+  md: 'h-60',
+  lg: 'h-80',
 };
 
 /**
@@ -30,17 +38,22 @@ export const GraphContainer = ({
   description,
   children,
   width = 'full',
+  staticHeight = 'lg',
 }) => {
   return (
     <div className={WIDTH_CLASS[width]}>
       <Card>
-        <CardHeader className='border-b'>
+        <CardHeader className='border-b text-nowrap text-ellipsis'>
           <CardTitle>{title}</CardTitle>
           {description && (
-            <CardDescription>{description}</CardDescription>
+            <CardDescription className='overflow-hidden text-nowrap text-ellipsis'>
+              {description}
+            </CardDescription>
           )}
         </CardHeader>
-        <CardContent>{children}</CardContent>
+        <CardContent className={`overflow-hidden ${HEIGHT_CLASS[staticHeight]}`}>
+          {children}
+        </CardContent>
       </Card>
     </div>
   );

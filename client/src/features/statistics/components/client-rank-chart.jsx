@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/chart';
 
 import { partnerRankMock } from '../constants/index.js';
+import { useIsMobile } from '@/hooks/use-mobile.js';
 
 export const partnerRankConfig = {
   outbound: {
@@ -17,6 +18,8 @@ export const partnerRankConfig = {
 };
 
 export const ClientRankChart = () => {
+  const isMobile = useIsMobile();
+
   return (
     <ChartContainer
       config={partnerRankConfig}
@@ -24,8 +27,8 @@ export const ClientRankChart = () => {
     >
       <BarChart
         data={partnerRankMock}
+        barSize={isMobile ? 20 : 24}
         layout='vertical'
-        margin={{ left: 20 }}
       >
         <CartesianGrid horizontal={false} />
 
@@ -40,7 +43,8 @@ export const ClientRankChart = () => {
 
         <Bar
           dataKey='outbound'
-          radius={6}
+          fill='var(--chart-2)'
+          radius={[0, 8, 8, 0]}
         />
       </BarChart>
     </ChartContainer>

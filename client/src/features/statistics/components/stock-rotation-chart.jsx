@@ -22,10 +22,13 @@ export const turnoverTrendConfig = {
   },
 };
 
+/**
+ * 재고 회전율 차트
+ */
 export const StockRotationChart = () => {
   return (
     <ChartContainer config={turnoverTrendConfig} className="h-80 w-full">
-      <LineChart data={inventoryTurnoverTrendMock}>
+      <LineChart data={inventoryTurnoverTrendMock} >
         <CartesianGrid strokeDasharray="3 3" />
 
         <XAxis dataKey="period" />
@@ -37,6 +40,8 @@ export const StockRotationChart = () => {
           type="monotone"
           dataKey="turnover"
           strokeWidth={2}
+          stroke='var(--chart-4)'
+          fill='var(--chart-4)'
           dot
           />
       </LineChart>

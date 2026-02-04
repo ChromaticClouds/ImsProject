@@ -24,9 +24,9 @@ import { RANK_LABEL, ROLE_LABEL } from '@/constants/index.js';
 /**
  * Assets
  */
-import { LockIcon, ChevronUpIcon } from 'lucide-react';
 import { LogOutDialog } from '@/features/auth/components/log-out-dialog.jsx';
 import { PasswordChangeDialog } from '@/features/auth/components/password-change-dialog.jsx';
+import { ChevronUpIcon } from 'lucide-react';
 
 export const UserMenu = () => {
   const [open, setOpen] = useState(false);

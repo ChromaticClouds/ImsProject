@@ -1,11 +1,6 @@
 // @ts-check
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  CartesianGrid,
-} from 'recharts';
+import { BarChart, Bar, XAxis, CartesianGrid } from 'recharts';
 
 import {
   ChartContainer,
@@ -16,6 +11,7 @@ import {
 } from '@/components/ui/chart';
 
 import { inboundOutboundByItemMock } from '../constants/index.js';
+import { useIsMobile } from '@/hooks/use-mobile.js';
 
 // chart-config.js
 export const inboundOutboundConfig = {
@@ -29,13 +25,30 @@ export const inboundOutboundConfig = {
   },
 };
 
+/**
+ * 입출고 수량 합계 통계 차트
+ */
 export const InOutboundChart = () => {
+  const isMobile = useIsMobile();
+
+  const BAR_WIDTH = 32;
+  const GAP = isMobile ? 16 : 32;
+  const chartWidth = inboundOutboundByItemMock.length * (BAR_WIDTH + GAP);
+
   return (
-    <ChartContainer config={inboundOutboundConfig} className="h-80 w-full">
-      <BarChart data={inboundOutboundByItemMock}>
+    <ChartContainer
+      config={inboundOutboundConfig}
+      className='h-80 w-full'
+      style={{ minWidth: chartWidth }}
+    >
+      <BarChart
+        data={inboundOutboundByItemMock}
+        barSize={isMobile ? 12 : 24}
+        barCategoryGap={16}
+      >
         <CartesianGrid vertical={false} />
         <XAxis
-          dataKey="item"
+          dataKey='item'
           tickLine={false}
           axisLine={false}
         />
@@ -44,13 +57,13 @@ export const InOutboundChart = () => {
         <ChartLegend content={<ChartLegendContent />} />
 
         <Bar
-          dataKey="inbound"
-          fill="var(--color-inbound)"
+          dataKey='inbound'
+          fill='var(--chart-1)'
           radius={[6, 6, 0, 0]}
         />
         <Bar
-          dataKey="outbound"
-          fill="var(--color-outbound)"
+          dataKey='outbound'
+          fill='var(--chart-2)'
           radius={[6, 6, 0, 0]}
         />
       </BarChart>

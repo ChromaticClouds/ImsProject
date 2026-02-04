@@ -95,7 +95,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 1,
     name: '참이슬 후레쉬',
-    code: 'SOJU-001',
+    product_code: 'SOJU-001',
     category: '소주',
     brand: '하이트진로',
     sale_price :1500,
@@ -107,7 +107,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 2,
     name: '발렌타인 21년',
-    code: 'WHI-021',
+    product_code: 'WHI-021',
     category: '위스키',
     brand: '발렌타인',
     sale_price :1500,
@@ -119,7 +119,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 3,
     name: '연태고량주',
-    code: 'CHIN-500',
+    product_code: 'CHIN-500',
     category: '고량주',
     brand: '연태',
     sale_price :1500,
@@ -131,7 +131,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 4,
     name: '일품진로',
-    code: 'SOJU-002',
+    product_code: 'SOJU-002',
     category: '소주',
     brand: '하이트진로',
     sale_price :1500,
@@ -143,7 +143,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 5,
     name: '화요 25도',
-    code: 'TRAD-025',
+    product_code: 'TRAD-025',
     category: '전통주',
     brand: '화요',
     sale_price :1500,
@@ -155,7 +155,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 6,
     name: '조니워커 블랙',
-    code: 'WHI-101',
+    product_code: 'WHI-101',
     category: '위스키',
     brand: '조니워커',
     sale_price :1500,
@@ -167,7 +167,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 7,
     name: '처음처럼',
-    code: 'SOJU-003',
+    product_code: 'SOJU-003',
     category: '소주',
     brand: '롯데칠성',
     sale_price :1500,
@@ -179,7 +179,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 8,
     name: '맥칼란 12년',
-    code: 'WHI-112',
+    product_code: 'WHI-112',
     category: '위스키',
     brand: '맥칼란',
     sale_price :1500,
@@ -191,7 +191,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 9,
     name: '공부가주',
-    code: 'CHIN-300',
+    product_code: 'CHIN-300',
     category: '고량주',
     brand: '공부가주',
     sale_price :1500,
@@ -203,7 +203,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 10,
     name: '경주법주',
-    code: 'TRAD-777',
+    product_code: 'TRAD-777',
     category: '전통주',
     brand: '경주법주',
     sale_price :1500,
@@ -215,7 +215,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 11,
     name: '시바스리갈 18년',
-    code: 'WHI-018',
+    product_code: 'WHI-018',
     category: '위스키',
     brand: '시바스',
     sale_price :1500,
@@ -227,7 +227,7 @@ export const MOCK_PRODUCTS = [
   {
     id: 12,
     name: '진로 이즈 백',
-    code: 'SOJU-004',
+    product_code: 'SOJU-004',
     category: '소주',
     brand: '하이트진로',
     sale_price :1500,

@@ -54,4 +54,19 @@ public class User {
         this.status = UserStatus.ACTIVE;
         return this;
     }
+
+    public void changeRank(UserRank newRank) {
+        if (this.userRank == UserRank.FIRST_ADMIN)
+            throw new IllegalStateException("최고 관리자는 변경할 수 없습니다.");
+
+        this.userRank = newRank;
+        if (newRank != UserRank.EMPLOYEE) this.userRole = UserRole.ALL;
+    }
+
+    public void changeRole(UserRole newRole) {
+        if (this.userRank != UserRank.EMPLOYEE)
+            throw new IllegalStateException("사원만 담당을 변경할 수 있습니다.");
+
+        this.userRole = newRole;
+    }
 }

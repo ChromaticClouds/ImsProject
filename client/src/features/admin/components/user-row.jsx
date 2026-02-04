@@ -1,52 +1,84 @@
+// @ts-check
+
+/**
+ * Components
+ */
 import { TableRow, TableCell } from '@/components/ui/table.js';
-import { Button } from '@/components/ui/button.js';
+import { RankCell } from './rank-cell.jsx';
+import { RoleCell } from './roll-cell.jsx';
+import { UserActionsWrapper } from './user-action-wrapper.jsx';
+
 import { toUserRowModel } from '../schemas/user-model.js';
+import { Badge } from '@/components/ui/badge.js';
+import { PencilIcon } from 'lucide-react';
+
+const DescriptionCell = ({ user, isPending }) => (
+  <TableCell className='w-sm'>
+    {!isPending ? user.roleDescription : '-'}
+  </TableCell>
+);
 
 /**
- * Row에서 사용할 액션을 "정의"하는 함수
- * 렌더링과 분리
- * @param {ReturnType<typeof toUserRowModel>} user
+ * @param {{
+ * user: ReturnType<typeof toUserRowModel>,
+ * onRankChange: (id: number, type: string) => void,
+ * onRoleChange: (id: number, type: string) => void,
+ * onResend: (id: number) => void
+ * onLeave: (id: number) => void
+ * onDelete: (id: number) => void
+ * }} props
  */
-export const getRowActions = (user) => {
-  if (user.status === 'PENDING') {
-    return [
-      <Button key="resend">재발송</Button>,
-      <Button key="delete" variant="destructive">삭제</Button>,
-    ];
-  }
-
-  if (user.rank !== 'FIRST_ADMIN') {
-    return [
-      <Button key="leave">퇴사</Button>,
-      <Button key="delete" variant="destructive">삭제</Button>,
-    ];
-  }
-
-  return [null, null];
-}
-
-/**
- * @param {{ user: ReturnType<typeof toUserRowModel>}} props
- */
-export const UserRow = ({ user }) => {
+export const UserRow = ({
+  user,
+  onRankChange,
+  onRoleChange,
+  onResend,
+  onLeave,
+  onDelete,
+}) => {
   const isPending = user.status === 'PENDING';
 
-  const actions = getRowActions(user);
-
   return (
-    <TableRow id={String(user.id)} className='h-16'>
+    <TableRow
+      id={String(user.id)}
+      className='h-16'
+    >
       <TableCell />
-      <TableCell>{user.name}</TableCell>
+      <TableCell>
+        <div className='flex gap-2 items-center'>
+          <span>{user.name}</span>
+          <PencilIcon size={16} />
+        </div>
+      </TableCell>
       <TableCell>{user.email}</TableCell>
 
       {/* 직급 / 권한 / 설명 등 공통 표시 영역 */}
-      <TableCell>{!isPending ? user.rankLabel : '-'}</TableCell>
-      <TableCell>{!isPending ? user.roleLabel : '-'}</TableCell>
-      <TableCell>{!isPending ? user.roleDescription : '-'}</TableCell>
+      <RankCell
+        user={user}
+        onRankChange={onRankChange}
+      />
+
+      <RoleCell
+        user={user}
+        onRoleChange={onRoleChange}
+      />
+
+      <DescriptionCell
+        user={user}
+        isPending={isPending}
+      />
+
+      <TableCell className='text-center'>
+        <Badge>{user.statusLabel}</Badge>
+      </TableCell>
 
       {/* 액션 영역 (항상 2칸 고정) */}
-      <TableCell>{actions[0]}</TableCell>
-      <TableCell>{actions[1]}</TableCell>
+      <UserActionsWrapper
+        user={user}
+        onResend={onResend}
+        onLeave={onLeave}
+        onDelete={onDelete}
+      />
     </TableRow>
   );
 };

@@ -1,13 +1,12 @@
 package com.example.ims.features.user.controllers;
 
+import com.example.ims.features.user.dto.UpdateUserRequest;
+import com.example.ims.features.user.dto.UserListResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.auth.enums.UserRole;
@@ -36,12 +35,23 @@ public class UserController {
     }
 
     @GetMapping("list")
-    public ResponseEntity<ApiResponse<PageResponse<User>>> getUserList(
-        @RequestParam(value = "page", defaultValue = "1") Integer page
+    public ResponseEntity<ApiResponse<PageResponse<UserListResponse>>> getUserList(
+        @RequestParam(value = "page", defaultValue = "1") Integer page,
+        @RequestParam(value = "search", defaultValue = "") String search
     ) {
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
-        PageResponse<User> userList = service.getUserList(pageable);
+        PageResponse<UserListResponse> userList = service.getUserList(pageable, search);
 
         return ResponseEntity.ok(ApiResponse.success(userList));
+    }
+
+    @PatchMapping("{id}")
+    public ResponseEntity<ApiResponse<Void>> patchUserPermission(
+        @PathVariable("id") Long id,
+        @RequestBody UpdateUserRequest request
+    ) {
+        service.updateUser(id, request);
+
+        return ResponseEntity.ok(ApiResponse.success("권한 변경 성공"));
     }
 }

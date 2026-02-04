@@ -87,7 +87,7 @@ export const ROLE_LABEL = {
   INBOUND: '입고',
   PLACE_ORDER: '발주',
   OUTBOUND: '출고',
-  RECIEVE_ORDER: '주문 수신',
+  RECEIVE_ORDER: '수주',
   ALL: '전체 권한',
 };
 

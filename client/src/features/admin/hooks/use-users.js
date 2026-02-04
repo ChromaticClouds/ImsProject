@@ -4,9 +4,9 @@ import { fetchUsers } from "../api/index.js";
 /** 
  * @param {number} page 
  */
-export const useUsers = (page) => {
+export const useUsers = (page, keyword) => {
   return useQuery({
-    queryKey: ['user', page],
-    queryFn: () => fetchUsers(page)
+    queryKey: ['users', page, keyword],
+    queryFn: () => fetchUsers(page, keyword)
   });
 }

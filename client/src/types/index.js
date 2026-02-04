@@ -35,7 +35,7 @@
  * @property {string} email
  * @property {string} name
  * @property {'FIRST_ADMIN' | 'SECOND_ADMIN' | 'EMPLOYEE'} userRank
- * @property {'NONE' | 'INBOUND' | 'PLACE_ORDER' | 'OUTBOUND' | 'RECIEVE_ORDER' | 'ALL'} userRole
+ * @property {'NONE' | 'INBOUND' | 'PLACE_ORDER' | 'OUTBOUND' | 'RECEIVE_ORDER' | 'ALL'} userRole
  * @property {'PENDING' | 'ACTIVE' | 'DEACTIVE' | 'DELETED'} status
  */
 

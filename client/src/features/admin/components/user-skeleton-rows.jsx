@@ -7,23 +7,26 @@ import { TableCell, TableRow } from '@/components/ui/table.js';
  */
 export const UserSkeletonRows = ({ rows = 10 }) => {
   return Array.from({ length: rows }).map((_, rowIdx) => (
-    <TableRow key={rowIdx} className="h-16">
-      <SkeletonCell width="w-0" />
-      <SkeletonCell width="w-24" />
-      <SkeletonCell width="w-48" />
-      <SkeletonCell width="w-20" />
-      <SkeletonCell width="w-24" />
-      <SkeletonCell width="w-40" />
-      <SkeletonCell width="w-10" />
-      <SkeletonCell width="w-10" />
+    <TableRow
+      key={rowIdx}
+      className='h-16'
+    >
+      <SkeletonCell />
+      <SkeletonCell />
+      <SkeletonCell />
+      <SkeletonCell />
+      <SkeletonCell />
+      <SkeletonCell />
+      <SkeletonCell />
+      <SkeletonCell />
     </TableRow>
   ));
 };
 
 /* ---------- helpers ---------- */
 
-const SkeletonCell = ({ width }) => (
+const SkeletonCell = () => (
   <TableCell>
-    <Skeleton className={`h-4 ${width} rounded`} />
+    <Skeleton className='h-4 rounded' />
   </TableCell>
 );

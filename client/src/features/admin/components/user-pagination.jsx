@@ -1,6 +1,6 @@
 import { CardFooter } from '@/components/ui/card.js';
 import { useUserList } from './user-provider.jsx';
-import { useSearchParams } from 'react-router-dom';
+
 import {
   Pagination,
   PaginationContent,

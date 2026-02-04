@@ -10,7 +10,7 @@ import { UserProvider } from '@/features/admin/components/user-provider.jsx';
 
 export const UserSetting = () => {
   return (
-    <div className='w-full h-full flex flex-col items-center justify-center my-6'>
+    <div className='w-full h-full flex flex-col items-center justify-center'>
       <AppHeader
         title='사용자 설정'
         description='사용자 설정 페이지입니다.'

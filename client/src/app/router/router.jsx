@@ -16,6 +16,7 @@ import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
 import { Product } from '@/pages/dashboard/product';
 import { AuthBootstrap } from '@/app/router/auth-bootstrap.jsx';
+import { Statistics } from '@/pages/dashboard/statistics.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -48,11 +49,11 @@ export const router = createBrowserRouter([
                   { path: 'create', element: <VendorCreate /> },
                 ],
               },
+              {
+                path: 'statistics',
+                element: <Statistics />
+              }
             ],
-          },
-          {
-            path: 'user/setting',
-            element: <UserSetting />,
           },
         ],
       },

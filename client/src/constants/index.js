@@ -71,7 +71,7 @@ export const SIDEBAR_ADDITIONAL_ITEMS = [
   },
   {
     title: '통계 및 리포트',
-    url: '#',
+    url: '/dashboard/statistics',
     Icon: ChartAreaIcon,
   },
 ];

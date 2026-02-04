@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator.js';
  */
 export const AppHeader = ({ title, description }) => {
   return (
-    <div className="w-full mb-6">
+    <div className="w-full mt-24 mb-6">
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">
           {title}

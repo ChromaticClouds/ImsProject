@@ -15,11 +15,7 @@ public class ProductController {
     
     @GetMapping
     public ResponseEntity<ApiResponse<Void>> getProduct() {
-        Authentication auth =
-            SecurityContextHolder.getContext().getAuthentication();
-
-        System.out.println(auth == null ? "NO AUTH" : auth.toString());
-
+      
         return ResponseEntity.ok(ApiResponse.success("Authorization successfully"));
     }
 }

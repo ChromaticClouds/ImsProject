@@ -7,6 +7,7 @@ export const InOutBound = () => {
       title='입출고 수량 합계 통계'
       description='각 품목 당 입출고 수량 합계'
       width='wide'
+      height='lg'
     >
       <InOutboundChart />
     </GraphContainer>

@@ -22,13 +22,9 @@ import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
 
 // ✅ inbounds
 import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
-<<<<<<< HEAD
 import { InboundPendingEdit } from '@/pages/inbound/inbound-pending-edit.jsx';
 import { InboundOverview } from '@/pages/inbound/inbound-overview.jsx';
 import { Adjust } from '@/pages/dashboard/adjust';
-=======
-import { Adjust } from '@/pages/dashboard/adjust.jsx';
->>>>>>> bd1ab290912913fd8820865b8112eb9e8a9c22b2
 
 export const router = createBrowserRouter([
   {

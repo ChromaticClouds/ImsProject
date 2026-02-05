@@ -1,5 +1,5 @@
 import { CardFooter } from '@/components/ui/card.js';
-import { useUserList } from './user-provider.jsx';
+import { useUserList } from '../providers/user-provider.jsx';
 
 import {
   Pagination,

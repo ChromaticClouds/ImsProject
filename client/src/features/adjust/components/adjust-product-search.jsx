@@ -19,7 +19,7 @@ import { SearchIcon } from 'lucide-react';
  */
 import { useProductSearchStore } from '@/features/product/stores/use-product-search-store.js';
 import { useProductSearch } from '@/features/product/hooks/use-product-search.js';
-import { useAdjustListStore } from '@/features/product/stores/use-adjust-list-store.js';
+import { useAdjustListStore } from '@/features/adjust/stores/use-adjust-list-store.js';
 import {
   Popover,
   PopoverContent,
@@ -29,6 +29,7 @@ import {
 export const AdjustProductSearch = () => {
   const { data } = useProductSearch();
   const { isOpen, setIsOpen, keyword, setKeyword } = useProductSearchStore();
+
   const { addProduct } = useAdjustListStore();
 
   return (
@@ -66,7 +67,10 @@ export const AdjustProductSearch = () => {
                 <div
                   key={v.id}
                   className='flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted transition-colors'
-                  onMouseDown={() => addProduct(v)}
+                  onMouseDown={() => {
+                    addProduct(v);
+                    setIsOpen(false);
+                  }}
                 >
                   <img
                     src={v.imageUrl || '/placeholder.png'}

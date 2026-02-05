@@ -1,5 +1,5 @@
-import { ProductCountChart } from '@/features/main/components/product-count-chart.jsx';
 import { GraphContainer } from '@/features/statistics/components/graph-container.jsx';
+import { ProductCountChart } from '@/features/main/components/product-count-chart.jsx';
 
 export const ProductCount = () => {
   return (

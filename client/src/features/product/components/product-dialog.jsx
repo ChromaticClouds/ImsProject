@@ -25,10 +25,10 @@ export const ProductDetailDialog = ({ product, onClose }) => {
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             {product.name}
-            <Badge variant="secondary">{product.category}</Badge>
+            <Badge variant="secondary">{product.type}</Badge>
           </DialogTitle>
           <DialogDescription className="font-mono text-xs">
-            품목 코드 · {product.code}
+            품목 코드  {product.productCode}
           </DialogDescription>
         </DialogHeader>
 
@@ -39,7 +39,7 @@ export const ProductDetailDialog = ({ product, onClose }) => {
             <img
               src={product.boximage}
               alt="box"
-              className="h-40 w-full object-contain rounded border bg-white"
+              className="h-40 w-40 object-contain rounded border bg-white"
             />
           </div>
 
@@ -48,7 +48,7 @@ export const ProductDetailDialog = ({ product, onClose }) => {
             <img
               src={product.singleimage}
               alt="single"
-              className="h-40 w-full object-contain rounded border bg-white"
+              className="h-40 w-40 object-contain rounded border bg-white"
             />
           </div>
         </div>
@@ -56,9 +56,9 @@ export const ProductDetailDialog = ({ product, onClose }) => {
         {/* 상세 정보 */}
         <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
           <DetailRow label="브랜드" value={product.brand} />
-          <DetailRow label="박스당 낱개 수" value={`${product.boxQuantity}개입`} />
-          <DetailRow label="단가" value={`${product.sale_price.toLocaleString()}원`} />
-          <DetailRow label="등록일" value={product.regDate} />
+          <DetailRow label="박스당 낱개 수" value={`${product.perCount}개입`} />
+          <DetailRow label="단가" value={`${product.salePrice}원`} />
+          <DetailRow label="등록일" value={product.createdAt} />
         </div>
       </DialogContent>
     </Dialog>

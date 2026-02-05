@@ -22,8 +22,13 @@ import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
 
 // ✅ inbounds
 import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
+<<<<<<< HEAD
 import { InboundPendingEdit } from '@/pages/inbound/inbound-pending-edit.jsx';
 import { InboundOverview } from '@/pages/inbound/inbound-overview.jsx';
+import { Adjust } from '@/pages/dashboard/adjust';
+=======
+import { Adjust } from '@/pages/dashboard/adjust.jsx';
+>>>>>>> bd1ab290912913fd8820865b8112eb9e8a9c22b2
 
 export const router = createBrowserRouter([
   {
@@ -45,9 +50,14 @@ export const router = createBrowserRouter([
               { index: true, element: <Main /> },
               { path: 'product', element: <Product /> },
               {
-                path: 'user/setting',
-                element: <UserSetting />,
-                handle: { permissions: ['ALL'] },
+                path: 'user',
+                children: [
+                  {
+                    path: 'setting',
+                    element: <UserSetting />,
+                    handle: { permissions: ['ALL'] },
+                  },
+                ],
               },
               {
                 path: 'vendor',
@@ -67,10 +77,20 @@ export const router = createBrowserRouter([
                   { path: 'register/:orderNumber', element: <InboundRegister /> },
                 ],
               },
-              { path: 'outbounds', 
+              {
+                path: 'outbounds',
                 children: [
-                  
-                ]}
+
+                ]
+              },
+              {
+                path: 'adjust',
+                element: <Adjust />
+              },
+              {
+                path: 'statistics',
+                element: <Statistics />,
+              },
             ],
           },
         ],

@@ -7,6 +7,7 @@ export const ClientRank = () => {
       title='거래처 순위 통계'
       description='TOP 5로 가장 입출고 내역이 잦은 거래처'
       width='third'
+      height='lg'
     >
       <ClientRankChart />
     </GraphContainer>

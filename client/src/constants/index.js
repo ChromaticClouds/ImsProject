@@ -58,7 +58,7 @@ export const SIDEBAR_PRODUCT_ITEMS = [
   },
   {
     title: '조정',
-    url: '#',
+    url: '/dashboard/adjust',
     Icon: ArrowDownUpIcon,
   },
 ];

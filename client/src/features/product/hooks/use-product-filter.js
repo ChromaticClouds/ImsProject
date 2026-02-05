@@ -1,24 +1,43 @@
+// @ts-check
+
+import { useEffect } from 'react';
 import { useMemo, useState } from 'react';
 
 export const useProductFilter = (products) => {
   const [filters, setFilters] = useState({
-    소주: true,
-    전통주: true,
-    양주: true,
+    SOJU: true,
+    BEER: true,
+    WHISKY: true,
     고량주: true,
     위스키: true,
   });
 
-  const [brandState, setBrandState] = useState(() =>
-    products.reduce((acc, p) => {
+  // const [brandState, setBrandState] = useState(() =>
+  //   products.reduce((acc, p) => {
+  //     acc[p.brand] = true;
+  //     return acc;
+  //   }, {})
+  // );
+
+  const [brandState, setBrandState] = useState({});
+
+  useEffect(() => {
+    if (products.length === 0) return;
+
+    const initialBrandState = products.reduce((acc, p) => {
       acc[p.brand] = true;
       return acc;
-    }, {})
-  );
+    }, {});
+
+    setBrandState(initialBrandState);
+  }, [products]);
+
 
   const filteredList = useMemo(() => {
     return products.filter(
-      (item) => filters[item.category] && brandState[item.brand]
+      (item) => {
+        return filters[item.type] && brandState[item.brand]
+      }
     );
   }, [products, filters, brandState]);
 

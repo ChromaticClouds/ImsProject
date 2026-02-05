@@ -54,40 +54,38 @@ export const ProductCountChart = () => {
   const chartWidth = data.length * (BAR_WIDTH + GAP);
 
   return (
-    <div className='overflow-hidden overflow-x-auto'>
-      <ChartContainer
-        config={chartConfig}
-        className='h-56'
-        style={{ minWidth: chartWidth }}
+    <ChartContainer
+      config={chartConfig}
+      className='h-54'
+      style={{ minWidth: chartWidth }}
+    >
+      <BarChart
+        data={data}
+        barSize={isMobile ? 12 : 24}
+        barCategoryGap={16}
       >
-        <BarChart
-          data={data}
-          barSize={isMobile ? 12 : 24}
-          barCategoryGap={16}
-        >
-          <XAxis
-            dataKey='product'
+        <XAxis
+          dataKey='product'
+          tickLine={false}
+          axisLine={false}
+        />
+
+        {!isMobile && (
+          <YAxis
             tickLine={false}
             axisLine={false}
           />
+        )}
 
-          {!isMobile && (
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-            />
-          )}
+        <Tooltip content={<ChartTooltipContent />} />
 
-          <Tooltip content={<ChartTooltipContent />} />
-
-          <Bar
-            dataKey='stock'
-            overlineThickness={0}
-            fill='var(--chart-3)'
-            radius={[8, 8, 0, 0]}
-          />
-        </BarChart>
-      </ChartContainer>
-    </div>
+        <Bar
+          dataKey='stock'
+          overlineThickness={0}
+          fill='var(--chart-3)'
+          radius={[8, 8, 0, 0]}
+        />
+      </BarChart>
+    </ChartContainer>
   );
 };

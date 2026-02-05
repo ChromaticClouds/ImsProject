@@ -9,11 +9,13 @@ export function InboundPendingRow({ row, loading, onError }) {
   const nav = useNavigate();
   const { isOpen, toggle, close, items, itemsLoading } = useInboundPendingRow(row.orderNumber);
 
+  
+
   const wrapRef = useRef(null);
   const btnRef = useRef(null);
   const [dropdownWidth, setDropdownWidth] = useState(240);
 
-  const MIN_DROPDOWN_WIDTH = 360; // 읽기 좋은 최소 폭 (원하면 320~420 사이로 조절)
+  const MIN_DROPDOWN_WIDTH = 360;
 
   function goRegister() {
     onError?.('');
@@ -88,14 +90,15 @@ useLayoutEffect(() => {
       </td>
 
       <td>{Number(row.totalAmount || 0).toLocaleString()}</td>
-      <td><button disabled>수정</button></td>
       <td>
-        <button
-  disabled={loading}
-  onClick={goRegister}
->
-  등록
-</button>
+      <button disabled={loading} onClick={() => nav(`/dashboard/inbounds/pending/edit/${encodeURIComponent(row.orderNumber)}`)}>
+      수정
+      </button>
+      </td>
+      <td>
+      <button disabled={loading} onClick={goRegister}>
+      등록
+      </button>
       </td>
     </tr>
   );

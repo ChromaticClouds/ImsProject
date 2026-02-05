@@ -1,3 +1,7 @@
+// @ts-check
+
+import { format } from 'date-fns';
+
 /**
  * Components
  */
@@ -12,40 +16,26 @@ import {
 /**
  * Assets
  */
-import { ChevronDownIcon } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 
-/**
- * Hooks
- */
-import { useState } from 'react';
-
-/**
- * Utils
- */
-import { format } from 'date-fns';
-
-export const AppDatePicker = () => {
-  const [date, setDate] = useState();
-
+export const AppDatePicker = ({ date = new Date(), setDate }) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           variant='outline'
           data-empty={!date}
-          className='data-[empty=true]:text-muted-foreground w-53 justify-between text-left font-normal'
+          className='data-[empty=true]:text-muted-foreground w-60 justify-start text-left font-normal'
         >
+          <CalendarIcon />
           {date ? format(date, 'PPP') : <span>Pick a date</span>}
-          <ChevronDownIcon />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className='w-auto p-0'
-        align='start'
-      >
+      <PopoverContent className='w-auto p-0'>
         <Calendar
           mode='single'
-          
+          selected={date}
+          onSelect={setDate}
         />
       </PopoverContent>
     </Popover>

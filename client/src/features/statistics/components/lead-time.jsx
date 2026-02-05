@@ -7,6 +7,7 @@ export const LeadTime = () => {
       title='리드타임'
       description='품목 및 거래처별 리드타임'
       width='full'
+      height='lg'
     >
       <LeadTimeChart />
     </GraphContainer>

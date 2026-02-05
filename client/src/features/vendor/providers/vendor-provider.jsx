@@ -10,6 +10,7 @@ import { useVendors } from '@/features/vendor/hooks/use-vendors';
  * @typedef {object} VendorContextValue
  * @property {VendorQuery} query
  * @property {VendorSearch} search
+ * @property {number} size  
  * @property {(next: Partial<VendorSearch>) => void} setSearch
  */
 
@@ -24,10 +25,10 @@ export const VendorProvider = ({ children }) => {
   const { search, setSearch } = useVendorSearch();
   const query = useVendors(search);
 
-  console.log(query.error);
+  console.log(query.data);
 
   return (
-    <VendorContext.Provider value={{ query, search, setSearch }}>
+    <VendorContext.Provider value={{ query, size: query.data?.size ?? 10, search, setSearch }}>
       {children}
     </VendorContext.Provider>
   );

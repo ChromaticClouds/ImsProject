@@ -7,6 +7,7 @@ export const StockRotation = () => {
       title='재고 회전율'
       description='기간 내 각 품목 당 재고 회전율'
       width='wide'
+      height='lg'
     >
       <StockRotationChart />
     </GraphContainer>

@@ -3,6 +3,7 @@ package com.example.ims.features.vendor.service;
 import java.util.List;
 import java.util.Collections;
 import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,8 @@ public class VendorService {
         
         List<VendorResponse> list =
         	mapper.findVendorList(type, keyword, PAGE_SIZE, offset);
+       
+        
         
         return VendorListResponse.builder()
             .list(list)

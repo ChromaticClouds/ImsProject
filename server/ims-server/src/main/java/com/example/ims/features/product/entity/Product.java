@@ -1,8 +1,11 @@
 package com.example.ims.features.product.entity;
 
+import com.example.ims.features.vendor.entities.VendorItem;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -38,5 +41,10 @@ public class Product {
     
     @Column(name = "created_at")
     private String createdAt;
-    
+
+    @OneToOne(mappedBy = "product")
+    private Stock stock;
+
+    @OneToMany(mappedBy = "product")
+    private List<VendorItem> vendorItems;
 }

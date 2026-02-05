@@ -1,5 +1,6 @@
 package com.example.ims.features.product.service;
 
+import com.example.ims.features.product.dto.ProductSuggest;
 import com.example.ims.features.product.entity.Product;
 import com.example.ims.features.product.repository.ProductRepository;
 import com.example.ims.features.product.repository.ProductSpecification;
@@ -18,8 +19,8 @@ public class ProductService {
 
     public PageResponse<Product> getProducts(Pageable pageable, String search) {
         return PageResponse.from(productRepository.findAll(
-            ProductSpecification.search(search),
-            pageable
+                ProductSpecification.search(search),
+                pageable
         ));
     }
 
@@ -27,9 +28,7 @@ public class ProductService {
         return productRepository.findById(id).orElse(null);
     }
 
-    public List<Product> suggest(String search) {
-        return productRepository.findAll(
-            ProductSpecification.search(search)
-        );
+    public List<ProductSuggest> suggest(String search) {
+        return productRepository.suggest(search);
     }
 }

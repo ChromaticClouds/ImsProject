@@ -104,3 +104,29 @@
  * @property {number} volumn
  * @property {string | null} imageUrl
  */
+
+/**
+ * @typedef {object} ProductSuggest
+ * @property {number} id
+ * @property {number} productId
+ * @property {string} name
+ * @property {string} brand
+ * @property {string} type
+ * @property {number} count
+ * @property {number} purchasePrice
+ * @property {number} salePrice
+ * @property {string} imageUrl
+ */
+
+/**
+ * @typedef {object} AdjustItem
+ * @property {number} id
+ * @property {string} name
+ * @property {string} brand
+ * @property {string} type
+ * @property {string} imageUrl
+ * @property {number} purchasePrice
+ * @property {number} salePrice
+ * @property {number} currentStock
+ * @property {number} adjustCount
+ */

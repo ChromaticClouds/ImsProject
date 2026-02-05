@@ -1,4 +1,8 @@
-import { useState } from 'react';
+// @ts-check
+
+/**
+ * Components
+ */
 import { Input } from '@/components/ui/input.js';
 import {
   Table,
@@ -9,9 +13,15 @@ import {
   TableRow,
 } from '@/components/ui/table.js';
 
-import { MOCK_ADJUST_LIST } from '../constants/index.js';
-import { XIcon } from 'lucide-react';
+/**
+ * Assets
+ */
 import { CircleXIcon } from 'lucide-react';
+
+/**
+ * Hooks
+ */
+import { useAdjustListStore } from '@/features/product/stores/use-adjust-list-store.js';
 
 const TABLE_HEADER = [
   '',
@@ -26,6 +36,8 @@ const TABLE_HEADER = [
 ];
 
 export const AdjustList = () => {
+  const { products } = useAdjustListStore();
+
   return (
     <Table>
       <TableHeader>
@@ -42,8 +54,8 @@ export const AdjustList = () => {
       </TableHeader>
 
       <TableBody>
-        {MOCK_ADJUST_LIST.map((row) => (
-          <TableRow key={row.productId}>
+        {products?.map((row) => (
+          <TableRow key={row.id}>
             {/* 이미지 */}
             <TableCell>
               <div className='rounded-lg w-10 h-10 overflow-hidden'>
@@ -55,23 +67,23 @@ export const AdjustList = () => {
             </TableCell>
 
             {/* 제품명 */}
-            <TableCell className='text-center'>{row.productName}</TableCell>
+            <TableCell className='text-center'>{row.name}</TableCell>
 
             {/* 구매가 */}
             <TableCell className='text-center'>
-              {row.purchasePrice.toLocaleString()}원
+              {row.purchasePrice}
             </TableCell>
 
             {/* 판매가 */}
             <TableCell className='text-center'>
-              {row.salePrice.toLocaleString()}원
+              {row.salePrice}원
             </TableCell>
 
             {/* 브랜드 */}
             <TableCell className='text-center'>{row.brand}</TableCell>
 
             {/* 주종 */}
-            <TableCell className='text-center'>{row.category}</TableCell>
+            <TableCell className='text-center'>{row.type}</TableCell>
 
             {/* 현재 재고 */}
             <TableCell className='text-center'>{row.currentStock}</TableCell>
@@ -79,8 +91,7 @@ export const AdjustList = () => {
             {/* 조정 수량 입력 */}
             <TableCell className='text-center'>
               <Input
-                defaultValue={0}
-                value={MOCK_ADJUST_LIST.adjustQty}
+                defaultValue={row.adjustCount}
                 className='w-20 text-center'
               />
             </TableCell>

@@ -24,7 +24,7 @@ export const AdjustHeader = () => {
         <div className='flex gap-3 items-center'>
           <AdjustProductSearch />
 
-          <Button className='h-12'>전체 삭제</Button>
+          <Button>전체 삭제</Button>
         </div>
       </div>
     </CardHeader>

@@ -1,5 +1,6 @@
 package com.example.ims.features.product.controllers;
 
+import com.example.ims.features.product.dto.ProductSuggest;
 import com.example.ims.features.product.entity.Product;
 import com.example.ims.features.product.service.ProductService;
 import com.example.ims.global.dto.PageResponse;
@@ -37,7 +38,7 @@ public class ProductController {
     }
 
     @GetMapping("suggest")
-    public ResponseEntity<ApiResponse<List<Product>>> suggest(
+    public ResponseEntity<ApiResponse<List<ProductSuggest>>> suggest(
         @RequestParam("search") String search
     ) {
         return ResponseEntity.ok(

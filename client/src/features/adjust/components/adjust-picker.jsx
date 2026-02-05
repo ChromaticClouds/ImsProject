@@ -1,18 +1,23 @@
-import { AppDatePicker } from '@/components/common/app-date-picker.jsx';
+import { AppDateRangePicker } from '@/components/common/app-date-range-picker.jsx';
 import { Label } from '@/components/ui/label.js';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.js';
 import { useState } from 'react';
 
+
+
 export const AdjustPicker = () => {
-  const [date, setDate] = useState();
+  const [value, setValue] = useState({
+    from: new Date(),
+    to: new Date()
+  });
 
   return (
     <section className='flex flex-col gap-4'>
       <div className='flex gap-3 items-center'>
         <span>날짜선택</span>
-        <AppDatePicker
-          date={date}
-          setDate={setDate}
+        <AppDateRangePicker
+          value={value}
+          onChange={(e) => setValue(e)}
         />
       </div>
       <div className='flex gap-3 items-center'>

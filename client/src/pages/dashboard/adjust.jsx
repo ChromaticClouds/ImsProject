@@ -1,5 +1,7 @@
 import { AppHeader } from '@/components/common/app-header.jsx';
 import { Card } from '@/components/ui/card.js';
+import { AdjustAction } from '@/features/adjust/components/adjust-action.jsx';
+import { AdjustFooter } from '@/features/adjust/components/adjust-footer.jsx';
 import { AdjustHeader } from '@/features/adjust/components/adjust-header.jsx';
 import { AdjustList } from '@/features/adjust/components/adjust-list.jsx';
 import { AdjustPicker } from '@/features/adjust/components/adjust-picker.jsx';
@@ -16,8 +18,10 @@ export const Adjust = () => {
         <Card>
           <AdjustHeader />
           <AdjustList />
+          <AdjustFooter />
         </Card>
       </div>
+      <AdjustAction />
     </div>
   );
 };

@@ -17,7 +17,7 @@ export const fetchProducts = (search) =>
 
 /**
  * @param {string} search
- * @returns {Promise<PageResponse<Product>>}
+ * @returns {Promise<ApiResponse<ProductSuggest[]>>}
  */
 export const searchProducts = (search) =>
   api.get('product/suggest', { searchParams: { search }, hooks }).json();

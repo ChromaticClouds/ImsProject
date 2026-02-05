@@ -34,7 +34,7 @@ export function InboundPendingItemsDropdown({ items }) {
             onMouseEnter={(e) => (e.currentTarget.style.background = '#f7f7f7')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
-            {/* 왼쪽: 제품명 + 주종/브랜드 */}
+            {/* 제품명, 주종/브랜드 */}
             <div style={{ minWidth: 0 }}>
               <div
                 style={{
@@ -54,7 +54,7 @@ export function InboundPendingItemsDropdown({ items }) {
               </div>
             </div>
 
-            {/* 오른쪽: 안전재고/발주수량 */}
+            {/* 안전재고/발주수량 */}
             <div>
               <StatChip label="안전재고" value={/** @type {any} */ (i).safetyStock ?? '-'} />
               <StatChip label="발주수량" value={i.orderQty ?? 0} />

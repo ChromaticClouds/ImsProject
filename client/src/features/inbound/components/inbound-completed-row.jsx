@@ -1,43 +1,39 @@
 // @ts-check
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useInboundPendingRow } from '../hooks/use-inbound-pending-row';
-import { useNavigate } from 'react-router-dom';
+import { useInboundCompletedItems } from '../hooks/use-inbound-completed-items';
 import { InboundPendingItemsDropdown } from './inbound-pending-items-dropdown';
-import { Button } from '@/components/ui/button';
 
-export function InboundPendingRow({ row, loading, onError }) {
-  const nav = useNavigate();
-  const { isOpen, toggle, close, items, itemsLoading } = useInboundPendingRow(row.orderNumber);
-
-  
+/**
+ * @param {{
+ *  row: any,
+ *  loading: boolean,
+ * }} props
+ */
+export function InboundCompletedRow({ row, loading }) {
+  const [isOpen, setIsOpen] = useState(false);
 
   const wrapRef = useRef(null);
   const btnRef = useRef(null);
   const [dropdownWidth, setDropdownWidth] = useState(240);
-
   const MIN_DROPDOWN_WIDTH = 360;
 
-  function goRegister() {
-    onError?.('');
-    nav(`/dashboard/inbounds/register/${encodeURIComponent(row.orderNumber)}`, { 
-      state: { vendorName: row.vendorName }, });
-  }
+  const itemsQuery = useInboundCompletedItems(row.orderNumber, isOpen);
+  const items = Array.isArray(itemsQuery.data) ? itemsQuery.data : [];
 
-useLayoutEffect(() => {
-  const el = btnRef.current;
-  if (!el) return;
+  useLayoutEffect(() => {
+    const el = btnRef.current;
+    if (!el) return;
 
-  const measure = () => {
-    const w = el.getBoundingClientRect().width;
-    setDropdownWidth(Math.max(w, MIN_DROPDOWN_WIDTH));
-  };
+    const measure = () => {
+      const w = el.getBoundingClientRect().width;
+      setDropdownWidth(Math.max(w, MIN_DROPDOWN_WIDTH));
+    };
 
-  measure();
-
-  const ro = new ResizeObserver(measure);
-  ro.observe(el);
-  return () => ro.disconnect();
-}, []);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -45,28 +41,32 @@ useLayoutEffect(() => {
       const el = wrapRef.current;
       if (!el) return;
       if (el.contains(e.target)) return;
-      close();
+      setIsOpen(false);
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
-  }, [isOpen, close]);
+  }, [isOpen]);
 
   return (
     <tr>
-      <td>{row.statusText ?? '입고 대기'}</td>
-      <td>{row.receiveDate}</td>
-      <td>{row.orderNumber}</td>
-      <td>{row.vendorName}</td>
+      <td style={{ padding: 8 }}>{row.statusText ?? '입고 완료'}</td>
+      <td style={{ padding: 8 }}>{row.orderDate ?? '-'}</td>
+      <td style={{ padding: 8 }}>{row.orderNumber}</td>
+      <td style={{ padding: 8 }}>{row.vendorName}</td>
 
-      <td>
+      <td style={{ padding: 8 }}>
         <div ref={wrapRef} style={{ position: 'relative', display: 'inline-block' }}>
-          <button ref={btnRef} onClick={toggle} disabled={loading}>
+          <button
+            ref={btnRef}
+            onClick={() => setIsOpen((v) => !v)}
+            disabled={loading}
+          >
             {row.itemCount}개 품목 {isOpen ? '▲' : '▼'}
           </button>
 
           {isOpen ? (
             <div style={{ position: 'absolute', zIndex: 50, marginTop: 8, width: dropdownWidth }}>
-              {itemsLoading ? (
+              {itemsQuery.isFetching ? (
                 <div
                   style={{
                     width: '100%',
@@ -89,18 +89,9 @@ useLayoutEffect(() => {
         </div>
       </td>
 
-      <td>{Number(row.totalAmount || 0).toLocaleString()}</td>
-      <td>
-      <button disabled={loading} onClick={() => nav(`/dashboard/inbounds/pending/edit/${encodeURIComponent(row.orderNumber)}`)}>
-      수정
-      </button>
-      </td>
-      <td>
-      <button disabled={loading} onClick={goRegister}>
-      등록
-      </button>
+      <td style={{ padding: 8, textAlign: 'right' }}>
+        {Number(row.totalAmount || 0).toLocaleString()}
       </td>
     </tr>
   );
 }
-

@@ -1,39 +1,46 @@
 // @ts-check
-import { useSearchParams } from 'react-router-dom';
-import { formatDateYMD } from './dateRange'; // 우리가 만든 헬퍼 사용
+import { useMemo, useState } from 'react';
 
 /**
- * @returns {{
- *   search: { from: string, to: string, page: number, size: number },
- *   setSearch: (next: Partial<{ from: string, to: string, page: number, size: number }>) => void
- * }}
+ * @typedef {Object} InboundPendingSearch
+ * @property {string} from
+ * @property {string} to
+ * @property {string=} keyword
+ * @property {number=} page
+ * @property {number=} size
  */
+
+function ymd(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 export function useInboundPendingSearch() {
-  const [params, setParams] = useSearchParams();
+  const today = useMemo(() => new Date(), []);
+  const todayYmd = useMemo(() => ymd(today), [today]);
 
-  const today = new Date();
-  const defaultFrom = formatDateYMD(today);
-  const defaultTo = formatDateYMD(
-    new Date(today.getFullYear() + 1, today.getMonth(), today.getDate())
-  );
+  /** @type {[InboundPendingSearch, any]} */
+  const [search, setSearch] = useState(() => ({
+    from: todayYmd,
+    to: todayYmd,
+    keyword: '',
+    page: 0,
+    size: 50,
+  }));
 
-  const search = {
-    from: params.get('from') ?? defaultFrom,
-    to: params.get('to') ?? defaultTo,
-    page: Number(params.get('page') ?? 0),
-    size: Number(params.get('size') ?? 20),
-  };
+  /**
+   * @param {{from:string,to:string}} next
+   */
+  function setRange(next) {
+    setSearch((prev) => ({
+      ...prev,
+      from: next.from,
+      to: next.to,
+      page: 0,
+    }));
+  }
 
-  const setSearch = (next) => {
-    const merged = { ...search, ...next };
-
-    setParams({
-      from: merged.from,
-      to: merged.to,
-      page: String(Math.max(merged.page ?? 0, 0)),
-      size: String(Math.max(merged.size ?? 20, 1)),
-    });
-  };
-
-  return { search, setSearch };
+  return { search, setSearch, setRange };
 }

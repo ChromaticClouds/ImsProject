@@ -53,7 +53,7 @@ export const SIDEBAR_PRODUCT_ITEMS = [
   },
   {
     title: '출고',
-    url: '#',
+    url: '/dashboard/outbounds/pending',
     Icon: ArrowBigUpDashIcon,
   },
   {

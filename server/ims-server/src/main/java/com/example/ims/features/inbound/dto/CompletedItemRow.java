@@ -5,7 +5,7 @@ import lombok.*;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-public class PendingItemRow {
+public class CompletedItemRow {
     private Long orderId;
     private Long vendorItemId;
     private Long productId;

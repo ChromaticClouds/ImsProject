@@ -18,3 +18,5 @@ public class PendingSummaryRow {
     private Integer itemCount;     // 품목 수(=라인 수)
     private Long totalAmount;      // 단가 총액 = SUM(count * purchase_price)
 }
+
+

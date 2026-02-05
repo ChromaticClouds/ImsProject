@@ -1,5 +1,4 @@
 // @ts-check
-
 import { createBrowserRouter } from 'react-router-dom';
 
 /**
@@ -20,8 +19,11 @@ import { AuthBootstrap } from '@/app/router/auth-bootstrap.jsx';
 import { Statistics } from '@/pages/dashboard/statistics.jsx';
 import { VendorDetail } from '@/pages/vendor/vendor-detail.jsx';
 import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
-import { InboundPending } from '@/pages/inbound/inbound-pending.jsx';
+
+// ✅ inbounds
 import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
+import { InboundPendingEdit } from '@/pages/inbound/inbound-pending-edit.jsx';
+import { InboundOverview } from '@/pages/inbound/inbound-overview.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -56,20 +58,19 @@ export const router = createBrowserRouter([
                   { path: 'modify/:id', element: <VendorModify /> },
                 ],
               },
-              {
-                path: 'statistics',
-                element: <Statistics />,
-              },
+              { path: 'statistics', element: <Statistics /> },
               {
                 path: 'inbounds',
                 children: [
-                  { path: 'pending', element: <InboundPending /> },
-                  {
-                    path: 'register/:orderNumber',
-                    element: <InboundRegister />,
-                  },
+                  { path: 'pending', element: <InboundOverview /> },
+                  { path: 'pending/edit/:orderNumber', element: <InboundPendingEdit /> },
+                  { path: 'register/:orderNumber', element: <InboundRegister /> },
                 ],
               },
+              { path: 'outbounds', 
+                children: [
+                  
+                ]}
             ],
           },
         ],

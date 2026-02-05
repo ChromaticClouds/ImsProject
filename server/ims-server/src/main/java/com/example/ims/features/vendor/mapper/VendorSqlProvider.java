@@ -20,7 +20,7 @@ public class VendorSqlProvider {
             if (type != null) WHERE("type = #{type}");
             if (keyword != null) WHERE("vendor_name LIKE CONCAT('%', #{keyword}, '%')");
         
-            ORDER_BY("created_at DESC");
+            ORDER_BY("id DESC");
         }}.toString()
         
         + " LIMIT ${limit} OFFSET ${offset}";

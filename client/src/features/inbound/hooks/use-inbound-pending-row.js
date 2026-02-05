@@ -18,19 +18,21 @@ export function useInboundPendingRow(orderNumber) {
   );
 
   const cachedItems = itemsMap[orderNumber];
-  const items = cachedItems ?? fetchedItems;
+
+  const items = fetchedItems.length ? fetchedItems : (cachedItems ?? []);
 
   useEffect(() => {
-    console.log('orderNumber:', orderNumber, 'isOpen:', isOpen);
     if (!isOpen) return;
-    if (itemsMap[orderNumber]) return;
     if (!fetchedItems.length) return;
 
     setItemsMap((prev) => {
-      if (prev[orderNumber]) return prev;
+      const prevItems = prev[orderNumber];
+
+      if (prevItems && JSON.stringify(prevItems) === JSON.stringify(fetchedItems)) return prev;
+
       return { ...prev, [orderNumber]: fetchedItems };
     });
-  }, [isOpen, orderNumber, fetchedItems, itemsMap, setItemsMap]);
+  }, [isOpen, orderNumber, fetchedItems, setItemsMap]);
 
   const toggle = () => {
     const next = new Set(expanded);
@@ -39,9 +41,17 @@ export function useInboundPendingRow(orderNumber) {
     setExpanded(next);
   };
 
+  const close = () => {
+    if (!isOpen) return;
+    const next = new Set(expanded);
+    next.delete(orderNumber);
+    setExpanded(next);
+  };
+
   return {
     isOpen,
     toggle,
+    close,
     items,
     itemsLoading: itemsQuery.isFetching,
   };

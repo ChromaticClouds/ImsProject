@@ -18,11 +18,11 @@ public class PageResponse<T> {
         return PageResponse.<T>builder()
                 .content(content)
                 .page(PageMeta.builder()
-                        .number(page)
-                        .size(size)
-                        .totalElements(total)
-                        .totalPages(totalPages)
-                        .build())
+                    .number(page)
+                    .size(size)
+                    .totalElements(total)
+                    .totalPages(totalPages)
+                    .build())
                 .build();
     }
 }

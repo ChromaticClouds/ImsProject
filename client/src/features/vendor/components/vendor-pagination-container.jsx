@@ -3,7 +3,7 @@ import { VendorPagination } from '@/features/vendor/components/vendor-pagination
 import { useVendorContext } from '@/features/vendor/providers/vendor-provider';
 
 export const VendorPaginationContainer = () => {
-  const { query, setSearch } = useVendorContext();
+  const { query, size } = useVendorContext();
   const pageInfo = query.data?.pageInfo;
 
   if (!pageInfo) return null;
@@ -11,7 +11,8 @@ export const VendorPaginationContainer = () => {
   return (
     <VendorPagination
       pageInfo={pageInfo}
-      onChange={(page) => setSearch({ page })}
+      basePath="/dashboard/vendor"
+      extraQuery={{ size }}
     />
   );
 };

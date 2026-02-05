@@ -1,4 +1,4 @@
-// @ts-check
+// // @ts-check
 
 import ky from 'ky';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
@@ -68,54 +68,93 @@ export const updateVendor = async (id, data) => {
   return await api.put(`vendor/${id}`, { json: data }).json();
 };
 
-// inbound - pending summary
-/**
- * @typedef {Object} InboundPendingSummaryParams
- * @property {string} from
- * @property {string} to
- * @property {string=} keyword
- * @property {number} page
- * @property {number} size
- */
 
 /**
- * @param {InboundPendingSummaryParams} params
- * @returns {Promise<any>} // TODO: 실제 응답 타입으로 교체
+ * 입고 - pending summary
+ * @param {{ from: string, to: string, keyword?: string, page?: number, size?: number }} params
  */
-export const fetchInboundPendingSummary = async (params) => {
+export async function fetchInboundPendingSummary(params) {
   return await api
     .get('api/inbounds/pending/summary', { searchParams: params })
     .json();
-};
+}
 
-// inbound - pending items
 /**
- * 발주번호로 품목 목록
+ * 입고 - pending items
  * @param {string} orderNumber
- * @returns {Promise<any>} // TODO: 실제 응답 타입으로 교체
  */
-export const fetchInboundPendingItems = async (orderNumber) => {
+export async function fetchInboundPendingItems(orderNumber) {
   return await api
     .get(`api/inbounds/pending/${encodeURIComponent(orderNumber)}/items`)
     .json();
-};
+}
 
-// inbound - complete order
 /**
- * 입고 완료
- * @param {number} orderId
- * @returns {Promise<any>} // 응답이 없으면 void/{}로 바꿔도 됨
+ * 입고 - pending detail
+ * @param {string} orderNumber
  */
-export const completeInboundOrder = async (orderId) => {
+export async function fetchInboundPendingDetail(orderNumber) {
+  return await api
+    .get(`api/inbounds/pending/${encodeURIComponent(orderNumber)}`)
+    .json();
+}
+
+/**
+ * 입고 - pending update
+ * @param {string} orderNumber
+ * @param {any} data
+ */
+export async function updateInboundPending(orderNumber, data) {
+  return await api
+    .patch(`api/inbounds/pending/${encodeURIComponent(orderNumber)}`, { json: data })
+    .json();
+}
+
+/**
+ * 입고 - complete by order id
+ * @param {number} orderId
+ */
+export async function completeInboundOrder(orderId) {
   return await api
     .patch(`api/inbounds/orders/${encodeURIComponent(orderId)}/complete`)
     .json();
-};
+}
 
-export const completeInboundByOrderNumber = async (orderNumber, body = {}) => {
+/**
+ * 입고 - complete by order number
+ * @param {string} orderNumber
+ * @param {{ memo?: string, receivedAt?: string }=} body
+ */
+export async function completeInboundByOrderNumber(orderNumber, body) {
   return await api
     .patch(`api/inbounds/orders/by-number/${encodeURIComponent(orderNumber)}/complete`, {
-      json: body,
+      json: body ?? {},
     })
     .json();
-};
+}
+
+/**
+ * inbound - completed today summary
+ * @param {{ keyword?: string, page?: number, size?: number }} params
+ */
+export async function fetchInboundCompletedTodaySummary(params) {
+  return await api
+    .get('api/inbounds/completed/today/summary', {
+      searchParams: {
+        keyword: params?.keyword ?? '',
+        page: String(params?.page ?? 0),
+        size: String(params?.size ?? 20),
+      },
+    })
+    .json();
+}
+
+/**
+ * 입고 - completed items
+ * @param {string} orderNumber
+ */
+export async function fetchInboundCompletedItems(orderNumber) {
+  return await api
+    .get(`api/inbounds/completed/${encodeURIComponent(orderNumber)}/items`)
+    .json();
+}

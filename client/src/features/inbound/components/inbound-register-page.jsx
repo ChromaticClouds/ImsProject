@@ -1,11 +1,9 @@
 // @ts-check
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useInboundPendingItems } from '../hooks/use-inbound-pending-items';
 import { useQueryClient } from '@tanstack/react-query';
-import { completeInboundByOrderNumber } from '@/services/api';
-import { Button } from '@/components/ui/button';
-
+import { useInboundPendingItems } from '../hooks/use-inbound-pending-items';
+import { completeInboundByOrderNumber } from '@/services/api.js';
 
 const MEMO_MAX = 300;
 
@@ -19,31 +17,32 @@ export function InboundRegisterPage() {
   const [memo, setMemo] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-
-  // 발주번호에 속한 품목 목록 조회
   const { data, isFetching } = useInboundPendingItems(orderNumber, true);
   const items = Array.isArray(data) ? data : [];
-
-  // 총 품목 수 / 총 수량 계산
   const totals = useMemo(() => {
-    const n = items.length;
-    const m = items.reduce((acc, it) => acc + Number(it.orderQty ?? 0), 0);
+  const n = items.length;
+  const m = items.reduce((acc, it) => acc + Number(it.orderQty ?? 0), 0);
     return { n, m };
   }, [items]);
-
   const memoOver = memo.length > MEMO_MAX;
 
   async function handleComplete() {
     setError('');
 
+    if (!orderNumber) {
+      setError('발주번호가 없습니다.');
+      return;
+    }
     if (memoOver) {
       setError('메모 입력 한도(300자)를 초과했습니다.');
       return;
     }
+    if (!items.length) {
+      setError('해당 발주번호에 품목이 없습니다.');
+      return;
+    }
 
-    const ok = window.confirm(
-      `총 ${totals.n}종, ${totals.m}개의 제품을 입고 확정하시겠습니까?`
-    );
+    const ok = window.confirm(`총 ${totals.n}종, ${totals.m}개의 제품을 입고 확정하시겠습니까?`);
     if (!ok) return;
 
     try {
@@ -55,9 +54,15 @@ export function InboundRegisterPage() {
       });
 
       await qc.invalidateQueries({ queryKey: ['inbound-pending-summary'] });
-    nav('/dashboard/inbounds/pending');
+      await qc.invalidateQueries({ queryKey: ['inbound-pending-items', orderNumber] });
+      await qc.invalidateQueries({ queryKey: ['inbound-pending-detail', orderNumber] });
+
+      await qc.invalidateQueries({ queryKey: ['inbound-completed-today-summary'] });
+      await qc.invalidateQueries({ queryKey: ['inbound-completed-items', orderNumber] });
+
+      nav('/dashboard/inbounds/pending');
     } catch (e) {
-      setError(e?.message || '입고 완료 처리 실패');
+      setError(/** @type {any} */ (e)?.message || '입고 완료 처리 실패');
     } finally {
       setSubmitting(false);
     }
@@ -67,17 +72,15 @@ export function InboundRegisterPage() {
     <div style={{ padding: 20, maxWidth: 1000, margin: '0 auto' }}>
       <h2>입고 등록</h2>
 
-      {/* 상단 정보 */}
       <div style={{ marginTop: 12, lineHeight: 1.8 }}>
         <div><b>공급처명:</b> {vendorName}</div>
         <div><b>입고 일자:</b> {receivedAt.toLocaleString()}</div>
+        <div><b>발주번호:</b> {orderNumber}</div>
       </div>
 
       <hr style={{ margin: '16px 0' }} />
 
-      {/* 입고 목록 */}
       <h3>입고 목록</h3>
-
       {isFetching ? <div>품목 조회 중...</div> : null}
 
       <div style={{ display: 'grid', gap: 12 }}>
@@ -95,7 +98,7 @@ export function InboundRegisterPage() {
             }}
           >
             <img
-              src={it.imageUrl || null}
+              src={it.imageUrl ? it.imageUrl : undefined}
               alt=""
               style={{
                 width: 80,
@@ -118,21 +121,16 @@ export function InboundRegisterPage() {
                 {' · '}
                 판매 단가: <b>{it.salePrice ? Number(it.salePrice).toLocaleString() : '-'}</b>
               </div>
-
-              <div>
-                안전재고: <b>-</b> / 현재고: <b>-</b>
-              </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div>입고 수량</div>
-              <div>{it.orderQty ?? 0}</div>
+              <div><b>{it.orderQty ?? 0}</b></div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* 합계 */}
       <div style={{ marginTop: 12, fontSize: 14 }}>
         <b>최종 품목 수:</b> {totals.n}종 &nbsp; / &nbsp;
         <b>총 입고 수량:</b> {totals.m}개
@@ -140,7 +138,6 @@ export function InboundRegisterPage() {
 
       <hr style={{ margin: '16px 0' }} />
 
-      {/* 메모 */}
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <b>메모</b>
@@ -170,11 +167,8 @@ export function InboundRegisterPage() {
         ) : null}
       </div>
 
-      {error ? (
-        <div style={{ marginTop: 10, color: 'crimson' }}>{error}</div>
-      ) : null}
+      {error ? <div style={{ marginTop: 10, color: 'crimson' }}>{error}</div> : null}
 
-      {/* 버튼 */}
       <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
         <button onClick={handleComplete} disabled={submitting || memoOver || isFetching}>
           {submitting ? '처리중...' : '입고 완료'}

@@ -1,17 +1,15 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchInboundPendingSummary } from '@/services/api';
-import { inboundQueryKeys } from './inboundQueryKeys';
+import { fetchInboundPendingSummary } from '@/services/api.js';
 
 /**
- * @param {import('../types').InboundPendingSearch} params
- * @returns {import('@tanstack/react-query').UseQueryResult<import('../types').InboundPendingSummaryResponse, Error>}
+ * @param {{ from: string, to: string, keyword?: string, page?: number, size?: number }} search
  */
-export function useInboundPendingSummary(params) {
+export function useInboundPendingSummary(search) {
   return useQuery({
-    queryKey: inboundQueryKeys.pendingSummary(params),
-    queryFn: () => fetchInboundPendingSummary(params),
-    placeholderData: (prev) => prev,
-    staleTime: 30 * 1000,
+    queryKey: ['inbound-pending-summary', search],
+    queryFn: () => fetchInboundPendingSummary(search),
+    enabled: !!search?.from && !!search?.to,
+    staleTime: 10 * 1000,
   });
 }

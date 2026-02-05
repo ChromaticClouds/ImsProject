@@ -53,12 +53,12 @@ export const SIDEBAR_PRODUCT_ITEMS = [
   },
   {
     title: '출고',
-    url: '#',
+    url: '/dashboard/outbounds/pending',
     Icon: ArrowBigUpDashIcon,
   },
   {
     title: '조정',
-    url: '#',
+    url: '/dashboard/adjust',
     Icon: ArrowDownUpIcon,
   },
 ];

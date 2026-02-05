@@ -15,23 +15,13 @@ import {
  * @property {string} [description]
  * @property {React.ReactNode} children
  * @property {GraphWidth} [width]
-<<<<<<< HEAD
- * @property {GraphHeight} staticHeight
-=======
  * @property {GraphHeight} [height]
->>>>>>> 1bf6c6195ec3873af9c36c4ea505b4a51c927dce
  */
 
 const WIDTH_CLASS = {
   third: 'col-span-10 lg:col-span-3 overflow-hidden overflow-x-auto',
   wide: 'col-span-10 lg:col-span-7 overflow-hidden overflow-x-auto',
   full: 'col-span-10 overflow-hidden overflow-x-auto',
-};
-
-const HEIGHT_CLASS = {
-  sm: 'h-40',
-  md: 'h-60',
-  lg: 'h-80',
 };
 
 const HEIGHT_CLASS = {

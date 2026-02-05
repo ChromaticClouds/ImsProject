@@ -7,14 +7,6 @@ import { useEffect, useState } from 'react';
 /** shadcn/ui 컴포넌트 */
 import { Button } from '@/components/ui/button';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -34,13 +26,13 @@ import {
 
 import { ProductPagination } from '@/features/product/components/product-pagination';
 import { useProductPagination } from '@/features/product/hooks/use-product-pagination';
-import { useProductSearch } from '@/features/product/hooks/use-product-serch';
 import { useProductFilter } from '@/features/product/hooks/use-product-filter';
 import { Input } from '@/components/ui/input';
 import { ProductDetailDialog } from '@/features/product/components/product-dialog';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts } from '@/features/product/api/product';
 import { ProductTable } from '@/features/product/components/product-table';
+import { useProductSearch } from '@/features/product/hooks/use-product-search.js';
 
 
 export const Product = () => {
@@ -49,7 +41,7 @@ export const Product = () => {
     queryFn: fetchProducts,
   });
 
-  const filter = useProductFilter(data ?? []);
+  const filter = useProductFilter(data?.content ?? []);
   
   const search = useProductSearch();
 

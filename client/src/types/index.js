@@ -91,3 +91,16 @@
  * @property {Vendor[]=} list
  * @property {PageInfo} pageInfo
  */
+
+/**
+ * @typedef {object} Product
+ * @property {number} id
+ * @property {string} name
+ * @property {string} type
+ * @property {string} brand
+ * @property {string} productCode
+ * @property {number} perCount
+ * @property {number} salePrice
+ * @property {number} volumn
+ * @property {string | null} imageUrl
+ */

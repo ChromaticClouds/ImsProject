@@ -15,6 +15,7 @@ import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
 import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
 import { Product } from '@/pages/dashboard/product';
+import { Notice } from '@/pages/dashboard/notice';
 
 import { AuthBootstrap } from '@/app/router/auth-bootstrap.jsx';
 import { Statistics } from '@/pages/dashboard/statistics.jsx';
@@ -22,6 +23,14 @@ import { VendorDetail } from '@/pages/vendor/vendor-detail.jsx';
 import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
 import { InboundPending } from '@/pages/inbound/inbound-pending.jsx';
 import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
+import { Todo } from '@/pages/dashboard/todo';
+
+/*
+ * Notice pages
+ */
+import { NoticeDetail } from '@/features/notice/pages/notice-detail'; // 상세 페이지 나중에 제거 할 수도 있음
+import { NoticeCreate } from '@/features/notice/pages/notice-create';
+import { NoticeEdit } from '@/features/notice/pages/notice-edit';
 
 export const router = createBrowserRouter([
   {
@@ -70,6 +79,17 @@ export const router = createBrowserRouter([
                   },
                 ],
               },
+              {
+                path: 'notice',
+                
+                children: [
+                  { index: true, element: <Notice />},
+                  { path: 'create', element: <NoticeCreate /> },
+                  { path: ':id', element: <NoticeDetail />},
+                  { path: ':id/edit', element: <NoticeEdit />},
+                ],
+              },
+              { path: 'todo', element: <Todo /> },
             ],
           },
         ],

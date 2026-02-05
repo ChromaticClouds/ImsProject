@@ -19,12 +19,7 @@ import {
 /**
  * @param {PaginationProps} props
  */
-export const NoticePagination = ({
-  currentPage,
-  totalPages,
-  setCurrentPage,
-}) => {
-  // 페이지가 0~1이면 페이징 UI 안 보여줌 (실무에서 많이 씀)
+export const TodoPagination = ({ currentPage, totalPages, setCurrentPage }) => {
   if (!totalPages || totalPages <= 1) return null;
 
   return (
@@ -48,12 +43,12 @@ export const NoticePagination = ({
             return (
               <PaginationItem key={page}>
                 <PaginationLink
+                  to='#'
                   isActive={page === currentPage}
                   onClick={(e) => {
                     e.preventDefault();
                     setCurrentPage(page);
                   }}
-                  to='#'
                 >
                   {page}
                 </PaginationLink>

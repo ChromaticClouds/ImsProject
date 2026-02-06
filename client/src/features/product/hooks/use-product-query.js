@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useProductView } from './use-product-view.js';
 import { useMemo } from 'react';
 
-export const useProductCondition = () => {
+export const useProductQuery = () => {
   const [params] = useSearchParams();
 
   const page = Number(params.get('page') ?? 0);

@@ -1,9 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useProductContext } from "@/features/product/providers/product-provider.jsx";
 import { MoreHorizontal } from "lucide-react";
 
-export const ProductTable = ({ paginatedList }) => {
+export const ProductTable = () => {
+  const { content } = useProductContext();
+
+  const paginatedList = content;
+
   return (
     <div className='rounded-md border'>
       <Table>

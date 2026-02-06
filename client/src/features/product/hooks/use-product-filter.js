@@ -12,13 +12,6 @@ export const useProductFilter = (products) => {
     위스키: true,
   });
 
-  // const [brandState, setBrandState] = useState(() =>
-  //   products.reduce((acc, p) => {
-  //     acc[p.brand] = true;
-  //     return acc;
-  //   }, {})
-  // );
-
   const [brandState, setBrandState] = useState({});
 
   useEffect(() => {

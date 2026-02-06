@@ -7,15 +7,16 @@ export const adjustProductSchema = z
     adjustCount: z
       .number('숫자만 입력해주세요')
       .int('정수만 입력 가능합니다')
-      .positive('조정 수량은 0보다 커야 합니다'),
+      .min(0, '조정 수량은 음수가 될 수 없습니다')
   })
-  .loose();
 
 export const adjustFormSchema = z.object({
   products: z
     .array(adjustProductSchema)
     .min(1, '조정할 품목을 최소 1개 이상 선택해주세요'),
-  type: z.enum(['PLUS', 'MINUSE']),
+  date: z
+    .date()
+    .max(new Date(), '미래 날짜는 선택할 수 없습니다'),
   memo: z
     .string()
     .trim()

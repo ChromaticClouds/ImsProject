@@ -1,10 +1,9 @@
 // @ts-check
 
-import { AppDateRangePicker } from '@/components/common/app-date-range-picker.jsx';
-import { Label } from '@/components/ui/label.js';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.js';
-import { useAdjustContext } from '@/features/adjust/providers/adjust-form-provider.jsx';
-import { useAdjustFormStore } from '@/features/adjust/stores/use-adjust-form-store.js';
+import { useAdjustContext } from '../providers/adjust-provider.jsx';
+import { AppDatePicker } from '@/components/common/app-date-picker.jsx';
+import React from 'react';
+import { FieldError } from '@/components/ui/field.js';
 
 export const AdjustPicker = () => {
   const form = useAdjustContext();
@@ -14,45 +13,19 @@ export const AdjustPicker = () => {
       <div className='flex gap-3 items-center'>
         <span>날짜선택</span>
         <form.Field name='date'>
-          {(field) => (
-            <AppDateRangePicker
-              value={field.state.value}
-              onChange={(e) =>
-                field.handleChange(
-                  e.from && e.to
-                    ? { from: e.from, to: e.to }
-                    : field.state.value,
-                )
-              }
-            />
-          )}
-        </form.Field>
-      </div>
-      <div className='flex gap-3 items-center'>
-        <span>조정 종류</span>
-        <form.Field name='type'>
-          {(field) => (
-            <RadioGroup
-              value={field.state.value}
-              className='flex gap-24'
-              onValueChange={field.handleChange}
-            >
-              <div className='flex items-center gap-3'>
-                <RadioGroupItem
-                  value='PLUS'
-                  id='plus'
+          {(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <React.Fragment>
+                <AppDatePicker
+                  date={field.state.value}
+                  setDate={(e) => field.handleChange(e)}
                 />
-                <Label htmlFor='plus'>증가</Label>
-              </div>
-              <div className='flex items-center gap-3'>
-                <RadioGroupItem
-                  value='MINUS'
-                  id='minus'
-                />
-                <Label htmlFor='minus'>감소</Label>
-              </div>
-            </RadioGroup>
-          )}
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </React.Fragment>
+            );
+          }}
         </form.Field>
       </div>
     </section>

@@ -1,8 +1,8 @@
 // @ts-check
 
-import { useAdjustForm } from '@/features/adjust/hooks/use-adjust-form.js';
 import { useContext } from 'react';
 import { createContext } from 'react';
+import { useAdjustForm } from './use-adjust-form.js';
 
 /**
  * @type {React.Context<ReturnType<typeof useAdjustForm>>}
@@ -11,14 +11,14 @@ const AdjustContext = createContext(null);
 
 export const useAdjustContext = () => {
   const ctx = useContext(AdjustContext);
-  if (!ctx) throw new Error('AdjustContext is not reached');
+  if (!ctx) throw new Error('AdjustContext is not provided');
   return ctx;
-}
+};
 
 /**
  * @param {React.PropsWithChildren} props
  */
-export const AdjustFormProvider = ({ children }) => {
+export const AdjustProvider = ({ children }) => {
   const form = useAdjustForm();
 
   return (

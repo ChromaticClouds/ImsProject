@@ -106,6 +106,14 @@
  */
 
 /**
+ * @param {object} SearchCondition
+ * @param {string} page
+ * @param {string} search
+ * @param {string} type
+ * @param {string} brand 
+ */
+
+/**
  * @typedef {object} ProductSuggest
  * @property {number} id
  * @property {number} productId
@@ -119,14 +127,15 @@
  */
 
 /**
+ * 재고 조정 시 목록에 이용되는 스키마
  * @typedef {object} AdjustItem
  * @property {number} id
  * @property {string} name
  * @property {string} brand
  * @property {string} type
- * @property {string} imageUrl
+ * @property {number} currentStock
  * @property {number} purchasePrice
  * @property {number} salePrice
- * @property {number} currentStock
+ * @property {string} imageUrl
  * @property {number} adjustCount
  */

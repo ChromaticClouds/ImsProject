@@ -1,10 +1,8 @@
 // @ts-check
 
-import { Filter, MoreHorizontal, Package2 } from 'lucide-react';
-
-import { useEffect, useState } from 'react';
-
-/** shadcn/ui 컴포넌트 */
+/**
+ * Components
+ */
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardHeader,
@@ -23,44 +20,30 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card';
-
 import { ProductPagination } from '@/features/product/components/product-pagination';
-import { useProductPagination } from '@/features/product/hooks/use-product-pagination';
-import { useProductFilter } from '@/features/product/hooks/use-product-filter';
 import { Input } from '@/components/ui/input';
 import { ProductDetailDialog } from '@/features/product/components/product-dialog';
-import { useQuery } from '@tanstack/react-query';
-import { fetchProducts } from '@/features/product/api/product';
 import { ProductTable } from '@/features/product/components/product-table';
-import { useProductSearch } from '@/features/product/hooks/use-product-search.js';
 
+/**
+ * Assets
+ */
+import { Filter, Package2 } from 'lucide-react';
+import { useProductCondition } from '@/features/product/hooks/use-product-condition.js';
+import { useMemo } from 'react';
 
 export const Product = () => {
-  const { data } = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchProducts,
-  });
+  const { content, pageResponse } = useProductCondition();
 
-  const filter = useProductFilter(data?.content ?? []);
-  
-  const search = useProductSearch();
+  const productType = useMemo(
+    () => [...new Set(content.map((c) => c.type))],
+    [content]
+  );
 
-  const searchedList = search.applySearch(filter.filteredList);
-  const pagination = useProductPagination(searchedList);
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const {
-    setFilters,
-    setBrandState,
-    setAllBrands,
-    paginatedList,
-    filters,
-    brandState,
-    currentPage,
-    setCurrentPage,
-    totalPages,
-  } = pagination;
+  const productBrand = useMemo(
+    () => [...new Set(content.map((c) => c.brand))],
+    [content]
+  )
 
   return (
     <div className='p-6 max-w-6xl mx-auto space-y-6'>
@@ -94,7 +77,7 @@ export const Product = () => {
               >
                 <DropdownMenuLabel>카테고리 선택</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.keys(filter.filters).map((cat) => (
+                {/* {Object.keys(filter.filters).map((cat) => (
                   <DropdownMenuCheckboxItem
                     key={cat}
                     checked={filter.filters[cat]}
@@ -103,6 +86,15 @@ export const Product = () => {
                     }
                   >
                     {cat}
+                  </DropdownMenuCheckboxItem>
+                ))} */}
+                {productType.entries().map(([type]) => (
+                  <DropdownMenuCheckboxItem
+                    key={type}
+                    checked={productType[type]}
+                    onCheckedChange={(checked) => productType.}
+                  >
+
                   </DropdownMenuCheckboxItem>
                 ))}
               </DropdownMenuContent>

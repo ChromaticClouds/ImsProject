@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button.js';
 import { Field, FieldError } from '@/components/ui/field.js';
 import {
   InputGroup,
@@ -8,10 +7,10 @@ import {
 } from '@/components/ui/input-group.js';
 import { FileCodeIcon } from 'lucide-react';
 import { useAdjustContext } from '../providers/adjust-provider.jsx';
-import { Spinner } from '@/components/ui/spinner.js';
+import { AdjustStatementDialog } from './adjust-statement-dialog.jsx';
 
-export const AdjustAction = () => {
-  const form = useAdjustContext();
+export const AdjustBottomSection = () => {
+  const { form } = useAdjustContext();
 
   return (
     <Field className='flex flex-col gap-6'>
@@ -39,22 +38,8 @@ export const AdjustAction = () => {
           );
         }}
       </form.Field>
-
-      <form.Subscribe
-        selector={(s) => [s.canSubmit, s.isTouched, s.isSubmitting]}
-      >
-        {([canSubmit, isTouched, isSubmitting]) => (
-          <div className='flex justify-end'>
-            <Button
-              className='w-24'
-              onClick={form.handleSubmit}
-              disabled={!isTouched || !canSubmit || isSubmitting}
-            >
-              {isSubmitting ? <Spinner /> : '조정 하기'}
-            </Button>
-          </div>
-        )}
-      </form.Subscribe>
+      
+      <AdjustStatementDialog />
     </Field>
   );
 };

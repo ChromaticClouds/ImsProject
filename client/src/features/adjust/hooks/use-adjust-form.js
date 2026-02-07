@@ -1,13 +1,29 @@
+/**
+ * Hooks
+ */
 import { useForm } from '@tanstack/react-form';
+
+/**
+ * Schema
+ */
 import { adjustFormSchema } from '../schemas/adjust-form-schema.js';
+
+/**
+ * Utils
+ */
+import { toast } from 'sonner';
+
+/**
+ * Api
+ */
 import { adjustProducts } from '../api/index.js';
 import { HTTPError } from 'ky';
-import { toast } from 'sonner';
 import { ERROR } from '@/services/error.js';
 
 /**
  * @typedef {object} DefaultValueState
  * @property {AdjustItem[]} products
+ * @property {'PLUS' | 'MINUS'} type
  * @property {Date} date
  * @property {string} memo
  */
@@ -15,6 +31,7 @@ import { ERROR } from '@/services/error.js';
 /** @type {DefaultValueState} */
 const defaultValues = {
   products: [],
+  type: 'PLUS',
   date: new Date(),
   memo: '',
 };
@@ -30,10 +47,12 @@ export const useAdjustForm = () => {
         const response = await adjustProducts(value);
         if (response.success) toast.success(response.message);
         form.reset();
-        return form
+        return form;
       } catch (err) {
         if (err instanceof HTTPError) {
-          return toast.error(await err.response.json()?.message);
+          return toast.error(
+            (await err.response.json()?.message) || ERROR.SERVER_ERROR,
+          );
         }
 
         toast.error(ERROR.SERVER_ERROR);

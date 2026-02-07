@@ -28,10 +28,10 @@ import { useAdjustContext } from '../providers/adjust-provider.jsx';
 import { addOrIncreaseProduct } from '../healper/index.js';
 
 export const AdjustProductSearch = () => {
-  const { data } = useProductSearch();
-  const { isOpen, setIsOpen, keyword, setKeyword } = useProductSearchStore();
+  const { input, setInput } = useProductSearch();
+  const { isOpen, setIsOpen } = useProductSearchStore();
 
-  const form = useAdjustContext();
+  const { form, products = [] } = useAdjustContext();
 
   return (
     <div className='relative w-full max-w-120'>
@@ -45,8 +45,8 @@ export const AdjustProductSearch = () => {
               <InputGroupInput
                 placeholder='제품 검색...'
                 size={48}
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
                 className='pr-10'
               />
               <InputGroupAddon>
@@ -62,8 +62,8 @@ export const AdjustProductSearch = () => {
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
           <div className='max-h-80 overflow-y-auto'>
-            {data?.data?.length ? (
-              data.data.map((product) => (
+            {products.length > 0 ? (
+              products.map((product) => (
                 <button
                   key={product.id}
                   type='button'

@@ -1,12 +1,13 @@
 package com.example.ims.features.product.repository;
 
 import com.example.ims.features.product.dto.ProductSuggest;
-import com.example.ims.features.product.entity.Product;
+import com.example.ims.features.product.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ProductRepository
@@ -29,4 +30,6 @@ public interface ProductRepository
     ORDER BY p.name
     """)
     List<ProductSuggest> suggest(@Param("search") String search);
+
+    List<Product> findAllByIdIn(Collection<Long> ids);
 }

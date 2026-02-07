@@ -1,7 +1,7 @@
 package com.example.ims.features.product.service;
 
 import com.example.ims.features.product.dto.ProductSuggest;
-import com.example.ims.features.product.entity.Product;
+import com.example.ims.features.product.entities.Product;
 import com.example.ims.features.product.repository.ProductRepository;
 import com.example.ims.features.product.repository.ProductSpecification;
 import com.example.ims.global.dto.PageResponse;

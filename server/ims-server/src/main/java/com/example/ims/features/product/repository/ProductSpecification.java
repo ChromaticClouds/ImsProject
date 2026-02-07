@@ -1,6 +1,6 @@
 package com.example.ims.features.product.repository;
 
-import com.example.ims.features.product.entity.Product;
+import com.example.ims.features.product.entities.Product;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ProductSpecification {

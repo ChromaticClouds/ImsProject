@@ -1,5 +1,6 @@
-package com.example.ims.features.product.entity;
+package com.example.ims.features.product.entities;
 
+import com.example.ims.features.stock.entities.Stock;
 import com.example.ims.features.vendor.entities.VendorItem;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,8 +28,8 @@ public class Product {
 
     private String brand;
 
-    @Column(name = "volumn")
-    private Integer volumn;
+    @Column(name = "volume")
+    private Integer volume;
 
     @Column(name = "per_count")
     private Integer perCount;

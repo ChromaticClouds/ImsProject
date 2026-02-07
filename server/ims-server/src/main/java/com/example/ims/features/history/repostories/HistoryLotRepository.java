@@ -1,4 +1,6 @@
-package com.example.ims.features.adjust.services;
+package com.example.ims.features.history.repostories;
 
-interface HistoryLotRepository extends org.springframework.data.jpa.repository.JpaRepository<com.example.ims.features.history.entities.HistoryLot, java.lang.Long> {
-}
+import com.example.ims.features.history.entities.HistoryLot;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface HistoryLotRepository extends JpaRepository<HistoryLot, Long> {}

@@ -12,9 +12,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
-  mongodb:
-    uri: ${MONGO_URI}
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
 
   data:
     redis:

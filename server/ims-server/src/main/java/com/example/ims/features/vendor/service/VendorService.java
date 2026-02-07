@@ -41,8 +41,6 @@ public class VendorService {
         
         List<VendorResponse> list =
         	mapper.findVendorList(type, keyword, PAGE_SIZE, offset);
-       
-        
         
         return VendorListResponse.builder()
             .list(list)

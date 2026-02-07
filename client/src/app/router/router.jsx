@@ -31,23 +31,23 @@ import { Todo } from '@/pages/dashboard/todo';
 /*
  * Notice pages
  */
-import { NoticeDetail } from '@/features/notice/pages/notice-detail'; 
+import { NoticeDetail } from '@/features/notice/pages/notice-detail';
 import { NoticeCreate } from '@/features/notice/pages/notice-create';
 import { NoticeEdit } from '@/features/notice/pages/notice-edit';
 import { InboundPendingEdit } from '@/pages/inbound/inbound-pending-edit.jsx';
 import { InboundOverview } from '@/pages/inbound/inbound-overview.jsx';
 import { Adjust } from '@/pages/dashboard/adjust';
 
-/* 
+/*
  * Todo pages
  */
 import { TodoCreate } from '@/features/todo/pages/todo-create';
 import { TodoDetail } from '@/features/todo/pages/todo-detail';
 import { TodoEdit } from '@/features/todo/pages/todo-edit';
 
-
 import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';
 import { OutboundRegister } from '@/pages/outbound/outbound-regiester.jsx';
+import { ReceiveOrder } from '@/pages/dashboard/receive-order/receive-order.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -102,8 +102,6 @@ export const router = createBrowserRouter([
                   },
                 ],
               },
-              { path: 'adjust', element: <Adjust /> },
-              { path: 'statistics', element: <Statistics /> },
               {
                 path: 'notice',
 
@@ -116,20 +114,23 @@ export const router = createBrowserRouter([
               },
 
               {
-                path : 'todo',
-                children:[
-                  {index:true, element: <Todo />},
-                  {path: 'create', element : <TodoCreate />},
-                  {path: ':id', element : <TodoDetail />},
-                  {path: ':id/edit', element : <TodoEdit />},
+                path: 'todo',
+                children: [
+                  { index: true, element: <Todo /> },
+                  { path: 'create', element: <TodoCreate /> },
+                  { path: ':id', element: <TodoDetail /> },
+                  { path: ':id/edit', element: <TodoEdit /> },
                 ],
               },
-             
+
               {
                 path: 'outbounds',
                 children: [
                   { path: 'pending', element: <OutboundPending /> },
-                  { path: 'register/:orderNumber', element: <OutboundRegister /> },
+                  {
+                    path: 'register/:orderNumber',
+                    element: <OutboundRegister />,
+                  },
                 ],
               },
               {
@@ -141,10 +142,13 @@ export const router = createBrowserRouter([
                 element: <Statistics />,
               },
               {
-                path:'purchase-order',
-                element:<PurchaseOrder />,
+                path: 'purchase-order',
+                element: <PurchaseOrder />,
+              },
+              {
+                path: 'receive-order',
+                element: <ReceiveOrder />
               }
-              
             ],
           },
         ],

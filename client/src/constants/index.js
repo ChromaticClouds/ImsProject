@@ -48,7 +48,7 @@ export const SIDEBAR_PRODUCT_ITEMS = [
   },
   {
     title: '수주',
-    url: '#',
+    url: '/dashboard/receive-order',
     Icon: FileInputIcon,
   },
   {

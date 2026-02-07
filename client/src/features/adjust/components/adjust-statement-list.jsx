@@ -35,14 +35,14 @@ export const AdjustStatementList = () => {
                   type === 'PLUS' ? 'text-green-300' : 'text-red-300'
                 }`}
               >
-                {type === 'PLUS' ? '총 입고' : '총 출고'}{' '}
+                {type === 'PLUS' ? '총 입고 ' : '총 출고 '}
                 {type === 'PLUS' ? '+' : '-'}
                 {totalAdjustCount}
               </div>
             </div>
 
             {/* 리스트 */}
-            <div className='max-h-[420px] overflow-y-auto'>
+            <div className='max-h-100 overflow-y-auto'>
               {products.map((item) => (
                 <div
                   key={item.id}

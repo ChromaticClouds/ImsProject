@@ -12,13 +12,16 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog.js';
 import { AdjustStatementList } from './adjust-statement-list.jsx';
+import { useState } from 'react';
 
 export const AdjustStatementDialog = () => {
-  const { form, products } = useAdjustContext();
+  const [open, setOpen] = useState(false);
+
+  const { form } = useAdjustContext();
 
   return (
-    <Dialog>
-      <DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <form.Subscribe selector={(s) => [s.canSubmit, s.isTouched]}>
           {([canSubmit, isTouched]) => (
             <div className='flex justify-end'>
@@ -44,8 +47,10 @@ export const AdjustStatementDialog = () => {
           {([isSubmitting]) => (
             <div className='flex justify-end pt-4'>
               <Button
-                className='w-28'
-                onClick={form.handleSubmit}
+                onClick={() => {
+                  form.handleSubmit();
+                  setOpen(false);
+                }}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? <Spinner /> : '조정 완료'}

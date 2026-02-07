@@ -2,6 +2,7 @@ package com.example.ims.features.adjust.services;
 
 import com.example.ims.features.adjust.dto.AdjustItem;
 import com.example.ims.features.adjust.dto.AdjustRequest;
+import com.example.ims.features.adjust.enums.AdjustType;
 import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.history.entities.History;
@@ -68,13 +69,14 @@ public class AdjustService {
             Stock stock = stockMap.get(item.id());
 
             if (stock == null) throw new StockNotFoundException();
+            if (item.adjustCount() < 0) throw new StockEmptyException();
 
             int before = stock.getCount();
-            int after = item.adjustCount();
+            int after = request.type() == AdjustType.PLUS ?
+                item.adjustCount()
+                : -item.adjustCount();
 
-            if (after < 0) throw new StockEmptyException();
-
-            stock.setCount(after);
+            stock.setCount(before + after);
 
             VendorItem vendorItem = vendorItemRepository
                 .findByProductId(stock.getProduct().getId())
@@ -85,7 +87,7 @@ public class AdjustService {
                 .vendorItem(vendorItem)
                 .product(stock.getProduct())
                 .beforeCount(before)
-                .afterCount(after)
+                .afterCount(before + after)
                 .createdAt(LocalDateTime.now())
                 .build();
 

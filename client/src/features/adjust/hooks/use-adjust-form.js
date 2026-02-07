@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { adjustProducts } from '../api/index.js';
 import { HTTPError } from 'ky';
 import { ERROR } from '@/services/error.js';
+import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * @typedef {object} DefaultValueState
@@ -37,6 +38,8 @@ const defaultValues = {
 };
 
 export const useAdjustForm = () => {
+  const queryClient = useQueryClient();
+
   const form = useForm({
     defaultValues,
     validators: {
@@ -46,6 +49,11 @@ export const useAdjustForm = () => {
       try {
         const response = await adjustProducts(value);
         if (response.success) toast.success(response.message);
+
+        queryClient.invalidateQueries({
+          queryKey: ['adjust-products'],
+        });
+
         form.reset();
         return form;
       } catch (err) {

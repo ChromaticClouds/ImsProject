@@ -15,5 +15,5 @@ public class PendingDetailResponse {
     private LocalDate receiveDate;
     private Long vendorId;
     private String vendorName;
-    private List<PendingItemRow> items;
+    private List<InboundItemRow> items;
 }

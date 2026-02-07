@@ -20,11 +20,13 @@ import { Statistics } from '@/pages/dashboard/statistics.jsx';
 import { VendorDetail } from '@/pages/vendor/vendor-detail.jsx';
 import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
 
-// ✅ inbounds
 import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
 import { InboundPendingEdit } from '@/pages/inbound/inbound-pending-edit.jsx';
 import { InboundOverview } from '@/pages/inbound/inbound-overview.jsx';
 import { Adjust } from '@/pages/dashboard/adjust';
+
+import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';
+import { OutboundRegister } from '@/pages/outbound/outbound-regiester.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -76,8 +78,9 @@ export const router = createBrowserRouter([
               {
                 path: 'outbounds',
                 children: [
-
-                ]
+                  { path: 'pending', element: <OutboundPending /> },
+                  { path: 'register/:orderNumber', element: <OutboundRegister /> },
+                ],
               },
               {
                 path: 'adjust',

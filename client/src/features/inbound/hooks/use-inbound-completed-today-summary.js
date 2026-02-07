@@ -17,7 +17,8 @@ export function useInboundCompletedTodaySummary(params) {
   return useQuery({
     queryKey: inboundQueryKeys.completedTodaySummary(safe),
     queryFn: () => fetchInboundCompletedTodaySummary(safe),
-    staleTime: 10 * 1000,
+    staleTime: 0,
+    refetchOnMount: 'always',
     placeholderData: (prev) => prev,
   });
 }

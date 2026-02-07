@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.util.StringUtils;
 
-import com.example.ims.features.inbound.dto.InboundPendingSummaryParam;
+import com.example.ims.features.inbound.dto.InboundSummaryParam;
 
 public class InboundQuerySqlProvider {
 
@@ -56,7 +56,7 @@ public class InboundQuerySqlProvider {
     }
 
     // -------------------------
-    // Completed List (범위용: 기존)
+    // Completed List (범위용)
     // -------------------------
     public String selectCompletedList(Map<String, Object> p) {
         String keyword = (String) p.get("keyword");
@@ -101,7 +101,6 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
-
     public String selectOrderDetail() {
         return new SQL(){{
             SELECT(
@@ -119,7 +118,6 @@ public class InboundQuerySqlProvider {
             WHERE("o.id = #{orderId}");
         }}.toString();
     }
-
 
     public String markInboundPending() {
         return new SQL(){{
@@ -147,8 +145,7 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
-
-    public String selectPendingSummary(InboundPendingSummaryParam p) {
+    public String selectPendingSummary(InboundSummaryParam p) {
         String keyword = p.getKeyword();
 
         StringBuilder sb = new StringBuilder();
@@ -189,7 +186,7 @@ public class InboundQuerySqlProvider {
         return sb.toString();
     }
 
-    public String countPendingSummary(InboundPendingSummaryParam p) {
+    public String countPendingSummary(InboundSummaryParam p) {
         String keyword = p.getKeyword();
 
         StringBuilder sb = new StringBuilder();
@@ -223,7 +220,6 @@ public class InboundQuerySqlProvider {
         return sb.toString();
     }
 
-
     public String selectPendingItemsByOrderNumber(Map<String, Object> params) {
         return new SQL() {{
             SELECT(
@@ -247,7 +243,6 @@ public class InboundQuerySqlProvider {
             ORDER_BY("o.id ASC");
         }}.toString();
     }
-
 
     public String selectCompletedTodaySummary(Map<String, Object> p) {
         String keyword = (String) p.get("keyword");
@@ -348,7 +343,6 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
-
     public String selectPendingDetailHeader() {
         return new SQL(){{
             SELECT(
@@ -383,7 +377,7 @@ public class InboundQuerySqlProvider {
             WHERE("status = 'INBOUND_PENDING'");
         }}.toString();
     }
-    
+
     public String selectOrdersForInboundCompleteByOrderNumber(Map<String, Object> p) {
         return """
             SELECT
@@ -394,10 +388,9 @@ public class InboundQuerySqlProvider {
             WHERE o.order_number = #{orderNumber}
               AND o.status = 'INBOUND_PENDING'
             ORDER BY o.id ASC
-            """;
+        """;
     }
 
-    // 2) 해당 vendor_item의 최신 재고
     public String selectLatestAfterCountForUpdate(Map<String, Object> p) {
         return """
             SELECT h.after_count
@@ -406,20 +399,19 @@ public class InboundQuerySqlProvider {
             ORDER BY h.created_at DESC, h.id DESC
             LIMIT 1
             FOR UPDATE
-            """;
+        """;
     }
 
-    // 3) history insert
+    // ✅ history insert (새 스키마)
     public String insertHistoryRow() {
         return """
             INSERT INTO history
-              (status, user_id, vendor_item_id, before_count, after_count, created_at)
+              (lot_id, vendor_item_id, product_id, before_count, after_count, created_at)
             VALUES
-              (#{status}, #{userId}, #{vendorItemId}, #{beforeCount}, #{afterCount}, NOW())
-            """;
+              (#{lotId}, #{vendorItemId}, #{productId}, #{beforeCount}, #{afterCount}, NOW())
+        """;
     }
 
-    // 4) 주문 상태 완료
     public String markInboundCompleteByOrderNumber() {
         return """
             UPDATE `order`
@@ -427,31 +419,25 @@ public class InboundQuerySqlProvider {
                 order_date = CURDATE()
             WHERE order_number = #{orderNumber}
               AND status = 'INBOUND_PENDING'
-            """;
+        """;
     }
-    
-    // 5) stock upsert (product_id 기준 누적) --> 이건 잘 몰랐음. upsert가 일부러 충돌시켜서 product_id가 같으면 update 아니면 insert
+
     public String upsertStockByProductId(Map<String, Object> p) {
-        // delta = afterCount - beforeCount (입고면 양수)
         return """
             INSERT INTO stock (product_id, `count`)
             VALUES (#{productId}, #{delta})
             ON DUPLICATE KEY UPDATE `count` = `count` + VALUES(`count`)
-            """;
+        """;
     }
-    
+
     public String selectProductIdByVendorItemId(Map<String, Object> p) {
         return """
             SELECT vi.product_id
             FROM vendor_item vi
             WHERE vi.id = #{vendorItemId}
-            """;
+        """;
     }
-    
-    
-    
-    
-    
 }
+
 
 

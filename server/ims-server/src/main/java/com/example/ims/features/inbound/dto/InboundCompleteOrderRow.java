@@ -7,6 +7,6 @@ public class InboundCompleteOrderRow {
     private Long orderId;
     private Long userId;
     private Long vendorItemId;
-    private Integer orderQty; // o.`count`
-    
+    private Long productId;
+    private Integer orderQty;
 }

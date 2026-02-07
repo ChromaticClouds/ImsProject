@@ -61,6 +61,7 @@ export const AppSidebar = () => {
             <SidebarMenu>
               {SIDEBAR_PRODUCT_ITEMS.map((item) => (
                 <AppSidebarLink
+
                   key={item.title}
                   {...item}
                 />

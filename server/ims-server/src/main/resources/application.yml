@@ -11,13 +11,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         jdbc:
           batch_size: 100
         order_inserts: true
         order_updates: true
+        default_batch_fetch_size: 100
 
   data:
     redis:

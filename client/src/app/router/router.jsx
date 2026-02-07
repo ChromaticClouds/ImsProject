@@ -102,6 +102,8 @@ export const router = createBrowserRouter([
                   },
                 ],
               },
+              { path: 'adjust', element: <Adjust /> },
+              { path: 'statistics', element: <Statistics /> },
               {
                 path: 'notice',
 

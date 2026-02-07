@@ -25,6 +25,7 @@ export const App = () => {
           <Toaster
             theme='system'
             position='top-center'
+            richColors
           />
           <Outlet />
         </ThemeProvider>

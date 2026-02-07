@@ -1,8 +1,4 @@
 // @ts-check
-
-/**
- * Components
- */
 import { Input } from '@/components/ui/input.js';
 import {
   Table,
@@ -12,16 +8,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table.js';
-
-/**
- * Assets
- */
 import { CircleXIcon } from 'lucide-react';
-
-/**
- * Hooks
- */
-import { useAdjustListStore } from '@/features/product/stores/use-adjust-list-store.js';
+import { useAdjustContext } from '../providers/adjust-provider.jsx';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@/components/ui/tooltip.js';
+import { FieldError } from '@/components/ui/field.js';
 
 const TABLE_HEADER = [
   '',
@@ -36,76 +30,114 @@ const TABLE_HEADER = [
 ];
 
 export const AdjustList = () => {
-  const { products } = useAdjustListStore();
+  const form = useAdjustContext();
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow className='bg-border hover:bg-muted'>
-          {TABLE_HEADER.map((v, i) => (
-            <TableHead
-              key={i}
-              className='text-center'
-            >
-              {v}
-            </TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
+    <form.Field name='products'>
+      {(productsField) => (
+        <Table>
+          <TableHeader>
+            <TableRow className='bg-border hover:bg-muted'>
+              {TABLE_HEADER.map((v, i) => (
+                <TableHead
+                  key={i}
+                  className='text-center'
+                >
+                  {v}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
 
-      <TableBody>
-        {products?.map((row) => (
-          <TableRow key={row.id}>
-            {/* 이미지 */}
-            <TableCell>
-              <div className='rounded-lg w-10 h-10 overflow-hidden'>
-                <img
-                  src={row.imageUrl}
-                  className='w-full h-full object-cover'
-                />
-              </div>
-            </TableCell>
+          <TableBody>
+            {productsField.state.value.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={9}
+                  className='h-24 text-center text-muted-foreground'
+                >
+                  품목 검색 후 등록해주세요.
+                </TableCell>
+              </TableRow>
+            ) : (
+              productsField.state.value.map((row, index) => (
+                <TableRow key={row.id}>
+                  {/* 이미지 */}
+                  <TableCell>
+                    <div className='rounded-lg w-10 h-10 overflow-hidden'>
+                      <img
+                        src={row.imageUrl}
+                        className='w-full h-full object-cover'
+                      />
+                    </div>
+                  </TableCell>
 
-            {/* 제품명 */}
-            <TableCell className='text-center'>{row.name}</TableCell>
+                  <TableCell className='text-center'>{row.name}</TableCell>
+                  <TableCell className='text-center'>
+                    {row.purchasePrice}
+                  </TableCell>
+                  <TableCell className='text-center'>
+                    {row.salePrice}원
+                  </TableCell>
+                  <TableCell className='text-center'>{row.brand}</TableCell>
+                  <TableCell className='text-center'>{row.type}</TableCell>
+                  <TableCell className='text-center'>
+                    {row.currentStock}
+                  </TableCell>
 
-            {/* 구매가 */}
-            <TableCell className='text-center'>
-              {row.purchasePrice}
-            </TableCell>
+                  <form.Field name={`products[${index}].adjustCount`}>
+                    {(countField) => {
+                      const isInvalid =
+                        countField.state.meta.isTouched &&
+                        !countField.state.meta.isValid;
 
-            {/* 판매가 */}
-            <TableCell className='text-center'>
-              {row.salePrice}원
-            </TableCell>
+                      return (
+                        <TableCell className='text-center'>
+                          <Tooltip open>
+                            <TooltipTrigger asChild>
+                              <Input
+                                value={countField.state.value ?? ''}
+                                onChange={(e) => {
+                                  countField.handleChange(
+                                    Number(e.target.value) || 0,
+                                  );
+                                }}
+                                aria-invalid={isInvalid}
+                                className='w-20 text-center'
+                              />
+                            </TooltipTrigger>
 
-            {/* 브랜드 */}
-            <TableCell className='text-center'>{row.brand}</TableCell>
+                            {isInvalid && (
+                              <TooltipContent className='bg-muted'>
+                                <FieldError
+                                  errors={countField.state.meta.errors}
+                                />
+                              </TooltipContent>
+                            )}
+                          </Tooltip>
+                        </TableCell>
+                      );
+                    }}
+                  </form.Field>
 
-            {/* 주종 */}
-            <TableCell className='text-center'>{row.type}</TableCell>
-
-            {/* 현재 재고 */}
-            <TableCell className='text-center'>{row.currentStock}</TableCell>
-
-            {/* 조정 수량 입력 */}
-            <TableCell className='text-center'>
-              <Input
-                defaultValue={row.adjustCount}
-                className='w-20 text-center'
-              />
-            </TableCell>
-
-            {/* 결과 재고 (계산 컬럼) */}
-            <TableCell className='text-center font-semibold'>
-              <CircleXIcon
-                size={20}
-                className='text-destructive cursor-pointer'
-              />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                  {/* 삭제 */}
+                  <TableCell className='text-center font-semibold'>
+                    <CircleXIcon
+                      size={20}
+                      className='text-destructive cursor-pointer'
+                      onClick={() =>
+                        productsField.handleChange((prev) =>
+                          prev.filter((_, i) => i !== index),
+                        )
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      )}
+    </form.Field>
   );
 };

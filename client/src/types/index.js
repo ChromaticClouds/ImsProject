@@ -93,6 +93,14 @@
  */
 
 /**
+ * @typedef {object} SearchCondition
+ * @property {string[]} brand
+ * @property {string[]} type
+ * @property {number} page
+ * @property {string} search
+ */
+
+/**
  * @typedef {object} Product
  * @property {number} id
  * @property {string} name
@@ -103,6 +111,14 @@
  * @property {number} salePrice
  * @property {number} volumn
  * @property {string | null} imageUrl
+ */
+
+/**
+ * @param {object} SearchCondition
+ * @param {string} page
+ * @param {string} search
+ * @param {string} type
+ * @param {string} brand 
  */
 
 /**
@@ -119,15 +135,16 @@
  */
 
 /**
+ * 재고 조정 시 목록에 이용되는 스키마
  * @typedef {object} AdjustItem
  * @property {number} id
  * @property {string} name
  * @property {string} brand
  * @property {string} type
- * @property {string} imageUrl
+ * @property {number} currentStock
  * @property {number} purchasePrice
  * @property {number} salePrice
- * @property {number} currentStock
+ * @property {string} imageUrl
  * @property {number} adjustCount
  */
 
@@ -153,3 +170,12 @@
  * @property {number} sellerVendorId   - 판매 거래처 ID
  */
 
+/*
+ * @typedef {'SOJU' | 'WHISKEY' | 'LIQUOR' | 'TRADITIONAL' | 'KAOLIANG_LIQUOR'} BrandCategory
+ */
+
+/**
+ * @typedef {object} CategoriesType
+ * @property {string[]} types
+ * @property {BrandCategory[]} brands
+ */

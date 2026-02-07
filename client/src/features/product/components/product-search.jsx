@@ -1,19 +1,40 @@
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+// @ts-check
 
 /**
- * @param {{ keyword: string, onChange: () => void }} props
+ * Components
  */
-export const ProductSearch = ({ keyword, onChange }) => {
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@/components/ui/input-group.js';
+
+/**
+ * Assets
+ */
+import { SearchIcon } from 'lucide-react';
+
+/**
+ * Hooks
+ */
+import { useProductSearch } from '../hooks/use-product-search.js';
+
+export const ProductSearch = () => {
+  const { input, setInput } = useProductSearch();
+
   return (
-    <div className="relative w-64">
-      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-      <Input
-        placeholder="품목명 / 코드 / 브랜드 검색"
-        value={keyword}
-        onChange={(e) => onChange(e.target.value)}
-        className="pl-8"
-      />
+    <div className='w-full flex justify-end'>
+      <InputGroup className='w-80'>
+        <InputGroupInput
+          placeholder='품목명 / 코드 / 브랜드 검색'
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className='pl-8'
+        />
+        <InputGroupAddon>
+          <SearchIcon />
+        </InputGroupAddon>
+      </InputGroup>
     </div>
   );
 };

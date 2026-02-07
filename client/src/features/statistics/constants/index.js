@@ -7,7 +7,6 @@ export const inboundOutboundByItemMock = [
   { item: '음료수', inbound: 890, outbound: 760 },
 ];
 
-
 export const inventoryTurnoverTrendMock = [
   { period: '1주차', turnover: 0.42 },
   { period: '2주차', turnover: 0.53 },
@@ -25,12 +24,12 @@ export const partnerRankMock = [
 ];
 
 export const stockShareMock = [
-  { item: '맥주', stock: 320 },
-  { item: '소주', stock: 280 },
-  { item: '와인', stock: 120 },
-  { item: '기타', stock: 90 },
-  { item: '막걸리', stock: 150 },
-  { item: '음료수', stock: 210 },
+  { item: '맥주', stock: 320, fill: 'var(--chart-1)' },
+  { item: '소주', stock: 280, fill: 'var(--chart-2)' },
+  { item: '와인', stock: 120, fill: 'var(--chart-3)' },
+  { item: '기타', stock: 90, fill: 'var(--chart-4)' },
+  { item: '막걸리', stock: 150, fill: 'var(--chart-5)' },
+  { item: '음료수', stock: 210, fill: 'var(--foreground)' },
 ];
 
 // lead-time.mock.js

@@ -21,17 +21,27 @@ import {
  */
 import { SearchIcon } from 'lucide-react';
 import { EmailDialog } from '@/features/admin/components/email-dialog.jsx';
-import { useUserList } from '@/features/admin/components/user-provider.jsx';
+import { useUserList } from '@/features/admin/providers/user-provider.jsx';
 import { useDebounce } from '@/hooks/use-debounce.js';
+import { useSearchParams } from 'react-router-dom';
 
 export const UserListHeader = () => {
+  const [, setSearchParams] = useSearchParams();
+
   const { count, setSearch } = useUserList();
   const [input, setInput] = React.useState('');
   const debounced = useDebounce(input, 500);
 
   React.useEffect(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', '1');
+      next.set('search', debounced);
+      return next;
+    }, { replace: true });
+
     setSearch(debounced);
-  }, [debounced, setSearch]);
+  }, [debounced]);
 
   return (
     <React.Fragment>

@@ -17,7 +17,7 @@ import { UserSkeletonRows } from '@/features/admin/components/user-skeleton-rows
 /**
  * Hooks
  */
-import { useUserList } from './user-provider.jsx';
+import { useUserList } from '../providers/user-provider.jsx';
 import { usePatchUser } from '../hooks/use-patch-user.js';
 
 /**
@@ -57,7 +57,7 @@ export const UserList = () => {
 
   /** @param {number} userId @param {string} newName */
   const handleNameChange = (userId, newName) => {
-    mutate({ id: userId, body: { name: newName }});
+    mutate({ id: userId, body: { name: newName } });
   };
 
   return (
@@ -72,7 +72,7 @@ export const UserList = () => {
           onResend: handleResend,
           onLeave: handleLeave,
           onDelete: handleDelete,
-          onNameChange: handleNameChange
+          onNameChange: handleNameChange,
         })}
       </TableBody>
     </Table>
@@ -89,7 +89,7 @@ const renderTableBody = ({
   onResend,
   onLeave,
   onDelete,
-  onNameChange
+  onNameChange,
 }) => {
   if (isFetching) return <UserSkeletonRows />;
 
@@ -129,7 +129,12 @@ const UserTableHeader = () => (
   <TableHeader>
     <TableRow className='bg-border hover:bg-muted'>
       {Array.from({ length: COLUMN_COUNT }, (_, i) => (
-        <TableHead key={i} className='text-center'>{HEAD_NAMES[i]}</TableHead>
+        <TableHead
+          key={i}
+          className='text-center'
+        >
+          {HEAD_NAMES[i]}
+        </TableHead>
       ))}
     </TableRow>
   </TableHeader>

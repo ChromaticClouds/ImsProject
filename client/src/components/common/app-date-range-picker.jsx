@@ -16,15 +16,10 @@ import { Button } from '@/components/ui/button.jsx';
  */
 import { CalendarIcon } from 'lucide-react';
 
-
-/**
- * @typedef {import('@tanstack/react-form').Updater} Updater
- */
-
 /**
  * @typedef {Object} Props
  * @property {import('react-day-picker').DateRange} value
- * @property {(Updater<string>) => void} onChange
+ * @property {(date: import('react-day-picker').DateRange) => void} onChange
  */
 
 /**
@@ -35,8 +30,8 @@ export const AppDateRangePicker = ({ value, onChange }) => {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
-          className="w-63"
+          variant='outline'
+          className='w-63'
         >
           {value?.from ? (
             value.to ? (
@@ -50,13 +45,17 @@ export const AppDateRangePicker = ({ value, onChange }) => {
           ) : (
             'Choose date'
           )}
-          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-max overflow-hidden p-0" align="start" side="top">
+      <PopoverContent
+        className='w-max overflow-hidden p-0'
+        align='start'
+        side='top'
+      >
         <Calendar
-          mode="range"
+          mode='range'
           selected={value}
           onSelect={onChange}
           captionLayout='dropdown'

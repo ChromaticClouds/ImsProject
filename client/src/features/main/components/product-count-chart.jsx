@@ -1,12 +1,5 @@
 // @ts-check
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card.js';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart.js';
 import { useIsMobile } from '@/hooks/use-mobile.js';
 import { Bar, BarChart, Tooltip, XAxis, YAxis } from 'recharts';

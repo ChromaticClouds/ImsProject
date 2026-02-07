@@ -4,6 +4,6 @@ import com.example.ims.global.exception.BusinessException;
 
 public class InvalidUserStateException extends BusinessException {
     public InvalidUserStateException() {
-        super(AuthError.UNAUTORIZED);
+        super(AuthError.INVALID_STATE);
     }
 }

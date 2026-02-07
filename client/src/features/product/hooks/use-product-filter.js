@@ -13,13 +13,6 @@ export const useProductFilter = (products) => {
    
   });
 
-  // const [brandState, setBrandState] = useState(() =>
-  //   products.reduce((acc, p) => {
-  //     acc[p.brand] = true;
-  //     return acc;
-  //   }, {})
-  // );
-
   const [brandState, setBrandState] = useState({});
 
   useEffect(() => {

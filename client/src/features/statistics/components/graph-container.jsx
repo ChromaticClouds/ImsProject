@@ -19,9 +19,9 @@ import {
  */
 
 const WIDTH_CLASS = {
-  third: 'col-span-10 lg:col-span-3',
-  wide: 'col-span-10 lg:col-span-7',
-  full: 'col-span-10',
+  third: 'col-span-10 lg:col-span-3 overflow-hidden overflow-x-auto',
+  wide: 'col-span-10 lg:col-span-7 overflow-hidden overflow-x-auto',
+  full: 'col-span-10 overflow-hidden overflow-x-auto',
 };
 
 const HEIGHT_CLASS = {
@@ -43,7 +43,7 @@ export const GraphContainer = ({
   return (
     <div className={WIDTH_CLASS[width]}>
       <Card>
-        <CardHeader className='border-b'>
+        <CardHeader className='border-b text-nowrap text-ellipsis'>
           <CardTitle>{title}</CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
         </CardHeader>

@@ -1,40 +1,32 @@
 // @ts-check
 
-import { useQuery } from '@tanstack/react-query';
-import { useProductSearchStore } from '../stores/use-product-search-store.js';
-import { searchProducts } from '../api/product.js';
+/**
+ * Hooks
+ */
 import { useDebounce } from '@/hooks/use-debounce.js';
+import { useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
-
-// export const useProductSearch = () => {
-//   const keyword = useProductSearchStore((s) => s.keyword);
-//   const debounced = useDebounce(keyword, 400);
-
-//   return useQuery({
-//     queryKey: ['product-suggest', debounced],
-//     queryFn: () => searchProducts(debounced),
-//     staleTime: 0,
-//   });
-// };
-
-
+import { useEffect } from 'react';
 
 export const useProductSearch = () => {
-  const [keyword, setKeyword] = useState('');
+  const [params, setParams] = useSearchParams();
 
-  const applySearch = (list) => {
-    if (!keyword.trim()) return list;
+  const [input, setInput] = useState(params.get('search') ?? '');
 
-    const k = keyword.trim().toLowerCase();
+  const keyword = useDebounce(input, 500);
 
-    return list.filter((p) => {
-      const name = String(p?.name ?? '').toLowerCase();
-      const brand = String(p?.brand ?? '').toLowerCase();
-      const code = String(p?.productCode ?? '').toLowerCase();
+  useEffect(() => {
+    const next = new URLSearchParams(params);
 
-      return name.includes(k) || brand.includes(k) || code.includes(k);
-    });
-  };
+    if (keyword) next.set('search', keyword);
+    else next.delete('search');
 
-  return { keyword, setKeyword, applySearch };
+    console.log('transferred')
+
+    next.set('page', '1');
+
+    setParams(next);
+  }, [keyword]);
+
+  return { input, setInput };
 };

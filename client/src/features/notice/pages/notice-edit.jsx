@@ -40,6 +40,7 @@ export const NoticeEdit = () => {
 
   if (isLoading) return <div className='p-6'>로딩중...</div>;
   if (!notice) return <div className='p-6'>게시글이 없습니다.</div>;
+  if (!isAdmin) return <div className='p-6'>권한이 없습니다.</div>;
 
   return (
     <div className='p-6 max-w-4xl mx-auto'>

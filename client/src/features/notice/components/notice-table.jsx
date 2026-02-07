@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 
-export const NoticeTable = ({ notices, onSelect }) => {
+export const NoticeTable = ({ notices = [], onSelect }) => {
   return (
     <Table>
       <TableHeader>
@@ -33,11 +33,12 @@ export const NoticeTable = ({ notices, onSelect }) => {
           <TableRow
             key={notice.id}
             className='cursor-pointer hover:bg-muted'
-            onClick={() => onSelect(notice.id)}
+            onClick={() => onSelect?.(notice.id)}
           >
             <TableCell>{notice.id}</TableCell>
             <TableCell className='flex items-center gap-2'>
               {notice.pinned && <Badge>공지</Badge>}
+            
               {notice.title}
             </TableCell>
             <TableCell>{notice.userId}</TableCell>

@@ -38,7 +38,7 @@ export const SIDEBAR_PRODUCT_ITEMS = [
   },
   {
     title: '발주',
-    url: '#',
+    url: '/dashboard/purchase-order',
     Icon: FileOutputIcon,
   },
   {

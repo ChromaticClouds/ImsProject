@@ -36,12 +36,13 @@ import { useProductSearch } from '@/features/product/hooks/use-product-search.js
 
 
 export const Product = () => {
-  const { data } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['products'],
-    queryFn: fetchProducts,
+    queryFn: ()=>fetchProducts(''),
   });
 
-  const filter = useProductFilter(data?.content ?? []);
+
+  const filter = useProductFilter(data?.content?? []);
   
   const search = useProductSearch();
 
@@ -49,6 +50,13 @@ export const Product = () => {
   const pagination = useProductPagination(searchedList);
 
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+
+  if (isLoading) return <div>상품 정보를 불러오는 중입니다...</div>;
+  // 2. 에러 발생 시 처리
+  if (error) return <div>에러가 발생했습니다: {error.message}</div>;
+
+
 
   const {
     setFilters,

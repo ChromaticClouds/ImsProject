@@ -6,10 +6,11 @@ import { useMemo, useState } from 'react';
 export const useProductFilter = (products) => {
   const [filters, setFilters] = useState({
     SOJU: true,
-    BEER: true,
     WHISKY: true,
-    고량주: true,
-    위스키: true,
+    LIQUOR: true,
+    TRADITIONAL: true,
+    KAOLIANG_LIQUOR: true,
+   
   });
 
   // const [brandState, setBrandState] = useState(() =>

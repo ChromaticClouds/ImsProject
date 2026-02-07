@@ -28,7 +28,7 @@ public class ProductController {
         @RequestParam(value = "search", defaultValue = "") String search
     ) {
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
-
+        
         return productService.getProducts(pageable, search);
     }
 

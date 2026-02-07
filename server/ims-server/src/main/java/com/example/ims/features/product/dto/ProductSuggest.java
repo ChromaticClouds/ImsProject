@@ -1,5 +1,6 @@
 package com.example.ims.features.product.dto;
 
+import com.example.ims.features.product.enums.ProductType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,7 +11,7 @@ public class ProductSuggest {
     private Long productId;
     private String name;
     private String brand;
-    private String type;
+    private ProductType type;
     private Integer purchasePrice;
     private Integer salePrice;
     private Integer count;

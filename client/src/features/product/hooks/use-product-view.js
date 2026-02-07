@@ -8,6 +8,5 @@ export const useProductView = (condition) => {
   return useQuery({
     queryKey: ['products', condition],
     queryFn: () => fetchProducts(condition),
-    staleTime: 0,
   });
 };

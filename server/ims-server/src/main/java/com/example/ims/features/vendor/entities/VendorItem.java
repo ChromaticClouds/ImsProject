@@ -1,13 +1,11 @@
 package com.example.ims.features.vendor.entities;
 
-import com.example.ims.features.product.entity.Product;
+import com.example.ims.features.product.entities.Product;
 import com.example.ims.features.vendor.dto.Vendor;
 import com.example.ims.features.vendor.enums.VendorItemStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Table(name = "vendor_item")

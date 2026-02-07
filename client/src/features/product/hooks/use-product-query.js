@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 export const useProductQuery = () => {
   const [params] = useSearchParams();
 
-  const page = Number(params.get('page') ?? 0);
+  const page = Number(params.get('page') ?? 1);
   const search = params.get('search') ?? '';
 
   const type = useMemo(
@@ -22,12 +22,25 @@ export const useProductQuery = () => {
 
   const query = useMemo(
     () => ({ page, search, type, brand }),
-    [page, search, type, brand]
+    [page, search, type, brand],
   );
 
-  const { data } = useProductView(query);
+  const { data, error } = useProductView(query);
 
-  const { content = [], ...rest } = data?.data ?? {};
+  if (error) console.log(error);
 
-  return { content, pageResponse: rest };
+  const pageData = data?.data;
+
+  return {
+    content: pageData?.content ?? [],
+    pageResponse: pageData
+      ? {
+          page: pageData.page,
+          totalElements: pageData.totalElements,
+          totalPages: pageData.totalPages,
+          isFirst: pageData.isFirst,
+          isLast: pageData.isLast,
+        }
+      : null,
+  };
 };

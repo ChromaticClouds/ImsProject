@@ -1,35 +1,49 @@
+// @ts-check
+
 import { useSearchParams } from "react-router-dom"
 
 /**
- * 
- * @param {string} category
- * @returns {{ 
- *   toggleType: (type: string, checked: boolean) => void, 
- *   selected: string[] 
- * }}
+ * @typedef {object} CategoryFilterType
+ * @property {string[]} selected
+ * @property {(value: string | string[], checked: boolean) => void} toggleType
+ * @property {() => void} clearType
  */
-export const useCategoryFilter = (category) => {
+
+/**
+ * 선택한 카테고리에 따라 URL 쿼리를 제어
+ * @param {string} key
+ * @returns {CategoryFilterType}
+ */
+export const useCategoryFilter = (key) => {
   const [params, setParams] = useSearchParams();
 
-  const selected = params.get(category)
+  const selected = params.get(key)
     ?.split(',').filter(Boolean) ?? [];
 
   return {
     selected,
 
-    toggleType: (type, checked) => {
-      const next = new Set(selected);
+    toggleType: (value, checked) => {
+      const set = new Set(selected);
+      const values = Array.isArray(value) ? value : [value];
 
-      if (checked) next.add(type);
-      else next.delete(type);
+      values.forEach((v) => 
+        checked ? set.add(v) : set.delete(v)
+      );
 
-      const value = [...next].join(',');
+      if (set.size === 0) params.delete(key);
+      else params.set(key, [...set].join(','));
 
-      if (value) params.set(category, value);
-      else params.delete('type');
-
-      params.set('page', '0');
+      params.set('page', '1');
       setParams(params);
     },
+
+    clearType: () => {
+      const next = new URLSearchParams(params);
+      next.delete(key);
+      next.set('page', '1');
+
+      setParams(next);
+    }
   }
 }

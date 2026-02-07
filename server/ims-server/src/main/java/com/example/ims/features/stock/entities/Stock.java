@@ -1,5 +1,6 @@
-package com.example.ims.features.product.entity;
+package com.example.ims.features.stock.entities;
 
+import com.example.ims.features.product.entities.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

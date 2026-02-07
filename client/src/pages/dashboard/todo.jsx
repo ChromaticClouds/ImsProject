@@ -26,7 +26,7 @@ import {
 import { fetchTodos } from '@/features/todo/api/todoApi';
 import { TodoTable } from '@/features/todo/components/todo-table';
 import { TodoPagination } from '@/features/todo/components/todo-pagination';
-import { TodoDetailDialog } from '@/features/todo/components/todo-dialog';
+// import { TodoDetailDialog } from '@/features/todo/components/todo-dialog';
 
 import { useTodoSearch } from '@/features/todo/hooks/todo-search';
 import { useTodoPagination } from '@/features/todo/hooks/todo-pagination';
@@ -35,6 +35,7 @@ import {
   TODO_STATUS_LABEL,
   TODO_SORT_LABEL,
 } from '@/features/todo/hooks/todo-filter-sort';
+import { useNavigate } from 'react-router-dom';
 
 export const Todo = () => {
   const { data = [] } = useQuery({
@@ -61,6 +62,9 @@ export const Todo = () => {
 
   const [selectedTodo, setSelectedTodo] = useState(null);
 
+  const navigate = useNavigate();
+
+
   // actions
   const handleDelete = (id) => {
     const ok = window.confirm('정말 삭제할까요?');
@@ -69,11 +73,31 @@ export const Todo = () => {
     setCurrentPage(1);
   };
 
-  const handleComplete = (id) => {
-    setLocalTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: 'DONE' } : t))
-    );
-  };
+  // const handleComplete = (id) => {
+  //   setLocalTodos((prev) =>
+  //     prev.map((t) => (t.id === id ? { ...t, status: 'DONE' } : t))
+  //   );
+  // };
+
+const today = new Date().toISOString().slice(0, 10);
+
+const handleComplete = (id) => {
+  setLocalTodos((prev) =>
+    prev.map((t) => {
+      if (t.id !== id) return t;
+
+      const isDone = t.status === 'DONE';
+
+      return {
+        ...t,
+        status: isDone ? 'IN_PROGRESS' : 'DONE',
+        completedAt: isDone ? null : today,
+      };
+    })
+  );
+};
+
+
 
   const handleEdit = (id) => {
     // ✅ 일단 “수정 페이지로 이동”만 연결할 자리
@@ -82,8 +106,7 @@ export const Todo = () => {
   };
 
   const handleCreate = () => {
-    // 예) navigate('/dashboard/todo/create')
-    alert('(예정) 업무 추가 페이지 이동');
+   navigate('/dashboard/todo/create');
   };
 
   return (
@@ -160,7 +183,7 @@ export const Todo = () => {
           {/* 검색 */}
           <div className='flex items-center gap-2'>
             <Input
-              placeholder='제목 / 설명 / 작성자 / 태그 검색'
+              placeholder='제목 / 설명 / 태그 검색'
               value={search.keyword}
               onChange={(e) => {
                 search.setKeyword(e.target.value);
@@ -173,7 +196,7 @@ export const Todo = () => {
           {/* 테이블 */}
           <TodoTable
             todos={paginatedList}
-            onDetail={setSelectedTodo}
+            onDetail={(todo) => navigate(`/dashboard/todo/${todo.id}`)}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onComplete={handleComplete}
@@ -190,11 +213,11 @@ export const Todo = () => {
       </Card>
 
       {/* 상세 다이얼로그 */}
-      <TodoDetailDialog
+      {/* <TodoDetailDialog
         todo={selectedTodo}
         onClose={() => setSelectedTodo(null)}
         onComplete={handleComplete}
-      />
+      /> */}
     </div>
   );
 };

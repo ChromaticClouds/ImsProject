@@ -1,9 +1,12 @@
-package com.example.ims.features.product.entity;
+package com.example.ims.features.product.entities;
 
+import com.example.ims.features.product.enums.ProductType;
+import com.example.ims.features.stock.entities.Stock;
 import com.example.ims.features.vendor.entities.VendorItem;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
 
@@ -22,13 +25,13 @@ public class Product {
 
     private String name;
 
-    @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private ProductType type;
 
     private String brand;
 
-    @Column(name = "volumn")
-    private Integer volumn;
+    @Column(name = "volume")
+    private Integer volume;
 
     @Column(name = "per_count")
     private Integer perCount;

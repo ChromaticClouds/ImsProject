@@ -93,6 +93,14 @@
  */
 
 /**
+ * @typedef {object} SearchCondition
+ * @property {string[]} brand
+ * @property {string[]} type
+ * @property {number} page
+ * @property {string} search
+ */
+
+/**
  * @typedef {object} Product
  * @property {number} id
  * @property {string} name
@@ -138,4 +146,36 @@
  * @property {number} salePrice
  * @property {string} imageUrl
  * @property {number} adjustCount
+ */
+
+/**
+ * 발주(Purchase Order) 타입
+ *
+ * @typedef {Object} PurchaseOrder
+ *
+ * @property {number} id               - 발주 ID
+ * @property {number} userId           - 발주 생성 사용자 ID
+ * @property {string} orderNumber      - 발주 번호 (예: PO-202502-016)
+ * @property {string} orderDate        - 발주일 (YYYY-MM-DD)
+ * @property {string} recieveDate      - 납기일 / 입고 예정일 (YYYY-MM-DD)
+ * @property {number} count            - 발주 수량
+ * @property {number} leadTime         - 리드타임 (일 단위)
+ * @property {('INBOUND_PENDING' | null)} status
+ *   - 발주 상태
+ *   - null: 발주 전송 전
+ *   - INBOUND_PENDING: 발주서 전송 완료 (입고 대기)
+ *
+ * @property {number} venderItemId     - 거래처 품목 ID
+ * @property {number} productId        - 내부 상품 ID
+ * @property {number} sellerVendorId   - 판매 거래처 ID
+ */
+
+/*
+ * @typedef {'SOJU' | 'WHISKEY' | 'LIQUOR' | 'TRADITIONAL' | 'KAOLIANG_LIQUOR'} BrandCategory
+ */
+
+/**
+ * @typedef {object} CategoriesType
+ * @property {string[]} types
+ * @property {BrandCategory[]} brands
  */

@@ -97,6 +97,10 @@ export const NoticeForm = ({
           {mode === 'create' ? '등록' : '수정완료'}
         </Button>
       </div>
+
+        
+
+
     </div>
   );
 };

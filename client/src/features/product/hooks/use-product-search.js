@@ -1,17 +1,32 @@
 // @ts-check
 
-import { useQuery } from '@tanstack/react-query';
-import { useProductSearchStore } from '../stores/use-product-search-store.js';
-import { searchProducts } from '../api/product.js';
+/**
+ * Hooks
+ */
 import { useDebounce } from '@/hooks/use-debounce.js';
+import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 export const useProductSearch = () => {
-  const keyword = useProductSearchStore((s) => s.keyword);
-  const debounced = useDebounce(keyword, 400);
+  const [params, setParams] = useSearchParams();
 
-  return useQuery({
-    queryKey: ['product-suggest', debounced],
-    queryFn: () => searchProducts(debounced),
-    staleTime: 0,
-  });
+  const [input, setInput] = useState(params.get('search') ?? '');
+
+  const keyword = useDebounce(input, 500);
+
+  useEffect(() => {
+    const next = new URLSearchParams(params);
+
+    if (keyword) next.set('search', keyword);
+    else next.delete('search');
+
+    console.log('transferred')
+
+    next.set('page', '1');
+
+    setParams(next);
+  }, [keyword]);
+
+  return { input, setInput };
 };

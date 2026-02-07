@@ -1,9 +1,24 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { MoreHorizontal } from "lucide-react";
+// @ts-check
 
-export const ProductTable = ({ paginatedList }) => {
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { MoreHorizontal } from 'lucide-react';
+import { useProductQuery } from '../hooks/use-product-query.js';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
+import { useState } from 'react';
+import { ProductDetailDialog } from './product-detail-dialog.jsx';
+
+export const ProductTable = () => {
+  const { content } = useProductQuery();
+
   return (
     <div className='rounded-md border'>
       <Table>
@@ -21,82 +36,71 @@ export const ProductTable = ({ paginatedList }) => {
         </TableHeader>
 
         <TableBody>
-          {paginatedList.length > 0 ? (
-            paginatedList.map((product) => (
-              <TableRow
-                key={product.id}
-                onClick={() => setSelectedProduct(product)}
-                className='hover:bg-muted/20 transition-colors cursor-pointer'
-              >
-                <TableCell>
-                  <div className='flex items-center gap-2'>
-                    <img
-                      src={product.image_url}
-                      alt=''
-                      className='w-10 h-10 rounded border bg-white object-cover'
-                    />
+          {content.length > 0 ? (
+            content.map((product) => (
+              <ProductDetailDialog product={product}>
+                <TableRow
+                  key={product.id}
+                  className='hover:bg-muted/20 transition-colors cursor-pointer'
+                >
+                  <TableCell>
+                    <div className='flex items-center gap-2'>
+                      <Avatar className='w-10 h-10 rounded'>
+                        <AvatarImage
+                          src={product.imageUrl}
+                          alt={product.name}
+                        />
+                        <AvatarFallback className='w-10 h-10 rounded' />
+                      </Avatar>
+                    </div>
+                  </TableCell>
 
-                    {/* <img
-                            src={product.boximage}
-                            alt=''
-                            className='w-10 h-10 rounded border bg-white object-cover'
-                          />
+                  <TableCell className='font-medium text-center'>
+                    {product.name}
+                  </TableCell>
 
-                          <img
-                            src={product.singleimage}
-                            alt=''
-                            className='w-10 h-10 rounded border bg-white object-cover'
-                          /> */}
-                  </div>
-                </TableCell>
+                  <TableCell className='text-muted-foreground font-mono text-xs'>
+                    {product.productCode}
+                  </TableCell>
 
-                <TableCell className='font-medium text-center'>
-                  {product.name}
-                </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant='secondary'
+                      className='font-normal'
+                    >
+                      {product.type}
+                    </Badge>
+                  </TableCell>
 
-                <TableCell className='text-muted-foreground font-mono text-xs'>
-                  {product.productCode}
-                </TableCell>
+                  <TableCell>{product.brand}</TableCell>
 
-                <TableCell>
-                  <Badge
-                    variant='secondary'
-                    className='font-normal'
-                  >
-                    {product.type}
-                    {/* {product.category} */}
-                  </Badge>
-                </TableCell>
+                  <TableCell className='text-right font-medium text-skyblue-600'>
+                    {product.salePrice?.toLocaleString()}원
+                  </TableCell>
 
-                <TableCell>{product.brand}</TableCell>
+                  <TableCell className='text-right font-medium'>
+                    {product.perCount}개입
+                  </TableCell>
 
-                <TableCell className='text-right font-medium text-skyblue-600'>
-                  {product.salePrice?.toLocaleString()}원
-                </TableCell>
-
-                <TableCell className='text-right font-medium'>
-                  {product.perCount}개입
-                  {/* {product.boxQuantity}개입 */}
-                </TableCell>
-
-                <TableCell>
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    className='h-8 w-8'
-                  >
-                    <MoreHorizontal className='h-4 w-4' />
-                  </Button>
-                </TableCell>
-              </TableRow>
+                  <TableCell>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      className='h-8 w-8'
+                    >
+                      <MoreHorizontal className='h-4 w-4' />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              </ProductDetailDialog>
             ))
           ) : (
             <TableRow>
               <TableCell
-                colSpan={7}
+                colSpan={8}
                 className='h-24 text-center text-muted-foreground'
               >
-                선택된 카테고리의 품목이 없습니다.
+                품목이 없습니다.
               </TableCell>
             </TableRow>
           )}

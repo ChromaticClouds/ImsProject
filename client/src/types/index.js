@@ -93,6 +93,14 @@
  */
 
 /**
+ * @typedef {object} SearchCondition
+ * @property {string[]} brand
+ * @property {string[]} type
+ * @property {number} page
+ * @property {string} search
+ */
+
+/**
  * @typedef {object} Product
  * @property {number} id
  * @property {string} name
@@ -138,4 +146,14 @@
  * @property {number} salePrice
  * @property {string} imageUrl
  * @property {number} adjustCount
+ */
+
+/**
+ * @typedef {'SOJU' | 'WHISKEY' | 'LIQUOR' | 'TRADITIONAL' | 'KAOLIANG_LIQUOR'} BrandCategory
+ */
+
+/**
+ * @typedef {object} CategoriesType
+ * @property {string[]} types
+ * @property {BrandCategory[]} brands
  */

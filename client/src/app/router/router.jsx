@@ -25,8 +25,6 @@ import { Product } from '@/pages/dashboard/product';
 import { Notice } from '@/pages/dashboard/notice';
 // purchase-order 발주 관리
 import { PurchaseOrder } from '@/pages/dashboard/purchase-order';
-
-// ✅ inbounds
 import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
 import { Todo } from '@/pages/dashboard/todo';
 
@@ -48,6 +46,8 @@ import { TodoDetail } from '@/features/todo/pages/todo-detail';
 import { TodoEdit } from '@/features/todo/pages/todo-edit';
 
 
+import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';
+import { OutboundRegister } from '@/pages/outbound/outbound-regiester.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -127,7 +127,10 @@ export const router = createBrowserRouter([
              
               {
                 path: 'outbounds',
-                children: [],
+                children: [
+                  { path: 'pending', element: <OutboundPending /> },
+                  { path: 'register/:orderNumber', element: <OutboundRegister /> },
+                ],
               },
               {
                 path: 'adjust',

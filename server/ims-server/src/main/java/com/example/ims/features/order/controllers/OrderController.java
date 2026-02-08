@@ -1,7 +1,7 @@
 package com.example.ims.features.order.controllers;
 
+import com.example.ims.features.order.dto.OrderBootstrap;
 import com.example.ims.features.order.dto.OrderResponse;
-import com.example.ims.features.order.entities.Order;
 import com.example.ims.features.order.services.OrderService;
 import com.example.ims.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +29,10 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success(orders));
     }
 
-    @GetMapping("cetegories")
-    public ResponseEntity<ApiResponse<Void>> getCategories() {
-        service.getCategories();
+    @GetMapping("bootstrap")
+    public ResponseEntity<ApiResponse<OrderBootstrap>> getOrderBootstrap() {
+        OrderBootstrap bootstrap = service.getOrderBootstrap();
 
-        return ResponseEntity.ok(ApiResponse.success("hello"));
+        return ResponseEntity.ok(ApiResponse.success(bootstrap));
     }
 }

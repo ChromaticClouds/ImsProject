@@ -8,8 +8,7 @@ export const MainBackground = ({ children }) => {
         className="
           w-full
           max-w-7xl
-          px-4
-          py-4
+          p-6
         "
       >
         {children}

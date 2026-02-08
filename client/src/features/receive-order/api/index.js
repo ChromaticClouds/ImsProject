@@ -1,7 +1,30 @@
+// @ts-check
+
 import { api, hooks } from "@/services/api.js";
 
 /**
- * @returns {ApiResponse<{ users: string[], sellers: string[] }>}
+ * @returns {Promise<ApiResponse<{ users: UserIdentifier[], sellers: VendorIdentifier[], sequence: string }>>}
  */
-export const getOrderCategories = () =>
-  api.get('order/categories', { hooks }).json();
+export const getOrderBoostrap = () =>
+  api.get('order/bootstrap', { hooks }).json();
+
+/**
+ * @typedef {'INBOUND_PENDING' | 'INBOUND_COMPLETE' | 'OUTBOUND_PENDING' | 'OUTBOUND_COMPLETE'} OrderStatus
+ */
+
+/**
+ * @typedef {object} ReceivedOrder
+ * @property {number} id
+ * @property {number} orderNumber
+ * @property {string} userName
+ * @property {number} count
+ * @property {string} orderDate
+ * @property {string} receiveDate
+ * @property {OrderStatus} status 
+ */
+
+/**
+ * @returns {Promise<ApiResponse<ReceivedOrder[]>>}
+ */
+export const getReceiveOrders = () =>
+  api.get('order/receive', { hooks }).json();

@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select.js';
-import { useReceiveOrderContext } from '@/features/receive-order/providers/receive-order-provider.jsx';
+import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
 
 /**
  * @typedef {object} OrderCategoryProps
@@ -18,30 +18,55 @@ import { useReceiveOrderContext } from '@/features/receive-order/providers/recei
  */
 
 /**
- * @param {OrderCategoryProps} props 
+ * @typedef {object} FormNameMap
+ * @property {'userId'} users
+ * @property {'sellerId'} sellers
+ */
+
+/**
+ * @type {FormNameMap}
+ */
+const FORM_NAME_MAP = {
+  users: 'userId',
+  sellers: 'sellerId',
+};
+
+/**
+ * @param {OrderCategoryProps} props
  */
 export const OrderCategorySelect = ({ categoryKey, label, placeholder }) => {
-  const context = useReceiveOrderContext();
+  const { form, categories } = useOrderPostContext();
 
-  const category = context[categoryKey] ?? [];
+  const category = categories?.[categoryKey] ?? [];
+  const formName = FORM_NAME_MAP[categoryKey];
 
   return (
     <div className='grid grid-cols-1 gap-1 md:grid-cols-[120px_1fr] md:items-center'>
       <span className='text-sm md:text-base'>{label}</span>
-      <Select>
-        <SelectTrigger className='w-full md:w-60'>
-          <SelectValue placeholder={placeholder ?? ''} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {category.map((item) => (
-              <SelectItem key={item} value={item}>
-                {item}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+      <form.Field name={formName}>
+        {(field) => (
+          <Select
+            value={String(field.state.value)}
+            onValueChange={(e) => field.handleChange(Number(e))}
+          >
+            <SelectTrigger className='w-full md:w-60'>
+              <SelectValue placeholder={placeholder ?? ''} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {category.map((item) => (
+                  <SelectItem
+                    key={item.id}
+                    value={String(item.id)}
+                  >
+                    {item.name ?? '(해당 없음)'}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        )}
+      </form.Field>
     </div>
   );
 };

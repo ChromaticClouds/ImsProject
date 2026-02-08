@@ -170,7 +170,8 @@
  * @property {number} sellerVendorId   - 판매 거래처 ID
  */
 
-/*
+
+/**
  * @typedef {'SOJU' | 'WHISKEY' | 'LIQUOR' | 'TRADITIONAL' | 'KAOLIANG_LIQUOR'} BrandCategory
  */
 
@@ -178,4 +179,41 @@
  * @typedef {object} CategoriesType
  * @property {string[]} types
  * @property {BrandCategory[]} brands
+ */
+
+/**
+ * @typedef {object} UserIdentifier
+ * @property {number} id
+ * @property {string} name
+ */
+
+/**
+ * @typedef {object} VendorIdentifier
+ * @property {number} id
+ * @property {string} name
+ */
+
+/**
+ * @typedef OrderCategories
+ * @property {UserIdentifier[]} users
+ * @property {VendorIdentifier[]} sellers
+ */
+
+/**
+ * @typedef {Object.<string, any>} OrderProductExtra
+ */
+
+/**
+ * @typedef {OrderProductExtra & {
+ *   amount: number
+ * }} OrderProduct
+ */
+
+/**
+ * 발주서 전송에 필요한 폼 스키마
+ * @typedef {object} OrderPostFormSchema
+ * @property {number| null} userId
+ * @property {number | null} sellerId
+ * @property {Date | null} receiveDate
+ * @property {OrderProduct[]} products
  */

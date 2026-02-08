@@ -1,6 +1,8 @@
 package com.example.ims.features.vendor.dto;
 
 import java.util.List;
+
+import com.example.ims.features.vendor.enums.VendorType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -9,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Setter
 @NoArgsConstructor
 public class VendorCreateRequest {
-    private String type;        // "Supplier" | "Seller"
+    private VendorType type;        // "Supplier" | "Seller"
     private String vendorName;
     private String telephone;
     private String email;

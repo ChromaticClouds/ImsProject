@@ -1,3 +1,5 @@
+// @ts-check
+
 import {
   Table,
   TableBody,
@@ -7,9 +9,6 @@ import {
   TableRow,
 } from '@/components/ui/table.js';
 import { RECEIVE_ORDER_TABLE_HEADER } from '../constants/index.js';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/services/api.js';
-import { useEffect } from 'react';
 
 const TABLE_HEADER = [
   '수주번호',
@@ -24,15 +23,8 @@ const TABLE_HEADER = [
 ];
 
 export const ReceiveOrderList = () => {
-  const { data } = useQuery({
-    queryKey: ['receive-order'],
-    queryFn: () => api.get('order/receive').json()
-  });
 
-  useEffect(() => {
-    console.log(data);
-  }, [data])
-
+  
   return (
     <Table>
       <TableHeader>

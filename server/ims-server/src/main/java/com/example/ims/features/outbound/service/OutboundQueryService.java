@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.example.ims.features.inbound.dto.HistoryLot;
 import com.example.ims.features.inbound.dto.PageResponse;
 import com.example.ims.features.outbound.dto.OutboundAssigneeRow;
 import com.example.ims.features.outbound.dto.OutboundCompleteOrderRow;
@@ -72,11 +73,20 @@ public class OutboundQueryService {
     Long userId = orders.get(0).getUserId();
     if (userId == null) throw new IllegalArgumentException("userId가 없습니다: " + on);
 
-    // history_lot
-    if (StringUtils.hasText(memo)) mapper.insertHistoryLot(userId, memo.trim());
+    
+    HistoryLot lot = new HistoryLot();
+    lot.setUserId(userId);
+    lot.setMemo(StringUtils.hasText(memo) ? memo.trim() : null);
+    
+    mapper.insertHistoryLot(lot);
+    
+    Long lotId = mapper.selectLastHistoryLotId();
+    if (lotId == null || lotId <= 0) throw new IllegalStateException("history_lot id 실패");
+    
 
     for (OutboundCompleteOrderRow r : orders) {
       Long productId = r.getProductId();
+      Long sellerVendorId = r.getSellerVendorId();
       int qty = r.getOrderQty() == null ? 0 : r.getOrderQty();
 
       if (productId == null || productId <= 0) continue;
@@ -84,12 +94,14 @@ public class OutboundQueryService {
 
       Integer before = mapper.selectStockCountForUpdate(productId);
       int beforeCount = before == null ? 0 : before.intValue();
+      
 
       int afterCount = beforeCount - qty;
       if (afterCount < 0) throw new IllegalArgumentException("재고 부족: productId=" + productId);
 
       
-      mapper.insertHistoryOutbound(userId, productId, beforeCount, afterCount);
+      
+      mapper.insertHistoryOutbound(lotId, r.getSellerVendorId(), userId, productId, beforeCount, afterCount);
 
       mapper.upsertStockByDelta(productId, -qty);
     }

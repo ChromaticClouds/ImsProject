@@ -38,7 +38,7 @@ public class OutboundSqlProvider {
         MIN(o.user_id) AS userId,
         MIN(u.name) AS userName,
         MAX(CASE WHEN o.`count` > IFNULL(s.`count`, 0) THEN 1 ELSE 0 END) AS hasShortage
-      FROM `order` o
+      FROM `orders` o
       JOIN vendor v ON v.id = o.seller_vendor_id
       JOIN product pr ON pr.id = o.product_id
       LEFT JOIN stock s ON s.product_id = o.product_id
@@ -69,7 +69,7 @@ public class OutboundSqlProvider {
     sb.append("""
       SELECT COUNT(*) FROM (
         SELECT o.order_number
-        FROM `order` o
+        FROM `orders` o
         WHERE o.status = 'OUTBOUND_PENDING'
           AND o.recieve_date BETWEEN #{from} AND #{to}
     """);
@@ -100,7 +100,7 @@ public class OutboundSqlProvider {
       IFNULL(s.`count`, 0) AS stockCount,
       CASE WHEN o.`count` > IFNULL(s.`count`, 0) THEN 1 ELSE 0 END AS shortage,
       pr.sale_price AS salePrice
-    FROM `order` o
+    FROM `orders` o
     JOIN product pr ON pr.id = o.product_id
     LEFT JOIN stock s ON s.product_id = o.product_id
     WHERE o.status = 'OUTBOUND_PENDING'
@@ -108,35 +108,41 @@ public class OutboundSqlProvider {
     ORDER BY o.id ASC
   """; }
 
-  public String selectCompletedTodaySummary(Map<String, Object> p) { 
+  public String selectCompletedTodaySummary(Map<String, Object> p) {
 	  return """
-    SELECT
-      'OUTBOUND_COMPLETE' AS status,
-      '출고 완료' AS statusText,
-      o.order_number AS orderNumber,
-      MIN(o.order_date) AS orderDate,
-      MIN(o.seller_vendor_id) AS sellerVendorId,
-      MIN(v.vendor_name) AS sellerVendorName,
-      COUNT(*) AS itemCount,
-      SUM(o.`count` * pr.sale_price) AS totalAmount,
-      MIN(o.user_id) AS userId,
-      MIN(u.name) AS userName
-    FROM `order` o
-    JOIN vendor v ON v.id = o.seller_vendor_id
-    JOIN product pr ON pr.id = o.product_id
-    LEFT JOIN `user` u ON u.id = o.user_id
-    WHERE o.status = 'OUTBOUND_COMPLETE'
-      AND o.order_date = CURDATE()
-    GROUP BY o.order_number
-    ORDER BY MIN(o.order_date) DESC, o.order_number DESC
-    LIMIT #{size} OFFSET #{offset}
-  """; }
+	    SELECT
+	      'OUTBOUND_COMPLETE' AS status,
+	      '출고 완료' AS statusText,
+	      o.order_number AS orderNumber,
+	      MIN(o.order_date) AS orderDate,
+	      MIN(o.seller_vendor_id) AS sellerVendorId,
+	      MIN(v.vendor_name) AS sellerVendorName,
+	      COUNT(DISTINCT o.id) AS itemCount,
+	      SUM(o.`count` * pr.sale_price) AS totalAmount,
+	      MIN(o.user_id) AS userId,
+	      MIN(u.name) AS userName
+	    FROM `orders` o
+	    JOIN vendor v ON v.id = o.seller_vendor_id
+	    JOIN product pr ON pr.id = o.product_id
+	    LEFT JOIN `user` u ON u.id = o.user_id
+	    LEFT JOIN `history` h 
+	      ON h.product_id = o.product_id 
+	     AND h.seller_vendor_id = o.seller_vendor_id
+	    LEFT JOIN `history_lot` hl ON hl.id = h.lot_id
+	    WHERE o.status = 'OUTBOUND_COMPLETE'
+	      AND o.order_date = CURDATE()
+	    GROUP BY o.order_number
+	    ORDER BY MAX(h.created_at) DESC
+	    LIMIT #{size} OFFSET #{offset}
+	  """;
+	}
+
 
   public String countCompletedTodaySummary() { 
 	  return """
     SELECT COUNT(*) FROM (
       SELECT o.order_number
-      FROM `order` o
+      FROM `orders` o
       WHERE o.status = 'OUTBOUND_COMPLETE'
         AND o.order_date = CURDATE()
       GROUP BY o.order_number
@@ -153,7 +159,7 @@ public class OutboundSqlProvider {
       pr.brand AS brand,
       o.`count` AS orderQty,
       pr.sale_price AS salePrice
-    FROM `order` o
+    FROM `orders` o
     JOIN product pr ON pr.id = o.product_id
     WHERE o.status = 'OUTBOUND_COMPLETE'
       AND o.order_number = #{orderNumber}
@@ -166,8 +172,9 @@ public class OutboundSqlProvider {
       o.id AS orderId,
       o.user_id AS userId,
       o.product_id AS productId,
+      o.seller_vendor_id AS sellerVendorId,
       o.`count` AS orderQty
-    FROM `order` o
+    FROM `orders` o
     WHERE o.order_number = #{orderNumber}
       AND o.status = 'OUTBOUND_PENDING'
     ORDER BY o.id ASC
@@ -192,14 +199,14 @@ public class OutboundSqlProvider {
   public String insertHistoryOutbound() { 
 	  return """
     INSERT INTO history
-      (lot_id, vendor_item_id, product_id, before_count, after_count, created_at)
+      (lot_id, seller_vendor_id, vendor_item_id, product_id, before_count, after_count, created_at)
     VALUES
-      (NULL, NULL, #{productId}, #{beforeCount}, #{afterCount}, NOW())
+      (#{lotId}, #{sellerVendorId}, NULL, #{productId}, #{beforeCount}, #{afterCount}, NOW())
   """; }
 
   public String markOutboundCompleteByOrderNumber() { 
 	  return """
-    UPDATE `order`
+    UPDATE `orders`
     SET status = 'OUTBOUND_COMPLETE',
         order_date = CURDATE()
     WHERE order_number = #{orderNumber}
@@ -221,6 +228,10 @@ public class OutboundSqlProvider {
 	  		ORDER BY p.type ASC
 	  		""";
   }
+  
+  public String selectLastHistoryLotId() {
+	  return "SELECT LAST_INSERT_ID()";
+	}
   
   public String selectStockBrandsByType(Map<String, Object> p) {
 	  return """

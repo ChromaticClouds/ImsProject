@@ -7,6 +7,7 @@ import { OutboundCompletedTable } from './outbound-completed-table.jsx';
 import { useOutboundAssignees } from '../hooks/use-outbound-assignees.js';
 import { Button } from '@/components/ui/button.js';
 import { OutboundStockCheckDialog } from './outbound-stock-check-dialog.jsx';
+import { AppHeader } from '@/components/common/app-header.jsx';
 
 import {
   Select,
@@ -61,8 +62,10 @@ export function OutboundOverviewScreen() {
 
   return (
     <div style={{ padding: 16 }}>
-      <h2>출고 내역</h2>
-
+      <AppHeader
+              title='출고 내역'
+              description='출고 내역을 확인하세요'
+            />
       <div style={{ marginBottom: 10, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
         <OutboundDateRangePicker
           value={search}

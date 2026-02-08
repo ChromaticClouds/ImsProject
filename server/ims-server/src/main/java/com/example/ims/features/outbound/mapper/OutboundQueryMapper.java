@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.UpdateProvider;
 
+import com.example.ims.features.inbound.dto.HistoryLot;
 import com.example.ims.features.outbound.dto.OutboundAssigneeRow;
 import com.example.ims.features.outbound.dto.OutboundCompleteOrderRow;
 import com.example.ims.features.outbound.dto.OutboundItemRow;
@@ -64,17 +66,23 @@ public interface OutboundQueryMapper {
 
   @InsertProvider(type = OutboundSqlProvider.class, method = "insertHistoryOutbound")
   int insertHistoryOutbound(
+      @Param("lotId") Long lotId,
+	  @Param("sellerVendorId") Long sellerVendorId,
       @Param("userId") Long userId,
       @Param("productId") Long productId,
       @Param("beforeCount") Integer beforeCount,
       @Param("afterCount") Integer afterCount
   );
+  
+  @SelectProvider(type = OutboundSqlProvider.class, method = "selectLastHistoryLotId")
+  Long selectLastHistoryLotId();
 
   @UpdateProvider(type = OutboundSqlProvider.class, method = "markOutboundCompleteByOrderNumber")
   int markOutboundCompleteByOrderNumber(@Param("orderNumber") String orderNumber);
 
   @InsertProvider(type = OutboundSqlProvider.class, method = "insertHistoryLot")
-  int insertHistoryLot(@Param("userId") Long userId, @Param("memo") String memo);
+  @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+  int insertHistoryLot(HistoryLot param);
   
   @SelectProvider(type = OutboundSqlProvider.class, method = "selectStockTypes")
   List<String> selectStockTypes();

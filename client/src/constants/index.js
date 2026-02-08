@@ -74,6 +74,11 @@ export const SIDEBAR_ADDITIONAL_ITEMS = [
     url: '/dashboard/statistics',
     Icon: ChartAreaIcon,
   },
+  {
+    title: '히스토리',
+    url: '/dashboard/history',
+    Icon: ChartAreaIcon,
+  },
 ];
 
 export const RANK_LABEL = {
@@ -237,3 +242,31 @@ export const MOCK_PRODUCTS = [
     singleimage: 'https://picsum.photos/id/12/40/40'
   },
 ];
+
+// ------------ 히스토리에 필요한 것 
+
+export const HISTORY_STATUS_OPTIONS = [
+  { value: 'ALL', label: '전체' },
+  { value: 'INBOUND', label: '입고' },
+  { value: 'OUTBOUND', label: '출고' },
+  { value: 'ADJUST', label: '조정' },
+];
+
+export const PRODUCT_TYPE_OPTIONS = [
+  { value: 'SOJU', label: '소주' },
+  { value: 'LIQUOR', label: '양주' },
+  { value: 'WHISKEY', label: '위스키' },
+  { value: 'TRADITIONAL', label: '전통주' },
+  { value: 'KAOLIANG_LIQUOR', label: '고량주' },
+];
+
+export function toKoreanType(type) {
+  const m = {
+    SOJU: '소주',
+    LIQUOR: '양주',
+    WHISKEY: '위스키',
+    TRADITIONAL: '전통주',
+    KAOLIANG_LIQUOR: '고량주',
+  };
+  return m[type] ?? type;
+}

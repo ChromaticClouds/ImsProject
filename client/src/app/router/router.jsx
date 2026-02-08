@@ -47,6 +47,7 @@ import { TodoEdit } from '@/features/todo/pages/todo-edit';
 
 import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';
 import { OutboundRegister } from '@/pages/outbound/outbound-regiester.jsx';
+import { HistoryPage } from '@/pages/dashboard/history.jsx';
 import { ReceiveOrder } from '@/pages/dashboard/receive-order/receive-order.jsx';
 import { ReceiveOrderPost } from '@/pages/dashboard/receive-order/receive-order-post.jsx';
 
@@ -144,6 +145,10 @@ export const router = createBrowserRouter([
               {
                 path: 'statistics',
                 element: <Statistics />,
+              },
+              {
+                path: 'history',
+                element: <HistoryPage />,
               },
               {
                 path: 'purchase-order',

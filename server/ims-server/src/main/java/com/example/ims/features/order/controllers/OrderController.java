@@ -28,4 +28,11 @@ public class OrderController {
 
         return ResponseEntity.ok(ApiResponse.success(orders));
     }
+
+    @GetMapping("cetegories")
+    public ResponseEntity<ApiResponse<Void>> getCategories() {
+        service.getCategories();
+
+        return ResponseEntity.ok(ApiResponse.success("hello"));
+    }
 }

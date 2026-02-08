@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card.js';
 import { UserList } from '@/features/admin/components/user-list.jsx';
 import { UserPagination } from '@/features/admin/components/user-pagination.jsx';
 import { UserListHeader } from '@/features/admin/components/user-list-header.jsx';
-import { UserProvider } from '@/features/admin/components/user-provider.jsx';
+import { UserProvider } from '@/features/admin/providers/user-provider.jsx';
 
 export const UserSetting = () => {
   return (

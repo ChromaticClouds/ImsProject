@@ -13,21 +13,43 @@ import { UserSetting } from '@/pages/dashboard/user-settiing.jsx';
 import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
 import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
-import { Product } from '@/pages/dashboard/product';
 
 import { AuthBootstrap } from '@/app/router/auth-bootstrap.jsx';
 import { Statistics } from '@/pages/dashboard/statistics.jsx';
 import { VendorDetail } from '@/pages/vendor/vendor-detail.jsx';
 import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
 
+// product 품목
+import { Product } from '@/pages/dashboard/product';
+// notice 공지사항
+import { Notice } from '@/pages/dashboard/notice';
+// purchase-order 발주 관리
+import { PurchaseOrder } from '@/pages/dashboard/purchase-order';
 import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
+import { Todo } from '@/pages/dashboard/todo';
+
+/*
+ * Notice pages
+ */
+import { NoticeDetail } from '@/features/notice/pages/notice-detail';
+import { NoticeCreate } from '@/features/notice/pages/notice-create';
+import { NoticeEdit } from '@/features/notice/pages/notice-edit';
 import { InboundPendingEdit } from '@/pages/inbound/inbound-pending-edit.jsx';
 import { InboundOverview } from '@/pages/inbound/inbound-overview.jsx';
 import { Adjust } from '@/pages/dashboard/adjust';
 
+/*
+ * Todo pages
+ */
+import { TodoCreate } from '@/features/todo/pages/todo-create';
+import { TodoDetail } from '@/features/todo/pages/todo-detail';
+import { TodoEdit } from '@/features/todo/pages/todo-edit';
+
 import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';
 import { OutboundRegister } from '@/pages/outbound/outbound-regiester.jsx';
 import { HistoryPage } from '@/pages/dashboard/history.jsx';
+import { ReceiveOrder } from '@/pages/dashboard/receive-order/receive-order.jsx';
+import { ReceiveOrderPost } from '@/pages/dashboard/receive-order/receive-order-post.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -72,20 +94,53 @@ export const router = createBrowserRouter([
                 path: 'inbounds',
                 children: [
                   { path: 'pending', element: <InboundOverview /> },
-                  { path: 'pending/edit/:orderNumber', element: <InboundPendingEdit /> },
-                  { path: 'register/:orderNumber', element: <InboundRegister /> },
+                  {
+                    path: 'pending/edit/:orderNumber',
+                    element: <InboundPendingEdit />,
+                  },
+                  {
+                    path: 'register/:orderNumber',
+                    element: <InboundRegister />,
+                  },
                 ],
               },
               {
+                path: 'notice',
+
+                children: [
+                  { index: true, element: <Notice /> },
+                  { path: 'create', element: <NoticeCreate /> },
+                  { path: ':id', element: <NoticeDetail /> },
+                  { path: ':id/edit', element: <NoticeEdit /> },
+                ],
+              },
+
+              {
+                path: 'todo',
+                children: [
+                  { index: true, element: <Todo /> },
+                  { path: 'create', element: <TodoCreate /> },
+                  { path: ':id', element: <TodoDetail /> },
+                  { path: ':id/edit', element: <TodoEdit /> },
+                ],
+              },
+
+              {
                 path: 'outbounds',
                 children: [
-                  { path: 'pending', element: <OutboundPending /> },
-                  { path: 'register/:orderNumber', element: <OutboundRegister /> },
+                  {
+                    path: 'pending',
+                    element: <OutboundPending />,
+                  },
+                  {
+                    path: 'register/:orderNumber',
+                    element: <OutboundRegister />,
+                  },
                 ],
               },
               {
                 path: 'adjust',
-                element: <Adjust />
+                element: <Adjust />,
               },
               {
                 path: 'statistics',
@@ -94,7 +149,18 @@ export const router = createBrowserRouter([
               {
                 path: 'history',
                 element: <HistoryPage />,
-              }
+              },
+              {
+                path: 'purchase-order',
+                element: <PurchaseOrder />,
+              },
+              {
+                path: 'receive-order',
+                children: [
+                  { index: true, element: <ReceiveOrder /> },
+                  { path: 'post', element: <ReceiveOrderPost /> },
+                ],
+              },
             ],
           },
         ],

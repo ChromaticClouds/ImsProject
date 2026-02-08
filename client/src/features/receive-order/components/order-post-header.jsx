@@ -1,0 +1,52 @@
+// @ts-check
+
+import { Input } from '@/components/ui/input.js';
+import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
+import { OrderCategorySelect } from './order-category-select.jsx';
+import { ReceiveOrderDatePicker } from './receive-order-date-picker.jsx';
+
+export const OrderPostHeader = () => {
+
+  return (
+    <section className='flex flex-col gap-4'>
+      {/* row 1 */}
+      <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-1 md:grid-cols-[120px_1fr] md:items-center'>
+          <span className='text-sm md:text-base'>수주 번호</span>
+          <Input
+            className='w-full md:w-60'
+            value='A012'
+            disabled
+          />
+        </div>
+
+        <div className='grid grid-cols-1 gap-1 md:grid-cols-[120px_1fr] md:items-center'>
+          <span className='text-sm md:text-base'>수주 날짜</span>
+          <Input
+            className='w-full md:w-60'
+            value={new Date().toLocaleDateString()}
+            disabled
+          />
+        </div>
+      </div>
+
+      {/* row 2 */}
+      <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+        <OrderCategorySelect
+          label='담당자'
+          placeholder='담당자를 선택해주세요'
+          categoryKey='users'
+        />
+
+        <OrderCategorySelect
+          label='판매처'
+          placeholder='판매처를 선택해주세요'
+          categoryKey='sellers'
+        />
+      </div>
+
+      {/* row 3 */}
+      <ReceiveOrderDatePicker />
+    </section>
+  );
+};

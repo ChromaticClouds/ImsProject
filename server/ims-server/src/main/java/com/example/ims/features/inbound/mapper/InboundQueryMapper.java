@@ -16,6 +16,7 @@ import com.example.ims.features.inbound.dto.*;
 @Mapper
 public interface InboundQueryMapper {
 
+	// 입고 대기 주문 목록(기간, 페이지)
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectPendingList")
     List<InboundOrderRow> selectPendingList(
         @Param("from") LocalDate from,
@@ -25,6 +26,8 @@ public interface InboundQueryMapper {
         @Param("size") int size
     );
 
+    
+    // 입고 대기 주문 갯수
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "countPending")
     long countPending(
         @Param("from") LocalDate from,
@@ -32,6 +35,7 @@ public interface InboundQueryMapper {
         @Param("keyword") String keyword
     );
 
+    // 입고 완료 목록
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectCompletedList")
     List<InboundOrderRow> selectCompletedList(
         @Param("from") LocalDate from,
@@ -41,6 +45,7 @@ public interface InboundQueryMapper {
         @Param("size") int size
     );
 
+    // 입고 완료 갯수
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "countCompleted")
     long countCompleted(
         @Param("from") LocalDate from,
@@ -48,27 +53,34 @@ public interface InboundQueryMapper {
         @Param("keyword") String keyword
     );
 
+    // 주문 번호에 대한 상세 정보
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectOrderDetail")
     InboundOrderDetail selectOrderDetail(@Param("orderId") Long orderId);
 
+    // 주문 상태 변경 (대기)
     @UpdateProvider(type = InboundQuerySqlProvider.class, method = "markInboundPending")
     int markInboundPending(@Param("orderId") Long orderId);
 
+    // 주문 상태 변경 (완료)
     @UpdateProvider(type = InboundQuerySqlProvider.class, method = "markInboundComplete")
     int markInboundComplete(@Param("orderId") Long orderId);
 
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectStatusSnapshot")
     InboundStatusUpdateResponse selectStatusSnapshot(@Param("orderId") Long orderId);
 
+    // 입고 대기 중인 제품 품목별 요약 
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectPendingSummary")
     List<InboundSummaryRow> selectPendingSummary(InboundSummaryParam param);
 
+    // 입고 대기 중인 제품 거래처별 요약 
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "countPendingSummary")
     long countPendingSummary(InboundSummaryParam param);
 
+    // 주문 번호에 포함된 여러 개 상품 리스트(대기)
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectPendingItemsByOrderNumber")
     List<InboundItemRow> selectPendingItemsByOrderNumber(@Param("orderNumber") String orderNumber);
 
+    // 오늘 처리된 입고 내역
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectCompletedTodaySummary")
     List<InboundSummaryRow> selectCompletedTodaySummary(
         @Param("keyword") String keyword,
@@ -76,18 +88,22 @@ public interface InboundQueryMapper {
         @Param("size") int size
     );
 
+    // 오늘 처리된 입고 내역 조회 갯수
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "countCompletedTodaySummary")
     long countCompletedTodaySummary(@Param("keyword") String keyword);
 
+    // 주문 번호에 포함된 여러 개 상품 리스트(완ㄹ요)
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectCompletedItemsByOrderNumber")
     List<InboundItemRow> selectCompletedItemsByOrderNumber(@Param("orderNumber") String orderNumber);
 
+    // 납기일 일자
     @UpdateProvider(type = InboundQuerySqlProvider.class, method = "updateReceiveDateByOrderNumber")
     int updateReceiveDateByOrderNumber(
         @Param("orderNumber") String orderNumber,
         @Param("receiveDate") LocalDate receiveDate
     );
 
+    // 입고 예정 제품 수
     @UpdateProvider(type = InboundQuerySqlProvider.class, method = "updateOrderQty")
     int updateOrderQty(
         @Param("orderId") Long orderId,
@@ -99,18 +115,21 @@ public interface InboundQueryMapper {
 
     // ---- 완료 처리용 ----
 
+    // 완료 처리 전, 최종 확인 데이터
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectOrdersForInboundCompleteByOrderNumber")
     List<InboundCompleteOrderRow> selectOrdersForInboundCompleteByOrderNumber(
         @Param("orderNumber") String orderNumber
     );
 
+    // 제품 몇 개인지 수량 확인 --> history beforeCount --> afterCount 때문에
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectLatestAfterCountForUpdate")
     Integer selectLatestAfterCountForUpdate(@Param("vendorItemId") Long vendorItemId);
 
+  
     @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectProductIdByVendorItemId")
     Long selectProductIdByVendorItemId(@Param("vendorItemId") Long vendorItemId);
 
-    // ✅ history: lot_id 기반으로 insert
+    // 해당 제품 변동 내역 표시
     @InsertProvider(type = InboundQuerySqlProvider.class, method = "insertHistoryRow")
     int insertHistoryRow(
         @Param("lotId") Long lotId,
@@ -120,6 +139,7 @@ public interface InboundQueryMapper {
         @Param("afterCount") Integer afterCount
     );
 
+    // 주문 번호 기준 해당 주문에 속한 항목 완료 처리
     @UpdateProvider(type = InboundQuerySqlProvider.class, method = "markInboundCompleteByOrderNumber")
     int markInboundCompleteByOrderNumber(@Param("orderNumber") String orderNumber);
 
@@ -130,7 +150,7 @@ public interface InboundQueryMapper {
         @Param("delta") Integer delta
     );
 
-    // ✅ history_lot 생성 + 생성된 id 받기 (가장 안전)
+    // user, 유형, 메모 생성. @Options으로 방금 만든  기록 ID값 받아옴. 
     @Insert("""
         INSERT INTO history_lot (user_id, status, memo)
         VALUES (#{userId}, #{status}, #{memo})

@@ -16,6 +16,9 @@ export const stockShareConfig = {
 
 const totalStock = stockShareMock.reduce((sum, v) => sum + v.stock, 0);
 
+/**
+ * 재고 점유율 차트
+ */
 export const StockShareChart = () => {
   return (
     <ChartContainer
@@ -31,7 +34,7 @@ export const StockShareChart = () => {
           nameKey='item'
           innerRadius={70} // ← 도넛 형태
           outerRadius={110}
-          paddingAngle={3}
+          paddingAngle={0}
         >
           {stockShareMock.map((_, index) => (
             <Cell key={index} />

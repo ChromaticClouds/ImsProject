@@ -1,18 +1,27 @@
 package com.example.ims.features.product.repository;
 
 import com.example.ims.features.product.dto.ProductSuggest;
-import com.example.ims.features.product.entity.Product;
+import com.example.ims.features.product.entities.Product;
+import com.example.ims.features.product.enums.ProductType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ProductRepository
     extends JpaRepository<Product, Long>,
         JpaSpecificationExecutor<Product>
 {
+
+    @Query("select distinct p.type from Product p where p.type is not null")
+    List<ProductType> findDistinctTypes();
+
+    @Query("select distinct p.brand from Product p where p.brand is not null")
+
+    List<String> findDistinctBrands();
 
     @Query("""
     SELECT new com.example.ims.features.product.dto.ProductSuggest(
@@ -29,4 +38,6 @@ public interface ProductRepository
     ORDER BY p.name
     """)
     List<ProductSuggest> suggest(@Param("search") String search);
+
+    List<Product> findAllByIdIn(Collection<Long> ids);
 }

@@ -19,17 +19,19 @@ import { SearchIcon } from 'lucide-react';
  */
 import { useProductSearchStore } from '@/features/product/stores/use-product-search-store.js';
 import { useProductSearch } from '@/features/product/hooks/use-product-search.js';
-import { useAdjustListStore } from '@/features/product/stores/use-adjust-list-store.js';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover.js';
+import { useAdjustContext } from '../providers/adjust-provider.jsx';
+import { addOrIncreaseProduct } from '../healper/index.js';
 
 export const AdjustProductSearch = () => {
-  const { data } = useProductSearch();
-  const { isOpen, setIsOpen, keyword, setKeyword } = useProductSearchStore();
-  const { addProduct } = useAdjustListStore();
+  const { input, setInput } = useProductSearch();
+  const { isOpen, setIsOpen } = useProductSearchStore();
+
+  const { form, products = [] } = useAdjustContext();
 
   return (
     <div className='relative w-full max-w-120'>
@@ -43,8 +45,8 @@ export const AdjustProductSearch = () => {
               <InputGroupInput
                 placeholder='제품 검색...'
                 size={48}
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
                 className='pr-10'
               />
               <InputGroupAddon>
@@ -57,30 +59,33 @@ export const AdjustProductSearch = () => {
         <PopoverContent
           align='start'
           className='p-0 w-(--radix-popover-trigger-width)'
-          onOpenAutoFocus={(e) => e.preventDefault()}
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
           <div className='max-h-80 overflow-y-auto'>
-            {data?.data?.length ? (
-              data.data.map((v) => (
-                <div
-                  key={v.id}
-                  className='flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted transition-colors'
-                  onMouseDown={() => addProduct(v)}
+            {products.length > 0 ? (
+              products.map((product) => (
+                <button
+                  key={product.id}
+                  type='button'
+                  className='w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors'
+                  onClick={() => {
+                    addOrIncreaseProduct(form, product);
+                    setIsOpen(false);
+                  }}
                 >
                   <img
-                    src={v.imageUrl || '/placeholder.png'}
+                    src={product.imageUrl || '/placeholder.png'}
                     className='w-10 h-10 rounded object-cover shrink-0'
                   />
                   <div className='flex flex-col min-w-0'>
                     <span className='text-sm font-medium truncate'>
-                      {v.name}
+                      {product.name}
                     </span>
                     <span className='text-xs text-muted-foreground truncate'>
-                      {v.brand} · 재고 {v.count}
+                      {product.brand} · 재고 {product.count}
                     </span>
                   </div>
-                </div>
+                </button>
               ))
             ) : (
               <div className='px-4 py-6 text-sm text-center text-muted-foreground'>

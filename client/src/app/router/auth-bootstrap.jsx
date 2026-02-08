@@ -19,7 +19,7 @@ import { useLoaderData } from 'react-router-dom';
 export const AuthBootstrap = () => {
   /**
    * @type {ReturnType<typeof useLoaderData<{ 
-   *   auth: { authenticated: boolean, role: User['role'] } 
+   *   auth: { authenticated: boolean, role: User['userRole'] } 
    * }>>}
    */
   const { auth } = useLoaderData();

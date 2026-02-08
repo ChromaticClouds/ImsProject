@@ -1,0 +1,28 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+
+export const NoticeDetailDialog = ({ notice, onClose }) => {
+  if (!notice) return null;
+
+  return (
+    <Dialog open={!!notice} onOpenChange={onClose}>
+      <DialogContent className='max-w-lg'>
+        <DialogHeader>
+          <DialogTitle>{notice.title}</DialogTitle>
+        </DialogHeader>
+
+        <div className='text-sm text-muted-foreground mb-2'>
+          작성자: {notice.userId} | 작성일: {notice.createdAt}
+        </div>
+
+        <div className='whitespace-pre-wrap text-sm'>
+          {notice.content}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};

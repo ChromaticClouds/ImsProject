@@ -27,6 +27,7 @@ import { Adjust } from '@/pages/dashboard/adjust';
 
 import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';
 import { OutboundRegister } from '@/pages/outbound/outbound-regiester.jsx';
+import { HistoryPage } from '@/pages/dashboard/history.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -90,6 +91,10 @@ export const router = createBrowserRouter([
                 path: 'statistics',
                 element: <Statistics />,
               },
+              {
+                path: 'history',
+                element: <HistoryPage />,
+              }
             ],
           },
         ],

@@ -6,6 +6,7 @@ import { VendorProvider } from '@/features/vendor/providers/vendor-provider';
 import { VendorTableContainer } from '../../features/vendor/components/vendor-table-container.jsx';
 import { VendorPaginationContainer } from '../../features/vendor/components/vendor-pagination-container.jsx';
 import { VendorSearch } from '@/features/vendor/components/vendor-search';
+import { AppHeader } from '@/components/common/app-header.jsx';
 
 export const VendorList = () => {
   const navigate = useNavigate();
@@ -13,10 +14,10 @@ export const VendorList = () => {
   return (
     <VendorProvider>
       <div className='p-4 space-y-4'>
-        <header className='flex justify-between items-center'>
-          <h1 className='text-xl font-semibold'>거래처 목록</h1>
-          
-        </header>
+      <AppHeader
+                    title='거래처'
+                    description='거래처를 확인하세요'
+                  />
         <VendorSearch />
         <VendorTableContainer />
         <VendorPaginationContainer />

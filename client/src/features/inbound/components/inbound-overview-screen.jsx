@@ -5,6 +5,7 @@ import { InboundCompletedTable } from './inbound-completed-table';
 
 import { useInboundPendingCtx } from '../providers/inbound-pending-provider';
 import { useInboundOverviewCtx } from '../providers/inbound-overview-provider';
+import { AppHeader } from '@/components/common/app-header.jsx';
 
 export function InboundOverviewScreen() {
   const pending = useInboundPendingCtx();
@@ -12,8 +13,10 @@ export function InboundOverviewScreen() {
 
   return (
     <div style={{ padding: 16 }}>
-      <h2>입고 현황</h2>
-
+      <AppHeader
+              title='입고 내역'
+              description='입고 내역을 확인하세요'
+            />
       <div style={{ marginBottom: 10 }}>
         <InboundDateRangePicker
           value={pending.search}

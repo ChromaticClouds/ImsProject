@@ -22,7 +22,7 @@ export const AmountFieldCell = ({ product, index }) => {
         const showError = isTouched && !isValid;
 
         return (
-          <TableCell className='text-center'>
+          <TableCell className='text-center w-20'>
             <TooltipProvider>
               <Tooltip open={showError}>
                 <TooltipTrigger asChild>

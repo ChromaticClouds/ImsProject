@@ -4,7 +4,7 @@ export const OrderPostSearchSkeleton = () => {
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
-          className='flex items-center gap-3 px-4 py-3'
+          className='flex items-center gap-3 p-2'
         >
           <div className='w-10 h-10 rounded bg-muted animate-pulse' />
           <div className='flex-1 h-4 bg-muted rounded animate-pulse' />

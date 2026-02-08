@@ -20,8 +20,8 @@ export const ReceiveOrderSearch = () => {
   };
 
   return (
-    <CardHeader className='border-b flex justify-between'>
-      <div className='flex gap-3 items-center'>
+    <CardHeader className='border-b flex justify-between flex-col xl:flex-row gap-3'>
+      <div className='flex gap-3 items-center w-full'>
         <span>날짜 선택</span>
         <AppDateRangePicker
           value={value}
@@ -29,7 +29,7 @@ export const ReceiveOrderSearch = () => {
         />
       </div>
       <div className='flex gap-3'>
-        <InputGroup className='w-100'>
+        <InputGroup className='w-100 xl:w-full'>
           <InputGroupInput placeholder='수주번호 / 판매처 / 대표자 / 담당자 검색' />
           <InputGroupAddon>
             <SearchIcon />

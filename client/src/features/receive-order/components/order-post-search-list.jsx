@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
 import { OrderPostSearchSkeleton } from './order-post-search-skeleton.jsx';
 
@@ -42,10 +43,14 @@ export const OrderPostSearchList = ({ products, isFetching, onClick }) => {
             onClick();
           }}
         >
-          <img
-            src={product.imageUrl || '/placeholder.png'}
-            className='w-10 h-10 rounded object-cover shrink-0'
-          />
+          <Avatar className='w-10 h-10 rounded'>
+            <AvatarImage
+              src={product.imageUrl}
+              alt={product.name}
+              className='w-10 h-10 rounded object-cover shrink-0'
+            />
+            <AvatarFallback className='w-10 h-10 rounded' />
+          </Avatar>
 
           <div className='flex flex-col min-w-0'>
             {/* 제품명 */}

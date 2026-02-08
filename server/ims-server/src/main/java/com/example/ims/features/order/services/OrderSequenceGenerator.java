@@ -15,8 +15,16 @@ public class OrderSequenceGenerator {
 
     private final OrderSequenceRepository sequenceRepository;
 
-    @Transactional
     public String generate() {
+        return next(false);
+    }
+
+    @Transactional
+    public String issue() {
+        return next(true);
+    }
+
+    private String next(boolean persist) {
         String today = LocalDate.now()
             .format(DateTimeFormatter.BASIC_ISO_DATE);
 
@@ -26,10 +34,18 @@ public class OrderSequenceGenerator {
 
         seq.increase();
 
+        if (persist) {
+            sequenceRepository.save(seq);
+        }
+
+        return format(today, seq.getSeq());
+    }
+
+    private String format(String date, int seq) {
         return String.format(
             "ORD-%s-%06d",
-            today,
-            seq.getSeq()
+            date,
+            seq
         );
     }
 }

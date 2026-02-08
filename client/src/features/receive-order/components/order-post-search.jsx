@@ -30,6 +30,7 @@ import { OrderPostSearchList } from './order-post-search-list.jsx';
 
 export const OrderPostSearch = () => {
   const [open, setOpen] = useState(false);
+  const [focus, setFocus] = useState(false);
   const [input, setInput] = useState('');
   const debounced = useDebounce(input, 500);
 
@@ -38,10 +39,11 @@ export const OrderPostSearch = () => {
   const products = data?.data ?? [];
 
   return (
-    <CardFooter>
+    <CardFooter className='border-t'>
       <div className='relative w-full max-w-120'>
         <Popover
           open={open}
+          modal={true}
           onOpenChange={setOpen}
         >
           <PopoverTrigger asChild>
@@ -52,6 +54,7 @@ export const OrderPostSearch = () => {
                   size={48}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onFocus={() => setOpen(true)}
                   className='pr-10'
                 />
                 <InputGroupAddon>
@@ -64,8 +67,9 @@ export const OrderPostSearch = () => {
           <PopoverContent
             align='start'
             side='bottom'
-            className='p-0 w-(--radix-popover-trigger-width)'
+            onOpenAutoFocus={(e) => e.preventDefault()}
             onCloseAutoFocus={(e) => e.preventDefault()}
+            className='p-0 w-(--radix-popover-trigger-width)'
           >
             <OrderPostSearchList
               products={products}

@@ -1,16 +1,11 @@
 package com.example.ims.features.order.controllers;
 
-import com.example.ims.features.order.dto.OrderBootstrap;
-import com.example.ims.features.order.dto.OrderProduct;
-import com.example.ims.features.order.dto.OrderResponse;
+import com.example.ims.features.order.dto.*;
 import com.example.ims.features.order.services.OrderService;
 import com.example.ims.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,11 +17,8 @@ public class OrderController {
     private final OrderService service;
 
     @GetMapping("receive")
-    public ResponseEntity<ApiResponse<List<OrderResponse>>> getReceiveOrders() {
-        List<OrderResponse> orders = service.getReceiveOrders()
-            .stream()
-            .map(OrderResponse::from)
-            .toList();
+    public ResponseEntity<ApiResponse<List<OrderSummary>>> getReceiveOrders() {
+        List<OrderSummary> orders = service.getReceiveOrders();
 
         return ResponseEntity.ok(ApiResponse.success(orders));
     }
@@ -45,5 +37,12 @@ public class OrderController {
         List<OrderProduct> products = service.getProducts(search);
 
         return ResponseEntity.ok(ApiResponse.success(products));
+    }
+
+    @PostMapping("post")
+    public ResponseEntity<ApiResponse<Void>> postOrder(@RequestBody OrderPostRequest request) {
+        service.postOrder(request);
+
+        return ResponseEntity.ok(ApiResponse.success("발주서가 성공적으로 업로드 되었습니다."));
     }
 }

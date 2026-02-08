@@ -9,12 +9,10 @@ export const productAmountSchema = z.object({
 
 export const receiveOrderFormSchema = z.object({
   userId: z.number()
-    .int()
-    .positive('담당자를 선택해주세요'),
+    .nullable('담당자를 선택해주세요'),
 
   sellerId: z.number()
-    .int()
-    .positive('판매처를 선택해주세요'),
+    .nullable('판매처를 선택해주세요'),
 
   receiveDate: z.date('날짜를 선택해주세요'),
 

@@ -6,6 +6,7 @@ import com.example.ims.features.product.entities.Product;
 import com.example.ims.features.vendor.dto.Vendor;
 import com.example.ims.features.vendor.entities.VendorItem;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @Table(name = "orders")
 @Getter
 @Setter
+@Builder
 public class Order {
 
     @Id

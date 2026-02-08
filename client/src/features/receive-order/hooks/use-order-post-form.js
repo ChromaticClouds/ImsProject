@@ -1,7 +1,19 @@
 // @ts-check
-import { useForm } from "@tanstack/react-form";
-import { receiveOrderFormSchema } from "../schemas/receive-order-form-schema.js";
 import z from 'zod';
+
+/**
+ * Hooks
+ */
+import { useForm } from '@tanstack/react-form';
+
+/**
+ * Schema
+ */
+import { receiveOrderFormSchema } from '../schemas/receive-order-form-schema.js';
+import { postOrder } from '@/features/receive-order/api/index.js';
+import { toast } from 'sonner';
+import { HTTPError } from 'ky';
+import { ERROR } from '@/services/error.js';
 
 /**
  * @typedef {z.infer<typeof receiveOrderFormSchema>} OrderSchema
@@ -13,18 +25,37 @@ import z from 'zod';
 const defaultValues = {
   userId: undefined,
   sellerId: undefined,
-  receiveDate: undefined,
-  products: []
-}
+  receiveDate: new Date(),
+  products: [],
+};
 
 export const useOrderPostForm = () => {
-  return useForm({
+  const form = useForm({
     defaultValues,
     validators: {
-      onChange: receiveOrderFormSchema
+      onChange: receiveOrderFormSchema,
     },
-    onSubmit: ({ value }) => {
-      console.log(value);
-    }
+    onSubmit: async ({ value }) => {
+      try {
+        const response = await postOrder(value);
+        if (!response.success) return;
+        toast.success(response.message);
+        form.reset();
+      } catch (err) {
+        if (err instanceof HTTPError) {
+          const errResponse = await err.response.json().catch(() => null);
+
+          return toast.error(
+            typeof errResponse?.message === 'string'
+              ? errResponse.message
+              : ERROR.UNEXPECTED_ERROR,
+          );
+        }
+
+        toast.error(ERROR.SERVER_ERROR);
+      }
+    },
   });
+
+  return form;
 };

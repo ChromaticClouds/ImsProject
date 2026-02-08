@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card.js';
+import { OrderPostAction } from '@/features/receive-order/components/order-post-action.jsx';
 import { OrderPostHeader } from '@/features/receive-order/components/order-post-header.jsx';
 import { OrderPostList } from '@/features/receive-order/components/order-post-list.jsx';
 import { OrderPostSearch } from '@/features/receive-order/components/order-post-search.jsx';
@@ -14,6 +15,7 @@ export const ReceiveOrderPost = () => {
           <OrderPostList />
           <OrderPostSearch />
         </Card>
+        <OrderPostAction />
       </ReceiveOrderPostContainer>
     </ReceiveOrderPostProvider>
   );

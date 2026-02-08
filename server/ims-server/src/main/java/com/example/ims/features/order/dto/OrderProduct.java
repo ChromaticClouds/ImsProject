@@ -11,6 +11,7 @@ public record OrderProduct(
     String brand,
     Integer salePrice,
     Integer perCount,
+    Integer amount,
     String imageUrl
 ) {
     public static OrderProduct from(Product product) {
@@ -22,6 +23,7 @@ public record OrderProduct(
             product.getBrand(),
             product.getSalePrice(),
             product.getPerCount(),
+            0,
             product.getImageUrl()
         );
     }

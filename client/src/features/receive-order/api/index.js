@@ -1,6 +1,8 @@
 // @ts-check
 
 import { api, hooks } from "@/services/api.js";
+import { receiveOrderFormSchema } from "@/features/receive-order/schemas/receive-order-form-schema.js";
+import z from "zod";
 
 /**
  * @returns {Promise<ApiResponse<{ users: UserIdentifier[], sellers: VendorIdentifier[], sequence: string }>>}
@@ -35,3 +37,10 @@ export const getReceiveOrders = () =>
  */
 export const getProductSearchResult = (search) =>
   api.get('order/get-products', { hooks, searchParams: { search } }).json();
+
+/**
+ * @param {z.infer<typeof receiveOrderFormSchema>} value 
+ * @returns {Promise<ApiResponse>}
+ */
+export const postOrder = (value) =>
+  api.post('order/post', { json: value, hooks }).json();

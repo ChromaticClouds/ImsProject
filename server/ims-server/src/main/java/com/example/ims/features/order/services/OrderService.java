@@ -2,15 +2,22 @@ package com.example.ims.features.order.services;
 
 import com.example.ims.features.auth.enums.UserRole;
 import com.example.ims.features.order.dto.OrderBootstrap;
+import com.example.ims.features.order.dto.OrderProduct;
 import com.example.ims.features.order.entities.Order;
 import com.example.ims.features.order.repositories.OrderRepository;
 import com.example.ims.features.order.repositories.OrderSequenceRepository;
+import com.example.ims.features.product.entities.Product;
+import com.example.ims.features.product.repository.ProductSpecification;
 import com.example.ims.features.user.dto.UserIdentifier;
 import com.example.ims.features.user.repositories.UserRepository;
 import com.example.ims.features.vendor.dto.VendorIdentifier;
+import com.example.ims.features.vendor.entities.VendorItem;
 import com.example.ims.features.vendor.enums.VendorType;
+import com.example.ims.features.vendor.repositories.VendorItemRepository;
 import com.example.ims.features.vendor.repositories.VendorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +31,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final VendorRepository vendorRepository;
+    private final VendorItemRepository vendorItemRepository;
     private final OrderSequenceGenerator sequenceGenerator;
 
     public List<Order> getReceiveOrders() {
@@ -46,6 +54,19 @@ public class OrderService {
         String sequence = sequenceGenerator.generate();
 
         return new OrderBootstrap(users, sellers, sequence);
+    }
+
+    public List<OrderProduct> getProducts(String search) {
+        Specification<VendorItem> spec = Specification
+            .where(ProductSpecification.productsIn(search));
+
+        return vendorItemRepository
+            .findAll(spec)
+            .stream()
+            .map(VendorItem::getProduct)
+            .map(OrderProduct::from)
+            .distinct()
+            .toList();
     }
 
     @Transactional

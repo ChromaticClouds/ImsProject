@@ -1,6 +1,7 @@
 package com.example.ims.features.order.controllers;
 
 import com.example.ims.features.order.dto.OrderBootstrap;
+import com.example.ims.features.order.dto.OrderProduct;
 import com.example.ims.features.order.dto.OrderResponse;
 import com.example.ims.features.order.services.OrderService;
 import com.example.ims.global.response.ApiResponse;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -34,5 +36,14 @@ public class OrderController {
         OrderBootstrap bootstrap = service.getOrderBootstrap();
 
         return ResponseEntity.ok(ApiResponse.success(bootstrap));
+    }
+
+    @GetMapping("get-products")
+    public ResponseEntity<ApiResponse<List<OrderProduct>>> getProducts(
+        @RequestParam(value = "search", defaultValue = "") String search
+    ) {
+        List<OrderProduct> products = service.getProducts(search);
+
+        return ResponseEntity.ok(ApiResponse.success(products));
     }
 }

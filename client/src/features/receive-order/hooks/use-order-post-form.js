@@ -11,9 +11,9 @@ import z from 'zod';
  * @type {OrderSchema}
  */
 const defaultValues = {
-  userId: null,
-  sellerId: null,
-  receiveDate: null,
+  userId: undefined,
+  sellerId: undefined,
+  receiveDate: undefined,
   products: []
 }
 

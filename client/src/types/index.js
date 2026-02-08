@@ -172,13 +172,13 @@
 
 
 /**
- * @typedef {'SOJU' | 'WHISKEY' | 'LIQUOR' | 'TRADITIONAL' | 'KAOLIANG_LIQUOR'} BrandCategory
+ * @typedef {'SOJU' | 'WHISKEY' | 'LIQUOR' | 'TRADITIONAL' | 'KAOLIANG_LIQUOR'} ProductType
  */
 
 /**
  * @typedef {object} CategoriesType
- * @property {string[]} types
- * @property {BrandCategory[]} brands
+ * @property {ProductType[]} types
+ * @property {string[]} brands
  */
 
 /**
@@ -216,4 +216,16 @@
  * @property {number | null} sellerId
  * @property {Date | null} receiveDate
  * @property {OrderProduct[]} products
+ */
+
+/**
+ * @typedef {object} OrderPostProduct
+ * @property {number} id
+ * @property {string} productCode
+ * @property {string} name
+ * @property {ProductType} type
+ * @property {string} brand
+ * @property {number} perCount
+ * @property {number} salePrice
+ * @property {string} imageUrl
  */

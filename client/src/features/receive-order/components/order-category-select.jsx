@@ -46,8 +46,10 @@ export const OrderCategorySelect = ({ categoryKey, label, placeholder }) => {
       <form.Field name={formName}>
         {(field) => (
           <Select
-            value={String(field.state.value)}
-            onValueChange={(e) => field.handleChange(Number(e))}
+            value={field.state.value ? String(field.state.value) : ''}
+            onValueChange={(v) => 
+              field.handleChange(v ? Number(v) : undefined)
+            }
           >
             <SelectTrigger className='w-full md:w-60'>
               <SelectValue placeholder={placeholder ?? ''} />

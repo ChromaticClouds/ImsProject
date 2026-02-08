@@ -31,7 +31,7 @@ public class ProductService {
             .and(ProductSpecification.brandIn(brands));
 
         return PageResponse.from(
-                productRepository.findAll(spec, pageable)
+            productRepository.findAll(spec, pageable)
         );
     }
 

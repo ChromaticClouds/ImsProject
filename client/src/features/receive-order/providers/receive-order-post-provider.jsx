@@ -18,7 +18,7 @@ import { useOrderBootstrap } from '../hooks/use-order-bootstrap.js';
  */
 const ReceiveOrderPostContext = createContext(null);
 
-export const useOrderPostContext = () => {
+export const  useOrderPostContext = () => {
   const ctx = useContext(ReceiveOrderPostContext);
   if (!ctx) throw new Error('Receive order post context is not provived1');
   return ctx;
@@ -29,9 +29,7 @@ export const useOrderPostContext = () => {
  */
 export const ReceiveOrderPostProvider = ({ children }) => {
   const form = useOrderPostForm();
-  const { data, error } = useOrderBootstrap();
-
-  console.log(data, error);
+  const { data } = useOrderBootstrap();
 
   const context = data?.data;
 

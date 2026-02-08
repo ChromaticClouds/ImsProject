@@ -25,7 +25,6 @@ public class OrderSequenceGenerator {
             .orElseGet(() -> new OrderSequence(today, 0));
 
         seq.increase();
-        sequenceRepository.save(seq);
 
         return String.format(
             "ORD-%s-%06d",

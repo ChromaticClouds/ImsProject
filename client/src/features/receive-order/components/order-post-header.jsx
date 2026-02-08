@@ -4,31 +4,14 @@ import { Input } from '@/components/ui/input.js';
 import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
 import { OrderCategorySelect } from './order-category-select.jsx';
 import { ReceiveOrderDatePicker } from './receive-order-date-picker.jsx';
+import { OrderBootstrap } from './order-bootstrap.jsx';
 
 export const OrderPostHeader = () => {
 
   return (
     <section className='flex flex-col gap-4'>
       {/* row 1 */}
-      <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
-        <div className='grid grid-cols-1 gap-1 md:grid-cols-[120px_1fr] md:items-center'>
-          <span className='text-sm md:text-base'>수주 번호</span>
-          <Input
-            className='w-full md:w-60'
-            value='A012'
-            disabled
-          />
-        </div>
-
-        <div className='grid grid-cols-1 gap-1 md:grid-cols-[120px_1fr] md:items-center'>
-          <span className='text-sm md:text-base'>수주 날짜</span>
-          <Input
-            className='w-full md:w-60'
-            value={new Date().toLocaleDateString()}
-            disabled
-          />
-        </div>
-      </div>
+      <OrderBootstrap />
 
       {/* row 2 */}
       <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>

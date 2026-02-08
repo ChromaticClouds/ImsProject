@@ -28,3 +28,10 @@ export const getOrderBoostrap = () =>
  */
 export const getReceiveOrders = () =>
   api.get('order/receive', { hooks }).json();
+
+/**
+ * @param {string} search
+ * @returns {Promise<ApiResponse<OrderPostProduct[]>>}
+ */
+export const getProductSearchResult = (search) =>
+  api.get('order/get-products', { hooks, searchParams: { search } }).json();

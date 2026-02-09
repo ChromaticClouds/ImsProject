@@ -1,23 +1,25 @@
 // src/features/purchase-order/stores/use-purchase-order-selection-store.js
-import { useMemo, useState } from 'react';
+import { create } from 'zustand';
 
-export const usePurchaseOrderSelectionStore = () => {
-  const [selectedIds, setSelectedIds] = useState([]);
+export const usePurchaseOrderSelectionStore = create((set, get) => ({
+  selectedIds: [],
 
-  const api = useMemo(() => {
-    const toggle = (id, checked) => {
-      setSelectedIds((prev) => {
-        if (checked) return prev.includes(id) ? prev : [...prev, id];
-        return prev.filter((x) => x !== id);
-      });
-    };
+  toggle: (id, checked) =>
+    set((state) => {
+      const exists = state.selectedIds.includes(id);
 
-    const clear = () => setSelectedIds([]);
+      if (checked && !exists) {
+        return { selectedIds: [...state.selectedIds, id] };
+      }
 
-    const isSelected = (id) => selectedIds.includes(id);
+      if (!checked && exists) {
+        return { selectedIds: state.selectedIds.filter((x) => x !== id) };
+      }
 
-    return { toggle, clear, isSelected };
-  }, [selectedIds]);
+      return state;
+    }),
 
-  return { selectedIds, setSelectedIds, ...api };
-};
+  clear: () => set({ selectedIds: [] }),
+
+  isSelected: (id) => get().selectedIds.includes(id),
+}));

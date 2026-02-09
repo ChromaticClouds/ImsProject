@@ -1,52 +1,51 @@
-// src/features/purchase-order/hooks/use-purchase-orders.js
-import { useEffect, useMemo, useState } from 'react';
-import { fetchPurchaseOrders } from '@/features/purchase-order/api/purchase-order-api.js';
+import { useMemo } from 'react';
+import { usePurchaseOrdersStore } from '@/features/purchase-order/stores/use-purchase-orders-store.js';
 
-const isSent = (status) => status === 'INBOUND_PENDING'; // 전송 완료
-const isDraft = (status) => status == null; // 전송 전 (null)
-
-const calcSummary = (rows) => {
-  const itemKinds = rows.length; // 발주 건수
-  const totalCount = rows.reduce((acc, r) => acc + Number(r.count || 0), 0);
-  return { itemKinds, totalCount };
+export const purchaseOrderStatus = {
+  isSent: (status) => status === 'INBOUND_PENDING',
+  isDraft: (status) => status == null,
 };
 
 export const usePurchaseOrders = () => {
-  const [rows, setRows] = useState([]);
-
-  useEffect(() => {
-    fetchPurchaseOrders().then(setRows).catch(console.error);
-  }, []);
-
-  const api = useMemo(() => {
-    const update = (id, patch) =>
-      setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
-
-    const remove = (id) => setRows((prev) => prev.filter((r) => r.id !== id));
-
-    const bulkRemove = (ids) =>
-      setRows((prev) => prev.filter((r) => !ids.includes(r.id)));
-
-    const markSent = (id) => update(id, { status: 'INBOUND_PENDING' });
-
-    const bulkMarkSent = (ids) =>
-      setRows((prev) =>
-        prev.map((r) => (ids.includes(r.id) ? { ...r, status: 'INBOUND_PENDING' } : r))
-      );
-
-    return { update, remove, bulkRemove, markSent, bulkMarkSent };
-  }, []);
+  const rows = usePurchaseOrdersStore((s) => s.rows);
+  const setRows = usePurchaseOrdersStore((s) => s.setRows);
+  const update = usePurchaseOrdersStore((s) => s.update);
+  const remove = usePurchaseOrdersStore((s) => s.remove);
+  const markSent = usePurchaseOrdersStore((s) => s.markSent);
+  const bulkMarkSent = usePurchaseOrdersStore((s) => s.bulkMarkSent);
+  const bulkRemove = usePurchaseOrdersStore((s) => s.bulkRemove);
 
   const summaryDraft = useMemo(
-    () => calcSummary(rows.filter((r) => isDraft(r.status))),
-    [rows]
-  );
-  const summarySent = useMemo(
-    () => calcSummary(rows.filter((r) => isSent(r.status))),
+    () => ({
+      itemKinds: rows.filter((r) => r.status == null).length,
+      totalCount: rows
+        .filter((r) => r.status == null)
+        .reduce((a, r) => a + Number(r.count || 0), 0),
+    }),
     [rows]
   );
 
-  return { rows, setRows, summaryDraft, summarySent, ...api };
+  const summarySent = useMemo(
+    () => ({
+      itemKinds: rows.filter((r) => r.status === 'INBOUND_PENDING').length,
+      totalCount: rows
+        .filter((r) => r.status === 'INBOUND_PENDING')
+        .reduce((a, r) => a + Number(r.count || 0), 0),
+    }),
+    [rows]
+  );
+
+  return {
+    rows,
+    setRows,
+    update,
+    remove,
+    markSent,
+    bulkMarkSent,
+    summaryDraft,
+    summarySent,
+    bulkRemove,
+  };
 };
 
-export const purchaseOrderStatus = { isSent, isDraft };
+

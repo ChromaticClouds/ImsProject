@@ -29,8 +29,8 @@ public class ProductController {
     public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getProducts(
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "search", defaultValue = "") String search,
-        @RequestParam(required = false) String type,
-        @RequestParam(required = false) String brand
+        @RequestParam(value = "type", required = false) String type,
+        @RequestParam(value = "brand", required = false) String brand
     ) {
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
 

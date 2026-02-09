@@ -1,3 +1,5 @@
+// @ts-check
+
 import { useEffect } from 'react';
 import { useMemo } from 'react';
 import { AppHeader } from '@/components/common/app-header.jsx';
@@ -11,8 +13,7 @@ import { PurchaseOrderPicker } from '@/features/purchase-order/components/purcha
 
 import { usePurchaseOrders } from '@/features/purchase-order/hooks/use-purchase-orders.js';
 import { usePurchaseOrderFilterStore } from '@/features/purchase-order/stores/use-purchase-order-filter-store.js';
-import { usePurchaseOrderPagination } from '@/features/purchase-order/hooks/purchase-order-pagination';
-
+import { usePurchaseOrderPagination } from '@/features/purchase-order/hooks/use-purchase-order-pagination';
 
 export const PurchaseOrder = () => {
   const { rows } = usePurchaseOrders();
@@ -23,6 +24,8 @@ export const PurchaseOrder = () => {
     () => rows.filter(filterFn),
     [rows, view, keyword, range]
   );
+
+  console.log(filtered);
 
   const pagination = usePurchaseOrderPagination(filtered);
 

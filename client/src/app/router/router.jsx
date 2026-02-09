@@ -21,27 +21,14 @@ import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
 
 // product 품목
 import { Product } from '@/pages/dashboard/product';
-<<<<<<< HEAD
 
-// ✅ inbounds
-=======
-// notice 공지사항
-import { Notice } from '@/pages/dashboard/notice';
-// purchase-order 발주 관리
-import { PurchaseOrder } from '@/pages/dashboard/purchase-order';
->>>>>>> cfbdc285c67beddbed33066ddd79fe068f45ff18
 import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
-
 
 /*
  * Notice pages
  */
-<<<<<<< HEAD
 import { Notice } from '@/pages/dashboard/notice';
-import { NoticeDetail } from '@/features/notice/pages/notice-detail'; 
-=======
 import { NoticeDetail } from '@/features/notice/pages/notice-detail';
->>>>>>> cfbdc285c67beddbed33066ddd79fe068f45ff18
 import { NoticeCreate } from '@/features/notice/pages/notice-create';
 import { NoticeEdit } from '@/features/notice/pages/notice-edit';
 import { InboundPendingEdit } from '@/pages/inbound/inbound-pending-edit.jsx';
@@ -56,20 +43,16 @@ import { TodoCreate } from '@/features/todo/pages/todo-create';
 import { TodoDetail } from '@/features/todo/pages/todo-detail';
 import { TodoEdit } from '@/features/todo/pages/todo-edit';
 
-<<<<<<< HEAD
 // purchase-order pages
 import { PurchaseOrder } from '@/pages/dashboard/purchase-order';
 import { PurchaseOrderCreate } from '@/features/purchase-order/pages/purchse-order-create';
 import { PurchaseOrderEdit } from '@/features/purchase-order/pages/purchase-order-edit';
 
-
-=======
 import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';
 import { OutboundRegister } from '@/pages/outbound/outbound-regiester.jsx';
 import { HistoryPage } from '@/pages/dashboard/history.jsx';
 import { ReceiveOrder } from '@/pages/dashboard/receive-order/receive-order.jsx';
 import { ReceiveOrderPost } from '@/pages/dashboard/receive-order/receive-order-post.jsx';
->>>>>>> cfbdc285c67beddbed33066ddd79fe068f45ff18
 
 export const router = createBrowserRouter([
   {
@@ -167,17 +150,14 @@ export const router = createBrowserRouter([
                 element: <Statistics />,
               },
               {
-<<<<<<< HEAD
-                path:'purchase-order',
-                children:[
-                  {index:true,element:<PurchaseOrder/>},
-                  {path:'create',element:<PurchaseOrderCreate/>},
-                  {path:':id/edit',element:<PurchaseOrderEdit/>},
+                path: 'purchase-order',
+                children: [
+                  { index: true, element: <PurchaseOrder /> },
+                  { path: 'create', element: <PurchaseOrderCreate /> },
+                  { path: ':id/edit', element: <PurchaseOrderEdit /> },
                 ],
-                
               },
-              
-=======
+              {
                 path: 'history',
                 element: <HistoryPage />,
               },
@@ -192,7 +172,6 @@ export const router = createBrowserRouter([
                   { path: 'post', element: <ReceiveOrderPost /> },
                 ],
               },
->>>>>>> cfbdc285c67beddbed33066ddd79fe068f45ff18
             ],
           },
         ],

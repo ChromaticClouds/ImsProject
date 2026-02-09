@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.ims.features.auth.entities.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findByStatusNotIn(List<UserStatus> statuses, Pageable pageable);
@@ -22,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByUserRoleIn(List<UserRole> roles);
 
     List<UserRole> UserRole(UserRole userRole);
+
+    Optional<User> findByEmail(String email);
 }

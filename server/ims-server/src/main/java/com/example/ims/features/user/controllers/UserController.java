@@ -2,6 +2,7 @@ package com.example.ims.features.user.controllers;
 
 import com.example.ims.features.auth.stores.RefreshTokenCookieStore;
 import com.example.ims.features.user.dto.*;
+import com.resend.core.exception.ResendException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -82,7 +83,7 @@ public class UserController {
     @PostMapping("forgot-password")
     public ResponseEntity<ApiResponse<Void>> postEmail(
         @RequestBody EmailRequest request
-    ) {
+    ) throws ResendException {
         service.sendEmail(request);
         return ResponseEntity.ok(ApiResponse.success("Got email"));
     }

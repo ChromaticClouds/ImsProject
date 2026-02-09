@@ -3,12 +3,12 @@ package com.example.ims.features.user.services;
 import com.example.ims.features.auth.enums.UserStatus;
 import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.auth.stores.RefreshTokenStore;
-import com.example.ims.features.user.dto.EmailRequest;
-import com.example.ims.features.user.dto.PasswordChangeRequest;
-import com.example.ims.features.user.dto.UpdateUserRequest;
-import com.example.ims.features.user.dto.UserListResponse;
+import com.example.ims.features.user.dto.*;
 import com.example.ims.features.user.exceptions.InvalidPasswordException;
 import com.example.ims.features.user.exceptions.PasswordMismatchException;
+import com.example.ims.features.user.stores.PasswordResetTokenStore;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,14 +20,20 @@ import com.example.ims.global.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private static final Duration PASSWORD_CHANGE_TTL = Duration.ofHours(24);
     
     private final UserRepository repository;
     private final RefreshTokenStore refreshTokenStore;
+    private final PasswordResetTokenStore passwordResetTokenStore;
+    private final PasswordMailSender mailSender;
 
     private String normalize(String search) {
         return (search == null) ? "" : search.trim();
@@ -76,7 +82,20 @@ public class UserService {
         refreshTokenStore.deleteAll(userId);
     }
 
-    public void sendEmail(EmailRequest request) {
+    public void sendEmail(EmailRequest request)
+            throws ResendException {
+        String token = UUID.randomUUID().toString();
 
+        PasswordChangePayload payload =
+            new PasswordChangePayload(request.email(), token);
+
+        passwordResetTokenStore.save(payload, PASSWORD_CHANGE_TTL);
+
+        User found = repository.findByEmail(payload.email())
+            .orElse(null);
+
+        if (found != null) {
+            mailSender.createPasswordChangeForm(payload);
+        }
     }
 }

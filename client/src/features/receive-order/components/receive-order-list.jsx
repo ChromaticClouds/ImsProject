@@ -9,21 +9,17 @@ import {
   TableRow,
 } from '@/components/ui/table.js';
 import { RECEIVE_ORDER_TABLE_HEADER } from '../constants/index.js';
-
-const TABLE_HEADER = [
-  '수주번호',
-  '수주일',
-  '판매처',
-  '대표자명',
-  '담당자',
-  '품목 수',
-  '단가 총액',
-  '납기희망일',
-  '출고 담당자',
-];
+import { useQuery } from '@tanstack/react-query';
+import { getReceiveOrders } from '../api/index.js';
+import { Select } from '@/components/ui/select.js';
 
 export const ReceiveOrderList = () => {
+  const { data, error, isFetching } = useQuery({
+    queryKey: ['receive-orders'],
+    queryFn: getReceiveOrders,
+  });
 
+  const orders = data?.data ?? [];
   
   return (
     <Table>
@@ -40,9 +36,19 @@ export const ReceiveOrderList = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell></TableCell>
-        </TableRow>
+        {orders.map((o) => (
+          <TableRow className='text-center h-16'>
+            <TableCell>{o.orderNumber}</TableCell>
+            <TableCell>{o.orderDate}</TableCell>
+            <TableCell>{o.vendorName}</TableCell>
+            <TableCell>{o.bossName}</TableCell>
+            <TableCell>{o.userName}</TableCell>
+            <TableCell>{o.itemCount}</TableCell>
+            <TableCell>{o.totalPrice}</TableCell>
+            <TableCell>{o.receiveDate}</TableCell>
+            <TableCell><Select></Select></TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );

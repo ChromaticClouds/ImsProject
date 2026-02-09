@@ -5,10 +5,11 @@ import java.time.LocalDate;
 
 public record OrderSummary(
     String orderNumber,
-    Long userId,
-    Long vendorId,
+    String userName,
+    String vendorName,
+    String bossName,
     LocalDate orderDate,
     LocalDate receiveDate,
-    BigInteger itemCount,
-    BigInteger totalPrice
+    Long itemCount,
+    Long totalPrice
 ) {}

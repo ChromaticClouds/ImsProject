@@ -108,7 +108,6 @@ public class OrderService {
     }
 
     public List<OrderSummary> getReceiveOrders() {
-//        return orderRepository.findOrderSummaries(OrderStatus.INBOUND_PENDING);
-        return List.of();
+        return orderRepository.findOrderSummaries(OrderStatus.INBOUND_PENDING);
     }
 }

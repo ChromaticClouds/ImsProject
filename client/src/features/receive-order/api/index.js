@@ -16,13 +16,14 @@ export const getOrderBoostrap = () =>
 
 /**
  * @typedef {object} ReceivedOrder
- * @property {number} id
- * @property {number} orderNumber
+ * @property {string} orderNumber
  * @property {string} userName
- * @property {number} count
+ * @property {string} vendorName
+ * @property {string} bossName
  * @property {string} orderDate
  * @property {string} receiveDate
- * @property {OrderStatus} status 
+ * @property {number} itemCount
+ * @property {number} totalPrice 
  */
 
 /**
@@ -44,3 +45,6 @@ export const getProductSearchResult = (search) =>
  */
 export const postOrder = (value) =>
   api.post('order/post', { json: value, hooks }).json();
+
+export const fetchOutboundManagers = 
+  api.get('order/get-managers', { hooks }).json();

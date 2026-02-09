@@ -69,4 +69,8 @@ public class User {
 
         this.userRole = newRole;
     }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

@@ -1,4 +1,3 @@
-// @ts-check
 
 /**
  * Components
@@ -26,12 +25,19 @@ import { Input } from '@/components/ui/input.js';
  */
 import { LockIcon } from 'lucide-react';
 import { usePasswordForm } from '../hooks/use-password-form.js';
+import { Spinner } from '@/components/ui/spinner.js';
+import { useState } from 'react';
 
 export const PasswordChangeDialog = () => {
   const form = usePasswordForm();
 
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
       <DialogTrigger asChild>
         <Button
           variant='ghost'
@@ -118,7 +124,24 @@ export const PasswordChangeDialog = () => {
         </form>
 
         <div className='w-full flex justify-between gap-3'>
-          <Button className='flex-1'>완료</Button>
+          <form.Subscribe
+            selector={(s) => [s.canSubmit, s.isTouched, s.isSubmitting]}
+          >
+            {([canSubmit, isTouched, isSubmitting]) => (
+              <Button
+                className='flex-1'
+                disabled={!canSubmit || !isTouched || isSubmitting}
+                onClick={async () => {
+                  const result = await form.handleSubmit();
+                  if (result?.success) {
+                    setOpen(false);
+                  }
+                }}
+              >
+                {isSubmitting ? <Spinner /> : '완료'}
+              </Button>
+            )}
+          </form.Subscribe>
           <DialogClose asChild>
             <Button
               variant='secondary'

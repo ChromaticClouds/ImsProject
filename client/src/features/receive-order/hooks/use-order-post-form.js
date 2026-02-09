@@ -14,6 +14,7 @@ import { postOrder } from '@/features/receive-order/api/index.js';
 import { toast } from 'sonner';
 import { HTTPError } from 'ky';
 import { ERROR } from '@/services/error.js';
+import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * @typedef {z.infer<typeof receiveOrderFormSchema>} OrderSchema
@@ -30,6 +31,8 @@ const defaultValues = {
 };
 
 export const useOrderPostForm = () => {
+  const queryClient = useQueryClient();
+
   const form = useForm({
     defaultValues,
     validators: {
@@ -39,8 +42,13 @@ export const useOrderPostForm = () => {
       try {
         const response = await postOrder(value);
         if (!response.success) return;
+        queryClient.invalidateQueries({
+          queryKey: ['receive-orders']
+        })
+        
         toast.success(response.message);
         form.reset();
+        return form;
       } catch (err) {
         if (err instanceof HTTPError) {
           const errResponse = await err.response.json().catch(() => null);

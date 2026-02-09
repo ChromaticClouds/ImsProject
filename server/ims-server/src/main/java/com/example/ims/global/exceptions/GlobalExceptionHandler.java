@@ -1,5 +1,6 @@
-package com.example.ims.global.exception;
+package com.example.ims.global.exceptions;
 
+import com.example.ims.features.auth.exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,11 @@ public class GlobalExceptionHandler {
             .body(ApiResponse.fail(e.getMessage()));
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse<Void>> handle(UnauthorizedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(ApiResponse.fail(e.getMessage()));
+    }
 }
 
 

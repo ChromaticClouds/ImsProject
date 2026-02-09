@@ -13,7 +13,7 @@ import { format, parseISO, isValid, differenceInCalendarDays } from 'date-fns';
 /** @param {string} s */
 function toDate(s) {
   if (!s) return undefined;
-  const d = parseISO(s); // 'yyyy-MM-dd' OK
+  const d = parseISO(s); // 
   return isValid(d) ? d : undefined;
 }
 

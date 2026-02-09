@@ -1,5 +1,8 @@
 // @ts-check
 
+/**
+ * Components
+ */
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,10 +14,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { MoreHorizontal } from 'lucide-react';
-import { useProductQuery } from '../hooks/use-product-query.js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
-import { useState } from 'react';
 import { ProductDetailDialog } from './product-detail-dialog.jsx';
+
+/**
+ * Hooks
+ */
+import { useProductQuery } from '../hooks/use-product-query.js';
 
 export const ProductTable = () => {
   const { content } = useProductQuery();
@@ -38,7 +44,7 @@ export const ProductTable = () => {
         <TableBody>
           {content.length > 0 ? (
             content.map((product) => (
-              <ProductDetailDialog product={product}>
+              <ProductDetailDialog key={product.id} product={product}>
                 <TableRow
                   key={product.id}
                   className='hover:bg-muted/20 transition-colors cursor-pointer'

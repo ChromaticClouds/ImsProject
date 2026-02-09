@@ -2,6 +2,9 @@ package com.example.ims.features.product.repository;
 
 import com.example.ims.features.product.entities.Product;
 import com.example.ims.features.product.enums.ProductType;
+import com.example.ims.features.vendor.entities.VendorItem;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -16,9 +19,9 @@ public class ProductSpecification {
             String like = "%" + search.toLowerCase() + "%";
 
             return cb.or(
-                cb.like(cb.lower(root.get("name")), like),
-                cb.like(cb.lower(root.get("type")), like),
-                cb.like(cb.lower(root.get("brand")), like)
+                    cb.like(cb.lower(root.get("name")), like),
+                    cb.like(cb.lower(root.get("type")), like),
+                    cb.like(cb.lower(root.get("brand")), like)
             );
         };
     }
@@ -42,6 +45,27 @@ public class ProductSpecification {
                 return cb.conjunction();
 
             return root.get("brand").in(brands);
+        };
+    }
+
+    public static Specification<VendorItem> productsIn(String search) {
+        return (root, query, cb) -> {
+            root.fetch("product", JoinType.LEFT);
+            query.distinct(true);
+
+            Join<VendorItem, Product> product =
+                    root.join("product", JoinType.LEFT);
+
+            if (search == null || search.isBlank())
+                return cb.conjunction();
+
+            String like = "%" + search.toLowerCase() + "%";
+
+            return cb.or(
+                cb.like(cb.lower(product.get("name")), like),
+                cb.like(cb.lower(product.get("type")), like),
+                cb.like(cb.lower(product.get("brand")), like)
+            );
         };
     }
 }

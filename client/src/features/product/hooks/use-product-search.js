@@ -21,8 +21,6 @@ export const useProductSearch = () => {
     if (keyword) next.set('search', keyword);
     else next.delete('search');
 
-    console.log('transferred')
-
     next.set('page', '1');
 
     setParams(next);

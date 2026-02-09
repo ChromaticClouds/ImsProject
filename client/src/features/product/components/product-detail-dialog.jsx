@@ -24,7 +24,6 @@ export const ProductDetailDialog = ({ product, children }) => {
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className='w-sm'>
-        {/* 헤더 */}
         <DialogHeader>
           <DialogTitle className='text-xl font-bold flex items-center gap-2'>
             <span>{product.name}</span>

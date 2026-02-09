@@ -33,7 +33,14 @@ export function InboundOverviewProvider() {
   const dd = String(today.getDate()).padStart(2, '0');
   const todayYMD = `${yyyy}-${mm}-${dd}`;
 
-  const [search, setSearch] = useState(() => ({ from: todayYMD, to: todayYMD }));
+  const fromDate = new Date(today);
+  fromDate.setFullYear(fromDate.getFullYear() - 1);
+  const fy = fromDate.getFullYear();
+  const fm = String(fromDate.getMonth() + 1).padStart(2, '0');
+  const fd = String(fromDate.getDate()).padStart(2, '0');
+  const fromYMD = `${fy}-${fm}-${fd}`;
+
+  const [search, setSearch] = useState(() => ({ from: fromYMD, to: todayYMD }));
   const [error, setError] = useState('');
 
   const pendingQ = useInboundPendingSummary({

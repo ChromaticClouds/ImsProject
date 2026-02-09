@@ -45,11 +45,6 @@ public class InboundQueryController {
         return service.getOrderDetail(orderId);
     }
 
-//    @PatchMapping("/orders/{orderId}/pending")
-//    public InboundStatusUpdateResponse markPending(@PathVariable("orderId") Long orderId) {
-//        return service.markPending(orderId);
-//    }
-
     @PatchMapping("/orders/{orderId}/complete")
     public InboundStatusUpdateResponse markComplete(@PathVariable("orderId") Long orderId) {
         return service.markComplete(orderId);
@@ -59,7 +54,7 @@ public class InboundQueryController {
     // Pending summary/items/detail/update
     // -------------------------
     @GetMapping("/pending/summary")
-    public PageResponse<PendingSummaryRow> pendingSummary(
+    public PageResponse<InboundSummaryRow> pendingSummary(
         @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
         @RequestParam("to")   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
         @RequestParam(value="keyword", required=false) String keyword,
@@ -70,7 +65,7 @@ public class InboundQueryController {
     }
 
     @GetMapping("/pending/{orderNumber}/items")
-    public List<PendingItemRow> pendingItems(@PathVariable("orderNumber") String orderNumber) {
+    public List<InboundItemRow> pendingItems(@PathVariable("orderNumber") String orderNumber) {
         return service.getPendingItemsByOrderNumber(orderNumber);
     }
 
@@ -79,9 +74,13 @@ public class InboundQueryController {
         return service.getPendingDetailByOrderNumber(orderNumber);
     }
 
+    // ✅ 여기서 memo까지 받아서 history_lot + history + stock + 주문완료 처리
     @PatchMapping("/orders/by-number/{orderNumber}/complete")
-    public InboundStatusUpdateResponse markCompleteByOrderNumber(@PathVariable("orderNumber") String orderNumber) {
-    	service.markCompleteByOrderNumberAndWriteHistoryAndStock(orderNumber);
+    public InboundStatusUpdateResponse markCompleteByOrderNumber(
+        @PathVariable("orderNumber") String orderNumber,
+        @RequestBody(required = false) HistoryLot req
+    ) {
+        service.markCompleteByOrderNumberAndWriteHistory(orderNumber, req == null ? null : req.getMemo());
 
         return InboundStatusUpdateResponse.builder()
             .orderId(null)
@@ -103,7 +102,7 @@ public class InboundQueryController {
     // 완료(오늘만) summary + items
     // -------------------------
     @GetMapping("/completed/today/summary")
-    public PageResponse<CompletedSummaryRow> completedTodaySummary(
+    public PageResponse<InboundSummaryRow> completedTodaySummary(
         @RequestParam(value="keyword", required=false) String keyword,
         @RequestParam(value="page", defaultValue="0") int page,
         @RequestParam(value="size", defaultValue="20") int size
@@ -112,7 +111,7 @@ public class InboundQueryController {
     }
 
     @GetMapping("/completed/{orderNumber}/items")
-    public List<CompletedItemRow> completedItems(@PathVariable("orderNumber") String orderNumber) {
+    public List<InboundItemRow> completedItems(@PathVariable("orderNumber") String orderNumber) {
         return service.getCompletedItemsByOrderNumber(orderNumber);
     }
 }

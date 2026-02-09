@@ -21,7 +21,7 @@ import { ERROR } from '@/services/error.js';
  * 현재 매칭된 라우트들에 대해 사용자의 접근 권한을 검사한다.
  *
  * @param {import('react-router-dom').UIMatch[]} matches
- * @param {User['role']} role
+ * @param {User['userRole']} role
  * @returns {boolean}
  */
 const hasRouteAccess = (matches, role) => {
@@ -33,7 +33,7 @@ const hasRouteAccess = (matches, role) => {
 };
 
 /**
- * @param {{ authenticated: boolean, role: User['role'] }} props
+ * @param {{ authenticated: boolean, role: User['userRole'] }} props
  */
 export const RouteAccessGuard = ({ authenticated, role }) => {
   /** @type {import('react-router-dom').UIMatch[]} */

@@ -11,14 +11,14 @@ public class AuthPartial {
     private final String eid;
     private final String name;
     private final String email;
-    private final UserRank rank;
-    private final UserRole role;
+    private final UserRank userRank;
+    private final UserRole userRole;
 
     public AuthPartial(User user) {
         this.eid = user.getEid();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.rank = user.getUserRank();
-        this.role = user.getUserRole();
+        this.userRank = user.getUserRank();
+        this.userRole = user.getUserRole();
     }
 }

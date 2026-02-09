@@ -5,13 +5,11 @@ import java.util.Map;
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.util.StringUtils;
 
-import com.example.ims.features.inbound.dto.InboundPendingSummaryParam;
+import com.example.ims.features.inbound.dto.InboundSummaryParam;
 
 public class InboundQuerySqlProvider {
 
-    // -------------------------
-    // Pending List
-    // -------------------------
+    // 입고 대기 목록
     public String selectPendingList(Map<String, Object> p) {
         String keyword = (String) p.get("keyword");
 
@@ -26,7 +24,7 @@ public class InboundQuerySqlProvider {
                 "o.status",
                 "o.vendor_item_id AS vendorItemId"
             );
-            FROM("`order` o");
+            FROM("`orders` o");
             WHERE("o.status = 'INBOUND_PENDING'");
             WHERE("o.recieve_date BETWEEN #{from} AND #{to}");
 
@@ -40,12 +38,13 @@ public class InboundQuerySqlProvider {
         return sql + " LIMIT #{size} OFFSET #{offset}";
     }
 
+    // 입고 대기 수량
     public String countPending(Map<String, Object> p) {
         String keyword = (String) p.get("keyword");
 
         return new SQL(){{
             SELECT("COUNT(*)");
-            FROM("`order` o");
+            FROM("`orders` o");
             WHERE("o.status = 'INBOUND_PENDING'");
             WHERE("o.recieve_date BETWEEN #{from} AND #{to}");
 
@@ -55,9 +54,7 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
-    // -------------------------
-    // Completed List (범위용: 기존)
-    // -------------------------
+    // 입고 완료 내역
     public String selectCompletedList(Map<String, Object> p) {
         String keyword = (String) p.get("keyword");
 
@@ -72,7 +69,7 @@ public class InboundQuerySqlProvider {
                 "o.status",
                 "o.vendor_item_id AS vendorItemId"
             );
-            FROM("`order` o");
+            FROM("`orders` o");
             WHERE("o.status = 'INBOUND_COMPLETE'");
             WHERE("o.order_date BETWEEN #{from} AND #{to}");
 
@@ -86,12 +83,13 @@ public class InboundQuerySqlProvider {
         return sql + " LIMIT #{size} OFFSET #{offset}";
     }
 
+    // 입고 완료 수량
     public String countCompleted(Map<String, Object> p) {
         String keyword = (String) p.get("keyword");
 
         return new SQL(){{
             SELECT("COUNT(*)");
-            FROM("`order` o");
+            FROM("`orders` o");
             WHERE("o.status = 'INBOUND_COMPLETE'");
             WHERE("o.order_date BETWEEN #{from} AND #{to}");
 
@@ -101,7 +99,7 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
-
+    // 입고 품목 상세
     public String selectOrderDetail() {
         return new SQL(){{
             SELECT(
@@ -115,23 +113,24 @@ public class InboundQuerySqlProvider {
                 "o.status",
                 "o.vendor_item_id AS vendorItemId"
             );
-            FROM("`order` o");
+            FROM("`orders` o");
             WHERE("o.id = #{orderId}");
         }}.toString();
     }
 
-
+    // 입고 대기
     public String markInboundPending() {
         return new SQL(){{
-            UPDATE("`order`");
+            UPDATE("`orders`");
             SET("status = 'INBOUND_PENDING'");
             WHERE("id = #{orderId}");
         }}.toString();
     }
 
+    // 입고 완료
     public String markInboundComplete() {
         return new SQL(){{
-            UPDATE("`order`");
+            UPDATE("`orders`");
             SET("status = 'INBOUND_COMPLETE'");
             SET("order_date = CURDATE()");
             WHERE("id = #{orderId}");
@@ -139,16 +138,17 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
+    // 입고 상태 
     public String selectStatusSnapshot() {
         return new SQL(){{
             SELECT("o.id AS orderId", "o.status AS status", "o.order_date AS orderDate");
-            FROM("`order` o");
+            FROM("`orders` o");
             WHERE("o.id = #{orderId}");
         }}.toString();
     }
 
-
-    public String selectPendingSummary(InboundPendingSummaryParam p) {
+    // 입고 대기 내역
+    public String selectPendingSummary(InboundSummaryParam p) {
         String keyword = p.getKeyword();
 
         StringBuilder sb = new StringBuilder();
@@ -161,7 +161,7 @@ public class InboundQuerySqlProvider {
               MIN(v.vendor_name) AS vendorName,
               COUNT(*) AS itemCount,
               SUM(o.`count` * vi.purchase_price) AS totalAmount
-            FROM `order` o
+            FROM `orders` o
             JOIN vendor_item vi ON vi.id = o.vendor_item_id
             JOIN vendor v ON v.id = vi.vendor_id
             JOIN product pr ON pr.id = vi.product_id
@@ -189,14 +189,15 @@ public class InboundQuerySqlProvider {
         return sb.toString();
     }
 
-    public String countPendingSummary(InboundPendingSummaryParam p) {
+    // 입고 대기 수량 내역
+    public String countPendingSummary(InboundSummaryParam p) {
         String keyword = p.getKeyword();
 
         StringBuilder sb = new StringBuilder();
         sb.append("""
             SELECT COUNT(*) FROM (
               SELECT o.order_number
-              FROM `order` o
+              FROM `orders` o
               JOIN vendor_item vi ON vi.id = o.vendor_item_id
               JOIN vendor v ON v.id = vi.vendor_id
               JOIN product pr ON pr.id = vi.product_id
@@ -223,7 +224,7 @@ public class InboundQuerySqlProvider {
         return sb.toString();
     }
 
-
+    // 입고 대기 물품(주문번호 별로)
     public String selectPendingItemsByOrderNumber(Map<String, Object> params) {
         return new SQL() {{
             SELECT(
@@ -239,7 +240,7 @@ public class InboundQuerySqlProvider {
                 "p.image_url AS imageUrl",
                 "p.sale_price AS salePrice"
             );
-            FROM("`order` o");
+            FROM("`orders` o");
             JOIN("vendor_item vi ON vi.id = o.vendor_item_id");
             JOIN("product p ON p.id = vi.product_id");
             WHERE("o.status = 'INBOUND_PENDING'");
@@ -248,7 +249,7 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
-
+    // 금일 입고 완료 내역
     public String selectCompletedTodaySummary(Map<String, Object> p) {
         String keyword = (String) p.get("keyword");
 
@@ -262,7 +263,7 @@ public class InboundQuerySqlProvider {
               MIN(v.vendor_name) AS vendorName,
               COUNT(*) AS itemCount,
               SUM(o.`count` * vi.purchase_price) AS totalAmount
-            FROM `order` o
+            FROM `orders` o
             JOIN vendor_item vi ON vi.id = o.vendor_item_id
             JOIN vendor v ON v.id = vi.vendor_id
             JOIN product pr ON pr.id = vi.product_id
@@ -290,6 +291,7 @@ public class InboundQuerySqlProvider {
         return sb.toString();
     }
 
+    // 금일 입고 완료 내역 수량
     public String countCompletedTodaySummary(Map<String, Object> p) {
         String keyword = (String) p.get("keyword");
 
@@ -297,7 +299,7 @@ public class InboundQuerySqlProvider {
         sb.append("""
             SELECT COUNT(*) FROM (
               SELECT o.order_number
-              FROM `order` o
+              FROM `orders` o
               JOIN vendor_item vi ON vi.id = o.vendor_item_id
               JOIN vendor v ON v.id = vi.vendor_id
               JOIN product pr ON pr.id = vi.product_id
@@ -324,6 +326,7 @@ public class InboundQuerySqlProvider {
         return sb.toString();
     }
 
+    // 입고 완료 (발주번호 별로)
     public String selectCompletedItemsByOrderNumber(Map<String, Object> params) {
         return new SQL() {{
             SELECT(
@@ -339,7 +342,7 @@ public class InboundQuerySqlProvider {
                 "p.image_url AS imageUrl",
                 "p.sale_price AS salePrice"
             );
-            FROM("`order` o");
+            FROM("`orders` o");
             JOIN("vendor_item vi ON vi.id = o.vendor_item_id");
             JOIN("product p ON p.id = vi.product_id");
             WHERE("o.status = 'INBOUND_COMPLETE'");
@@ -348,7 +351,7 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
-
+    // 입고 대기 상세 헤더
     public String selectPendingDetailHeader() {
         return new SQL(){{
             SELECT(
@@ -357,7 +360,7 @@ public class InboundQuerySqlProvider {
                 "MIN(vi.vendor_id) AS vendorId",
                 "MIN(v.vendor_name) AS vendorName"
             );
-            FROM("`order` o");
+            FROM("`orders` o");
             JOIN("vendor_item vi ON vi.id = o.vendor_item_id");
             JOIN("vendor v ON v.id = vi.vendor_id");
             WHERE("o.status = 'INBOUND_PENDING'");
@@ -366,38 +369,42 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
+    
+    // 입고 수정 (발주번호 별로)
     public String updateReceiveDateByOrderNumber(Map<String, Object> p) {
         return new SQL(){{
-            UPDATE("`order`");
+            UPDATE("`orders`");
             SET("recieve_date = #{receiveDate}");
             WHERE("order_number = #{orderNumber}");
             WHERE("status = 'INBOUND_PENDING'");
         }}.toString();
     }
 
+    // 입고 수정 수량
     public String updateOrderQty(Map<String, Object> p) {
         return new SQL(){{
-            UPDATE("`order`");
+            UPDATE("`orders`");
             SET("`count` = #{orderQty}");
             WHERE("id = #{orderId}");
             WHERE("status = 'INBOUND_PENDING'");
         }}.toString();
     }
-    
+
+    // 발주번호별로 입고 완료 
     public String selectOrdersForInboundCompleteByOrderNumber(Map<String, Object> p) {
         return """
             SELECT
               o.user_id AS userId,
               o.vendor_item_id AS vendorItemId,
               o.`count` AS orderQty
-            FROM `order` o
+            FROM `orders` o
             WHERE o.order_number = #{orderNumber}
               AND o.status = 'INBOUND_PENDING'
             ORDER BY o.id ASC
-            """;
+        """;
     }
 
-    // 2) 해당 vendor_item의 최신 재고
+    // 입고 수정 후에 내역
     public String selectLatestAfterCountForUpdate(Map<String, Object> p) {
         return """
             SELECT h.after_count
@@ -406,52 +413,48 @@ public class InboundQuerySqlProvider {
             ORDER BY h.created_at DESC, h.id DESC
             LIMIT 1
             FOR UPDATE
-            """;
+        """;
     }
 
-    // 3) history insert
+    // 히스토리 추가
     public String insertHistoryRow() {
         return """
             INSERT INTO history
-              (status, user_id, vendor_item_id, before_count, after_count, created_at)
+              (lot_id, vendor_item_id, product_id, before_count, after_count, created_at)
             VALUES
-              (#{status}, #{userId}, #{vendorItemId}, #{beforeCount}, #{afterCount}, NOW())
-            """;
+              (#{lotId}, #{vendorItemId}, #{productId}, #{beforeCount}, #{afterCount}, NOW())
+        """;
     }
 
-    // 4) 주문 상태 완료
+    // 발주번호 별로 입고 완료
     public String markInboundCompleteByOrderNumber() {
         return """
-            UPDATE `order`
+            UPDATE `orders`
             SET status = 'INBOUND_COMPLETE',
                 order_date = CURDATE()
             WHERE order_number = #{orderNumber}
               AND status = 'INBOUND_PENDING'
-            """;
+        """;
     }
-    
-    // 5) stock upsert (product_id 기준 누적) --> 이건 잘 몰랐음. upsert가 일부러 충돌시켜서 product_id가 같으면 update 아니면 insert
+
+    // product_id 별로 stock upsert
     public String upsertStockByProductId(Map<String, Object> p) {
-        // delta = afterCount - beforeCount (입고면 양수)
         return """
             INSERT INTO stock (product_id, `count`)
             VALUES (#{productId}, #{delta})
             ON DUPLICATE KEY UPDATE `count` = `count` + VALUES(`count`)
-            """;
+        """;
     }
-    
+
+    // vendorItemID 별로 제품
     public String selectProductIdByVendorItemId(Map<String, Object> p) {
         return """
             SELECT vi.product_id
             FROM vendor_item vi
             WHERE vi.id = #{vendorItemId}
-            """;
+        """;
     }
-    
-    
-    
-    
-    
 }
+
 
 

@@ -15,7 +15,7 @@ import { AdjustProductSearch } from './adjust-product-search.jsx';
 import { useAdjustContext } from '../providers/adjust-provider.jsx';
 
 export const AdjustHeader = () => {
-  const form = useAdjustContext();
+  const { form } = useAdjustContext();
 
   return (
     <CardHeader className='border-b flex flex-col'>

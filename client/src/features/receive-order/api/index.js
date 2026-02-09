@@ -1,0 +1,50 @@
+// @ts-check
+
+import { api, hooks } from "@/services/api.js";
+import { receiveOrderFormSchema } from "@/features/receive-order/schemas/receive-order-form-schema.js";
+import z from "zod";
+
+/**
+ * @returns {Promise<ApiResponse<{ users: UserIdentifier[], sellers: VendorIdentifier[], sequence: string }>>}
+ */
+export const getOrderBoostrap = () =>
+  api.get('order/bootstrap', { hooks }).json();
+
+/**
+ * @typedef {'INBOUND_PENDING' | 'INBOUND_COMPLETE' | 'OUTBOUND_PENDING' | 'OUTBOUND_COMPLETE'} OrderStatus
+ */
+
+/**
+ * @typedef {object} ReceivedOrder
+ * @property {string} orderNumber
+ * @property {string} userName
+ * @property {string} vendorName
+ * @property {string} bossName
+ * @property {string} orderDate
+ * @property {string} receiveDate
+ * @property {number} itemCount
+ * @property {number} totalPrice 
+ */
+
+/**
+ * @returns {Promise<ApiResponse<ReceivedOrder[]>>}
+ */
+export const getReceiveOrders = () =>
+  api.get('order/receive', { hooks }).json();
+
+/**
+ * @param {string} search
+ * @returns {Promise<ApiResponse<OrderPostProduct[]>>}
+ */
+export const getProductSearchResult = (search) =>
+  api.get('order/get-products', { hooks, searchParams: { search } }).json();
+
+/**
+ * @param {z.infer<typeof receiveOrderFormSchema>} value 
+ * @returns {Promise<ApiResponse>}
+ */
+export const postOrder = (value) =>
+  api.post('order/post', { json: value, hooks }).json();
+
+export const fetchOutboundManagers = 
+  api.get('order/get-managers', { hooks }).json();

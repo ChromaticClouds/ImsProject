@@ -4,7 +4,7 @@ import { CardFooter } from '@/components/ui/card.js';
 import { useAdjustContext } from '../providers/adjust-provider.jsx';
 
 export const AdjustFooter = () => {
-  const form = useAdjustContext();
+  const { form } = useAdjustContext();
 
   return (
     <form.Subscribe

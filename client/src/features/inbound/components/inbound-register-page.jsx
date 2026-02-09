@@ -60,6 +60,13 @@ export function InboundRegisterPage() {
       await qc.invalidateQueries({ queryKey: ['inbound-completed-today-summary'] });
       await qc.invalidateQueries({ queryKey: ['inbound-completed-items', orderNumber] });
 
+      await qc.invalidateQueries({
+      predicate: (q) => Array.isArray(q.queryKey) && String(q.queryKey[0] ?? '').startsWith('inbound-'),
+      });
+      await qc.refetchQueries({
+      predicate: (q) => Array.isArray(q.queryKey) && String(q.queryKey[0] ?? '').startsWith('inbound-'),
+      });
+
       nav('/dashboard/inbounds/pending');
     } catch (e) {
       setError(/** @type {any} */ (e)?.message || '입고 완료 처리 실패');

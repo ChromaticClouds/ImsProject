@@ -5,6 +5,7 @@ import { InboundPendingScreen } from '@/features/inbound/components/inbound-pend
 import { useInboundPendingSearch } from '@/features/inbound/hooks/use-inbound-pending-search';
 import { useInboundPendingSummary } from '@/features/inbound/hooks/use-inbound-pending-summary';
 
+
 export function InboundPending() {
   const { search, setRange } = useInboundPendingSearch();
   const q = useInboundPendingSummary(search);
@@ -22,6 +23,7 @@ export function InboundPending() {
       error={error}
       setError={setError}
     >
+      
       <InboundPendingScreen />
     </InboundPendingProvider>
   );

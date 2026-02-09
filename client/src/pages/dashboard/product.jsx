@@ -3,16 +3,9 @@
 /**
  * Components
  */
-import {
-  Card,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { ProductPagination } from '@/features/product/components/product-pagination';
 import { ProductTable } from '@/features/product/components/product-table';
-
-/**
- * Assets
- */
 import { ProductProvider } from '@/features/product/providers/product-provider.jsx';
 import { ProductSearch } from '@/features/product/components/product-search.jsx';
 import { ProductHeader } from '@/features/product/components/product-header.jsx';

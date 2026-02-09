@@ -1,7 +1,7 @@
 import { useAdjustContext } from '../providers/adjust-provider.jsx';
 
 /**
- * @param {ReturnType<typeof useAdjustContext>} form 
+ * @param {ReturnType<typeof useAdjustContext>['form']} form 
  * @param {ProductSuggest} product 
  */
 export const addOrIncreaseProduct = (form, product) => {

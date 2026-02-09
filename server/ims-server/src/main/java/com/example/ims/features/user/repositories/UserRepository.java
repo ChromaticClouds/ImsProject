@@ -1,5 +1,6 @@
 package com.example.ims.features.user.repositories;
 
+import com.example.ims.features.auth.enums.UserRole;
 import com.example.ims.features.auth.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             String name,
             Pageable pageable
     );
+
+    List<User> findByUserRoleIn(List<UserRole> roles);
+
+    List<UserRole> UserRole(UserRole userRole);
 }

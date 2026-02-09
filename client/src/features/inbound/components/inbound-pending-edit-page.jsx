@@ -57,11 +57,13 @@ export function InboundPendingEditPage() {
 
       await mutateAsync(payload);
 
-      await qc.invalidateQueries({ queryKey: inboundQueryKeys.pendingSummary({ ...data, page: 0, size: 20 }) }); // 보수적으로
-      await qc.invalidateQueries({ queryKey: inboundQueryKeys.pendingItems(orderNumber) });
-      await qc.invalidateQueries({ queryKey: inboundQueryKeys.pendingDetail(orderNumber) });
+        
+        await qc.invalidateQueries({ queryKey: inboundQueryKeys.pendingItems(orderNumber), exact: true });
+        await qc.invalidateQueries({ queryKey: inboundQueryKeys.pendingDetail(orderNumber), exact: true });
+        await qc.invalidateQueries({ queryKey: ['inbound-pending-summary'], exact: false });
+        await qc.refetchQueries({ queryKey: ['inbound-pending-summary'], exact: false });
 
-      nav('/dashboard/inbounds/pending');
+        nav('/dashboard/inbounds/pending');
     } catch (e) {
       setError(e?.message || '수정 실패');
     }

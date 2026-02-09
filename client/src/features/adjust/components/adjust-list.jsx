@@ -1,4 +1,8 @@
 // @ts-check
+
+/**
+ * Components
+ */
 import { Input } from '@/components/ui/input.js';
 import {
   Table,
@@ -25,12 +29,12 @@ const TABLE_HEADER = [
   '브랜드',
   '주종',
   '재고',
-  '조정수량',
+  '변동 수량',
   '',
 ];
 
 export const AdjustList = () => {
-  const form = useAdjustContext();
+  const { form } = useAdjustContext();
 
   return (
     <form.Field name='products'>
@@ -74,7 +78,7 @@ export const AdjustList = () => {
 
                   <TableCell className='text-center'>{row.name}</TableCell>
                   <TableCell className='text-center'>
-                    {row.purchasePrice}
+                    {row.purchasePrice}원 
                   </TableCell>
                   <TableCell className='text-center'>
                     {row.salePrice}원

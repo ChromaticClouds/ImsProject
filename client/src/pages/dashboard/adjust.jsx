@@ -1,6 +1,8 @@
-import { AppHeader } from '@/components/common/app-header.jsx';
+// @ts-check
+
 import { Card } from '@/components/ui/card.js';
-import { AdjustAction } from '@/features/adjust/components/adjust-action.jsx';
+import { AppHeader } from '@/components/common/app-header.jsx';
+import { AdjustBottomSection } from '@/features/adjust/components/adjust-bottom-section.jsx';
 import { AdjustFooter } from '@/features/adjust/components/adjust-footer.jsx';
 import { AdjustHeader } from '@/features/adjust/components/adjust-header.jsx';
 import { AdjustList } from '@/features/adjust/components/adjust-list.jsx';
@@ -21,7 +23,7 @@ export const Adjust = () => {
           <AdjustList />
           <AdjustFooter />
         </Card>
-        <AdjustAction />
+        <AdjustBottomSection />
       </AdjustProvider>
     </div>
   );

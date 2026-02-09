@@ -78,9 +78,9 @@ export const UserMenu = () => {
 
           {/* 권한 배지 */}
           <div className='flex flex-wrap gap-1 pt-2'>
-            <Badge variant='default'>{RANK_LABEL[user.rank]}</Badge>
+            <Badge variant='default'>{RANK_LABEL[user.userRank]}</Badge>
 
-            <Badge variant='secondary'>{ROLE_LABEL[user.role]}</Badge>
+            <Badge variant='secondary'>{ROLE_LABEL[user.userRole]}</Badge>
           </div>
         </div>
 

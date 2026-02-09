@@ -134,7 +134,7 @@ export async function completeInboundByOrderNumber(orderNumber, body) {
 }
 
 /**
- * inbound - completed today summary
+ * 입고 - completed today summary
  * @param {{ keyword?: string, page?: number, size?: number }} params
  */
 export async function fetchInboundCompletedTodaySummary(params) {
@@ -157,4 +157,84 @@ export async function fetchInboundCompletedItems(orderNumber) {
   return await api
     .get(`api/inbounds/completed/${encodeURIComponent(orderNumber)}/items`)
     .json();
+}
+
+
+/** @typedef {{ from: string, to: string, userId?: number, page?: number, size?: number }} OutboundPendingSummaryParams */
+export async function fetchOutboundPendingSummary(params) {
+  return await api.get('api/outbounds/pending/summary', { searchParams: params }).json();
+}
+
+/** @param {string} orderNumber */
+export async function fetchOutboundPendingItems(orderNumber) {
+  return await api.get(`api/outbounds/pending/${encodeURIComponent(orderNumber)}/items`).json();
+}
+
+/**
+ * @typedef {{ page?: number, size?: number }} OutboundCompletedTodaySummaryParams
+ */
+export async function fetchOutboundCompletedTodaySummary(params) {
+  return await api.get('api/outbounds/completed/today/summary', { searchParams: params }).json();
+}
+
+/** @param {string} orderNumber */
+export async function fetchOutboundCompletedItems(orderNumber) {
+  return await api.get(`api/outbounds/completed/${encodeURIComponent(orderNumber)}/items`).json();
+}
+
+/**
+ * 출고 완료 (orderNumber)
+ * @param {string} orderNumber
+ * @param {{ memo?: string }=} body
+ */
+export const completeOutboundByOrderNumber = async (orderNumber, body = {}) => {
+  return await api
+    .patch(`api/outbounds/orders/by-number/${encodeURIComponent(orderNumber)}/complete`, {
+      json: body,
+    })
+    .json();
+};
+
+export async function fetchOutboundAssignees() {
+  return await api.get('api/outbounds/assignees').json();
+}
+
+export async function fetchOutboundStockTypes() {
+  const res = await api.get('api/outbounds/stock/types').json();
+  return res.data;
+}
+
+/** @param {{ type: string }} params */
+export async function fetchOutboundStockBrands(params) {
+  const res = await api.get('api/outbounds/stock/brands', { searchParams: params }).json();
+  return res.data;
+}
+
+/** @param {{ type: string, brand: string }} params */
+export async function fetchOutboundStockProducts(params) {
+  const res = await api.get('api/outbounds/stock/products', { searchParams: params }).json();
+  return res.data;
+}
+
+/**
+ * History
+ * @param {{ from:string, to:string, q?:string, kind?:string, targetId?:number, status?:string, type?:string, brand?:string, page?:number, size?:number }} params
+ */
+export async function fetchHistoryLots(params) {
+  return await api.get('api/history/lots', { searchParams: params }).json();
+}
+
+/** @param {string} q */
+export async function fetchHistorySearch(q) {
+  return await api.get('api/history/search', { searchParams: { q } }).json();
+}
+
+/** @param {string} type */
+export async function fetchHistoryBrands(type) {
+  return await api.get('api/history/brands', { searchParams: { type } }).json();
+}
+
+// 기간 설정을 위함(최소)
+export async function fetchHistoryMinDate() {
+  return await api.get('api/history/min-date').json(); 
 }

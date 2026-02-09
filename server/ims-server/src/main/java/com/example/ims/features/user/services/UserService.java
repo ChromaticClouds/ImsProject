@@ -5,6 +5,7 @@ import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.auth.stores.RefreshTokenStore;
 import com.example.ims.features.user.dto.*;
 import com.example.ims.features.user.exceptions.InvalidPasswordException;
+import com.example.ims.features.user.exceptions.InvalidTokenException;
 import com.example.ims.features.user.exceptions.PasswordMismatchException;
 import com.example.ims.features.user.stores.PasswordResetTokenStore;
 import com.resend.core.exception.ResendException;
@@ -45,9 +46,9 @@ public class UserService {
 
         Page<User> users =
             repository.findByStatusNotInAndNameContainingIgnoreCase(
-                    excluded,
-                    normalize(search),
-                    pageable
+                excluded,
+                normalize(search),
+                pageable
             );
 
         return PageResponse.from(users.map(UserListResponse::from));
@@ -97,5 +98,31 @@ public class UserService {
         if (found != null) {
             mailSender.createPasswordChangeForm(payload);
         }
+    }
+
+    public void verifyUserByToken(String token) {
+        String email = passwordResetTokenStore
+            .findEmailByToken(token)
+            .orElseThrow(InvalidTokenException::new);
+
+        repository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+    }
+
+    @Transactional
+    public void resetPassword(PasswordResetRequest request) {
+        if (!request.confirmPassword().equals(request.newPassword()))
+            throw new PasswordMismatchException();
+
+        String email = passwordResetTokenStore
+            .findEmailByToken(request.token())
+            .orElseThrow(InvalidTokenException::new);
+
+        User user = repository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+
+        passwordResetTokenStore.delete(request.token());
+
+        user.changePassword(request.newPassword());
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -17,5 +18,14 @@ public class PasswordResetTokenStore {
 
     public void save(PasswordChangePayload payload, Duration ttl) {
         redis.opsForValue().set(PREFIX + payload.token(), payload.email(), ttl);
+    }
+
+    public Optional<String> findEmailByToken(String token) {
+        String email = redis.opsForValue().get(PREFIX + token);
+        return Optional.ofNullable(email);
+    }
+
+    public void delete(String token) {
+        redis.delete(token);
     }
 }

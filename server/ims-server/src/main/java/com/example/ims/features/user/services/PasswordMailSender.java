@@ -1,6 +1,7 @@
 package com.example.ims.features.user.services;
 
 import com.example.ims.features.user.dto.PasswordChangePayload;
+import com.example.ims.features.user.mail.PasswordResetMail;
 import com.example.ims.global.external.resend.ResendClient;
 import com.example.ims.global.properties.ResendProperties;
 import com.resend.core.exception.ResendException;
@@ -21,8 +22,8 @@ public class PasswordMailSender {
             .from(props.getFromEmail())
             .to(payload.email())
             .subject("[IMS PROJECT] 비밀번호 재설정 안내")
-            .html(payload.token())
-            .build();
+            .html(new PasswordResetMail(payload.token(), props.getBaseUrl())
+                .getMailContents()).build();
 
         resendClient.send(options);
     }

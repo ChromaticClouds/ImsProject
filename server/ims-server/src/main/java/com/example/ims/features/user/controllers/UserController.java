@@ -85,6 +85,22 @@ public class UserController {
         @RequestBody EmailRequest request
     ) throws ResendException {
         service.sendEmail(request);
-        return ResponseEntity.ok(ApiResponse.success("Got email"));
+        return ResponseEntity.ok(ApiResponse.success("이메일이 전송되었습니다."));
+    }
+
+    @GetMapping("password-reset")
+    public ResponseEntity<ApiResponse<Void>> verifyAccess(
+        @RequestParam("token") String token
+    ) {
+        service.verifyUserByToken(token);
+        return ResponseEntity.ok(ApiResponse.success("유효한 비밀번호 재설정 토큰입니다."));
+    }
+
+    @PostMapping("password-reset")
+    public ResponseEntity<ApiResponse<Void>> passwordReset(
+        @RequestBody PasswordResetRequest request
+    ) {
+        service.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.success("비밀번호가 성공적으로 변경되었습니다."));
     }
 }

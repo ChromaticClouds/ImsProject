@@ -1,6 +1,5 @@
 // @ts-check
 
-
 import { sendEmail } from '../api/index.js';
 import { emailFormSchema } from '../schemas/email-form-schema.js';
 

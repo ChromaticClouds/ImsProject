@@ -14,6 +14,7 @@ import {
  * @property {string} title
  * @property {string} [description]
  * @property {React.ReactNode} children
+ * @property {React.ReactNode} [headerAction]
  * @property {GraphWidth} [width]
  * @property {GraphHeight} [height]
  */
@@ -36,6 +37,7 @@ const HEIGHT_CLASS = {
 export const GraphContainer = ({
   title,
   description,
+  headerAction,
   children,
   width = 'full',
   height = 'lg',
@@ -43,10 +45,23 @@ export const GraphContainer = ({
   return (
     <div className={WIDTH_CLASS[width]}>
       <Card>
-        <CardHeader className='border-b text-nowrap text-ellipsis'>
-          <CardTitle>{title}</CardTitle>
-          {description && <CardDescription>{description}</CardDescription>}
+        <CardHeader className='border-b gap-0'>
+          <div className='p-0 flex justify-between items-center'>
+            <div className='min-w-0 flex flex-col gap-3'>
+              <CardTitle className='truncate'>{title}</CardTitle>
+              {description && (
+                <CardDescription className='truncate'>
+                  {description}
+                </CardDescription>
+              )}
+            </div>
+
+            {headerAction && (
+              <div className='shrink-0'>{headerAction}</div>
+            )}
+          </div>
         </CardHeader>
+
         <CardContent
           className={`overflow-hidden overflow-x-auto ${HEIGHT_CLASS[height]}`}
         >

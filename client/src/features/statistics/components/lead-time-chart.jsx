@@ -11,8 +11,9 @@ import {
 
 import { leadTimeMock } from '../constants/index.js';
 import { useIsMobile } from '@/hooks/use-mobile.js';
+import { useLeadTimeQuery } from '../hooks/use-lead-time-query.js';
+import { useEffect } from 'react';
 
-// lead-time.config.js
 export const leadTimeConfig = {
   leadTime: {
     label: '평균 리드타임 (일)',
@@ -21,14 +22,16 @@ export const leadTimeConfig = {
 
 /**
  * 평균 리드타임 차트
- * @param {{ range: string }} props
  */
-export const LeadTimeChart = ({ range }) => {
+export const LeadTimeChart = () => {
+  const { data } = useLeadTimeQuery();
   const isMobile = useIsMobile();
+
+  const chartData = data ?? [];
 
   const BAR_WIDTH = 32;
   const GAP = isMobile ? 16 : 32;
-  const chartWidth = leadTimeMock.length * (BAR_WIDTH + GAP);
+  const chartWidth = chartData.length * (BAR_WIDTH + GAP);
 
   return (
     <ChartContainer
@@ -37,13 +40,13 @@ export const LeadTimeChart = ({ range }) => {
       style={{ minWidth: chartWidth }}
     >
       <BarChart
-        data={leadTimeMock}
+        data={chartData}
         barSize={isMobile ? 12 : 24}
       >
         <CartesianGrid strokeDasharray='3 3' />
 
         {/* 거래처 */}
-        <XAxis dataKey='supplier' />
+        <XAxis dataKey='name' />
 
         {/* 평균 리드타임 */}
         <YAxis />

@@ -9,7 +9,6 @@ import com.example.ims.features.user.exceptions.InvalidTokenException;
 import com.example.ims.features.user.exceptions.PasswordMismatchException;
 import com.example.ims.features.user.stores.PasswordResetTokenStore;
 import com.resend.core.exception.ResendException;
-import com.resend.services.emails.model.CreateEmailOptions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

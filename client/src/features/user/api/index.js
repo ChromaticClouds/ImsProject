@@ -1,4 +1,6 @@
-import { api } from '@/services/api.js';
+// @ts-check
+
+import { api, hooks } from '@/services/api.js';
 
 /**
  * 잊어버린 비밀번호를 찾기 위해 이메일을 전송하는 패치 함수
@@ -14,4 +16,19 @@ export const sendEmail = (value) =>
  * @returns {Promise<ApiResponse<any>>}
  */
 export const verifyPasswordResetToken = (token) =>
-  api.get('user/password-reset', { searchParams: { token } }).json();
+  api.get('user/password-reset', { searchParams: { token }, hooks }).json();
+
+/**
+ * @typedef {object} PasswordResetRequest
+ * @property {string} newPassword
+ * @property {string} confirmPassword
+ * @property {string} token
+ */
+
+/**
+ * 
+ * @param {PasswordResetRequest} value 
+ * @returns {Promise<ApiResponse<any>>}
+ */
+export const postPasswordRequest = (value) => 
+  api.post('user/password-reset', { json: value, hooks }).json();

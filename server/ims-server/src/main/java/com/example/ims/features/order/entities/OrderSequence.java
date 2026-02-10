@@ -19,10 +19,13 @@ public class OrderSequence {
     @Column(name = "order_date")
     private String orderDate;
 
-    @Column(nullable = false)
-    private int seq;
+    @Column(nullable = false, name = "rec_seq")
+    private int recSeq;
 
-    public void increase() {
-        this.seq += 1;
+    @Column(nullable = false, name = "pla_seq")
+    private int plaSeq;
+
+    public void recIncrease() {
+        this.recSeq += 1;
     }
 }

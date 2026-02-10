@@ -30,15 +30,15 @@ public class OrderSequenceGenerator {
 
         OrderSequence seq = sequenceRepository
             .findById(today)
-            .orElseGet(() -> new OrderSequence(today, 0));
+            .orElseGet(() -> new OrderSequence(today, 0, 0));
 
-        seq.increase();
+        seq.recIncrease();
 
         if (persist) {
             sequenceRepository.save(seq);
         }
 
-        return format(today, seq.getSeq());
+        return format(today, seq.getRecSeq());
     }
 
     private String format(String date, int seq) {

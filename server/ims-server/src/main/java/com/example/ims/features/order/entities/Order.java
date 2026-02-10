@@ -26,11 +26,17 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     User user;
-
+    @Column(name = "order_number")
     String orderNumber;
+
+    @Column(name = "order_date")
     LocalDate orderDate;
+
+    @Column(name = "recieve_date")
     LocalDate recieveDate;
     Integer count;
+
+    @Column(name = "lead_time")
     Double leadTime;
 
     @Enumerated(EnumType.STRING)

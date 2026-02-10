@@ -21,6 +21,7 @@ import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
 
 // product 품목
 import { Product } from '@/pages/dashboard/product';
+
 import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
 
 /*

@@ -25,6 +25,8 @@ export const PurchaseOrder = () => {
     [rows, view, keyword, range]
   );
 
+  console.log(filtered);
+
   const pagination = usePurchaseOrderPagination(filtered);
 
   useEffect(() => {

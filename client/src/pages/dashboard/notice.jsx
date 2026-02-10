@@ -4,22 +4,17 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Bell, Plus } from 'lucide-react';
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
+import {Card,CardHeader,CardTitle,CardDescription,CardContent,CardFooter,} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-import { fetchNotices } from '@/features/notice/api/noticeApi';
+import { fetchNoticessssss } from '@/features/notice/api/noticeApi'; 
 import { NoticeTable } from '@/features/notice/components/notice-table';
-import { NoticePagination } from '@/features/notice/components/notice-pagination';
-// import { NoticeDetailDialog } from '@/features/notice/components/notice-dialog'; 상세 팝업형태
+
+// 페이지네이션 나중에 하나로 선택 및 수정
+import { NoticePagination } from '@/features/notice/components/notice-pagination'; 
 import { useNoticePagination } from '@/features/notice/hooks/use-notice-pagination';
+
 import { useNoticeSearch } from '@/features/notice/hooks/use-notice-search';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,10 +27,12 @@ export const Notice = () => {
   // 🔐 임시 권한 (나중에 로그인 정보로 교체)
   const isAdmin = true;
 
-  const { data = [] } = useQuery({
+  const { data = [], error } = useQuery({
     queryKey: ['notices'],
-    queryFn: fetchNotices,
+    queryFn: fetchNoticessssss,
   });
+
+  console.log(data, error);
 
   const search = useNoticeSearch();
   const searchedList = search.applySearch(data);
@@ -109,11 +106,6 @@ export const Notice = () => {
         </CardFooter>
       </Card>
 
-      {/* 상세 다이얼로그 */}
-      {/* <NoticeDetailDialog
-        notice={selectedNotice}
-        onClose={() => setSelectedNotice(null)}
-      /> */}
 
     </div>
   );

@@ -20,19 +20,31 @@ export const NoticeCreate = () => {
 
   const create = useMutation({
     mutationFn: (values) =>
+      
       createNotice({
-        userId: 'admin',
+       userId: 1,
         ...values,
       }),
+
+      // createNotice(values),     //--> 로그인 정보 받아오면 이걸로 바꾸기
+
+    
     onSuccess: async (res) => {
       if (!res?.ok) {
+        console.error('createNotice failed response:', res);
         window.alert(res?.message ?? '등록 실패');
         return;
       }
-      window.alert(res.message); // 등록되었습니다
+
+      window.alert(res.message ?? '등록되었습니다');
+
       await qc.invalidateQueries({ queryKey: ['notices'] });
+
+     
       navigate('/dashboard/notice');
     },
+
+  
   });
 
   return (

@@ -11,5 +11,7 @@ public record OrderSummary(
     LocalDate orderDate,
     LocalDate receiveDate,
     Long itemCount,
-    Long totalPrice
+    Long totalPrice,
+    Long managerId,
+    String managerName
 ) {}

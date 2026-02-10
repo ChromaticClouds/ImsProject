@@ -11,7 +11,7 @@ export const bootStrapAuth = async () => {
     const { user, token } = data;
     useAuthStore.getState().setAuth(user, token);
     return { success: true, role: user.userRole };
-  } catch {
+  } catch (err) {
     toast.error('세션이 만료됐거나 유효한 접근이 아닙니다.');
     useAuthStore.getState().clearAuth();
     return { success: false, role: null };

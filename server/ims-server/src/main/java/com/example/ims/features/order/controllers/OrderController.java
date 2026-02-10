@@ -1,12 +1,16 @@
 package com.example.ims.features.order.controllers;
 
+import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.order.dto.*;
 import com.example.ims.features.order.services.OrderService;
+import com.example.ims.features.user.dto.UserIdentifier;
 import com.example.ims.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -17,9 +21,17 @@ public class OrderController {
     private final OrderService service;
 
     @GetMapping("receive")
-    public ResponseEntity<ApiResponse<List<OrderSummary>>> getReceiveOrders() {
-        List<OrderSummary> orders = service.getReceiveOrders();
-
+    public ResponseEntity<ApiResponse<List<OrderSummary>>> getReceiveOrders(
+        @RequestParam(required = false, value = "search") String search,
+        @RequestParam(required = false, value = "fromDate")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate fromDate,
+        @RequestParam(required = false, value = "toDate")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate toDate
+    ) {
+        List<OrderSummary> orders =
+            service.getReceiveOrders(search, fromDate, toDate);
         return ResponseEntity.ok(ApiResponse.success(orders));
     }
 
@@ -35,14 +47,27 @@ public class OrderController {
         @RequestParam(value = "search", defaultValue = "") String search
     ) {
         List<OrderProduct> products = service.getProducts(search);
-
         return ResponseEntity.ok(ApiResponse.success(products));
     }
 
     @PostMapping("post")
     public ResponseEntity<ApiResponse<Void>> postOrder(@RequestBody OrderPostRequest request) {
         service.postOrder(request);
-
         return ResponseEntity.ok(ApiResponse.success("발주서가 성공적으로 업로드 되었습니다."));
+    }
+
+    @GetMapping("get-managers")
+    public ResponseEntity<ApiResponse<List<UserIdentifier>>> getOutboundManagers() {
+        List<UserIdentifier> managers = service.getOutboundManagers();
+        return ResponseEntity.ok(ApiResponse.success(managers));
+    }
+
+    @PatchMapping("/{orderNumber}/manager")
+    public ResponseEntity<ApiResponse<Void>> patchOutboundManager(
+        @PathVariable("orderNumber") String orderNumber,
+        @RequestBody AssignOutboundManagerRequest request
+    ) {
+        service.assignOutboundManager(orderNumber, request.managerId());
+        return ResponseEntity.ok(ApiResponse.success("ok"));
     }
 }

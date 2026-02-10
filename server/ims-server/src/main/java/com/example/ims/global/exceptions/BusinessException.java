@@ -1,4 +1,4 @@
-package com.example.ims.global.exception;
+package com.example.ims.global.exceptions;
 
 public class BusinessException extends RuntimeException {
     public BusinessException(String message) {

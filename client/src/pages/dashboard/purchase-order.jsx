@@ -13,7 +13,7 @@ import { PurchaseOrderPicker } from '@/features/purchase-order/components/purcha
 
 import { usePurchaseOrders } from '@/features/purchase-order/hooks/use-purchase-orders.js';
 import { usePurchaseOrderFilterStore } from '@/features/purchase-order/stores/use-purchase-order-filter-store.js';
-import { usePurchaseOrderPagination } from '@/features/purchase-order/hooks/use-purchase-order-pagination';
+import { usePurchaseOrderPagination } from '@/features/purchase-order/hooks/use-purchase-order-pagination.js';
 
 export const PurchaseOrder = () => {
   const { rows } = usePurchaseOrders();

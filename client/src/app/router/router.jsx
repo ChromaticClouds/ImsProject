@@ -53,6 +53,8 @@ import { OutboundRegister } from '@/pages/outbound/outbound-regiester.jsx';
 import { HistoryPage } from '@/pages/dashboard/history.jsx';
 import { ReceiveOrder } from '@/pages/dashboard/receive-order/receive-order.jsx';
 import { ReceiveOrderPost } from '@/pages/dashboard/receive-order/receive-order-post.jsx';
+import { ForgotPassword } from '@/pages/forgot-password.jsx';
+import { PasswordReset } from '@/pages/password-reset.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -62,6 +64,8 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'login', element: <Auth /> },
       { path: 'register', element: <Auth /> },
+      { path: 'forgot-password', element: <ForgotPassword /> },
+      { path: 'password-reset', element: <PasswordReset /> },
 
       {
         loader: authBootstrapLoader,

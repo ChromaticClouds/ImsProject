@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover.js';
+import { useDebounce } from '@/hooks/use-debounce.js';
 
 /**
  * Assets
@@ -24,18 +25,25 @@ import { SearchIcon } from 'lucide-react';
  * Hooks
  */
 import { useState } from 'react';
-import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
+import { useOrderProductSearch } from '../hooks/use-order-product-search.js';
+import { OrderPostSearchList } from './order-post-search-list.jsx';
 
 export const OrderPostSearch = () => {
   const [open, setOpen] = useState(false);
+  const [focus, setFocus] = useState(false);
+  const [input, setInput] = useState('');
+  const debounced = useDebounce(input, 500);
 
-  const { } = useOrderPostContext();
+  const { data, isFetching } = useOrderProductSearch(debounced, open);
+
+  const products = data?.data ?? [];
 
   return (
-    <CardFooter>
+    <CardFooter className='border-t'>
       <div className='relative w-full max-w-120'>
         <Popover
           open={open}
+          modal={true}
           onOpenChange={setOpen}
         >
           <PopoverTrigger asChild>
@@ -46,6 +54,7 @@ export const OrderPostSearch = () => {
                   size={48}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onFocus={() => setOpen(true)}
                   className='pr-10'
                 />
                 <InputGroupAddon>
@@ -57,41 +66,16 @@ export const OrderPostSearch = () => {
 
           <PopoverContent
             align='start'
-            className='p-0 w-(--radix-popover-trigger-width)'
+            side='bottom'
+            onOpenAutoFocus={(e) => e.preventDefault()}
             onCloseAutoFocus={(e) => e.preventDefault()}
+            className='p-0 w-(--radix-popover-trigger-width)'
           >
-            <div className='max-h-80 overflow-y-auto'>
-              {products.length > 0 ? (
-                products.map((product) => (
-                  <button
-                    key={product.id}
-                    type='button'
-                    className='w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors'
-                    onClick={() => {
-                      addOrIncreaseProduct(form, product);
-                      setIsOpen(false);
-                    }}
-                  >
-                    <img
-                      src={product.imageUrl || '/placeholder.png'}
-                      className='w-10 h-10 rounded object-cover shrink-0'
-                    />
-                    <div className='flex flex-col min-w-0'>
-                      <span className='text-sm font-medium truncate'>
-                        {product.name}
-                      </span>
-                      <span className='text-xs text-muted-foreground truncate'>
-                        {product.brand} · 재고 {product.count}
-                      </span>
-                    </div>
-                  </button>
-                ))
-              ) : (
-                <div className='px-4 py-6 text-sm text-center text-muted-foreground'>
-                  검색 결과가 없습니다
-                </div>
-              )}
-            </div>
+            <OrderPostSearchList
+              products={products}
+              isFetching={isFetching}
+              onClick={() => setOpen(false)}
+            />
           </PopoverContent>
         </Popover>
       </div>

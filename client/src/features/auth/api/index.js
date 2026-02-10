@@ -1,7 +1,13 @@
+// @ts-check
+
 /**
  * Node modules
  */
-import { api } from '@/services/api.js';
+import { api, hooks } from '@/services/api.js';
+import { ERROR } from '@/services/error.js';
+import { HTTPError } from 'ky';
+import { toast } from 'sonner';
+import { useAuthStore } from '../stores/use-auth-store.js';
 
 /**
  * @param {LoginFormSchema} form
@@ -27,4 +33,11 @@ export const verifyToken = (token) =>
 /**
  * @returns {Promise<ApiResponse<RefreshResponse>>}
  */
-export const refreshToken = () => api.get('auth/refresh', { retry: 1 }).json();
+export const refreshToken = () => api.get('auth/refresh', { retry: 1, hooks }).json();
+
+/**
+ * @returns {Promise<ApiResponse<void>>}
+ */
+export const logout = () => api.post('user/logout', { hooks }).json();
+
+

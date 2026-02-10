@@ -18,7 +18,7 @@ const chartConfig = {
   },
 };
 
-export const InventoryShareRadialChart = () => {
+export const  InventoryShareRadialChart = () => {
   const totalLimits = VENDOR_MONITORED[0].stocked + VENDOR_MONITORED[0].limit;
 
   return (

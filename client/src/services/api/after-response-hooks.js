@@ -24,7 +24,13 @@ export const afterResponseHooks = [
       const retryRequest = request.clone();
       retryRequest.headers.set('Authorization', `Bearer ${token}`);
 
-      return fetch(retryRequest);
+      return ky(request, {
+        ...options,
+        headers: {
+          ...Object.fromEntries(request.headers),
+          Authorization: `Bearer ${token}`,
+        },
+      });
     } catch (err) {
       useAuthStore.getState().logout();
       return response;

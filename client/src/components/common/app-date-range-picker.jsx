@@ -31,7 +31,7 @@ export const AppDateRangePicker = ({ value, onChange }) => {
       <PopoverTrigger asChild>
         <Button
           variant='outline'
-          className='w-63'
+          className='w-63 xl:w-full flex-1 xl:flex-0'
         >
           {value?.from ? (
             value.to ? (

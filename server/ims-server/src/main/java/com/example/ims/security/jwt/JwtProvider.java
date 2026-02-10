@@ -97,8 +97,8 @@ public class JwtProvider {
             = new UserPrincipal(userId, email, role, rank);
 
         return new UsernamePasswordAuthenticationToken(
-                principal,
-                null,
-                authorities);
+            principal,
+            null,
+            authorities);
     }
 }

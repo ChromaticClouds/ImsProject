@@ -3,6 +3,9 @@ import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
 import { InventoryShare } from '@/features/main/inventory-share.jsx';
 import { ProductCount } from '@/features/main/product-count.jsx';
 
+import { MainNotice } from '@/features/main/main-notice';
+import { MainTodo } from '@/features/main/main-todo';
+
 export const Main = () => {
   const { user } = useAuthStore();
 
@@ -15,6 +18,11 @@ export const Main = () => {
       <div className='grid grid-cols-10 gap-4'>
         <ProductCount />
         <InventoryShare />
+      </div>
+
+      <div className='mt-4 grid grid-cols-10 gap-4'>
+        <MainNotice />
+        <MainTodo />
       </div>
     </div>
   );

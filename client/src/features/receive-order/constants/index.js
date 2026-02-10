@@ -9,3 +9,10 @@ export const RECEIVE_ORDER_TABLE_HEADER = [
   '납기희망일',
   '출고 담당자',
 ];
+
+export const ORDER_POST_TABLE_HEADER = [
+  { head: '제품', width: 'w-100' },
+  { head: '수량', width: 'w-20' },
+  { head: '단가', width: 'w-60' },
+  { head: '', width: 'w-20' },
+];

@@ -10,10 +10,15 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog.js';
 import { LogOutIcon } from 'lucide-react';
+import { useState } from 'react';
+import { useLogout } from '../hooks/use-logout.js';
 
 export const LogOutDialog = () => {
+  const { logoutUser } = useLogout();
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant='ghost'
@@ -30,7 +35,15 @@ export const LogOutDialog = () => {
           <DialogDescription>정말로 로그아웃 하시겠습니까?</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant='destructive'>로그아웃</Button>
+          <Button
+            variant='destructive'
+            onClick={async () => {
+              const result = await logoutUser();
+              if (result.success) setOpen(false);
+            }}
+          >
+            로그아웃
+          </Button>
           <DialogClose asChild>
             <Button variant='secondary'>취소</Button>
           </DialogClose>

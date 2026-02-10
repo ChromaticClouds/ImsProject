@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input.js";
 import { useOrderPostContext } from "../providers/receive-order-post-provider.jsx";
 
 export const OrderBootstrap = () => {
+  // 수주 번호를 context에서 가져옴
   const { sequence } = useOrderPostContext();
 
   return (
@@ -10,7 +11,7 @@ export const OrderBootstrap = () => {
         <span className='text-sm md:text-base'>수주 번호</span>
         <Input
           className='w-full md:w-60'
-          value='A012'
+          value={sequence}
           disabled
         />
       </div>

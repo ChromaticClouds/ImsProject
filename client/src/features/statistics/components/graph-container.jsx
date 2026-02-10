@@ -27,7 +27,7 @@ const WIDTH_CLASS = {
 const HEIGHT_CLASS = {
   sm: 'h-40',
   md: 'h-60',
-  lg: 'h-80',
+  lg: 'h-100',
 };
 
 /**

@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchInboundPendingItems } from '@/services/api';
+import { fetchInboundPendingItems } from '../api/index';
 import { inboundQueryKeys } from './inboundQueryKeys';
 
 /**

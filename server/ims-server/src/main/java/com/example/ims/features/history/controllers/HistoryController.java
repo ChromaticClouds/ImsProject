@@ -40,7 +40,12 @@ public class HistoryController {
     return service.getLots(from, to, q, kind, targetId, status, type, brand, page, size);
   }
 
-  
+  // 품목 상세
+  @GetMapping("/lots/{lotId}")
+  public HistoryLotSummaryRow lotDetail(@PathVariable("lotId") Long lotId) {
+    return service.getLotDetail(lotId);
+  }
+
   // 검색 드롭다운
   @GetMapping("/search")
   public List<HistorySearchSuggestionRow> search(@RequestParam("q") String q) {
@@ -53,6 +58,7 @@ public class HistoryController {
     return service.getBrandsByType(type);
   }
   
+  // 최소 날짜 잡기
   @GetMapping("/min-date")
   public Map<String, String> minDate() {
     String min = service.getMinCreatedDateYmd();

@@ -1,6 +1,6 @@
 // @ts-check
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteVendor } from '@/services/api'
+import { deleteVendor } from '../api/index'
 
 export function useDeleteVendor() {
   const queryClient = useQueryClient()

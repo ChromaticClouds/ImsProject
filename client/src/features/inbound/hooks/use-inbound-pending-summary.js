@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchInboundPendingSummary } from '@/services/api.js';
+import { fetchInboundPendingSummary } from '../api/index';
 
 /**
  * @param {{ from: string, to: string, keyword?: string, page?: number, size?: number }} search

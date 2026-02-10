@@ -141,7 +141,10 @@ public interface InboundQueryMapper {
 
     // 주문 번호 기준 해당 주문에 속한 항목 완료 처리
     @UpdateProvider(type = InboundQuerySqlProvider.class, method = "markInboundCompleteByOrderNumber")
-    int markInboundCompleteByOrderNumber(@Param("orderNumber") String orderNumber);
+    int markInboundCompleteByOrderNumber(
+        @Param("orderNumber") String orderNumber,
+        @Param("loginUserId") Long loginUserId
+    );
 
     // stock upsert 누적
     @InsertProvider(type = InboundQuerySqlProvider.class, method = "upsertStockByProductId")
@@ -157,6 +160,13 @@ public interface InboundQueryMapper {
     """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insertHistoryLot(HistoryLot lot);
+    
+    // 안전재고
+    @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectSafeStock")
+    List<InboundSafeStockRow> selectSafeStock(@Param("productIds") List<Long> productIds);
+    
+ 
+    
 }
 
 

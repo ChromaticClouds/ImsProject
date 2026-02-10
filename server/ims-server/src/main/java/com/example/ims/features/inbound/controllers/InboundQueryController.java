@@ -1,13 +1,16 @@
 package com.example.ims.features.inbound.controllers;
 
 import java.time.LocalDate;
+
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.example.ims.features.inbound.dto.*;
 import com.example.ims.features.inbound.service.InboundQueryService;
+import com.example.ims.features.user.dto.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
 
@@ -74,13 +77,17 @@ public class InboundQueryController {
         return service.getPendingDetailByOrderNumber(orderNumber);
     }
 
-    // ✅ 여기서 memo까지 받아서 history_lot + history + stock + 주문완료 처리
+    //
     @PatchMapping("/orders/by-number/{orderNumber}/complete")
     public InboundStatusUpdateResponse markCompleteByOrderNumber(
         @PathVariable("orderNumber") String orderNumber,
-        @RequestBody(required = false) HistoryLot req
+        @RequestBody(required = false) HistoryLot req,
+        @AuthenticationPrincipal UserPrincipal user
     ) {
-        service.markCompleteByOrderNumberAndWriteHistory(orderNumber, req == null ? null : req.getMemo());
+    	
+    	Long loginUserId = (user == null? null : user.userId());
+    	System.out.println("userdfdfdfdsfsdfsdfdsf : " + user);
+        service.markCompleteByOrderNumberAndWriteHistory(orderNumber, req == null ? null : req.getMemo(), loginUserId);
 
         return InboundStatusUpdateResponse.builder()
             .orderId(null)
@@ -99,7 +106,7 @@ public class InboundQueryController {
     }
 
     // -------------------------
-    // 완료(오늘만) summary + items
+    // 완료(금일) summary + items
     // -------------------------
     @GetMapping("/completed/today/summary")
     public PageResponse<InboundSummaryRow> completedTodaySummary(
@@ -114,6 +121,13 @@ public class InboundQueryController {
     public List<InboundItemRow> completedItems(@PathVariable("orderNumber") String orderNumber) {
         return service.getCompletedItemsByOrderNumber(orderNumber);
     }
+    
+    @GetMapping("/safeStock")
+    public Map<Long, InboundSafeStockRow> safeStock(@RequestParam("productIds") List<Long> productIds){
+    	
+    	return service.getSafetyStocksByProductIds(productIds);
+    };
+    
 }
 
 

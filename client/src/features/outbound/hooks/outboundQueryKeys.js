@@ -5,3 +5,5 @@ export const outboundQueryKeys = {
   completedTodaySummary: (params) => ['outbound-completed-today-summary', params],
   completedItems: (orderNumber) => ['outbound-completed-items', orderNumber],
 };
+
+

@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchHistoryMinDate } from '@/services/api.js';
+import { fetchHistoryMinDate } from '../api/index';
 
 /**
  * @param {boolean} enabled

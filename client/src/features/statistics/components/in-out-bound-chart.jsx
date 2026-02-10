@@ -1,71 +1,66 @@
-// @ts-check
 
+// @ts-check
+import React from 'react';
 import { BarChart, Bar, XAxis, CartesianGrid } from 'recharts';
 
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
 } from '@/components/ui/chart';
 
-import { inboundOutboundByItemMock } from '../constants/index.js';
 import { useIsMobile } from '@/hooks/use-mobile.js';
 
-// chart-config.js
 export const inboundOutboundConfig = {
-  inbound: {
-    label: '입고',
-    color: 'hsl(var(--chart-1))',
-  },
-  outbound: {
-    label: '출고',
-    color: 'hsl(var(--chart-2))',
-  },
+  inbound: { label: '입고', color: 'hsl(var(--chart-1))' },
+  outbound: { label: '출고', color: 'hsl(var(--chart-2))' },
 };
 
 /**
- * 입출고 수량 합계 통계 차트
+ * @param {{ data: Array<{ item: string, inbound: number, outbound: number, total: number }> }} props
  */
-export const InOutboundChart = () => {
+export const InOutboundChart = ({ data }) => {
   const isMobile = useIsMobile();
 
   const BAR_WIDTH = 32;
   const GAP = isMobile ? 16 : 32;
-  const chartWidth = inboundOutboundByItemMock.length * (BAR_WIDTH + GAP);
+  const chartWidth = Math.max(1, data.length) * (BAR_WIDTH + GAP);
 
   return (
     <ChartContainer
       config={inboundOutboundConfig}
-      className='h-80 w-full'
+      className='h-95 w-full'
       style={{ minWidth: chartWidth }}
     >
-      <BarChart
-        data={inboundOutboundByItemMock}
-        barSize={isMobile ? 12 : 24}
-        barCategoryGap={16}
-      >
+      <BarChart data={data} barSize={isMobile ? 12 : 24} barCategoryGap={16} margin={{ top: 10, right: 20, left: 0, bottom: 30 }}>
         <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey='item'
-          tickLine={false}
-          axisLine={false}
+        <XAxis dataKey='item' tickLine={false} axisLine={false} />
+
+        
+        <ChartTooltip
+          content={({ active, payload, label }) => {
+            if (!active || !payload?.length) return null;
+            const p = payload?.[0]?.payload;
+            return (
+              <div className="rounded-md border bg-background p-2 text-sm shadow">
+                <div className="font-semibold mb-1">{label}</div>
+                <div className="flex flex-col gap-0.5">
+                  <div>입고: {Number(p?.inbound ?? 0).toLocaleString()}</div>
+                  <div>출고: {Number(p?.outbound ?? 0).toLocaleString()}</div>
+                  <div className="font-semibold">
+                    합계: {Number(p?.total ?? 0).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+            );
+          }}
         />
 
-        <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
 
-        <Bar
-          dataKey='inbound'
-          fill='var(--chart-1)'
-          radius={[6, 6, 0, 0]}
-        />
-        <Bar
-          dataKey='outbound'
-          fill='var(--chart-2)'
-          radius={[6, 6, 0, 0]}
-        />
+        <Bar dataKey='inbound' fill='var(--chart-1)' radius={[6, 6, 0, 0]} />
+        <Bar dataKey='outbound' fill='var(--chart-2)' radius={[6, 6, 0, 0]} />
       </BarChart>
     </ChartContainer>
   );

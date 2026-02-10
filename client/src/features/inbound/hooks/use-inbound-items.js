@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   fetchInboundPendingItems,
   fetchInboundCompletedItems,
-} from '@/services/api.js';
+} from '../api/index';
 
 /**
  * @param {string} orderNumber

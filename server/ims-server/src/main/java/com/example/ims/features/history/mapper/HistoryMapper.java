@@ -41,6 +41,14 @@ public interface HistoryMapper {
       @Param("targetId") Long targetId,
       @Param("q") String q
   );
+  
+  // 상세 정보 내역 헤더
+  @SelectProvider(type = HistoryProvider.class, method = "selectLotDetailHeader")
+  HistoryLotSummaryRow selectLotDetailHeader(@Param("lotId") Long lotId);
+
+  // 상세 제품 리스트
+  @SelectProvider(type = HistoryProvider.class, method = "selectLotDetailItems")
+  List<HistoryLotSummaryRow> selectLotDetailItems(@Param("lotId") Long lotId);
 
 
   // 상세 정보 브랜드, 주종 - 검색하기 편하게 하기 위함.

@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchOutboundStockProducts } from '@/services/api.js';
+import { fetchOutboundStockProducts } from '../api/index';
 
 /** @param {{ type: string, brand: string }} params */
 export function useOutboundStockProducts(params, enabled = true) {

@@ -1,15 +1,18 @@
 package com.example.ims.features.outbound.controllers;
 
 import java.time.LocalDate;
+
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.ims.features.inbound.dto.HistoryLot;
 import com.example.ims.features.inbound.dto.PageResponse;
 import com.example.ims.features.outbound.dto.*;
 import com.example.ims.features.outbound.service.OutboundQueryService;
+import com.example.ims.features.user.dto.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,9 +36,11 @@ public class OutboundQueryController {
       @RequestParam("to")   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
       @RequestParam(value="userId", required=false) Long userId,
       @RequestParam(value="page", defaultValue="0") int page,
-      @RequestParam(value="size", defaultValue="20") int size
+      @RequestParam(value="size", defaultValue="20") int size,
+      @AuthenticationPrincipal UserPrincipal user
   ) {
-    return service.getPendingSummary(from, to, userId, page, size);
+	  
+	  return service.getPendingSummary(from, to, userId, page, size);
   }
 
   @GetMapping("/pending/{orderNumber}/items")
@@ -85,6 +90,8 @@ public class OutboundQueryController {
   
 
 }
+
+
 
 
 

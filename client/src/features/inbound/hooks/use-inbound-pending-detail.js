@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchInboundPendingDetail } from '@/services/api';
+import { fetchInboundPendingDetail } from '../api/index';
 
 export function useInboundPendingDetail(orderNumber) {
   return useQuery({

@@ -2,11 +2,58 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOutboundPendingItems } from '../hooks/use-outbound-pending-items.js';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
+
+
+function decodeJwtPayload(token) {
+  try {
+    const parts = String(token || '').split('.');
+    if (parts.length < 2) return null;
+    const json = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+
+function getMyUserIdFromToken(token) {
+  const p = decodeJwtPayload(token);
+  if (!p) return null;
+
+
+  if (p.id != null && !Number.isNaN(Number(p.id))) return Number(p.id);
+  if (p.userId != null && !Number.isNaN(Number(p.userId))) return Number(p.userId);
+
+
+  if (p.sub != null && !Number.isNaN(Number(p.sub))) return Number(p.sub);
+  console.log(p);
+  return null;
+}
 
 /**
  * @param {{ items: any[] }} props
  */
 function OutboundPendingItemsDropdown({ items }) {
+
+      /** @param {string} type */
+function toKoreanType(type) {
+  switch (type) {
+    case 'SOJU':
+      return '소주';
+    case 'WHISKEY':
+      return '위스키';
+    case 'LIQUOR':
+      return '양주';
+    case 'TRADITIONAL':
+      return '전통주';
+    case 'KAOLIANG_LIQUOR':
+      return '고량주';
+    default:
+      return type;
+  }
+}
+
   return (
     <div
       style={{
@@ -20,56 +67,51 @@ function OutboundPendingItemsDropdown({ items }) {
         padding: 8,
       }}
     >
-      
       <div>
-          {items.map((it) => {
-            const shortage = Number(it.shortage || 0) === 1;
-            return (
-              <div
-              key={it.orderId} 
-              style={{ 
+        {items.map((it) => {
+          const shortage = Number(it.shortage || 0) === 1;
+          return (
+            <div
+              key={it.orderId}
+              style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 gap: 12,
                 padding: '10px 10px',
                 borderRadius: 8,
-                background: shortage ? '#f7f7f7' : 'transparent'
-             }}
+                background: shortage ? '#f7f7f7' : 'transparent',
+              }}
               onMouseEnter={(e) => (e.currentTarget.style.background = '#f7f7f7')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-              >
-                <div style={{ minWidth: 0 }}>
-                <div 
-                style={{ 
-                  fontWeight: 700,
-                  fontSize: 14,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                 }}
-                 title={it.productName}
-                 >{it.productName}
-                 </div>
+            >
+              <div style={{ minWidth: 0 }}>
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: 14,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                  title={it.productName}
+                >
+                  {it.productName}
+                </div>
                 <div>
-                  {(it.type ?? '-')}{' · '}{(it.brand ?? '-')}
-                </div>
-                </div>
-                <div 
-                style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span>수주수량{Number(it.orderQty ?? 0)}</span>
-                  <span>현재고{Number(it.stockCount ?? 0)}</span>
+                  {(toKoreanType(it.type) ?? '-')}{' · '}{(it.brand ?? '-')}
                 </div>
               </div>
-            );
-          })}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <span>수주수량{Number(it.orderQty ?? 0)}</span>
+                <span>현재고{Number(it.stockCount ?? 0)}</span>
+              </div>
+            </div>
+          );
+        })}
 
-          {!items.length ? (
-            <tr>
-              <td colSpan={4} style={{ padding: 10, textAlign: 'center', color: '#666' }}>
-                품목 없음
-              </td>
-            </tr>
-          ) : null}
+        {!items.length ? (
+          <div style={{ padding: 10, textAlign: 'center', color: '#666' }}>품목 없음</div>
+        ) : null}
       </div>
     </div>
   );
@@ -85,21 +127,23 @@ function OutboundPendingItemsDropdown({ items }) {
 export function OutboundPendingRow({ row, loading, onError }) {
   const nav = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-
   const wrapRef = useRef(null);
   const btnRef = useRef(null);
   const [dropdownWidth, setDropdownWidth] = useState(240);
   const MIN_DROPDOWN_WIDTH = 360;
 
+  const accessToken = useAuthStore((s) => s.accessToken);
+  const myId = useMemo(() => getMyUserIdFromToken(accessToken), [accessToken]);
+
+  const managerId = row?.managerId == null ? null : Number(row.managerId);
+  const isMine = myId != null && managerId != null && myId === managerId;
+
   const itemsQuery = useOutboundPendingItems(row.orderNumber, isOpen);
   const items = useMemo(() => (Array.isArray(itemsQuery.data) ? itemsQuery.data : []), [itemsQuery.data]);
-
 
   const shortage =
     Number(row.hasShortage || 0) === 1 ||
     items.some((it) => Number(it.shortage || 0) === 1);
-
-  const isOverdue = String(row.statusText || '') === '미납';
 
   useLayoutEffect(() => {
     const el = btnRef.current;
@@ -134,6 +178,7 @@ export function OutboundPendingRow({ row, loading, onError }) {
       <td style={{ padding: 8 }}>{row.receiveDate ?? '-'}</td>
       <td style={{ padding: 8 }}>{row.orderNumber}</td>
       <td style={{ padding: 8 }}>{row.sellerVendorName ?? '-'}</td>
+      <td style={{ padding: 8 }}>{row.managerName ?? '-'}</td>
 
       <td style={{ padding: 8 }}>
         <div ref={wrapRef} style={{ position: 'relative', display: 'inline-block' }}>
@@ -175,18 +220,19 @@ export function OutboundPendingRow({ row, loading, onError }) {
         {Number(row.totalAmount ?? 0).toLocaleString()}
       </td>
 
-      <td style={{ padding: 8 }}>{row.userName ?? '-'}</td>
-
       <td style={{ padding: 8, textAlign: 'right' }}>
         <button
           type="button"
-          disabled={loading || shortage}
-          onClick={() => nav(`/dashboard/outbounds/register/${row.orderNumber}`, {
-          state: { sellerVendorName: row.sellerVendorName ?? '-' }
-          })}
+          disabled={loading || shortage || !isMine}
+          onClick={() =>
+            nav(`/dashboard/outbounds/register/${row.orderNumber}`, {
+              state: { sellerVendorName: row.sellerVendorName ?? '-' },
+            })
+          }
         >
           등록
         </button>
+
       </td>
     </tr>
   );

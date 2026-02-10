@@ -64,6 +64,14 @@ public class HistoryService {
 
     return PageResponse.of(rows, safePage, safeSize, total);
   }
+  
+  public HistoryLotSummaryRow getLotDetail(Long lotId) {
+	    if (lotId == null || lotId <= 0) throw new IllegalArgumentException("lotId 필수");
+	    HistoryLotSummaryRow header = mapper.selectLotDetailHeader(lotId);
+	    if (header == null) throw new IllegalArgumentException("lot 없음: " + lotId);
+	    header.setItems(mapper.selectLotDetailItems(lotId));
+	    return header;
+	  }
 
   public List<String> getBrandsByType(String type) {
     if (!StringUtils.hasText(type)) return List.of();

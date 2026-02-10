@@ -3,9 +3,9 @@ import { ArrowBigDownDashIcon, ArrowBigUpDashIcon, ArrowDownUpIcon } from 'lucid
 
 /** @param {any} row */
 function getIcon(row) {
-  if (row.status === 'INBOUND') return <ArrowBigDownDashIcon size={18} />;
-  if (row.status === 'OUTBOUND') return <ArrowBigUpDashIcon size={18} />;
-  return <ArrowDownUpIcon size={18} />;
+  if (row.status === 'INBOUND') return <ArrowBigDownDashIcon size={18} className='text-blue-500' />;
+  if (row.status === 'OUTBOUND') return <ArrowBigUpDashIcon size={18} className='text-red-500' />;
+  return <ArrowDownUpIcon size={18} className='text-green-500' />;
 }
 
 function deltaStyle(status, n) {

@@ -7,6 +7,25 @@ import { useOutboundCompletedItems } from '../hooks/use-outbound-completed-items
  * @param {{ items: any[] }} props
  */
 function OutboundCompletedItemsDropdown({ items }) {
+
+    /** @param {string} type */
+function toKoreanType(type) {
+  switch (type) {
+    case 'SOJU':
+      return '소주';
+    case 'WHISKEY':
+      return '위스키';
+    case 'LIQUOR':
+      return '양주';
+    case 'TRADITIONAL':
+      return '전통주';
+    case 'KAOLIANG_LIQUOR':
+      return '고량주';
+    default:
+      return type;
+  }
+}
+
   return (
     <div
       style={{
@@ -47,7 +66,7 @@ function OutboundCompletedItemsDropdown({ items }) {
                  title={it.productName}
               >{it.productName}</div>
               <div>
-                {it.type ?? '-'} / {it.brand ?? '-'}
+                {toKoreanType(it.type) ?? '-'} / {it.brand ?? '-'}
               </div>
               </div>
               <div 

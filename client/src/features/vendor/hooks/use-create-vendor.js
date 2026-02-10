@@ -1,6 +1,6 @@
 // @ts-check
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createVendor } from '@/services/api';
+import { createVendor } from '../api/index';
 
 export function useCreateVendor() {
   const qc = useQueryClient();

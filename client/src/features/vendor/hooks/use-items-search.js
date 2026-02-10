@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchProducts } from '@/services/api';
+import { fetchProducts } from '../api/index';
 
 /**
  * @param {{ keyword: string, excludeAssigned?: boolean }} params

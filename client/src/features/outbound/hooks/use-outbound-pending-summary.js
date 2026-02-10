@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchOutboundPendingSummary } from '@/services/api.js';
+import { fetchOutboundPendingSummary } from '../api/index';
 import { outboundQueryKeys } from './outboundQueryKeys.js';
 
 /** @param {{ from: string, to: string, userId?: number, page?: number, size?: number }} params */
@@ -12,3 +12,8 @@ export function useOutboundPendingSummary(params) {
     gcTime: 5 * 60 * 1000,
   });
 }
+
+
+
+
+

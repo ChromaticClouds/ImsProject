@@ -4,6 +4,7 @@ import { HistoryDateRangePicker } from './history-date-range-picker.jsx';
 import { HistorySearchBox } from './history-search-box.jsx';
 import { HistoryFilters } from './history-filters.jsx';
 import { HistoryLotList } from './history-lot-list.jsx';
+import { HistoryDetailPanel } from './history-detail-panel.jsx';
 
 
 export function HistoryScreen() {
@@ -47,6 +48,7 @@ export function HistoryScreen() {
         background: '#fff'
       }}>
         <HistoryLotList rows={rows} selectedLotId={selectedLotId} onSelect={setSelectedLotId} />
+        <HistoryDetailPanel lotId={selectedLotId} />
       </div>
     </div>
   );

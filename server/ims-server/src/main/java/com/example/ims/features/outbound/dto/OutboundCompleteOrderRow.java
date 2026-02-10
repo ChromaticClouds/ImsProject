@@ -11,6 +11,8 @@ public class OutboundCompleteOrderRow {
     
     private Long sellerVendorId;
     
+    private Long managerId;
+    
     public Long getSellerVendorId() {
     	return sellerVendorId;
     }

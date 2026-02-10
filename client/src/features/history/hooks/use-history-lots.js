@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchHistoryLots } from '@/services/api.js';
+import { fetchHistoryLots } from '../api/index';
 import { historyQueryKeys } from './historyQueryKeys.js';
 
 export function useHistoryLots(params) {

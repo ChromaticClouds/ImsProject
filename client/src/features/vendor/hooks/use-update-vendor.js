@@ -1,6 +1,6 @@
 // @ts-check
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateVendor } from '@/services/api';
+import { updateVendor } from '../api/index';
 
 /**
  * @typedef {{ id: number, payload: any }} UpdateVendorVars

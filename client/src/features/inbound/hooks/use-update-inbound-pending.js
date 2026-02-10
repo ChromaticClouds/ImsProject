@@ -1,7 +1,7 @@
 // @ts-check
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { inboundQueryKeys } from './inboundQueryKeys';
-import { updateInboundPending } from '@/services/api';
+import { updateInboundPending } from '../api/index';
 
 /**
  * @typedef {{ orderId: number, orderQty: number }} PendingUpdateItem

@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchHistoryBrands } from '@/services/api.js';
+import { fetchHistoryBrands } from '../api/index';
 import { historyQueryKeys } from './historyQueryKeys.js';
 
 export function useHistoryBrands(type) {

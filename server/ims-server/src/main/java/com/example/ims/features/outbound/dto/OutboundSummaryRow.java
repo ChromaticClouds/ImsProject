@@ -20,4 +20,6 @@ public class OutboundSummaryRow {
     private LocalDate receiveDate;    // 납기희망일(recieve_date)
     private boolean hasShortage; // 재고 부족
     private LocalDate orderDate;
+    private Long managerId;
+    private String managerName;
 }

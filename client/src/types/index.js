@@ -30,7 +30,6 @@
 
 /**
  * @typedef {object} User
- * @property {number} id
  * @property {string} eid
  * @property {string} email
  * @property {string} name

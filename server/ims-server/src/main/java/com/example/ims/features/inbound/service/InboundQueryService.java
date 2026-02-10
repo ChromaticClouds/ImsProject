@@ -10,7 +10,10 @@ import com.example.ims.features.inbound.dto.*;
 import com.example.ims.features.inbound.mapper.InboundQueryMapper;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -173,9 +176,64 @@ public class InboundQueryService {
 
     // -----------------------------------------------------------------------------------------
     // 발주번호로 입고완료 + history + stock + memo 
+//    @Transactional
+//    public int markCompleteByOrderNumberAndWriteHistory(String orderNumber, String memo) {
+//        if (!StringUtils.hasText(orderNumber)) throw new IllegalArgumentException("orderNumber 필수");
+//        String on = orderNumber.trim();
+//
+//        List<InboundCompleteOrderRow> rows = mapper.selectOrdersForInboundCompleteByOrderNumber(on);
+//        if (rows == null || rows.isEmpty()) {
+//            throw new IllegalArgumentException("입고 완료 대상이 없습니다(이미 완료됐거나 발주번호 없음): " + on);
+//        }
+//
+//        Long fallbackUserId = rows.get(0).getUserId();
+//        if (fallbackUserId == null) throw new IllegalArgumentException("userId가 없습니다: " + on);
+//
+//        // historyLot
+//        HistoryLot lot = new HistoryLot();
+//        lot.setUserId(fallbackUserId);
+//        lot.setStatus("INBOUND");
+//        lot.setMemo(StringUtils.hasText(memo) ? memo.trim() : null);
+//
+//        int lotInserted = mapper.insertHistoryLot(lot);
+//        if (lotInserted != 1 || lot.getId() == null) {
+//            throw new IllegalStateException("history_lot 생성 실패");
+//        }
+//        Long lotId = lot.getId();
+//
+//        // history + stock
+//        for (InboundCompleteOrderRow r : rows) {
+//            Long vendorItemId = r.getVendorItemId();
+//            if (vendorItemId == null || vendorItemId <= 0) continue;
+//
+//            int qty = (r.getOrderQty() == null ? 0 : r.getOrderQty().intValue());
+//            if (qty <= 0) continue;
+//
+//            Long productId = mapper.selectProductIdByVendorItemId(vendorItemId);
+//            if (productId == null || productId <= 0) {
+//                throw new IllegalArgumentException("productId 없음. vendorItemId=" + vendorItemId);
+//            }
+//
+//            Integer latestAfter = mapper.selectLatestAfterCountForUpdate(vendorItemId);
+//            int beforeCount = (latestAfter == null ? 0 : latestAfter.intValue());
+//            int afterCount = beforeCount + qty;
+//
+//            mapper.insertHistoryRow(lotId, vendorItemId, productId, beforeCount, afterCount);
+//            mapper.upsertStockByProductId(productId, qty);
+//        }
+//
+//        // 주문 상태 완료
+//        int updated = mapper.markInboundCompleteByOrderNumber(on);
+//        if (updated <= 0) throw new IllegalArgumentException("입고 완료 처리 실패: " + on);
+//
+//        return updated;
+//    }
+    
     @Transactional
-    public int markCompleteByOrderNumberAndWriteHistory(String orderNumber, String memo) {
+    public int markCompleteByOrderNumberAndWriteHistory(String orderNumber, String memo, Long loginUserId) {
         if (!StringUtils.hasText(orderNumber)) throw new IllegalArgumentException("orderNumber 필수");
+        if (loginUserId == null || loginUserId <= 0) throw new IllegalArgumentException("로그인 userId 없음");
+
         String on = orderNumber.trim();
 
         List<InboundCompleteOrderRow> rows = mapper.selectOrdersForInboundCompleteByOrderNumber(on);
@@ -183,22 +241,17 @@ public class InboundQueryService {
             throw new IllegalArgumentException("입고 완료 대상이 없습니다(이미 완료됐거나 발주번호 없음): " + on);
         }
 
-        Long fallbackUserId = rows.get(0).getUserId();
-        if (fallbackUserId == null) throw new IllegalArgumentException("userId가 없습니다: " + on);
-
-        // historyLot
+        // ✅ history_lot은 로그인 유저
         HistoryLot lot = new HistoryLot();
-        lot.setUserId(fallbackUserId);
+        lot.setUserId(loginUserId);
         lot.setStatus("INBOUND");
         lot.setMemo(StringUtils.hasText(memo) ? memo.trim() : null);
 
         int lotInserted = mapper.insertHistoryLot(lot);
-        if (lotInserted != 1 || lot.getId() == null) {
-            throw new IllegalStateException("history_lot 생성 실패");
-        }
+        if (lotInserted != 1 || lot.getId() == null) throw new IllegalStateException("history_lot 생성 실패");
         Long lotId = lot.getId();
 
-        // history + stock
+        // history + stock 그대로
         for (InboundCompleteOrderRow r : rows) {
             Long vendorItemId = r.getVendorItemId();
             if (vendorItemId == null || vendorItemId <= 0) continue;
@@ -207,9 +260,7 @@ public class InboundQueryService {
             if (qty <= 0) continue;
 
             Long productId = mapper.selectProductIdByVendorItemId(vendorItemId);
-            if (productId == null || productId <= 0) {
-                throw new IllegalArgumentException("productId 없음. vendorItemId=" + vendorItemId);
-            }
+            if (productId == null || productId <= 0) throw new IllegalArgumentException("productId 없음. vendorItemId=" + vendorItemId);
 
             Integer latestAfter = mapper.selectLatestAfterCountForUpdate(vendorItemId);
             int beforeCount = (latestAfter == null ? 0 : latestAfter.intValue());
@@ -219,12 +270,13 @@ public class InboundQueryService {
             mapper.upsertStockByProductId(productId, qty);
         }
 
-        // 주문 상태 완료
-        int updated = mapper.markInboundCompleteByOrderNumber(on);
+        
+        int updated = mapper.markInboundCompleteByOrderNumber(on, loginUserId);
         if (updated <= 0) throw new IllegalArgumentException("입고 완료 처리 실패: " + on);
 
         return updated;
     }
+
 
     // -----------------------------------------------------------------------------------------
     private void validateRange(LocalDate from, LocalDate to) {
@@ -237,6 +289,21 @@ public class InboundQueryService {
         int s = size <= 0 ? 20 : size;
         return Math.min(s, 100);
     }
+    
+    // ------------------------------------------------------------------------------------------
+    // 안전재고
+    
+    public Map<Long, InboundSafeStockRow> getSafetyStocksByProductIds(List<Long> productIds) {
+    	  if (productIds == null || productIds.isEmpty()) return Collections.emptyMap();
+
+    	  List<InboundSafeStockRow> rows = mapper.selectSafeStock(productIds);
+
+    	  Map<Long, InboundSafeStockRow> map = new HashMap();
+    	  for (InboundSafeStockRow r : rows) {
+    	    if (r.getProductId() != null) map.put(r.getProductId(), r);
+    	  }
+    	  return map;
+    	}
 }
 
 

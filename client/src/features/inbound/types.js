@@ -37,6 +37,7 @@
 /**
  * @typedef {object} InboundPendingItem
  * @property {number} orderId
+ * @property {number} productId
  * @property {string} productName
  * @property {string=} type
  * @property {string=} brand

@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchOutboundAssignees } from '@/services/api.js';
+import { fetchOutboundAssignees } from '../api/index';
 
 export function useOutboundAssignees() {
   return useQuery({
@@ -9,3 +9,6 @@ export function useOutboundAssignees() {
     staleTime: 5 * 60 * 1000,
   });
 }
+
+
+

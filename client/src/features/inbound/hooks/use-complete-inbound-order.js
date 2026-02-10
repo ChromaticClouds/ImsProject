@@ -1,6 +1,6 @@
 // @ts-check
 import { useMutation } from '@tanstack/react-query';
-import { completeInboundOrder } from '@/services/api';
+import { completeInboundOrder } from '../api/index';
 
 /**
  * @returns {import('@tanstack/react-query').UseMutationResult<any, Error, number, unknown>}

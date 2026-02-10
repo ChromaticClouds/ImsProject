@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchOutboundStockTypes } from '@/services/api.js';
+import { fetchOutboundStockTypes } from '../api/index';
 
 export function useOutboundStockTypes(enabled = true) {
   return useQuery({

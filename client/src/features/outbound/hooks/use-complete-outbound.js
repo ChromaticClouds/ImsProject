@@ -1,7 +1,7 @@
 // @ts-check
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { completeOutboundByOrderNumber } from '@/services/api.js';
+import { completeOutboundByOrderNumber } from '../api/index';
 
 /**
  * @typedef {{ orderNumber: string, memo?: string }} CompleteOutboundVars
@@ -46,3 +46,4 @@ export function useCompleteOutbound() {
 
   return { mutateAsync: m.mutateAsync, isPending: m.isPending };
 }
+

@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useInboundPendingItems } from '../hooks/use-inbound-pending-items';
-import { completeInboundByOrderNumber } from '@/services/api.js';
+import { completeInboundByOrderNumber } from '../api/index';
 
 const MEMO_MAX = 300;
 

@@ -125,6 +125,77 @@ public class HistoryProvider {
       ) t
     """;
   }
+  
+  public String selectLotDetailHeader() {
+	    return """
+	      SELECT
+	        hl.id AS lotId,
+	        hl.status AS status,
+	        CASE hl.status
+	          WHEN 'INBOUND' THEN '입고'
+	          WHEN 'OUTBOUND' THEN '출고'
+	          ELSE '조정'
+	        END AS statusText,
+	        MAX(h.created_at) AS createdAt,
+	        hl.user_id AS userId,
+	        u.name AS userName,
+	        hl.memo AS memo,
+
+	        MIN(vi.vendor_id) AS vendorId,
+	        MIN(v_in.vendor_name) AS vendorName,
+
+	        MIN(h.seller_vendor_id) AS sellerVendorId,
+	        MIN(v_out.vendor_name) AS sellerVendorName,
+
+	        COUNT(DISTINCT h.product_id) AS itemCount,
+	        SUM(h.after_count - h.before_count) AS totalDelta
+	      FROM history_lot hl
+	      JOIN history h ON h.lot_id = hl.id
+	      JOIN product pr ON pr.id = h.product_id
+	      LEFT JOIN `user` u ON u.id = hl.user_id
+	      LEFT JOIN vendor_item vi ON vi.id = h.vendor_item_id
+	      LEFT JOIN vendor v_in ON v_in.id = vi.vendor_id
+	      LEFT JOIN vendor v_out ON v_out.id = h.seller_vendor_id
+	      WHERE hl.id = #{lotId}
+	      GROUP BY hl.id, hl.status, hl.user_id, u.name, hl.memo
+	    """;
+	  }
+
+	  public String selectLotDetailItems() {
+	    return """
+	      SELECT
+	        h.id AS historyId,
+	        h.product_id AS productId,
+	        pr.product_code AS productCode,
+	        pr.name AS productName,
+	        pr.type AS type,
+	        pr.brand AS brand,
+	        pr.volume AS volume,
+
+	        h.vendor_item_id AS vendorItemId,
+	        vi.purchase_price AS purchasePrice,
+	        pr.sale_price AS salePrice,
+
+	        h.before_count AS beforeCount,
+	        h.after_count AS afterCount,
+	        (h.after_count - h.before_count) AS delta,
+
+	        vi.vendor_id AS vendorId,
+	        v_in.vendor_name AS vendorName,
+
+	        h.seller_vendor_id AS sellerVendorId,
+	        v_out.vendor_name AS sellerVendorName,
+
+	        h.created_at AS createdAt
+	      FROM history h
+	      JOIN product pr ON pr.id = h.product_id
+	      LEFT JOIN vendor_item vi ON vi.id = h.vendor_item_id
+	      LEFT JOIN vendor v_in ON v_in.id = vi.vendor_id
+	      LEFT JOIN vendor v_out ON v_out.id = h.seller_vendor_id
+	      WHERE h.lot_id = #{lotId}
+	      ORDER BY h.created_at ASC, h.id ASC
+	    """;
+	  }
 
 
   public String selectBrandsByType() {

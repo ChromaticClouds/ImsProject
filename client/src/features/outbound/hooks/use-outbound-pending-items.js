@@ -1,6 +1,6 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
-import { fetchOutboundPendingItems } from '@/services/api.js';
+import { fetchOutboundPendingItems } from '../api/index';
 import { outboundQueryKeys } from './outboundQueryKeys.js';
 
 /** @param {string} orderNumber @param {boolean} enabled */

@@ -1,11 +1,12 @@
-import { api, hooks } from "@/services/api.js";
+// @ts-check
 
+import { api, hooks } from "@/services/api.js";
 
 /**
  * 통계 - 주종 목록
  */
 export async function fetchStatisticsTypes() {
-  return await api.get('api/statistics/types').json();
+  return await api.get('stats/types').json();
 }
 
 /**
@@ -13,7 +14,7 @@ export async function fetchStatisticsTypes() {
  * @param {{ type: string }} params
  */
 export async function fetchStatisticsBrands(params) {
-  return await api.get('api/statistics/brands', { searchParams: params }).json();
+  return await api.get('stats/brands', { searchParams: params }).json();
 }
 
 /**
@@ -21,19 +22,17 @@ export async function fetchStatisticsBrands(params) {
  * @param {{ from: string, to: string, keyword?: string, type?: string, brand?: string, limit?: number }} params
  */
 export async function fetchStatisticsInOutByProduct(params) {
-  return await api.get('api/statistics/in-out/by-product', { searchParams: params }).json();
+  return await api.get('stats/in-out/by-product', { searchParams: params }).json();
 }
 
 // 거래처 순위 통계
 export async function fetchInboundPartnerRank(params) {
-  return await api.get('api/statistics/rank/inbound', { searchParams: params }).json();
+  return await api.get('stats/rank/inbound', { searchParams: params }).json();
 }
 
 export async function fetchOutboundPartnerRank(params) {
-  return await api.get('api/statistics/rank/outbound', { searchParams: params }).json();
+  return await api.get('stats/rank/outbound', { searchParams: params }).json();
 }
-
-import { api } from "@/services/api.js";
 
 /**
  * @typedef {{
@@ -62,5 +61,8 @@ export const getWarehouseShare = () =>
 export const getProductShare = () =>
   api.get('stats/by-product').json();
 
-export const getLeadTimeStats = () =>
-  api.get('stats/lead-time').json();
+export const getVendorLeadTime = () =>
+  api.get('stats/lead-time/by-product').json();
+
+export const getProductLeadTime = () =>
+  api.get('stats/lead-time/by-vendor').json();

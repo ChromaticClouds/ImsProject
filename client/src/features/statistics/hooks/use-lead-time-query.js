@@ -1,11 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { getLeadTimeStats } from "../api/index.js";
+import { useQuery } from '@tanstack/react-query';
+import { getProductLeadTime, getVendorLeadTime } from '../api/index.js';
 
-export const useLeadTimeQuery = () => 
+/**
+ * @param {'vendor' | 'product'} type 
+ */
+export const useLeadTimeQuery = (type) =>
   useQuery({
-    queryKey: ['stats', 'lead-time'],
+    queryKey: ['stats', 'lead-time', type],
     queryFn: async () => {
-      const res = await getLeadTimeStats();
+      const res =
+        type === 'vendor'
+          ? await getVendorLeadTime()
+          : await getProductLeadTime();
+
       return res?.data ?? [];
-    }
-  })
+    },
+  });

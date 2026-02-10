@@ -31,8 +31,12 @@ public class StatisticsService {
 		return mapper.findTop5ByUsedVolume();
 	}
 
-	public List<LeadTimeResponse> getLeadTime() {
+	public List<LeadTimeResponse> getVendorLeadTime() {
 		return mapper.findLeadTimeByVendor();
+	}
+
+	public List<LeadTimeResponse> getProductLeadTime() {
+		return mapper.findLeadTimeByProduct();
 	}
 
 	public List<InOutByProductRow> getInOutByProduct(

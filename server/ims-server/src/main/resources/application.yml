@@ -8,6 +8,9 @@ spring:
     password: ${DB_PASS}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  mongodb:
+    uri: ${MONGO_URI}
+
   jpa:
     hibernate:
       ddl-auto: update

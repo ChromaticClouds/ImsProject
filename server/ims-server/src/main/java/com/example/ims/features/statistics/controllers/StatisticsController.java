@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/stats")
 @RequiredArgsConstructor
@@ -93,8 +91,13 @@ public class StatisticsController {
         return ResponseEntity.ok(ApiResponse.success(service.getProductShare()));
     }
 
-    @GetMapping("lead-time")
-    public ResponseEntity<ApiResponse<List<LeadTimeResponse>>> getLeadTime() {
-        return ResponseEntity.ok(ApiResponse.success(service.getLeadTime()));
+    @GetMapping("lead-time/by-vendor")
+    public ResponseEntity<ApiResponse<List<LeadTimeResponse>>> getVendorLeadTime() {
+        return ResponseEntity.ok(ApiResponse.success(service.getVendorLeadTime()));
+    }
+
+    @GetMapping("lead-time/by-product")
+    public ResponseEntity<ApiResponse<List<LeadTimeResponse>>> getProductLeadTime() {
+        return ResponseEntity.ok(ApiResponse.success(service.getProductLeadTime()));
     }
 }

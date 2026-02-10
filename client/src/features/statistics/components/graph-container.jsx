@@ -28,7 +28,7 @@ const WIDTH_CLASS = {
 const HEIGHT_CLASS = {
   sm: 'h-40',
   md: 'h-60',
-  lg: 'h-100',
+  lg: 'h-80',
 };
 
 /**
@@ -63,7 +63,7 @@ export const GraphContainer = ({
         </CardHeader>
 
         <CardContent
-          className={`overflow-hidden overflow-x-auto ${HEIGHT_CLASS[height]}`}
+          className={`h-full flex flex-col justify-center overflow-hidden overflow-x-auto ${HEIGHT_CLASS[height]}`}
         >
           {children}
         </CardContent>

@@ -9,10 +9,8 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-import { leadTimeMock } from '../constants/index.js';
 import { useIsMobile } from '@/hooks/use-mobile.js';
 import { useLeadTimeQuery } from '../hooks/use-lead-time-query.js';
-import { useEffect } from 'react';
 
 export const leadTimeConfig = {
   leadTime: {
@@ -24,7 +22,7 @@ export const leadTimeConfig = {
  * 평균 리드타임 차트
  */
 export const LeadTimeChart = () => {
-  const { data } = useLeadTimeQuery();
+  const { data } = useLeadTimeQuery('vendor');
   const isMobile = useIsMobile();
 
   const chartData = data ?? [];

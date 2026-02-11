@@ -1,5 +1,8 @@
 // @ts-check
 
+import { useAuthStore } from '@/features/auth/stores/use-auth-store';
+import { api } from '@/services/api';
+
 const BASE_URL = 'http://localhost:8080/api/notice';
 
 // 서버(언더바) -> 프론트(camelCase)
@@ -26,13 +29,10 @@ const toServer = (p) => ({
  * 공지 목록
  * GET /api/notice/list
  */
-export const fetchNoticessssss = async () => {
-  const res = await fetch(`${BASE_URL}/list`);
-  if (!res.ok) throw new Error('공지 목록 조회 실패');
 
-  const data = await res.json(); // [{...}]
-  return data.map(fromServer);
-};
+/** @returns {Promise<NoticeListResponse>} */
+export const getNotices = (page = 1) =>
+  api.get('api/notice/list', { searchParams: { page } }).json();
 
 /**
  * 공지 상세
@@ -69,20 +69,25 @@ export const createNotice = async (values) => {
       [
         JSON.stringify({
           user_id: values.userId,
-          title : values.title,
+          title: values.title,
           content: values.content,
           pinned: !!values.pinned,
         }),
       ],
-      { type: 'application/json' }
-    )
+      { type: 'application/json' },
+    ),
   );
 
   if (values?.file) form.append('file', values.file);
 
+  const accessToken = useAuthStore.getState().accessToken;
+
   const res = await fetch(`${BASE_URL}/post`, {
     method: 'POST',
     body: form,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
 
   // 서버가 ApiResponse를 주는 구조 가정: { success/ok, message, ... }
@@ -122,8 +127,8 @@ export const updateNotice = async (id, values) => {
           file_name: values.fileName ?? null,
         }),
       ],
-      { type: 'application/json' }
-    )
+      { type: 'application/json' },
+    ),
   );
 
   // 새 파일을 선택한 경우에만 첨부

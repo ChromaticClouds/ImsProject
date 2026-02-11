@@ -2,8 +2,11 @@ package com.example.ims.features.notice.services;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.List;
 import java.util.UUID;
 
+import com.example.ims.features.notice.dto.NoticeResponse;
+import com.example.ims.features.notice.exceptions.ExceedPostingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,9 +26,14 @@ public class NoticeCreate {
     @Value("${ims.upload.notice-dir:uploads/notice}")
     String uploadDir;
 
-    public ApiResponse<Void> execute(NoticeCreateRequest req, MultipartFile file) {
-        String title = req.getTitle() == null ? "" : req.getTitle().trim();
-        String content = req.getContent() == null ? "" : req.getContent().trim();
+    public ApiResponse<Void> execute(Long userId, NoticeCreateRequest req, MultipartFile file) {
+        List<NoticeResponse> pinned = mapper.findPinnedNotices();
+
+        if (pinned.size() >= 3)
+            throw new ExceedPostingException();
+
+        String title = req.title() == null ? "" : req.title().trim();
+        String content = req.content() == null ? "" : req.content().trim();
 
         if (title.isBlank() || content.isBlank()) {
             return ApiResponse.fail("미입력되었습니다");
@@ -54,7 +62,7 @@ public class NoticeCreate {
             }
         }
 
-        mapper.insert(req.getUser_id(), title, content, req.isPinned(), filePath);
+        mapper.insert(userId, title, content, req.pinned(), filePath);
         return ApiResponse.success("작성완료");
     }
 }

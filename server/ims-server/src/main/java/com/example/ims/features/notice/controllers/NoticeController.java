@@ -2,7 +2,10 @@ package com.example.ims.features.notice.controllers;
 
 import java.util.List;
 
+import com.example.ims.features.notice.dto.NoticeListResponse;
+import com.example.ims.features.user.dto.UserPrincipal;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,21 +41,25 @@ public class NoticeController {
 
     // GetMapping 부분
     @GetMapping("/list")
-    List<NoticeResponse> list() {
-        return nList.execute();
+    public NoticeListResponse getNotices(
+        @RequestParam(value = "page", defaultValue = "1") Integer page,
+        @RequestParam(value = "search", required = false) String search
+    ) {
+        return nList.execute(page);
     }
 
     @GetMapping("/{id}")
-    NoticeResponse detail(NoticeResponse dto) {
-        return nDetail.execute(dto.getId());
+    NoticeResponse detail(@PathVariable Long id) {
+        return nDetail.execute(id);
     }
 
     @PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<Void> post(
-            @RequestPart("notice") NoticeCreateRequest notice,
-            @RequestPart(value = "file", required = false) MultipartFile file
+        @RequestPart("notice") NoticeCreateRequest notice,
+        @RequestPart(value = "file", required = false) MultipartFile file,
+        @AuthenticationPrincipal UserPrincipal user
     ) {
-        return nCreate.execute(notice, file);
+        return nCreate.execute(user.userId(), notice, file);
     }
 
     @DeleteMapping("/{id}")

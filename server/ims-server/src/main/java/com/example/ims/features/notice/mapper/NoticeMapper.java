@@ -10,32 +10,43 @@ import com.example.ims.features.notice.dto.NoticeResponse;
 public interface NoticeMapper {
 
     @Select("""
-        SELECT
-          id,
-          user_id,
-          title,
-          content,
-          pinned,
-          created_at,
-          file_name
-        FROM notice
-        ORDER BY pinned DESC, created_at DESC
+    SELECT *
+    FROM notice
+    ORDER BY pinned DESC, created_at DESC
+    LIMIT #{size} OFFSET #{offset}
     """)
-    List<NoticeResponse> list();
+    List<NoticeResponse> list(
+        @Param("size") int size,
+        @Param("offset") int offset
+    );
+
+    /**
+     * 중요 태그가 붙은 게시글을 조회
+     */
+    @Select("""
+    SELECT * FROM notice WHERE pinned = 1 ORDER BY created_at DESC;
+    """)
+    List<NoticeResponse> findPinnedNotices();
+
+    @Select("""
+    SELECT COUNT(*) FROM notice
+    """)
+    long countNormal();
 
     @Select("""
         SELECT
           id,
-          user_id,
+          user_id as userId,
           title,
           content,
           pinned,
-          created_at,
-          file_name
+          created_at as createdAt,
+          file_name as fileName
         FROM notice
         WHERE id = #{id}
     """)
     NoticeResponse findById(@Param("id") Long id);
+
 
     @Insert("""
         INSERT INTO notice (user_id, title, content, pinned, created_at, file_name)

@@ -12,27 +12,34 @@ import {
 
 import { NoticeForm } from '@/features/notice/components/notice-form';
 import { createNotice } from '@/features/notice/api/noticeApi';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store';
 
 export const NoticeCreate = () => {
   const isAdmin = true;
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { user } = useAuthStore();
 
   const create = useMutation({
     mutationFn: (values) =>
-      
       createNotice({
-       userId: 1,
+        userId: user.id,
         ...values,
       }),
 
-      // createNotice(values),     //--> 로그인 정보 받아오면 이걸로 바꾸기
+    // createNotice(values),     //--> 로그인 정보 받아오면 이걸로 바꾸기
 
-    
     onSuccess: async (res) => {
       if (!res?.ok) {
         console.error('createNotice failed response:', res);
-        window.alert(res?.message ?? '등록 실패');
+        if(res.success) {
+          window.alert(res?.message);
+          navigate('/dashboard/notice');
+        } else {
+          window.alert('등록 실패');
+        }
+
+        
         return;
       }
 
@@ -40,11 +47,8 @@ export const NoticeCreate = () => {
 
       await qc.invalidateQueries({ queryKey: ['notices'] });
 
-     
       navigate('/dashboard/notice');
     },
-
-  
   });
 
   return (

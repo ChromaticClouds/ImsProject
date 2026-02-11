@@ -44,6 +44,14 @@ export const NoticeForm = ({
       return;
     }
 
+    console.log(`onSubmit
+      title: ${t},
+      content: ${c},
+      ${pinned},
+      ${fileName},
+      
+      `)
+
     onSubmit({
       title: t,
       content: c,

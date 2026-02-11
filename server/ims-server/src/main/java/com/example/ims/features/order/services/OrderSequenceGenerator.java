@@ -14,38 +14,58 @@ import java.time.format.DateTimeFormatter;
 public class OrderSequenceGenerator {
 
     private final OrderSequenceRepository sequenceRepository;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.BASIC_ISO_DATE;
 
-    public String generate() {
-        return next(false);
+    /**
+     * 수주 번호 조회
+     */
+    @Transactional(readOnly = true)
+    public String generateReceiveOrder() {
+        String today = LocalDate.now().format(DATE_FORMATTER);
+        OrderSequence seq = sequenceRepository.findById(today)
+            .orElse(new OrderSequence(today, 0, 0));
+        int nextRec = seq.getRecSeq() + 1;
+        return format("REC", today, nextRec);
     }
 
+    /**
+     * 수주 번호 발급 및 저장
+     */
     @Transactional
-    public String issue() {
-        return next(true);
-    }
-
-    private String next(boolean persist) {
-        String today = LocalDate.now()
-            .format(DateTimeFormatter.BASIC_ISO_DATE);
-
-        OrderSequence seq = sequenceRepository
-            .findById(today)
+    public String issueReceiveOrder() {
+        String today = LocalDate.now().format(DATE_FORMATTER);
+        OrderSequence seq = sequenceRepository.findByIdForUpdate(today)
             .orElseGet(() -> new OrderSequence(today, 0, 0));
-
         seq.recIncrease();
-
-        if (persist) {
-            sequenceRepository.save(seq);
-        }
-
-        return format(today, seq.getRecSeq());
+        sequenceRepository.save(seq);
+        return format("REC", today, seq.getRecSeq());
     }
 
-    private String format(String date, int seq) {
-        return String.format(
-            "ORD-%s-%06d",
-            date,
-            seq
-        );
+    /**
+     * 발주 번호 조회
+     */
+    public String generatePlaceOrder() {
+        String today = LocalDate.now().format(DATE_FORMATTER);
+        OrderSequence seq = sequenceRepository.findById(today)
+            .orElse(new OrderSequence(today, 0, 0));
+        int nextPla = seq.getPlaSeq() + 1;
+        return format("PLA", today, nextPla);
+    }
+
+    /**
+     * 발주 번호 발급 및 저장
+     */
+    @Transactional
+    public String issuePlaceOrder() {
+        String today = LocalDate.now().format(DATE_FORMATTER);
+        OrderSequence seq = sequenceRepository.findByIdForUpdate(today)
+            .orElseGet(() -> new OrderSequence(today, 0, 0));
+        seq.plaIncrease();
+        sequenceRepository.save(seq);
+        return format("PLA", today, seq.getPlaSeq());
+    }
+
+    public String format(String type, String date, int seq) {
+        return String.format("%s-%s-%06d", type, date, seq);
     }
 }

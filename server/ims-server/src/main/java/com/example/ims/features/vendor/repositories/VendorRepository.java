@@ -1,6 +1,7 @@
 package com.example.ims.features.vendor.repositories;
 
 import com.example.ims.features.vendor.dto.Vendor;
+import com.example.ims.features.vendor.dto.VendorIdentifier;
 import com.example.ims.features.vendor.enums.VendorType;
 import org.springframework.data.jpa.repository.JpaRepository;
 

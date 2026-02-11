@@ -10,16 +10,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
+import { CheckIcon } from 'lucide-react';
 import { BottleWineIcon } from 'lucide-react';
 import { WarehouseIcon } from 'lucide-react';
 import { SortDescIcon } from 'lucide-react';
+import { useState } from 'react';
 
 /**
  * 창고 점유율과 각 품목당 점유율 컴포넌트를 스위치하기 위한 헤더 버튼
  * @param {{ onChange: (value: 'WAREHOUSE' | 'PRODUCT') => void }} props
  */
 export const StockShareChangeSlot = ({ onChange }) => {
-  
+  const [checked, setChecked] = useState('WAREHOUSE');
 
   return (
     <DropdownMenu>
@@ -41,13 +43,29 @@ export const StockShareChangeSlot = ({ onChange }) => {
             차트 선택
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => onChange('WAREHOUSE')}>
+          <DropdownMenuItem
+            onClick={() => {
+              setChecked('WAREHOUSE');
+              onChange('WAREHOUSE');
+            }}
+          >
             <WarehouseIcon />
             <span>창고 점유율</span>
+            {checked === 'WAREHOUSE' && (
+              <CheckIcon className='ml-auto h-4 w-4' />
+            )}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onChange('PRODUCT')}>
+          <DropdownMenuItem
+            onClick={() => {
+              setChecked('PRODUCT');
+              onChange('PRODUCT');
+            }}
+          >
             <BottleWineIcon />
             <span>각 품목별 점유율</span>
+            {checked === 'PRODUCT' && (
+              <CheckIcon className='ml-auto h-4 w-4' />
+            )}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

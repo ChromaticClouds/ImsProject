@@ -8,23 +8,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table.js';
-import { RECEIVE_ORDER_TABLE_HEADER } from '../constants/index.js';
+import { RECEIVE_ORDER_TABLE_HEADER } from '../../constants/index.js';
 import { AssignOutboundManager } from './assign-outbound-manager.jsx';
-import { useFetchReceiveOrder } from '../hooks/use-fetch-receive-order.js';
+import { useFetchReceiveOrder } from '../../hooks/use-fetch-receive-order.js';
 import { CardContent } from '@/components/ui/card.js';
+import { ReceiveOrderDetail } from './receive-order-detail.jsx';
 
-export const ReceiveOrderList = ({ searchCond }) => {
-  const { orders, mutation } = useFetchReceiveOrder(searchCond);
+export const ReceiveOrderList = () => {
+  const { orders, mutation } = useFetchReceiveOrder();
 
   return (
-    <CardContent className='p-0 h-100 overflow-y-auto relative'>
-      <Table>
-        <TableHeader className='sticky top-0 z-10'>
-          <TableRow className='bg-accent'>
+    <CardContent className='p-0 max-h-120 overflow-y-auto'>
+      <Table noWrapper>
+        <TableHeader>
+          <TableRow>
             {RECEIVE_ORDER_TABLE_HEADER.map((head) => (
               <TableHead
-                className='text-center'
                 key={head}
+                className='bg-accent text-center sticky top-0 z-10'
               >
                 {head}
               </TableHead>
@@ -42,7 +43,7 @@ export const ReceiveOrderList = ({ searchCond }) => {
               <TableCell>{o.vendorName}</TableCell>
               <TableCell>{o.bossName}</TableCell>
               <TableCell>{o.userName}</TableCell>
-              <TableCell>{o.itemCount}</TableCell>
+              <ReceiveOrderDetail order={o} />
               <TableCell>{o.totalPrice}</TableCell>
               <TableCell>{o.receiveDate}</TableCell>
               <TableCell>

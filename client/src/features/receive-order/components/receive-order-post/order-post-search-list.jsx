@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
-import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
+import { useOrderPostContext } from '../../providers/receive-order-post-provider.jsx';
 import { OrderPostSearchSkeleton } from './order-post-search-skeleton.jsx';
 
 /**

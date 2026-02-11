@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input.js";
-import { useOrderPostContext } from "../providers/receive-order-post-provider.jsx";
+import { useOrderPostContext } from "../../providers/receive-order-post-provider.jsx";
 
 export const OrderBootstrap = () => {
   // 수주 번호를 context에서 가져옴

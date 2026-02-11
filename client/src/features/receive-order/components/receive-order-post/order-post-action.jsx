@@ -45,9 +45,9 @@ export const OrderPostAction = () => {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>발주서 등록</AlertDialogTitle>
+                <AlertDialogTitle>주문서 등록</AlertDialogTitle>
                 <AlertDialogDescription>
-                  발주서를 등록하시겠습니까?
+                  주문서를 등록하시겠습니까?
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

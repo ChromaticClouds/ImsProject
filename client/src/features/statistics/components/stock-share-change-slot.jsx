@@ -19,6 +19,8 @@ import { SortDescIcon } from 'lucide-react';
  * @param {{ onChange: (value: 'WAREHOUSE' | 'PRODUCT') => void }} props
  */
 export const StockShareChangeSlot = ({ onChange }) => {
+  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

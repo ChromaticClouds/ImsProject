@@ -62,7 +62,6 @@ public class VendorController {
     public void updateVendor(@PathVariable("id") Long id, @RequestBody VendorCreateRequest request) {
         vendorService.updateVendor(id, request);
     }
-
     
     @DeleteMapping("/{id}")
     public void deleteVendor(@PathVariable("id") Long id) {

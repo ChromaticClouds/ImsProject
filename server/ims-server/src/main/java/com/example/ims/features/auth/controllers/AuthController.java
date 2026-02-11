@@ -33,8 +33,9 @@ public class AuthController {
     private final AuthService service;
 
     @PostMapping("login")
-    public ResponseEntity<ApiResponse<AuthResponse>> loginUser(@RequestBody LoginRequest request)
-            throws UserNotFoundException {
+    public ResponseEntity<ApiResponse<AuthResponse>> loginUser(
+        @RequestBody LoginRequest request
+    ) throws UserNotFoundException {
         AuthResult result = service.loginUser(request);
 
         ResponseCookie refreshCookie = 
@@ -49,7 +50,9 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<ApiResponse<AuthResponse>> registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> registerUser(
+        @RequestBody RegisterRequest request
+    ) {
         AuthResult result = service.registerUser(request);
 
         ResponseCookie refreshCookie = 

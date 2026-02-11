@@ -6,9 +6,11 @@ import com.example.ims.features.vendor.enums.VendorType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class VendorCreateRequest {
     private VendorType type;        // "Supplier" | "Seller"

@@ -15,8 +15,8 @@ import {
 /**
  * Constants
  */
-import { ORDER_POST_TABLE_HEADER } from '../constants/index.js';
-import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
+import { ORDER_POST_TABLE_HEADER } from '../../constants/index.js';
+import { useOrderPostContext } from '../../providers/receive-order-post-provider.jsx';
 import { AmountFieldCell } from './amount-field-cell.jsx';
 import { CircleXIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';

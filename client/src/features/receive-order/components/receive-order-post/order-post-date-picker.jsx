@@ -3,7 +3,7 @@ import { AppDatePicker } from '@/components/common/app-date-picker.jsx';
 /**
  * Hooks
  */
-import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
+import { useOrderPostContext } from '../../providers/receive-order-post-provider.jsx';
 
 export const ReceiveOrderDatePicker = () => {
   const { form } = useOrderPostContext();

@@ -15,6 +15,7 @@ export const getOrderBoostrap = () =>
  */
 
 /**
+ * 수주 내역 항목 Api 상세
  * @typedef {object} ReceivedOrder
  * @property {string} orderNumber
  * @property {string} userName
@@ -28,19 +29,15 @@ export const getOrderBoostrap = () =>
  * @property {string} managerName
  */
 
-/** @param {{ search?: string, fromDate?: string, toDate?: string }} searchCond */
-const buildParams = ({ search, fromDate, toDate }) => {
-  const params = {};
-
-  if (search) params.search = search;
-  if (fromDate) params.fromDate = fromDate;
-  if (toDate) params.toDate = toDate;
-
-  return params;
-};
+/** @param {{ search?: string, fromDate?: string, toDate?: string, salerId?: number }} searchCond */
+const buildParams = (searchCond) =>
+  Object.entries(searchCond).reduce((acc, [key, value]) => {
+    if (value != null && value !== '') acc[key] = value;
+    return acc;
+  }, {});
 
 /**
- * @param {{ search?: string, fromDate?: string, toDate?: string }} searchCond
+ * @param {{ search?: string, fromDate?: string, toDate?: string, salerId?: number }} searchCond
  * @returns {Promise<ApiResponse<ReceivedOrder[]>>}
  */
 export const getReceiveOrders = (searchCond) => {
@@ -76,10 +73,40 @@ export const fetchOutboundManagers = () =>
  *
  * @param {{ orderNumber: string, managerId: number | null }} param
  */
-export const assignOutboundManager = ({
-  orderNumber,
-  managerId,
-}) => {
+export const assignOutboundManager = ({ orderNumber, managerId }) => {
   console.log(managerId);
-  return api.patch(`order/${orderNumber}/manager`, { json: { managerId } }).json();
-}
+  return api
+    .patch(`order/${orderNumber}/manager`, { json: { managerId } })
+    .json();
+};
+
+/**
+ * 판매처 항목
+ * @typedef {object} SaleVendor
+ * @property {number} id
+ * @property {string} name
+ */
+
+/**
+ * 판매처 항목 리스트 GET 요청
+ * @returns {Promise<ApiResponse<SaleVendor[]>>}
+ */
+export const getSalers = () => api.get('order/get-salers', { hooks }).json();
+
+/**
+ * @typedef {object} OrderDetail
+ * @property {number} id
+ * @property {string} name
+ * @property {ProductType} itemType
+ * @property {string} brand
+ * @property {number} count
+ * @property {string} imageUrl
+ */
+
+/**
+ * 수주 내역 상세 요청
+ * @param {string} orderNumber 
+ * @returns {Promise<ApiResponse<OrderDetail[]>>}
+ */
+export const getItemsByOrderNumber = (orderNumber) =>
+  api.get(`order/${orderNumber}/items`).json();

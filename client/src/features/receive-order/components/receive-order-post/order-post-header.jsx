@@ -1,9 +1,7 @@
 // @ts-check
 
-import { Input } from '@/components/ui/input.js';
-import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
 import { OrderCategorySelect } from './order-category-select.jsx';
-import { ReceiveOrderDatePicker } from './receive-order-date-picker.jsx';
+import { ReceiveOrderDatePicker } from './order-post-date-picker.jsx';
 import { OrderBootstrap } from './order-bootstrap.jsx';
 
 export const OrderPostHeader = () => {

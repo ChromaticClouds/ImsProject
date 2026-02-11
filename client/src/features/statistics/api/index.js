@@ -61,8 +61,25 @@ export const getWarehouseShare = () =>
 export const getProductShare = () =>
   api.get('stats/by-product').json();
 
-export const getVendorLeadTime = () =>
-  api.get('stats/lead-time/by-product').json();
 
-export const getProductLeadTime = () =>
-  api.get('stats/lead-time/by-vendor').json();
+/**
+ * @typedef {Object} LeadTimeData
+ * @property {string} name
+ * @property {number} leadTime
+ */
+
+/**
+ * 거래처별 리드타임
+ * @param {{ startDate: string, endDate: string }} date
+ * @returns {Promise<ApiResponse<LeadTimeData[]>>}
+ */
+export const getVendorLeadTime = (date) =>
+  api.get('stats/lead-time/by-vendor', { searchParams: date, hooks }).json();
+
+/**
+ * 품목별 리드타임
+ * @param {{ startDate: string, endDate: string }} date
+ * @returns {Promise<ApiResponse<LeadTimeData[]>>}
+ */
+export const getProductLeadTime = (date) =>
+  api.get('stats/lead-time/by-product', { searchParams: date, hooks }).json();

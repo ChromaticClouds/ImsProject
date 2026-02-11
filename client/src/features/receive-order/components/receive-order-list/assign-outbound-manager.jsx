@@ -6,7 +6,7 @@ import {
   SelectValue,
   SelectItem,
 } from '@/components/ui/select.js';
-import { useOutboundManagersContext } from '../providers/receive-order-table-provider.jsx';
+import { useOutboundManagersContext } from '../../providers/receive-order-table-provider.jsx';
 
 /**
  * @param {{

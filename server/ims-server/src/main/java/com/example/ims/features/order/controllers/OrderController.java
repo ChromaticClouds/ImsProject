@@ -1,9 +1,9 @@
 package com.example.ims.features.order.controllers;
 
-import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.order.dto.*;
 import com.example.ims.features.order.services.OrderService;
 import com.example.ims.features.user.dto.UserIdentifier;
+import com.example.ims.features.vendor.dto.VendorIdentifier;
 import com.example.ims.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,10 +28,11 @@ public class OrderController {
         LocalDate fromDate,
         @RequestParam(required = false, value = "toDate")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        LocalDate toDate
+        LocalDate toDate,
+        @RequestParam(required = false, value = "salerId") Long salerId
     ) {
         List<OrderSummary> orders =
-            service.getReceiveOrders(search, fromDate, toDate);
+            service.getReceiveOrders(search, fromDate, toDate, salerId);
         return ResponseEntity.ok(ApiResponse.success(orders));
     }
 
@@ -53,7 +54,7 @@ public class OrderController {
     @PostMapping("post")
     public ResponseEntity<ApiResponse<Void>> postOrder(@RequestBody OrderPostRequest request) {
         service.postOrder(request);
-        return ResponseEntity.ok(ApiResponse.success("발주서가 성공적으로 업로드 되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success("주문서가 성공적으로 업로드 되었습니다."));
     }
 
     @GetMapping("get-managers")
@@ -69,5 +70,19 @@ public class OrderController {
     ) {
         service.assignOutboundManager(orderNumber, request.managerId());
         return ResponseEntity.ok(ApiResponse.success("ok"));
+    }
+
+    @GetMapping("get-salers")
+    public ResponseEntity<ApiResponse<List<VendorIdentifier>>> getSalers() {
+        return ResponseEntity.ok(ApiResponse.success(service.getSalers()));
+    }
+
+    @GetMapping("{orderNumber}/items")
+    public ResponseEntity<ApiResponse<List<OrderDetail>>> getItemsByOrderNumber(
+        @PathVariable("orderNumber") String orderNumber
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(
+            service.getItemsByOrderNumber(orderNumber)
+        ));
     }
 }

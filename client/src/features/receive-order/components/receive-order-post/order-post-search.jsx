@@ -25,12 +25,11 @@ import { SearchIcon } from 'lucide-react';
  * Hooks
  */
 import { useState } from 'react';
-import { useOrderProductSearch } from '../hooks/use-order-product-search.js';
+import { useOrderProductSearch } from '../../hooks/use-order-product-search.js';
 import { OrderPostSearchList } from './order-post-search-list.jsx';
 
 export const OrderPostSearch = () => {
   const [open, setOpen] = useState(false);
-  const [focus, setFocus] = useState(false);
   const [input, setInput] = useState('');
   const debounced = useDebounce(input, 500);
 

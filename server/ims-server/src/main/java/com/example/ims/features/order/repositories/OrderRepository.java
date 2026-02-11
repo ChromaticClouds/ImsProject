@@ -1,8 +1,10 @@
 package com.example.ims.features.order.repositories;
 
+import com.example.ims.features.order.dto.OrderDetail;
 import com.example.ims.features.order.dto.OrderSummary;
 import com.example.ims.features.order.entities.Order;
 import com.example.ims.features.order.enums.OrderStatus;
+import com.example.ims.features.vendor.dto.VendorIdentifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,6 +31,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     )
     and (:fromDate is null or o.orderDate >= :fromDate)
     and (:toDate   is null or o.orderDate <= :toDate)
+    and (:salerId  is null or o.vendor.id = :salerId)
     group by o.orderNumber, o.user.id, o.vendor.id, o.orderDate, o.recieveDate, m.id, m.name
     order by o.orderDate desc
     """)
@@ -36,7 +39,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         @Param("status") OrderStatus status,
         @Param("search") String search,
         @Param("fromDate") LocalDate fromDate,
-        @Param("toDate") LocalDate toDate
+        @Param("toDate") LocalDate toDate,
+        @Param("salerId") Long salerId
     );
 
     @Query("""
@@ -46,5 +50,25 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     """)
     List<Order> findOrdersByOrderNumber(
             @Param("orderNumber") String orderNumber
+    );
+
+    @Query("""
+    select v.id as id, v.vendorName as name
+    from Order o join o.vendor v
+    where o.status = :status
+    group by v.id, v.vendorName
+    """)
+    List<VendorIdentifier> getSalers(@Param("status") OrderStatus status);
+
+    @Query("""
+    select p.id as id, p.name as name, p.type as itemType,
+    p.brand as brand, o.count as count, p.imageUrl
+    from Order o join o.product p
+    where o.status = :status
+    and o.orderNumber = :orderNumber
+    """)
+    List<OrderDetail> getItemsByOrderNumber(
+        @Param("orderNumber") String orderNumber,
+        OrderStatus status
     );
 }

@@ -1,18 +1,28 @@
+// @ts-check
+
 import { useQuery } from '@tanstack/react-query';
 import { getProductLeadTime, getVendorLeadTime } from '../api/index.js';
+import { useLeadTimeFilterStore } from '../stores/use-lead-time-filter-store.js';
 
-/**
- * @param {'vendor' | 'product'} type 
- */
-export const useLeadTimeQuery = (type) =>
-  useQuery({
-    queryKey: ['stats', 'lead-time', type],
+export const useLeadTimeQuery = () => {
+  const searchType = useLeadTimeFilterStore((s) => s.filter.searchType);
+  const startDate = useLeadTimeFilterStore((s) => s.filter.startDate);
+  const endDate = useLeadTimeFilterStore((s) => s.filter.endDate);
+
+  return useQuery({
+    queryKey: ['stats', 'lead-time', searchType, startDate, endDate],
+
     queryFn: async () => {
+      const params = { startDate, endDate };
+
       const res =
-        type === 'vendor'
-          ? await getVendorLeadTime()
-          : await getProductLeadTime();
+        searchType === 'vendor'
+          ? await getVendorLeadTime(params)
+          : await getProductLeadTime(params);
 
       return res?.data ?? [];
     },
+
+    enabled: !!startDate && !!endDate,
   });
+};

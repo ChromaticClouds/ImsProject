@@ -92,12 +92,22 @@ public class StatisticsController {
     }
 
     @GetMapping("lead-time/by-vendor")
-    public ResponseEntity<ApiResponse<List<LeadTimeResponse>>> getVendorLeadTime() {
-        return ResponseEntity.ok(ApiResponse.success(service.getVendorLeadTime()));
+    public ResponseEntity<ApiResponse<List<LeadTimeResponse>>> getVendorLeadTime(
+        @RequestParam("startDate") LocalDate startDate,
+        @RequestParam("endDate") LocalDate endDate
+    ) {
+        List<LeadTimeResponse> vendorLeadTime
+            = service.getVendorLeadTime(startDate, endDate);
+        return ResponseEntity.ok(ApiResponse.success(vendorLeadTime));
     }
 
     @GetMapping("lead-time/by-product")
-    public ResponseEntity<ApiResponse<List<LeadTimeResponse>>> getProductLeadTime() {
-        return ResponseEntity.ok(ApiResponse.success(service.getProductLeadTime()));
+    public ResponseEntity<ApiResponse<List<LeadTimeResponse>>> getProductLeadTime(
+        @RequestParam("startDate") LocalDate startDate,
+        @RequestParam("endDate") LocalDate endDate
+    ) {
+        List<LeadTimeResponse> productLeadTime
+            = service.getProductLeadTime(startDate, endDate);
+        return ResponseEntity.ok(ApiResponse.success(productLeadTime));
     }
 }

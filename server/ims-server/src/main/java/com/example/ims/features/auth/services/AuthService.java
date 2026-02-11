@@ -1,5 +1,8 @@
 package com.example.ims.features.auth.services;
 
+import com.example.ims.features.auth.enums.UserRank;
+import com.example.ims.features.user.entities.UserSequence;
+import com.example.ims.features.user.repositories.UserSequenceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,32 +20,35 @@ import com.example.ims.security.jwt.JwtProvider;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.Year;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final JwtProvider jwtProvider;
     private final AuthRepository repository;
+    private final UserSequenceRepository sequenceRepository;
     private final RefreshTokenStore refreshTokenStore;
     private final InvitationTokenStore invitationTokenStore;
 
     public AuthResult loginUser(LoginRequest request) throws UserNotFoundException {
         User user = repository.findByEid(request.getEid())
-            .orElseThrow(UserNotFoundException::new);
-        
+                .orElseThrow(UserNotFoundException::new);
+
         if (!user.getPassword().equals(request.getPassword())) {
             throw new UserNotFoundException();
         }
 
         String accessToken = jwtProvider.createAccessToken(
-            user.getId(), 
+            user.getId(),
             user.getEmail(),
             user.getUserRank(),
             user.getUserRole()
         );
 
-        String refreshToken = 
-        	jwtProvider.createRefreshToken(user.getId());
+        String refreshToken =
+                jwtProvider.createRefreshToken(user.getId());
 
         refreshTokenStore.save(refreshToken, user.getId());
 
@@ -55,19 +61,25 @@ public class AuthService {
             .findEmailByToken(request.getToken())
             .orElseThrow(InvalidInvitationTokenException::new);
 
+        String employeeNumber = generateEmployeeNumber();
+
         User user = repository.findByEmail(email)
             .orElseThrow(UserNotFoundException::new)
-            .register(request.getName(), request.getPassword());
+            .register(employeeNumber, request.getName(), request.getPassword());
+
+        user.setUserRank(UserRank.EMPLOYEE);
 
         String accessToken = jwtProvider.createAccessToken(
-            user.getId(), 
+            user.getId(),
             user.getEmail(),
             user.getUserRank(),
             user.getUserRole()
         );
 
-        String refreshToken = 
-        	jwtProvider.createRefreshToken(user.getId());
+        String refreshToken =
+            jwtProvider.createRefreshToken(user.getId());
+
+        refreshTokenStore.save(refreshToken, user.getId());
 
         invitationTokenStore.delete(request.getToken());
 
@@ -76,27 +88,43 @@ public class AuthService {
 
     public AuthResult refresh(String refreshToken) {
         jwtProvider.validate(refreshToken);
-        
-        Long userId = refreshTokenStore.findUserId(refreshToken)
-        	.orElseThrow(UnauthorizedException::new);
-        
-        refreshTokenStore.delete(refreshToken, userId);
-        
-        User user = repository.findById(userId)
-        	.orElseThrow(UnauthorizedException::new);
 
-        String newRefresh = 
-        	jwtProvider.createRefreshToken(userId);
-        
-        refreshTokenStore.save(newRefresh, userId); 
-        
+        Long userId = refreshTokenStore.findUserId(refreshToken)
+            .orElseThrow(UnauthorizedException::new);
+
+        refreshTokenStore.delete(refreshToken, userId);
+
+        User user = repository.findById(userId)
+            .orElseThrow(UserNotFoundException::new);
+
+        String newRefresh =
+            jwtProvider.createRefreshToken(userId);
+
+        refreshTokenStore.save(newRefresh, userId);
+
         String newAccess = jwtProvider.createAccessToken(
-    		userId, 
-    		user.getEmail(),
+            userId,
+            user.getEmail(),
             user.getUserRank(),
-    		user.getUserRole()
+            user.getUserRole()
         );
-        
+
         return new AuthResult(user, newAccess, newRefresh);
     }
+
+    @Transactional
+    public String generateEmployeeNumber() {
+        int currentYear = Year.now().getValue();
+
+        UserSequence sequence = sequenceRepository
+            .findByYearForUpdate(currentYear)
+            .orElseGet(() -> sequenceRepository.save(
+                new UserSequence(currentYear, 0)
+            ));
+
+        sequence.increase();
+
+        return "%d-%04d".formatted(currentYear, sequence.getSeq());
+    }
+
 }

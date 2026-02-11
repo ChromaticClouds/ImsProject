@@ -34,6 +34,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
     private UserRank userRank;
 
     @Enumerated(EnumType.STRING)
@@ -44,11 +45,14 @@ public class User {
     @Column(nullable = false)
     private UserStatus status;
 
-    public User register(String name, String password) {
+    public User register(
+        String employeeNumber, String name, String password
+    ) {
         if (this.status != UserStatus.PENDING) {
             throw new InvalidUserStateException();
         }
 
+        this.eid = employeeNumber;
         this.name = name;
         this.password = password;
         this.status = UserStatus.ACTIVE;

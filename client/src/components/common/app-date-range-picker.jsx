@@ -28,11 +28,8 @@ import { CalendarIcon } from 'lucide-react';
 export const AppDateRangePicker = ({ value, onChange }) => {
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant='outline'
-          className='w-63 xl:w-full flex-1 xl:flex-0'
-        >
+      <PopoverTrigger asChild className='w-full min-w-62.5'>
+        <Button variant='outline'>
           {value?.from ? (
             value.to ? (
               <>

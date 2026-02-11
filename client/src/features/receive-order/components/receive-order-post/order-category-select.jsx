@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select.js';
-import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
+import { useOrderPostContext } from '../../providers/receive-order-post-provider.jsx';
 
 /**
  * @typedef {object} OrderCategoryProps
@@ -32,6 +32,7 @@ const FORM_NAME_MAP = {
 };
 
 /**
+ * 카테고리 키에 따라서 셀렉트 박스의 항목 렌더링 분기
  * @param {OrderCategoryProps} props
  */
 export const OrderCategorySelect = ({ categoryKey, label, placeholder }) => {

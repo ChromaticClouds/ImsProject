@@ -1,5 +1,5 @@
 import { TableCell } from '@/components/ui/table.js';
-import { useOrderPostContext } from '../providers/receive-order-post-provider.jsx';
+import { useOrderPostContext } from '../../providers/receive-order-post-provider.jsx';
 import {
   Tooltip,
   TooltipContent,
@@ -9,6 +9,7 @@ import {
 import { Input } from '@/components/ui/input.js';
 
 /**
+ * 주문서 작성 품목 리스트 중 품목 수량 입력 검증 컴포넌트
  * @param {{ product: OrderPostProduct & { amount: number}, index: number }} props
  */
 export const AmountFieldCell = ({ product, index }) => {

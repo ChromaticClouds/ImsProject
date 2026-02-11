@@ -4,6 +4,7 @@ import { ChartContainer } from '@/components/ui/chart.js';
 import { PieChart, Pie, Cell } from 'recharts';
 import { useWarehouseShareQuery } from '../hooks/use-warehouse-share-query.js';
 import { Spinner } from '@/components/ui/spinner.js';
+import { ChartLoading } from './chart-loading.jsx';
 
 export const stockShareConfig = {
   value: {
@@ -14,7 +15,7 @@ export const stockShareConfig = {
 export const WarehouseShareChart = () => {
   const { data, isLoading, isError } = useWarehouseShareQuery();
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <ChartLoading />;
   if (isError || !data) return <div>데이터 없음</div>;
 
   const usedRate = Math.round((data.usedVolume / data.totalVolume) * 100);

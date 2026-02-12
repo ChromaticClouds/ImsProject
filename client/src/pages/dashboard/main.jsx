@@ -20,9 +20,10 @@ export const Main = () => {
         <InventoryShare />
       </div>
 
-      <div className='mt-4 grid grid-cols-10 gap-4'>
+      {/* <div className='mt-4 grid grid-cols-10 gap-4'> */}
+      <div className='mt-4 grid gap-4'>
         <MainNotice />
-        <MainTodo />
+        {/* <MainTodo /> */}
       </div>
     </div>
   );

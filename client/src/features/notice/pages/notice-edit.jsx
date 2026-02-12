@@ -10,37 +10,25 @@ import {
   CardContent,
 } from '@/components/ui/card';
 
-import { NoticeForm } from '@/features/notice/components/notice-form';
+import { NoticeForm } from '@/features/notice/components/notice-modify';
 import { fetchNoticeById, updateNotice } from '@/features/notice/api/noticeApi';
+import { useNoticeUpdateMutation } from '../hooks/use-notice-update-mutation';
 
 export const NoticeEdit = () => {
-  const isAdmin = true;
   const { id } = useParams();
   const navigate = useNavigate();
-  const qc = useQueryClient();
 
+  // 게시글 수정 정보 불러오기
   const { data: notice, isLoading } = useQuery({
     queryKey: ['notice', id],
     queryFn: () => fetchNoticeById(id),
   });
 
-  const save = useMutation({
-    mutationFn: (values) => updateNotice(id, values),
-    onSuccess: async (res) => {
-      if (!res?.ok) {
-        window.alert(res?.message ?? '수정 실패');
-        return;
-      }
-      window.alert(res.message); // 수정되었습니다
-      await qc.invalidateQueries({ queryKey: ['notices'] });
-      await qc.invalidateQueries({ queryKey: ['notice', id] });
-      navigate(`/dashboard/notice/${id}`);
-    },
-  });
+  // 게시글 수정 처리 Fetcher
+  const update = useNoticeUpdateMutation();
 
   if (isLoading) return <div className='p-6'>로딩중...</div>;
   if (!notice) return <div className='p-6'>게시글이 없습니다.</div>;
-  if (!isAdmin) return <div className='p-6'>권한이 없습니다.</div>;
 
   return (
     <div className='p-6 max-w-4xl mx-auto'>
@@ -52,7 +40,6 @@ export const NoticeEdit = () => {
         <CardContent>
           <NoticeForm
             mode='edit'
-            isAdmin={isAdmin}
             initialValues={{
               title: notice.title,
               content: notice.content,
@@ -60,8 +47,9 @@ export const NoticeEdit = () => {
               fileName: notice.fileName,
             }}
             onCancel={() => navigate(`/dashboard/notice/${id}`)}
-            onSubmit={(values) => save.mutate(values)}
-            isSubmitting={save.isPending}
+            // onSubmit={(values) => update.mutate({ id: Number(id), values })} // values를 formData로 수정 할 뻔
+            onSubmit={(formData) => update.mutate({ id: Number(id), formData })} // values를 formData로 수정 할 뻔
+            isSubmitting={update.isPending}
           />
         </CardContent>
       </Card>

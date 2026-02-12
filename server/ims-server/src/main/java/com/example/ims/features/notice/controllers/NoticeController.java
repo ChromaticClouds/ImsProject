@@ -3,8 +3,10 @@ package com.example.ims.features.notice.controllers;
 import java.util.List;
 
 import com.example.ims.features.notice.dto.NoticeListResponse;
+import com.example.ims.features.notice.dto.NoticeUpdateRequest;
 import com.example.ims.features.user.dto.UserPrincipal;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +16,7 @@ import com.example.ims.features.notice.dto.NoticeResponse;
 import com.example.ims.features.notice.services.NoticeCreate;
 import com.example.ims.features.notice.services.NoticeDelete;
 import com.example.ims.features.notice.services.NoticeDetail;
+import com.example.ims.features.notice.services.NoticeEdit;
 import com.example.ims.features.notice.services.NoticeList;
 import com.example.ims.features.notice.services.NoticePinnedUpdate;
 import com.example.ims.global.response.ApiResponse;
@@ -35,6 +38,9 @@ public class NoticeController {
 
     @Resource
     NoticeDelete nDelete;
+    
+    @Resource
+    NoticeEdit nEdit;
 
     @Resource
     NoticePinnedUpdate nPinned;
@@ -45,30 +51,47 @@ public class NoticeController {
         @RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(value = "search", required = false) String search
     ) {
-        return nList.execute(page);
+//    	System.out.println(search);
+        return nList.execute(page, search);
     }
 
     @GetMapping("/{id}")
-    NoticeResponse detail(@PathVariable Long id) {
+    NoticeResponse detail(@PathVariable("id") Long id) {
         return nDetail.execute(id);
     }
 
     @PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<Void> post(
-        @RequestPart("notice") NoticeCreateRequest notice,
-        @RequestPart(value = "file", required = false) MultipartFile file,
+         NoticeCreateRequest notice,
         @AuthenticationPrincipal UserPrincipal user
     ) {
-        return nCreate.execute(user.userId(), notice, file);
+    	
+    	//System.out.println("NoticeCreate 진입ewfewf"+notice);
+       return nCreate.execute(user.userId(), notice);
+    	 //return null;
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable("id") Long id) {
         return nDelete.execute(id);
     }
 
     @PatchMapping("/{id}/pinned")
-    public ApiResponse<Void> pinned(@PathVariable Long id, @RequestParam boolean pinned) {
+    public ApiResponse<Void> pinned(@PathVariable("id") Long id, @RequestParam boolean pinned) {
+        System.out.println("수정 폼 들어옴");
+
         return nPinned.execute(id, pinned);
+    }
+
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<Void> patchNotice(
+        @PathVariable("id") Long id,
+        @RequestPart("notice") NoticeUpdateRequest notice
+       
+    ) {
+    	
+    	
+        System.out.println(id + ", " + notice );
+        return nEdit.execute(id, notice);
     }
 }

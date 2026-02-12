@@ -24,7 +24,7 @@ export const NoticeCreate = () => {
     mutationFn: (values) =>
       createNotice({
         userId: user.id,
-        ...values,
+        frmData : values,
       }),
 
     // createNotice(values),     //--> 로그인 정보 받아오면 이걸로 바꾸기
@@ -36,7 +36,7 @@ export const NoticeCreate = () => {
           window.alert(res?.message);
           navigate('/dashboard/notice');
         } else {
-          window.alert('등록 실패');
+          window.alert(res.message??'등록 실패');
         }
 
         

@@ -2,7 +2,9 @@ package com.example.ims.features.notice.services;
 
 import com.example.ims.features.notice.dto.*;
 import com.example.ims.features.notice.entity.Notice;
+import com.example.ims.features.notice.entity.NoticeUser;
 import com.example.ims.features.notice.repository.NoticeRepository;
+import com.example.ims.features.notice.repository.NoticeUserRepository;
 import com.example.ims.features.user.repositories.UserRepository;   // user
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,10 +25,12 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
-
-    public NoticeService(NoticeRepository noticeRepository, UserRepository userRepository) {
+    private final NoticeUserRepository noticeUserRepository;
+    
+    public NoticeService(NoticeRepository noticeRepository, UserRepository userRepository, NoticeUserRepository noticeUserRepository) {
         this.noticeRepository = noticeRepository;
         this.userRepository = userRepository;
+        this.noticeUserRepository = noticeUserRepository;
     }
 
     //  목록: 핀 3개 + 일반 10개
@@ -67,18 +71,21 @@ public class NoticeService {
     public NoticeActionResponse create(Long loginUserId, NoticeCreateRequest req, String storedFileName) {
         assertFirstAdmin(loginUserId);
 
+        NoticeUser user = noticeUserRepository.findById(loginUserId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        
         List<Notice> pinned = noticeRepository
             .findTop3ByPinnedTrueOrderByCreatedAtDesc();
 
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> 핀 개수: " + pinned.size());
 
-        String title = (req.title() == null) ? "" : req.title().trim();
-        String content = (req.content() == null) ? "" : req.content().trim();
+        String title = (req.getTitle() == null) ? "" : req.getTitle().trim();
+        String content = (req.getContent() == null) ? "" : req.getContent().trim();
         if (title.isBlank() || content.isBlank()) {
             return new NoticeActionResponse(false, "미입력되었습니다", null);
         }
 
-        if (req.pinned()) {
+        if (req.isPinned()) {
             long pinnedCount = noticeRepository.countByPinnedTrue();
             if (pinnedCount >= PINNED_LIMIT) {
                 return new NoticeActionResponse(false, "중요 게시글의 개수가 초과되었습니다", null);
@@ -86,10 +93,10 @@ public class NoticeService {
         }
 
         Notice notice = new Notice(
-                loginUserId,
+                user,             // 변경된 부분
                 title,
                 content,
-                req.pinned(),
+                req.isPinned(),
                 LocalDate.now(),
                 storedFileName
         );

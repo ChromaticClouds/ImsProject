@@ -19,11 +19,11 @@ public class NoticeList {
     @Resource
     NoticeMapper mapper;
 
-    public NoticeListResponse execute(Integer page) {
+    public NoticeListResponse execute(Integer page, String search) {
         int offset = (page - 1) * SIZE;
 
         List<NoticeResponse> pinned = mapper.findPinnedNotices();
-        List<NoticeResponse> items = mapper.list(SIZE, offset);
+        List<NoticeResponse> items = mapper.list(SIZE, offset, search);
         long totalElements = mapper.countNormal();
         int totalPages = (int) Math.ceil((double) totalElements / SIZE);
 

@@ -26,20 +26,29 @@ public class NoticeCreate {
     @Value("${ims.upload.notice-dir:uploads/notice}")
     String uploadDir;
 
-    public ApiResponse<Void> execute(Long userId, NoticeCreateRequest req, MultipartFile file) {
+    public ApiResponse<Void> execute(Long userId, NoticeCreateRequest req) {
+    	
+    	System.out.println("NoticeCreate : "+req);
         List<NoticeResponse> pinned = mapper.findPinnedNotices();
 
-        if (pinned.size() >= 3)
-            throw new ExceedPostingException();
+        if(req.isPinned()) {
+        	if (pinned.size() >= 3)
+        		return ApiResponse.fail("중요 태그가 붙은 게시물의 개수는 3개를 초과할 수 없습니다.");
 
-        String title = req.title() == null ? "" : req.title().trim();
-        String content = req.content() == null ? "" : req.content().trim();
+        }
+        
+        String title = req.getTitle() == null ? "" : req.getTitle().trim();
+        String content = req.getContent() == null ? "" : req.getContent().trim();
 
         if (title.isBlank() || content.isBlank()) {
             return ApiResponse.fail("미입력되었습니다");
         }
 
         String filePath = null; // DB에 넣을 file_name 값(=경로)
+        
+        MultipartFile file = req.getUpff();
+        
+        uploadDir = "C:\\Users\\andbe\\OneDrive\\Desktop\\ims_prj\\ImsProject\\server\\ims-server\\src\\main\\resources\\static\\uploads";
 
         if (file != null && !file.isEmpty()) {
             try {
@@ -62,7 +71,7 @@ public class NoticeCreate {
             }
         }
 
-        mapper.insert(userId, title, content, req.pinned(), filePath);
+        mapper.insert(userId, title, content, req.isPinned(), filePath);
         return ApiResponse.success("작성완료");
     }
 }

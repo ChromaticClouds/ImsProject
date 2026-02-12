@@ -11,6 +11,7 @@ import java.util.List;
 public record ProductResponse(
     Long id,
     String imageUrl,
+    String boxImageUrl,
     String productCode,
     String name,
     ProductType type,
@@ -23,6 +24,7 @@ public record ProductResponse(
             new ProductResponse(
                 product.getId(),
                 product.getImageUrl(),
+                product.getBoxImageUrl(),
                 product.getProductCode(),
                 product.getName(),
                 product.getType(),

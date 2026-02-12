@@ -31,11 +31,15 @@ export const NoticeDetail = () => {
     onSuccess: async (res) => {
       if (!res?.ok) {
         window.alert(res?.message ?? '삭제 실패');
+        if(res?.success!=false) {
+          navigate('/dashboard/notice');
+        }
         return;
       }
       window.alert(res.message); // "삭제 완료 되었습니다."
       await qc.invalidateQueries({ queryKey: ['notices'] });
       await qc.invalidateQueries({ queryKey: ['notice', id] });
+      
       navigate('/dashboard/notice');
     },
   });
@@ -48,7 +52,11 @@ export const NoticeDetail = () => {
       <Card>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
-            {notice.pinned && <Badge className='rounded-full'>공지</Badge>}
+            {notice.pinned ? (
+              <span className="shrink-0 rounded-lg bg-red-700 px-2 py-0.5 text-xs font-medium text-red-50">
+                중요
+              </span>
+            ) : null}
             {notice.title}
           </CardTitle>
           <CardDescription>작성일: {notice.createdAt}</CardDescription>
@@ -91,6 +99,7 @@ export const NoticeDetail = () => {
               const ok = window.confirm('정말 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.');
               if (!ok) return;
               del.mutate();
+              
             }}
           >
             {del.isPending ? '삭제중...' : '삭제'}

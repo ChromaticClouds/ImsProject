@@ -8,11 +8,11 @@ const BASE_URL = 'http://localhost:8080/api/notice';
 // 서버(언더바) -> 프론트(camelCase)
 const fromServer = (n) => ({
   id: n.id,
-  userId: n.user_id,
+  userId: n.user_id??n.userId,
   title: n.title,
   content: n.content,
   pinned: !!n.pinned,
-  createdAt: n.created_at,
+  createdAt: n.created_at??n.createdAt,
   fileName: n.file_name, // file_name(경로) -> fileName
 });
 
@@ -40,6 +40,7 @@ export const getNotices = (page = 1) =>
  */
 export const fetchNoticeById = async (id) => {
   const res = await fetch(`${BASE_URL}/${id}`);
+  console.log(res)
   if (res.status === 404) return null;
   if (!res.ok) throw new Error('공지 상세 조회 실패');
 
@@ -55,36 +56,38 @@ export const fetchNoticeById = async (id) => {
  * - file은 NoticeForm에서 File 객체로 받아온다고 가정
  */
 export const createNotice = async (values) => {
-  const title = (values?.title ?? '').trim();
-  const content = (values?.content ?? '').trim();
 
-  if (!title || !content) {
-    return { ok: false, message: '미입력되었습니다' };
-  }
+  console.log('createNotice : ', values)
+  // const title = (values?.title ?? '').trim();
+  // const content = (values?.content ?? '').trim();
 
-  const form = new FormData();
-  form.append(
-    'notice',
-    new Blob(
-      [
-        JSON.stringify({
-          user_id: values.userId,
-          title: values.title,
-          content: values.content,
-          pinned: !!values.pinned,
-        }),
-      ],
-      { type: 'application/json' },
-    ),
-  );
+  // if (!title || !content) {
+  //   return { ok: false, message: '미입력되었습니다' };
+  // }
 
-  if (values?.file) form.append('file', values.file);
+  // const form = new FormData();
+  // form.append(
+  //   'notice',
+  //   new Blob(
+  //     [
+  //       JSON.stringify({
+  //         user_id: values.userId,
+  //         title: values.title,
+  //         content: values.content,
+  //         pinned: !!values.pinned,
+  //       }),
+  //     ],
+  //     { type: 'application/json' },
+  //   ),
+  // );
+
+ // if (values?.file) form.append('file', values.file);
 
   const accessToken = useAuthStore.getState().accessToken;
 
   const res = await fetch(`${BASE_URL}/post`, {
     method: 'POST',
-    body: form,
+    body: values.frmData,
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -104,7 +107,27 @@ export const createNotice = async (values) => {
  *
  * 여기서는 "multipart" 기준으로 작성 (파일 교체 가능)
  */
+
+/**
+ * 
+ * @param {number} id 
+ * @param {import('../components/notice-form').NoticeFormValues} values 
+ */
+
+
+/**
+ * @param {number} id
+ * @param {{
+ *   title: string;
+ *   content: string;
+ *   pinned: boolean;
+ *   file?: File | null;
+ *   fileName?: string | null;
+ * }} values
+ * @returns {Promise<{ ok: boolean; message?: string }>}
+ */
 export const updateNotice = async (id, values) => {
+  console.log("updateNotice : ", id, values)
   const title = (values?.title ?? '').trim();
   const content = (values?.content ?? '').trim();
 
@@ -113,33 +136,37 @@ export const updateNotice = async (id, values) => {
   }
 
   const form = new FormData();
+
+  // JSON 부분
   form.append(
     'notice',
     new Blob(
       [
         JSON.stringify({
-          // user_id는 수정에 필수 아니면 빼도 됨
           title,
           content,
+          oldPinned : !!values.oldPinned,
           pinned: !!values.pinned,
-          // file_name은 서버에서 파일 업로드 시 덮어쓰게 두는 걸 추천
-          // 필요하면 내려보낼 수는 있음:
-          file_name: values.fileName ?? null,
+          fileName: values.fileName ?? null,
         }),
       ],
       { type: 'application/json' },
     ),
   );
 
-  // 새 파일을 선택한 경우에만 첨부
-  if (values?.file) form.append('file', values.file);
+  // 파일이 있을 경우만 추가
+  if (values.file instanceof File) {
+    form.append('file', values.file);
+  }
 
-  const res = await fetch(`${BASE_URL}/${id}`, {
-    method: 'PATCH', // 서버를 PATCH로 만들면 그대로 사용
-    body: form,
-  });
+  try {
+    const response = await api.patch(`api/notice/${id}`, { body: form }).json();
 
-  return res.json();
+    return response;
+  } catch (error) {
+    console.error(error);
+    return { ok: false, message: '서버 오류가 발생했습니다' };
+  }
 };
 
 /**

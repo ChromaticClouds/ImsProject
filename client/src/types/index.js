@@ -111,6 +111,7 @@
  * @property {number} salePrice
  * @property {number} volumn
  * @property {string | null} imageUrl
+ * @property {string | null} boxImageUrl // db는 box_image_url로 컬럼을 생성
  */
 
 /**
@@ -228,4 +229,23 @@
  * @property {number} perCount
  * @property {number} salePrice
  * @property {string} imageUrl
+ */
+
+/**
+ * @typedef {object} Notice
+ * @property {number} id
+ * @property {boolean} pinned
+ * @property {string} title
+ * @property {string} content
+ * @property {string | null} fileName
+ * @property {string} createdAt
+ */
+
+/**
+ * @typedef {object} NoticeListResponse
+ * @property {Notice[]} items
+ * @property {Notice[]} pinned
+ * @property {number} page
+ * @property {number} totalElements
+ * @property {number} totalPages
  */

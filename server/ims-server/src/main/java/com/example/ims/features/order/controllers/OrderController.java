@@ -1,6 +1,5 @@
 package com.example.ims.features.order.controllers;
 
-import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.order.dto.*;
 import com.example.ims.features.order.services.OrderService;
 import com.example.ims.features.user.dto.UserIdentifier;

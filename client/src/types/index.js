@@ -59,6 +59,21 @@
  */
 
 /**
+ * 거래처 상세
+ * @typedef {object} VendorDetail
+ * @property {number} id
+ * @property {'Supplier' | 'Seller'} type
+ * @property {string} vendorName
+ * @property {string} bossName
+ * @property {string} email
+ * @property {string} address
+ * @property {string} telephone
+ * @property {string} imageUrl
+ * @property {string} memo
+ * @property {string} createdAt
+ */
+
+/**
  * @template T
  * @typedef {object} PageResponse
  * @property {T[]} content
@@ -241,4 +256,22 @@
  * @property {number} totalPrice
  * @property {number | null} managerId
  * @property {string | null} managerName
+ */
+
+/**
+ * 공급처 목록 발주 번호, 유저 목록 스키마
+ * @typedef {object} OrderBootstrap
+ * @property {string} sequence
+ * @property {UserIdentifier[]} users
+ * @property {VendorIdentifier[]} vendors
+ */
+
+/**
+ * @typedef {object} OrderSummary
+ * @property {number} id
+ * @property {string} name
+ * @property {string} brand
+ * @property {ProductType} type
+ * @property {number} salePrice
+ * @property {string | null} imageUrl
  */

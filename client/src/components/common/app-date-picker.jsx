@@ -19,15 +19,20 @@ import {
 import { CalendarIcon } from 'lucide-react';
 
 /**
- * @param {{ date: Date, setDate: (date: Date) => void }} props
+ * @param {{ date?: Date, setDate?: (date: Date) => void, disabled?: boolean }} props
  */
-export const AppDatePicker = ({ date = new Date(), setDate }) => {
+export const AppDatePicker = ({
+  date = new Date(),
+  setDate = () => {},
+  disabled = false,
+}) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           variant='outline'
           data-empty={!date}
+          disabled={disabled}
           className='data-[empty=true]:text-muted-foreground md:w-60 w-full justify-start text-left font-normal'
         >
           <CalendarIcon />

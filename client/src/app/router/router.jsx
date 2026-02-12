@@ -55,6 +55,7 @@ import { ReceiveOrder } from '@/pages/dashboard/receive-order/receive-order.jsx'
 import { ReceiveOrderPost } from '@/pages/dashboard/receive-order/receive-order-post.jsx';
 import { ForgotPassword } from '@/pages/forgot-password.jsx';
 import { PasswordReset } from '@/pages/password-reset.jsx';
+import { PurchaseOrderPost } from '@/pages/dashboard/purchase-order/purchase-order-post.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -157,7 +158,7 @@ export const router = createBrowserRouter([
                 path: 'purchase-order',
                 children: [
                   { index: true, element: <PurchaseOrder /> },
-                  { path: 'create', element: <PurchaseOrderCreate /> },
+                  { path: 'create', element: <PurchaseOrderPost /> },
                   { path: ':id/edit', element: <PurchaseOrderEdit /> },
                 ],
               },

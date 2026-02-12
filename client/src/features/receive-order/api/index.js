@@ -5,7 +5,7 @@ import { receiveOrderFormSchema } from '@/features/receive-order/schemas/receive
 import z from 'zod';
 
 /**
- * @returns {Promise<ApiResponse<{ users: UserIdentifier[], sellers: VendorIdentifier[], sequence: string }>>}
+ * @returns {Promise<ApiResponse<{ users: UserIdentifier[], vendors: VendorIdentifier[], sequence: string }>>}
  */
 export const getOrderBoostrap = () =>
   api.get('order/bootstrap', { hooks }).json();

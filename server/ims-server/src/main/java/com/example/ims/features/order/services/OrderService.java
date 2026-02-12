@@ -53,7 +53,7 @@ public class OrderService {
             .map(v -> new VendorIdentifier(v.getId(), v.getVendorName()))
             .toList();
 
-        String sequence = sequenceGenerator.generate();
+        String sequence = sequenceGenerator.generateReceiveOrder();
 
         return new OrderBootstrap(users, sellers, sequence);
     }
@@ -79,7 +79,7 @@ public class OrderService {
         Vendor vendor = vendorRepository.findById(request.getSellerId())
             .orElseThrow(VendorNotFoundException::new);
 
-        String orderNumber = sequenceGenerator.issue();
+        String orderNumber = sequenceGenerator.issueReceiveOrder();
 
         List<Order> orders = request.getProducts().stream().map(p -> {
             Product product = productRepository.findById(p.id())

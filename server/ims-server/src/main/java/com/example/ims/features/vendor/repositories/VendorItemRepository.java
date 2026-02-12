@@ -12,4 +12,5 @@ public interface VendorItemRepository
             JpaSpecificationExecutor<VendorItem> {
 
     Optional<VendorItem> findByProductId(Long id);
+    List<VendorItem> findAllByVendorId(Long vendorId);
 }

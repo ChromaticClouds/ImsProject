@@ -35,7 +35,7 @@ export const ReceiveOrderPostProvider = ({ children }) => {
 
   const categories = {
     users: context?.users ?? [],
-    sellers: context?.sellers ?? [],
+    sellers: context?.vendors ?? [],
   };
 
   return (

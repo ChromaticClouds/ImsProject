@@ -3,9 +3,9 @@
  */
 import { AppHeader } from '@/components/common/app-header.jsx';
 import { Card } from '@/components/ui/card.js';
-import { UserList } from '@/features/admin/components/user-list.jsx';
-import { UserPagination } from '@/features/admin/components/user-pagination.jsx';
-import { UserListHeader } from '@/features/admin/components/user-list-header.jsx';
+import { UserList } from '@/features/admin/components/user-setting/user-list.jsx';
+import { UserPagination } from '@/features/admin/components/user-setting/user-pagination.jsx';
+import { UserListHeader } from '@/features/admin/components/user-setting/user-list-header.jsx';
 import { UserProvider } from '@/features/admin/providers/user-provider.jsx';
 
 export const UserSetting = () => {
@@ -20,7 +20,9 @@ export const UserSetting = () => {
           <UserProvider>
             <UserListHeader />
             <UserList />
-            <UserPagination />
+            <UserPagination 
+              prefix='/dashboard/user/setting'
+            />
           </UserProvider>
         </Card>
       </div>

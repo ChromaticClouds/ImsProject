@@ -12,13 +12,14 @@ import {
   TableCell,
 } from '@/components/ui/table.js';
 import { UserRow } from './user-row.jsx';
-import { UserSkeletonRows } from '@/features/admin/components/user-skeleton-rows.jsx';
+import { UserSkeletonRows } from '@/features/admin/components/user-setting/user-skeleton-rows.jsx';
 
 /**
  * Hooks
  */
-import { useUserList } from '../providers/user-provider.jsx';
-import { usePatchUser } from '../hooks/use-patch-user.js';
+import { useUserList } from '../../providers/user-provider.jsx';
+import { usePatchUser } from '../../hooks/use-patch-user.js';
+import { useResendEmail } from '@/features/admin/hooks/use-resend-email.js';
 
 /**
  * Constants
@@ -27,6 +28,7 @@ import { usePatchUser } from '../hooks/use-patch-user.js';
 const COLUMN_COUNT = 9;
 
 export const UserList = () => {
+  const { mutate: resendEmailMutate } = useResendEmail();
   const { users, isFetching } = useUserList();
   const { mutate } = usePatchUser();
 
@@ -40,9 +42,9 @@ export const UserList = () => {
     mutate({ id: userId, body: { role } });
   };
 
-  /** @param {number} userId */
-  const handleResend = (userId) => {
-    console.log(userId);
+  /** @param {string} email */
+  const handleResend = (email) => {
+    resendEmailMutate(email);
   };
 
   /** @param {number} userId */

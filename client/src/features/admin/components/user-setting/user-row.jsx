@@ -10,7 +10,7 @@ import { UserActionsWrapper } from './user-action-wrapper.jsx';
 import { Badge } from '@/components/ui/badge.js';
 import { NameChangeDialog } from './name-change-dialog.jsx';
 
-import { toUserRowModel } from '../schemas/user-model.js';
+import { toUserRowModel } from '../../schemas/user-model.js';
 
 const DescriptionCell = ({ user, isPending }) => (
   <TableCell className='w-sm'>

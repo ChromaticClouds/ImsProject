@@ -4,7 +4,7 @@
  * Components
  */
 import { InputGroupInput } from '@/components/ui/input-group';
-import { EmailBadgeList } from '@/features/admin/components/email-badge-list.jsx';
+import { EmailBadgeList } from '@/features/admin/components/user-setting/email-badge-list.jsx';
 
 /**
  * Hooks

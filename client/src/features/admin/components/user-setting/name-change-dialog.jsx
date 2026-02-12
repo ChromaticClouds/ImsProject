@@ -21,7 +21,7 @@ import { TableCell } from '@/components/ui/table.js';
 import { UserIcon, PencilIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
 
-import { toUserRowModel } from '../schemas/user-model.js';
+import { toUserRowModel } from '../../schemas/user-model.js';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -39,9 +39,9 @@ export const NameChangeDialog = ({ user, onNameChange }) => {
   const handleSubmit = () => {
     const newName = inputRef.current?.value.trim();
 
-    if (!newName || newName === user.name) 
+    if (!newName || newName === user.name)
       return toast.error('이름을 입력해주세요');
-    
+
     onNameChange(user.id, newName);
   };
 
@@ -50,7 +50,10 @@ export const NameChangeDialog = ({ user, onNameChange }) => {
       <div className='flex gap-2 items-center'>
         <span>{user.name}</span>
 
-        <Dialog open={open} onOpenChange={(o) => setOpen(o)}>
+        <Dialog
+          open={open}
+          onOpenChange={(o) => setOpen(o)}
+        >
           <DialogTrigger asChild>
             <PencilIcon
               size={16}
@@ -74,9 +77,7 @@ export const NameChangeDialog = ({ user, onNameChange }) => {
               </InputGroupAddon>
             </InputGroup>
 
-            <Button onClick={handleSubmit}>
-              변경 완료
-            </Button>
+            <Button onClick={handleSubmit}>변경 완료</Button>
           </DialogContent>
         </Dialog>
       </div>

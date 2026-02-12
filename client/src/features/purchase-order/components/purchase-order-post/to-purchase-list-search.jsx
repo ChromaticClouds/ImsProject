@@ -35,44 +35,54 @@ export const ToPurchaseListSearch = () => {
   return (
     <CardFooter className='border-t flex items-center gap-3'>
       <div className='relative w-full max-w-120'>
-        <Popover
-          open={open && !!selectedVendorId}
-          onOpenChange={setOpen}
-          modal={true}
-        >
-          <PopoverTrigger asChild>
-            <InputGroup>
-              <InputGroupInput
-                placeholder='제품 검색...'
-                value={input}
-                disabled={!selectedVendorId}
-                onChange={(e) => setInput(e.target.value)}
-                onFocus={() => setOpen(true)}
-                data-aria-hidden={false}
-                className='pr-10'
-              />
-              <InputGroupAddon>
-                <SearchIcon className='w-5 h-5 text-muted-foreground' />
-              </InputGroupAddon>
-            </InputGroup>
-          </PopoverTrigger>
-
-          <PopoverContent
-            align='start'
-            side='bottom'
-            onOpenAutoFocus={(e) => e.preventDefault()}
-            onCloseAutoFocus={(e) => e.preventDefault()}
-            data-aria-hidden={false}
-            className='p-0 w-(--radix-popover-trigger-width)'
+        {selectedVendorId ? (
+          <Popover
+            open={open}
+            onOpenChange={setOpen}
+            modal={true}
           >
-            <PoSearchList
-              open={open}
-              selectedVendorId={selectedVendorId}
-              debounced={debounced}
-              onClick={() => setOpen(false)}
+            <PopoverTrigger asChild>
+              <InputGroup>
+                <InputGroupInput
+                  placeholder='제품 검색...'
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  className='pr-10'
+                />
+                <InputGroupAddon>
+                  <SearchIcon className='w-5 h-5 text-muted-foreground' />
+                </InputGroupAddon>
+              </InputGroup>
+            </PopoverTrigger>
+
+            <PopoverContent
+              align='start'
+              side='bottom'
+              onOpenAutoFocus={(e) => e.preventDefault()}
+              onCloseAutoFocus={(e) => e.preventDefault()}
+              className='p-0 w-(--radix-popover-trigger-width)'
+            >
+              <PoSearchList
+                open={open}
+                selectedVendorId={selectedVendorId}
+                debounced={debounced}
+                onClick={() => setOpen(false)}
+              />
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <InputGroup>
+            <InputGroupInput
+              placeholder='공급처를 먼저 지정해주세요'
+              disabled
+              data-aria-hidden={false}
+              className='pr-10'
             />
-          </PopoverContent>
-        </Popover>
+            <InputGroupAddon>
+              <SearchIcon className='w-5 h-5 text-muted-foreground' />
+            </InputGroupAddon>
+          </InputGroup>
+        )}
       </div>
       <FieldDescription className='flex items-center gap-2'>
         <AlertCircleIcon size={16} />

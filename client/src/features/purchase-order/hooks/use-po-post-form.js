@@ -1,10 +1,16 @@
 // @ts-check
 
+import { formatToIsoDate } from '@/features/receive-order/utils/format-date.js';
+import { api, hooks } from '@/services/api.js';
+import { ERROR } from '@/services/error.js';
 import { useForm } from '@tanstack/react-form';
+import { HTTPError } from 'ky';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import z from 'zod';
 
 const defaultValues = {
+  date: new Date(),
   supplierId: null,
   products: [],
 };
@@ -12,6 +18,7 @@ const defaultValues = {
 const productCountSchema = z
   .object({
     id: z.number(),
+    vendorItemId: z.number(),
     name: z.string(),
     brand: z.string(),
     type: z.string(), // enum이면 z.nativeEnum
@@ -22,6 +29,7 @@ const productCountSchema = z
   .loose();
 
 const poPostSchema = z.object({
+  date: z.date(),
   supplierId: z
     .number()
     .nullable()
@@ -36,14 +44,39 @@ const poPostSchema = z.object({
 /** @typedef {z.infer<typeof poPostSchema>} PoPostFormValues */
 
 export const usePoPostForm = () => {
+  const navigate = useNavigate();
+
   const form = useForm({
     /** @type {PoPostFormValues} */
     defaultValues,
     validators: {
       onChange: poPostSchema,
     },
-    onSubmit: ({ value }) => {
-      toast(JSON.stringify(value));
+    onSubmit: async ({ value }) => {
+      try {
+        const formatForm = { ...value, date: formatToIsoDate(value.date) };
+
+        const response = await api.post(
+          'purchase/order/post', { json: formatForm, hooks }
+        ).json();
+
+        if (!response?.success) return;
+        toast.success(response?.message);
+        form.reset();
+        navigate('/dashboard/purchase-order');
+      } catch (err) {
+        if (err instanceof HTTPError) {
+          const errResponse = await err.response.json();
+
+          return toast.error(
+            typeof errResponse?.message === 'string'
+              ? errResponse?.message
+              : ERROR.UNEXPECTED_ERROR
+          );
+        }
+
+        toast.error(ERROR.SERVER_ERROR);
+      }
     },
   });
 

@@ -6,7 +6,7 @@
 import { Button } from '@/components/ui/button.js';
 import { TableCell } from '@/components/ui/table.js';
 
-import { toUserRowModel } from '../schemas/user-model.js';
+import { toUserRowModel } from '../../schemas/user-model.js';
 import { ConfirmButton } from './confirm-button.jsx';
 
 const ActionCell = ({ children }) => (
@@ -20,7 +20,7 @@ const ActionCell = ({ children }) => (
  * @property {ReturnType<typeof toUserRowModel>} user
  * @property {(userId: number) => void} onLeave
  * @property {(userId: number) => void} onDelete
- * @property {(userId: number) => void} onResend
+ * @property {(email: string) => void} onResend
  */
 
 /**
@@ -34,7 +34,7 @@ export const UserActionsWrapper = ({ user, onLeave, onDelete, onResend }) => {
       <ConfirmButton
         title='초대 이메일을 재발송하시겠습니까?'
         description='사용자에게 초대 메일이 다시 발송됩니다.'
-        onConfirm={() => onResend(user.id)}
+        onConfirm={() => onResend(user.email)}
       >
         <Button>재발송</Button>
       </ConfirmButton>,

@@ -19,7 +19,7 @@ import { useLoaderData } from 'react-router-dom';
 export const AuthBootstrap = () => {
   /**
    * @type {ReturnType<typeof useLoaderData<{ 
-   *   auth: { authenticated: boolean, role: User['userRole'] } 
+   *   auth: { authenticated: boolean, role: User['userRole'], rank: User['userRank'] } 
    * }>>}
    */
   const { auth } = useLoaderData();
@@ -31,6 +31,7 @@ export const AuthBootstrap = () => {
           <RouteAccessGuard 
             authenticated={result.authenticated}
             role={result.role}
+            rank={result.rank}
           />
         )}
       </Await>

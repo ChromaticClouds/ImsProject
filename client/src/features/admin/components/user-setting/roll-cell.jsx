@@ -1,6 +1,6 @@
 import { TableCell } from '@/components/ui/table.js';
 import { RoleSelect } from './role-select.jsx';
-import { toUserRowModel } from '../schemas/user-model.js';
+import { toUserRowModel } from '../../schemas/user-model.js';
 
 /**
  * @param {{

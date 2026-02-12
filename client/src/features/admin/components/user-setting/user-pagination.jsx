@@ -1,5 +1,5 @@
 import { CardFooter } from '@/components/ui/card.js';
-import { useUserList } from '../providers/user-provider.jsx';
+import { useUserList } from '../../providers/user-provider.jsx';
 
 import {
   Pagination,
@@ -10,9 +10,10 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination.js';
 
-const BASE_PATH = '/dashboard/user/setting';
-
-export const UserPagination = () => {
+/**
+ * @param {{ prefix: string }} props 
+ */
+export const UserPagination = ({ prefix }) => {
   const { page, totalPages, isFirst, isLast } = useUserList();
 
   if (totalPages <= 1) return null;
@@ -23,7 +24,7 @@ export const UserPagination = () => {
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              to={`${BASE_PATH}?page=${page - 1}`}
+              to={`${prefix}?page=${page - 1}`}
               onClick={(e) => isFirst && e.preventDefault()}
               aria-disabled={isFirst}
               className={isFirst ? 'pointer-events-none opacity-50' : undefined}
@@ -37,7 +38,7 @@ export const UserPagination = () => {
               <PaginationItem key={p}>
                 <PaginationLink
                   isActive={p === page}
-                  to={`${BASE_PATH}?page=${p}`}
+                  to={`${prefix}?page=${p}`}
                 >
                   {p}
                 </PaginationLink>
@@ -47,7 +48,7 @@ export const UserPagination = () => {
 
           <PaginationItem>
             <PaginationNext
-              to={`${BASE_PATH}?page=${page + 1}`}
+              to={`${prefix}?page=${page + 1}`}
               onClick={(e) => isLast && e.preventDefault()}
               aria-disabled={isLast}
               className={isLast ? 'pointer-events-none opacity-50' : undefined}

@@ -8,7 +8,7 @@ import {
   InputGroupButton,
   InputGroupText,
 } from '@/components/ui/input-group.js';
-import { EmailInput } from '@/features/admin/components/email-input.jsx';
+import { EmailInput } from '@/features/admin/components/user-setting/email-input.jsx';
 import { useEmailSubmit } from '@/features/admin/hooks/use-email-submit.js';
 
 export const EmailForm = () => {

@@ -2,12 +2,12 @@
 
 import { TableCell } from '@/components/ui/table.js';
 import { RankSelect } from './rank-select.jsx';
-import { toUserRowModel } from '../schemas/user-model.js';
+import { toUserRowModel } from '../../schemas/user-model.js';
 
 /**
- * @param {{ 
- * user: ReturnType<typeof toUserRowModel>, 
- * onRankChange: (id: number, type: string) => void 
+ * @param {{
+ * user: ReturnType<typeof toUserRowModel>,
+ * onRankChange: (id: number, type: string) => void
  * }} props
  */
 export const RankCell = ({ user, onRankChange }) => {

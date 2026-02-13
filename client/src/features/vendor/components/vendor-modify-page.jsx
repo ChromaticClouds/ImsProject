@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useQueryClient } from '@tanstack/react-query';
-
+import { softDeleteVendorItem } from '@/features/vendor/api';
 import { useVendorDetail } from '@/features/vendor/hooks/use-vendor-detail'; // 이미 쓰고 있는 상세 훅
 import { useUpdateVendor } from '@/features/vendor/hooks/use-update-vendor';
 import { useItemsSearch } from '@/features/vendor/hooks/use-items-search';
@@ -28,6 +28,8 @@ import { useItemsSearch } from '@/features/vendor/hooks/use-items-search';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^(01[0-9]-\d{3,4}-\d{4}|0\d{1,2}-\d{3,4}-\d{4})$/;
+
+
 
 function normalizePhone(value) {
   const digits = value.replace(/[^\d]/g, '');
@@ -106,6 +108,7 @@ export function VendorModifyPage() {
   const { data: itemsData, isFetching: itemsLoading } = useItemsSearch({
     keyword: itemKeyword.trim(),
     excludeAssigned: true,
+    currentVendorId: vendorId,
   });
 
   const items = /** @type {{ id: number, name: string }[]} */ (itemsData ?? []);
@@ -170,6 +173,7 @@ export function VendorModifyPage() {
     return selectedItems.every((x) => Number(x.unitPrice) > 0);
   }, [form.type, selectedItems]);
 
+
   // 완료 버튼 활성 조건
   const canSubmit = isValidRequired && isValidSupplierItems && !updating;
 
@@ -184,9 +188,20 @@ export function VendorModifyPage() {
     setSelectedItems((prev) => prev.map((x) => (x.itemId === itemId ? { ...x, unitPrice: num } : x)));
   };
 
-  const onRemoveItem = (itemId) => {
+  // const onRemoveItem = (itemId) => {
+  //   setSelectedItems((prev) => prev.filter((x) => x.itemId !== itemId));
+  // };
+
+  const onRemoveItem = async (itemId) => {
+  try {
+    await softDeleteVendorItem({ vendorId, productId: itemId });
     setSelectedItems((prev) => prev.filter((x) => x.itemId !== itemId));
-  };
+    queryClient.invalidateQueries({ queryKey: ['items-search'] }); 
+  } catch (e) {
+    console.error(e);
+    alert('품목 삭제 중 오류가 발생했습니다.');
+  }
+};
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -254,29 +269,21 @@ export function VendorModifyPage() {
       <form onSubmit={onSubmit}>
         {/* 공급처/판매처 라디오 */}
         <div>
-          <span>구분</span>
-          <br />
+  <span>구분</span>
+  <br />
 
-          <label>
-            <input
-              type="radio"
-              name="vendorType"
-              checked={form.type === 'Supplier'}
-              onChange={() => setType('Supplier')}
-            />
-            공급처
-          </label>
-
-          <label style={{ marginLeft: 12 }}>
-            <input
-              type="radio"
-              name="vendorType"
-              checked={form.type === 'Seller'}
-              onChange={() => setType('Seller')}
-            />
-            판매처
-          </label>
-        </div>
+  {form.type === 'Supplier' ? (
+    <label>
+      <input type="radio" name="vendorType" checked readOnly />
+      공급처
+    </label>
+  ) : (
+    <label>
+      <input type="radio" name="vendorType" checked readOnly />
+      판매처
+    </label>
+  )}
+</div>
 
         {/* 거래처명 */}
         <div>
@@ -433,6 +440,8 @@ export function VendorModifyPage() {
             ) : null}
           </div>
         ) : null}
+
+
 
         <div style={{ marginTop: 14 }}>
           <Button type="submit" disabled={!canSubmit}>

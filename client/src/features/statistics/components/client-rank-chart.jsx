@@ -13,12 +13,16 @@ import { useIsMobile } from '@/hooks/use-mobile.js';
 export const ClientRankChart = ({ data = [], mode }) => {
   const isMobile = useIsMobile();
 
+  
+
   const chartConfig = {
     qty: {
       label: mode === 'inbound' ? '입고' : '출고',
       color: mode === 'inbound' ? 'var(--chart-1)' : 'var(--chart-2)',
     },
   };
+
+  
 
   return (
     <ChartContainer className="h-50 w-full" config={chartConfig}>

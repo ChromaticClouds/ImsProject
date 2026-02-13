@@ -30,7 +30,7 @@ export const InOutboundChart = ({ data }) => {
   return (
     <ChartContainer
       config={inboundOutboundConfig}
-      className='h-95 w-full'
+      className='h-70 w-full'
       style={{ minWidth: chartWidth }}
     >
       <BarChart data={data} barSize={isMobile ? 12 : 24} barCategoryGap={16} margin={{ top: 10, right: 20, left: 0, bottom: 30 }}>

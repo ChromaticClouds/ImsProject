@@ -1,77 +1,110 @@
-//@ts-check
+// @ts-check
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button.js';
 import { Input } from '@/components/ui/input.js';
 import { Label } from '@/components/ui/label.js';
 
-// 변경한 mock 파일/exports에 맞춤
-import { testvendors } from '@/features/purchase-order/mocks/test-vendor-mock.js';
-import { testvendorItems } from '@/features/purchase-order/mocks/test-vendor-item-mock.js';
+const formatNumber = (n) => Number(n || 0).toLocaleString();
 
-export const PurchaseOrderForm = ({ mode, initialValue, onSubmit }) => {
-  const [form, setForm] = useState(initialValue);
+/**
+ * @typedef {Object} PurchaseOrderFormItem
+ * @property {number} orderId
+ * @property {string} productName
+ * @property {string} type
+ * @property {string} brand
+ * @property {number} safetyStock
+ * @property {number|string} count
+ * @property {number} purchasePrice
+ */
 
-  // purchaseOrders 스키마에 맞게 sellerVendorId 사용
-  const selectedVendor = useMemo(
-    () =>
-      testvendors?.find((v) => String(v.id) === String(form.sellerVendorId)),
-    [form.sellerVendorId],
-  );
+/**
+ * @typedef {Object} PurchaseOrderFormState
+ * @property {string} orderNumber
+ * @property {string} orderDate
+ * @property {string} recieveDate
+ * @property {string} vendorName
+ * @property {PurchaseOrderFormItem[]} items
+ */
 
-  // vendorItem 스키마: vendorId 로 필터링
-  const itemsForVendor = useMemo(() => {
-    if (!form.sellerVendorId) return [];
-    return testvendorItems?.filter(
-      (it) => String(it.vendorId) === String(form.sellerVendorId),
-    );
-  }, [form.sellerVendorId]);
+/**
+ * @param {{
+ *  initialValue: PurchaseOrderFormState,
+ *  onSubmit: (payload: {recieveDate:string, items:{orderId:number, count:number}[]}) => void
+ * }} props
+ */
+export const PurchaseOrderForm = ({ initialValue, onSubmit }) => {
+  /** @type {[PurchaseOrderFormState, import('react').Dispatch<import('react').SetStateAction<PurchaseOrderFormState>>]} */
+  const [form, setForm] = useState({
+    ...initialValue,
+    items: Array.isArray(initialValue?.items) ? initialValue.items : [],
+  });
 
-  const selectedItem = useMemo(
-    () =>
-      itemsForVendor.find((it) => String(it.id) === String(form.venderItemId)),
-    [itemsForVendor, form.venderItemId],
-  );
-
+  /** @param {keyof PurchaseOrderFormState} key @param {any} value */
   const setField = (key, value) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  const handleVendorChange = (e) => {
-    const vendorId = e.target.value ? Number(e.target.value) : null;
+  const totalCount = useMemo(
+    () =>
+      (Array.isArray(form.items) ? form.items : []).reduce(
+        (sum, it) => sum + Number(it.count || 0),
+        0
+      ),
+    [form.items]
+  );
 
-    // 공급처 바뀌면 품목도 초기화
-    setForm((prev) => ({
-      ...prev,
-      sellerVendorId: vendorId,
-      venderItemId: null,
-      productId: null,
-    }));
-  };
+  const typeLabelMap = {
+  SOJU: '소주',
+  LIQUOR: '양주',
+  KAOLIANG_LIQUOR: '고량주',
+  TRADITIONAL: '전통주',
+  WHISKEY: '위스키',
+};
 
-  const handleItemChange = (e) => {
-    const itemId = e.target.value ? Number(e.target.value) : null;
-    const item = itemsForVendor.find((it) => String(it.id) === String(itemId));
+const isValidCount = (value) => {
+  const n = Number(value);
+  return Number.isInteger(n) && n > 0;
+};
 
-    setForm((prev) => ({
-      ...prev,
-      venderItemId: itemId,
-      productId: item?.productId ?? null,
-    }));
-  };
+const formatSafetyStock = (v) => {
+  if (v == null) return '-';
+  const n = Number(v);
+  if (!Number.isFinite(n)) return String(v);
+  return n.toFixed(1);
+};
+
+const submitDisabled =
+  !form.recieveDate ||
+  !Array.isArray(form.items) ||
+  form.items.length === 0 ||
+  form.items.some((it) => !isValidCount(it.count));
+
+const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
+
+  const totalPrice = useMemo(
+    () =>
+      (Array.isArray(form.items) ? form.items : []).reduce(
+        (sum, it) => sum + Number(it.count || 0) * Number(it.purchasePrice || 0),
+        0
+      ),
+    [form.items]
+  );
 
   const submit = () => {
-    // 최소 검증
     if (!form.recieveDate) return alert('납기일을 선택해주세요');
-    if (!form.sellerVendorId) return alert('공급처를 선택해주세요');
-    if (!form.venderItemId) return alert('품목을 선택해주세요');
-    if (!form.count || Number(form.count) <= 0)
-      return alert('수량을 입력해주세요');
 
-    onSubmit(form);
+    const payload = {
+      recieveDate: form.recieveDate,
+      items: (Array.isArray(form.items) ? form.items : []).map((it) => ({
+        orderId: it.orderId,
+        count: Number(it.count || 0),
+      })),
+    };
+
+    onSubmit(payload);
   };
 
   return (
     <div className='flex flex-col gap-6'>
-      {/* 발주번호(읽기 전용) */}
       <div className='grid grid-cols-12 gap-4 items-center'>
         <Label className='col-span-2'>발주번호</Label>
         <Input
@@ -82,7 +115,6 @@ export const PurchaseOrderForm = ({ mode, initialValue, onSubmit }) => {
         />
       </div>
 
-      {/* 발주일(기본값: 금일 / 읽기 전용) */}
       <div className='grid grid-cols-12 gap-4 items-center'>
         <Label className='col-span-2'>발주일</Label>
         <Input
@@ -93,7 +125,16 @@ export const PurchaseOrderForm = ({ mode, initialValue, onSubmit }) => {
         />
       </div>
 
-      {/* 납기일(입력 가능) */}
+      <div className='grid grid-cols-12 gap-4 items-center'>
+        <Label className='col-span-2'>공급처</Label>
+        <Input
+          className='col-span-10'
+          value={form.vendorName ?? ''}
+          readOnly
+          disabled
+        />
+      </div>
+
       <div className='grid grid-cols-12 gap-4 items-center'>
         <Label className='col-span-2'>납기일</Label>
         <Input
@@ -104,132 +145,67 @@ export const PurchaseOrderForm = ({ mode, initialValue, onSubmit }) => {
         />
       </div>
 
-      {/* 공급처 선택(드롭다운) */}
-      <div className='grid grid-cols-12 gap-2 items-center'>
-        <Label className='col-span-2'>공급처</Label>
-        <select
-          className='col-span-10 h-10 rounded-md border bg-background px-3'
-          value={form.sellerVendorId ?? ''}
-          onChange={handleVendorChange}
-          disabled={mode === 'edit'} // 수정페이지에 공급처 수정 불가
-        >
-  
-          <option value=''>공급처 선택</option>
-          {testvendors?.map((v) => (
-            <option
-              key={v.id}
-              value={v.id}
-            >
-              {v.vendorName}
-            </option>
-          ))}
-        </select>
-
-        {mode === 'edit' ? (
-            <p className='col-span-10 px-2 col-start-3 text-sm text-amber-600'>
-              공급처는 수정이 불가합니다.
-            </p>
-        ) : null}
-
-      </div>
-
-      {/* 공급처 선택 시 자동 기입(읽기 전용) */}
-      <div className='grid grid-cols-12 gap-4 items-center'>
-        <Label className='col-span-2'>대표자명</Label>
-        <Input
-          className='col-span-10'
-          value={selectedVendor?.bossName ?? ''}
-          readOnly
-          disabled
-        />
-      </div>
-
-      <div className='grid grid-cols-12 gap-4 items-center'>
-        <Label className='col-span-2'>공급처명</Label>
-        <Input
-          className='col-span-10'
-          value={selectedVendor?.vendorName ?? ''}
-          readOnly
-          disabled
-        />
-      </div>
-
-      <div className='grid grid-cols-12 gap-4 items-center'>
-        <Label className='col-span-2'>전화번호</Label>
-        <Input
-          className='col-span-10'
-          value={selectedVendor?.telephone ?? ''}
-          readOnly
-          disabled
-        />
-      </div>
-
-      <div className='grid grid-cols-12 gap-4 items-center'>
-        <Label className='col-span-2'>이메일</Label>
-        <Input
-          className='col-span-10'
-          value={selectedVendor?.email ?? ''}
-          readOnly
-          disabled
-        />
-      </div>
-
-      {/* 품목 선택(공급처 담당 품목만) */}
-      <div className='grid grid-cols-12 gap-4 items-center'>
-        <Label className='col-span-2'>품목 선택</Label>
-        <select
-          className='col-span-10 h-10 rounded-md border bg-background px-3'
-          value={form.venderItemId ?? ''}
-          onChange={handleItemChange}
-          disabled={!form.sellerVendorId}
-        >
-          <option value=''>
-            {form.sellerVendorId ? '품목 선택' : '먼저 공급처를 선택하세요'}
-          </option>
-
-          {itemsForVendor.map((it) => (
-            <option
-              key={it.id}
-              value={it.id}
-            >
-              {/* label이 없을 수도 있으니 안전한 표시 */}
-              {it.label ??
-                `상품ID ${it.productId} · 구매가 ${it.purchasePrice}`}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* 선택한 품목 정보(선택 사항: 확인용) */}
-      {selectedItem ? (
-        <div className='grid grid-cols-12 gap-4 items-center'>
-          <Label className='col-span-2'>구매가</Label>
-          <Input
-            className='col-span-10'
-            value={selectedItem.purchasePrice ?? ''}
-            readOnly
-            disabled
-          />
+      {/* 품목 라인 */}
+      <div className='rounded-lg border overflow-hidden'>
+        <div className='grid grid-cols-12 text-xs font-medium bg-muted px-3 py-2'>
+          <div className='col-span-4'>품목명</div>
+          <div className='col-span-2 text-center'>주종</div>
+          <div className='col-span-2 text-center'>브랜드</div>
+          <div className='col-span-2 text-center'>안전재고</div>
+          <div className='col-span-2 text-center'>발주수량</div>
         </div>
-      ) : null}
 
-      {/* 수량 */}
-      <div className='grid grid-cols-12 gap-4 items-center'>
-        <Label className='col-span-2'>수량</Label>
-        <Input
-          className='col-span-10'
-          inputMode='numeric'
-          placeholder='수량 입력'
-          value={form.count}
-          onChange={(e) => setField('count', e.target.value)}
-        />
+        {form.items.length ? (
+          form.items.map((it) => (
+            <div
+              key={it.orderId}
+              className='grid grid-cols-12 px-3 py-2 text-sm border-t items-center'
+            >
+              <div className='col-span-4 truncate'>{it.productName ?? '-'}</div>
+              <div className='col-span-2 text-center'>{formatType(it.type) ?? '-'}</div>
+              <div className='col-span-2 text-center'>{it.brand ?? '-'}</div>
+              <div className='col-span-2 text-center'>{formatSafetyStock(it.safetyStock) ?? 0}</div>
+
+              <div className='col-span-2'>
+                <Input
+                  inputMode='numeric'
+                  value={String(it.count ?? 0)}
+                  onChange={(e) => {
+                    const next = e.target.value.replace(/[^\d]/g, '');
+
+                    setForm((prev) => {
+                      const prevItems = Array.isArray(prev.items)
+                        ? prev.items
+                        : [];
+
+                      return {
+                        ...prev,
+                        items: prevItems.map((x) =>
+                          String(x.orderId) === String(it.orderId)
+                            ? { ...x, count: next }
+                            : x
+                        ),
+                      };
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className='px-3 py-6 text-sm text-muted-foreground text-center'>
+            수정할 품목이 없습니다
+          </div>
+        )}
       </div>
 
-      {/* 저장 버튼 */}
+      <div className='text-sm text-muted-foreground flex justify-between'>
+        <span>합계 수량: {formatNumber(totalCount)}</span>
+        <span>합계 금액: {formatNumber(totalPrice)}원</span>
+      </div>
+
       <div className='flex justify-end gap-2'>
-        <Button onClick={submit}>
-          {mode === 'edit' ? '수정 저장' : '등록'}
-        </Button>
+        <Button onClick={submit} disabled={submitDisabled}>수정 저장</Button>
       </div>
     </div>
   );

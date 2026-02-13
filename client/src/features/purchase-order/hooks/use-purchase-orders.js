@@ -1,51 +1,93 @@
-import { useMemo } from 'react';
-import { usePurchaseOrdersStore } from '@/features/purchase-order/stores/use-purchase-orders-store.js';
+// @ts-check
+import { useCallback, useMemo, useState } from 'react';
+import {
+  fetchPurchaseOrders,
+  deletePurchaseOrder,
+  sendPurchaseOrder,
+  bulkSendPurchaseOrders,
+  bulkDeletePurchaseOrders,
+} from '@/features/purchase-order/api/index.js';
+
+/**
+ * @typedef {{ orderKinds:number, totalCount:number, totalPrice:number }} PurchaseOrderSummary
+ */
+
+const EMPTY_SUMMARY = { orderKinds: 0, totalCount: 0, totalPrice: 0 };
 
 export const purchaseOrderStatus = {
-  isSent: (status) => status === 'INBOUND_PENDING',
+  isSent: (status) => status === 'INBOUND_PENDING' || status === 'INBOUND_COMPLETE',
   isDraft: (status) => status == null,
 };
 
+/** @param {any} s */
+const normalizeSummary = (s) => ({
+  orderKinds: Number(s?.orderKinds ?? 0),
+  totalCount: Number(s?.totalCount ?? 0),
+  totalPrice: Number(s?.totalPrice ?? 0),
+});
+
 export const usePurchaseOrders = () => {
-  const rows = usePurchaseOrdersStore((s) => s.rows);
-  const setRows = usePurchaseOrdersStore((s) => s.setRows);
-  const update = usePurchaseOrdersStore((s) => s.update);
-  const remove = usePurchaseOrdersStore((s) => s.remove);
-  const markSent = usePurchaseOrdersStore((s) => s.markSent);
-  const bulkMarkSent = usePurchaseOrdersStore((s) => s.bulkMarkSent);
-  const bulkRemove = usePurchaseOrdersStore((s) => s.bulkRemove);
+  const [rows, setRows] = useState([]);
+  const [page, setPage] = useState({ number: 1, size: 10, totalElements: 0, totalPages: 1 });
+  const [summary, setSummary] = useState(/** @type {PurchaseOrderSummary} */ (EMPTY_SUMMARY));
+  const [loading, setLoading] = useState(false);
 
-  const summaryDraft = useMemo(
-    () => ({
-      itemKinds: rows.filter((r) => r.status == null).length,
-      totalCount: rows
-        .filter((r) => r.status == null)
-        .reduce((a, r) => a + Number(r.count || 0), 0),
-    }),
-    [rows]
-  );
+  const load = useCallback(async (params) => {
+    setLoading(true);
+    try {
+      const data = await fetchPurchaseOrders(params);
 
-  const summarySent = useMemo(
-    () => ({
-      itemKinds: rows.filter((r) => r.status === 'INBOUND_PENDING').length,
-      totalCount: rows
-        .filter((r) => r.status === 'INBOUND_PENDING')
-        .reduce((a, r) => a + Number(r.count || 0), 0),
-    }),
-    [rows]
-  );
+      setRows(Array.isArray(data?.content) ? data.content : []);
+      setPage(
+        data?.page ?? {
+          number: params?.page ?? 1,
+          size: params?.size ?? 10,
+          totalElements: 0,
+          totalPages: 1,
+        }
+      );
+
+      setSummary(normalizeSummary(data?.summary));
+
+      return data;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const remove = useCallback(async (orderNumber) => {
+    await deletePurchaseOrder(orderNumber);
+  }, []);
+
+  const markSent = useCallback(async (orderNumber) => {
+    await sendPurchaseOrder(orderNumber);
+  }, []);
+
+  const bulkMarkSent = useCallback(async (orderNumbers) => {
+    await bulkSendPurchaseOrders(orderNumbers);
+  }, []);
+
+  const bulkRemove = useCallback(async (orderNumbers) => {
+    await bulkDeletePurchaseOrders(orderNumbers);
+  }, []);
+
+  // ✅ purchase-order.jsx에서 기존에 쓰던 이름 유지(호환)
+  const summaryDraft = useMemo(() => summary, [summary]);
+  const summarySent = useMemo(() => summary, [summary]);
 
   return {
     rows,
-    setRows,
-    update,
+    page,
+    summary,
+    loading,
+    load,
+
     remove,
     markSent,
     bulkMarkSent,
+    bulkRemove,
+
     summaryDraft,
     summarySent,
-    bulkRemove,
   };
 };
-
-

@@ -25,6 +25,16 @@ import { useProductQuery } from '../hooks/use-product-query.js';
 export const ProductTable = () => {
   const { content } = useProductQuery();
 
+    const typeLabelMap = {
+  SOJU: '소주',
+  LIQUOR: '양주',
+  KAOLIANG_LIQUOR: '고량주',
+  TRADITIONAL: '전통주',
+  WHISKEY: '위스키',
+};
+
+const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
+
   return (
     <div className='rounded-md border'>
       <Table>
@@ -74,7 +84,7 @@ export const ProductTable = () => {
                       variant='secondary'
                       className='font-normal'
                     >
-                      {product.type}
+                      {formatType(product.type)}
                     </Badge>
                   </TableCell>
 

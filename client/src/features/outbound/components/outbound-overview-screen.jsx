@@ -48,7 +48,7 @@ export function OutboundOverviewScreen() {
   const assigneesQ = useOutboundAssignees();
   const assignees = Array.isArray(assigneesQ.data) ? assigneesQ.data : [];
 
-   console.log('assignees:', assigneesQ.data);
+  
   const assigneeLabel = useMemo(() => {
     if (assignee === 'all') return '담당자(전체)';
     const idNum = Number(assignee);

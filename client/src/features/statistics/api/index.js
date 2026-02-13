@@ -5,7 +5,7 @@ import { api, hooks } from "@/services/api.js";
  * 통계 - 주종 목록
  */
 export async function fetchStatisticsTypes() {
-  return await api.get('api/statistics/types').json();
+  return await api.get('stats/types').json();
 }
 
 /**
@@ -13,7 +13,7 @@ export async function fetchStatisticsTypes() {
  * @param {{ type: string }} params
  */
 export async function fetchStatisticsBrands(params) {
-  return await api.get('api/statistics/brands', { searchParams: params }).json();
+  return await api.get('stats/brands', { searchParams: params }).json();
 }
 
 /**
@@ -21,19 +21,18 @@ export async function fetchStatisticsBrands(params) {
  * @param {{ from: string, to: string, keyword?: string, type?: string, brand?: string, limit?: number }} params
  */
 export async function fetchStatisticsInOutByProduct(params) {
-  return await api.get('api/statistics/in-out/by-product', { searchParams: params }).json();
+  return await api.get('stats/in-out/by-product', { searchParams: params }).json();
 }
 
 // 거래처 순위 통계
 export async function fetchInboundPartnerRank(params) {
-  return await api.get('api/statistics/rank/inbound', { searchParams: params }).json();
+  return await api.get('stats/rank/inbound', { searchParams: params }).json();
 }
 
 export async function fetchOutboundPartnerRank(params) {
-  return await api.get('api/statistics/rank/outbound', { searchParams: params }).json();
+  return await api.get('stats/rank/outbound', { searchParams: params }).json();
 }
 
-import { api } from "@/services/api.js";
 
 /**
  * @typedef {{
@@ -64,3 +63,31 @@ export const getProductShare = () =>
 
 export const getLeadTimeStats = () =>
   api.get('stats/lead-time').json();
+
+// --------------------------------------------------------------
+// 품목별 수량 그래프
+
+/** @typedef {{ type?: string, unsafeOnly?: boolean, limit?: number }} StockByProductParams */
+
+export async function fetchStatisticsStockByProduct(params) {
+  return await api.get('stats/stock/by-product', { searchParams: params, hooks }).json();
+}
+
+// ---------------------------------------------------------------------
+// 재고 회전율
+
+/** @typedef {{ year: number, month?: number, productId: number }} StockRotationTrendParams */
+
+export async function fetchStatisticsStockRotationTrend(params) {
+  return await api.get('stats/stock-rotation/trend', { searchParams: params, hooks }).json();
+}
+
+/** @typedef {{ keyword: string, limit?: number }} StatisticsSearchProductsParams */
+
+
+/** @param {StatisticsSearchProductsParams} params */
+export async function fetchStatisticsSearchProducts(params) {
+  return await api
+    .get('stats/stock-rotation/products/search', { searchParams: params, hooks })
+    .json();
+}

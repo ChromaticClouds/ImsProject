@@ -158,16 +158,12 @@ export const router = createBrowserRouter([
                 children: [
                   { index: true, element: <PurchaseOrder /> },
                   { path: 'create', element: <PurchaseOrderCreate /> },
-                  { path: ':id/edit', element: <PurchaseOrderEdit /> },
+                  { path: ':orderNumber/edit', element: <PurchaseOrderEdit /> },
                 ],
               },
               {
                 path: 'history',
                 element: <HistoryPage />,
-              },
-              {
-                path: 'purchase-order',
-                element: <PurchaseOrder />,
               },
               {
                 path: 'receive-order',

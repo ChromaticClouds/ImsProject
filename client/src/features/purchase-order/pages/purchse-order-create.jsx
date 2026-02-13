@@ -51,7 +51,7 @@ export const PurchaseOrderCreate = () => {
   };
 
   const handleSubmit = (payload) => {
-    //  mock 저장: rows에 추가
+   
     const nextId = rows.reduce((m, r) => Math.max(m, r.id), 0) + 1;
 
     setRows([

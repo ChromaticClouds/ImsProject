@@ -38,19 +38,6 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
     const productsQ = useOutboundStockProducts({ type, brand }, open);
     const products = Array.isArray(productsQ.data) ? productsQ.data : [];
 
-    useEffect(() => {
-        console.log('StockCheckDialog opened:', open);
-        console.log('typesQ:', typesQ);
-        if (typesQ.error) console.error('typesQ error:', typesQ.error);
-        console.log('types:', types);
-        console.log('brandsQ:', brandsQ);
-        if (brandsQ.error) console.error('brandsQ error:', brandsQ.error);
-        console.log('brands:', brands);
-        console.log('productsQ:', productsQ);
-        if (productsQ.error) console.error('productsQ error:', productsQ.error);
-        console.log('products:', products);
-    }, [open, typesQ, types, brandsQ, brands, productsQ, products]);
-
     const selectedProduct = useMemo(() => {
         const idNum = Number(productId);
         return products.find((p) => Number(p.id) === idNum) || null;
@@ -205,8 +192,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
 /** @param {StockProduct} p */
 function formatProductLabel(p) {
   const name = p.name ?? '';
-  const vol = p.volume ? ` ${p.volume}` : '';
-  return `${name}${vol}`.trim();
+  return `${name}`.trim();
 }
 
 /** @param {string} type */

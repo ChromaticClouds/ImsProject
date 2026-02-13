@@ -1,25 +1,24 @@
-// src/features/purchase-order/stores/use-purchase-order-selection-store.js
 import { create } from 'zustand';
 
 export const usePurchaseOrderSelectionStore = create((set, get) => ({
-  selectedIds: [],
+  selectedOrderNumbers: [],
 
-  toggle: (id, checked) =>
+  toggle: (orderNumber, checked) =>
     set((state) => {
-      const exists = state.selectedIds.includes(id);
+      const exists = state.selectedOrderNumbers.includes(orderNumber);
 
       if (checked && !exists) {
-        return { selectedIds: [...state.selectedIds, id] };
+        return { selectedOrderNumbers: [...state.selectedOrderNumbers, orderNumber] };
       }
 
       if (!checked && exists) {
-        return { selectedIds: state.selectedIds.filter((x) => x !== id) };
+        return { selectedOrderNumbers: state.selectedOrderNumbers.filter((x) => x !== orderNumber) };
       }
 
       return state;
     }),
 
-  clear: () => set({ selectedIds: [] }),
+  clear: () => set({ selectedOrderNumbers: [] }),
 
-  isSelected: (id) => get().selectedIds.includes(id),
+  isSelected: (orderNumber) => get().selectedOrderNumbers.includes(orderNumber),
 }));

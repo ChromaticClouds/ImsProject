@@ -80,6 +80,6 @@ export const assignOutboundManager = ({
   orderNumber,
   managerId,
 }) => {
-  console.log(managerId);
+  
   return api.patch(`order/${orderNumber}/manager`, { json: { managerId } }).json();
 }

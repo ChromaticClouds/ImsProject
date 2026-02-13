@@ -181,7 +181,7 @@ export function OutboundPendingRow({ row, loading, onError }) {
       <td style={{ padding: 8 }}>{row.managerName ?? '-'}</td>
 
       <td style={{ padding: 8 }}>
-        <div ref={wrapRef} style={{ position: 'relative', display: 'inline-block' }}>
+        <div ref={wrapRef} style={{ position: 'relative', display: 'inline-block', zIndex: isOpen? 100 : 1 }}>
           <button
             ref={btnRef}
             type="button"
@@ -191,8 +191,8 @@ export function OutboundPendingRow({ row, loading, onError }) {
             {row.itemCount ?? 0}개 품목 {isOpen ? '▲' : '▼'}
           </button>
 
-          {isOpen ? (
-            <div style={{ position: 'absolute', zIndex: 50, marginTop: 8, width: dropdownWidth }}>
+          {isOpen && (
+            <div style={{ position: 'absolute', zIndex: 9999, top: '100%', marginTop: 8, width: dropdownWidth }}>
               {itemsQuery.isFetching ? (
                 <div
                   style={{
@@ -212,7 +212,7 @@ export function OutboundPendingRow({ row, loading, onError }) {
                 <OutboundPendingItemsDropdown items={items} />
               )}
             </div>
-          ) : null}
+          )}
         </div>
       </td>
 

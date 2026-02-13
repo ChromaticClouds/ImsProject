@@ -75,23 +75,6 @@ export const PurchaseOrderTable = ({ orders, tab, onSend, onDelete }) => {
               {/* 납기일 */}
               <TableCell className='text-right'>{o.recieveDate}</TableCell>
               
-              {/* 필요 없을 듯 하다 */}
-              {/* <TableCell className='text-right'>
-                {tab === 'BEFORE_SEND' ? (
-                  <div className='flex justify-end gap-2'>
-                    <Button size='sm' onClick={() => onSend?.(o.id)}>
-                      전송
-                    </Button>
-                    <Button size='sm' variant='destructive' onClick={() => onDelete?.(o.id)}>
-                      삭제
-                    </Button>
-                  </div>
-                ) : (
-                  <div className='text-sm text-muted-foreground'>
-                    전송 완료됨
-                  </div>
-                )}
-              </TableCell> */}
             </TableRow>
           );
         })}

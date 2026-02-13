@@ -40,12 +40,16 @@ function toKoreanType(type) {
     return list.map((it) => {
       const pid = Number(it.productId);
       const row = safeMap?.[String(pid)];
+      console.log('safeMap sample', safeMap);
+console.log('safetyStock raw', row?.safetyStock, typeof row?.safetyStock);
       return {
         ...it,
         safetyStock: row?.safetyStock,
       };
     });
   }, [list, safeMap]);
+
+  
 
 
   return (

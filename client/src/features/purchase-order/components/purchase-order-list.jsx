@@ -13,59 +13,68 @@ import {
   TableRow,
 } from '@/components/ui/table.js';
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
+import { SendIcon, Trash2Icon, PencilIcon, ChevronDownIcon, BadgeCheckIcon, BadgeIcon, BadgeMinusIcon } from 'lucide-react';
 
-import { SendIcon, Trash2Icon, PencilIcon, ChevronDownIcon } from 'lucide-react';
-
-import {
-  usePurchaseOrders,
-  purchaseOrderStatus,
-} from '@/features/purchase-order/hooks/use-purchase-orders.js';
-
+import { usePurchaseOrders, purchaseOrderStatus } from '@/features/purchase-order/hooks/use-purchase-orders.js';
 import { usePurchaseOrderFilterStore } from '@/features/purchase-order/stores/use-purchase-order-filter-store.js';
 import { usePurchaseOrderSelectionStore } from '@/features/purchase-order/stores/use-purchase-order-selection-store.js';
 
-//  vendor mock 
-import { testvendors } from '@/features/purchase-order/mocks/test-vendor-mock.js';
-//  vendor-item mock 
-import { testvendorItems } from '@/features/purchase-order/mocks/test-vendor-item-mock.js';
-//  발주서 상세  mock
-import { purchaseOrderItems } from '@/features/purchase-order/mocks/purchase-order-item-mock.js';
-// product mock (Popover 상세 출력용)
-import { MOCK_PRODUCTS } from '@/features/product/mocks/product.js';
-
-const statusLabel = (status) =>
-  status === 'INBOUND_PENDING' ? '전송 완료' : '전송 전';
-
 const formatNumber = (n) => Number(n || 0).toLocaleString();
 
-export const PurchaseOrderList = ({rows}) => {
+const isPending = (status) => status === 'INBOUND_PENDING';
+const isComplete = (status) => status === 'INBOUND_COMPLETE';
+
+const statusText = (status) => {
+  if (isPending(status) || isComplete(status)) return '전송 완료';
+  return '전송 전';
+};
+
+const statusClassName = (status) => {
+  if (isComplete(status)) return 'text-emerald-600 font-medium';
+  if (isPending(status)) return 'text-amber-600 font-medium';
+  return 'text-amber-600 font-medium'; // 전송 전
+};
+
+const StatusIcon = ({ status }) => {
+  if (isComplete(status)) return <BadgeCheckIcon className='w-4 h-4' />;
+  if (isPending(status)) return <BadgeMinusIcon className='w-4 h-4' />;
+  return null;
+};
+
+const typeLabelMap = {
+  SOJU: '소주',
+  LIQUOR: '양주',
+  KAOLIANG_LIQUOR: '고량주',
+  TRADITIONAL: '전통주',
+  WHISKEY: '위스키',
+};
+const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
+
+/** @param {{rows:any[], onReload:()=>Promise<any>}} props */
+export const PurchaseOrderList = ({ rows, onReload }) => {
   const navigate = useNavigate();
 
   const { remove, markSent } = usePurchaseOrders();
-
-  // ✅ view/keyword/range를 직접 구독해서 filtered가 재계산되게 함
-  const { view, keyword, range, filterFn } = usePurchaseOrderFilterStore();
-
+  const { view } = usePurchaseOrderFilterStore();
   const { toggle, isSelected } = usePurchaseOrderSelectionStore();
+
+  
+
+  const formatSafetyStock = (v) => {
+  if (v == null) return '-';
+  const n = Number(v);
+  if (!Number.isFinite(n)) return String(v);
+  return n.toFixed(1);
+};
 
   const isSentView = view === 'SENT';
 
-  // ✅ view/keyword/range를 deps로 넣어야 버튼 눌렀을 때 바로 갱신됨
-  const filtered = useMemo(
-    () => rows.filter(filterFn),
-    // filterFn은 zustand 내부 고정 함수라 참조가 안 바뀔 수 있음
-    // 그래서 view/keyword/range로 강제 재계산 트리거
-    [rows, view, keyword, range]
-  );
-
   const TABLE_HEADER = isSentView
-    ? ['', '상태', '발주일', '발주번호', '납기일', '품목 수', '거래처ID', '총액']
-    : ['', '상태', '발주일', '발주번호', '납기일', '품목 수', '거래처ID', '수정', '전송', '삭제'];
+    ? ['', '상태', '발주일', '발주번호', '납기일', '품목 수', '공급처', '단가총액']
+    : ['', '상태', '발주일', '발주번호', '납기일', '품목 수', '공급처', '단가총액', '수정', '전송', '삭제'];
+
+  const safeRows = useMemo(() => (Array.isArray(rows) ? rows : []), [rows]);
 
   return (
     <Table>
@@ -80,61 +89,31 @@ export const PurchaseOrderList = ({rows}) => {
       </TableHeader>
 
       <TableBody>
-        {filtered?.length ? (
-          filtered.map((r) => {
+        {safeRows.length ? (
+          safeRows.map((r) => {
             const sent = purchaseOrderStatus.isSent(r.status);
             const draft = purchaseOrderStatus.isDraft(r.status);
 
-            const vendor = testvendors.find(
-              (v) => String(v.id) === String(r.sellerVendorId)
-            );
-
-            // ✅ 이 발주서에 포함된 품목들(2~3개 가능)
-            const items = purchaseOrderItems.filter(
-              (it) => String(it.purchaseOrderId) === String(r.id)
-            );
-
-            const itemCountLabel = `${items.length || 0}개`;
-
-            // ✅ 전송 confirm/표시용 총 수량(아이템 합산)
-            const totalCount = items.reduce(
-              (sum, it) => sum + Number(it.count || 0),
-              0
-            );
-
-            // ✅ 전송 완료 화면 총액: 여러 품목 합산(단가표 * 수량)
-            const totalPrice = items.reduce((sum, it) => {
-              const vi = testvendorItems.find(
-                (x) => String(x.id) === String(it.venderItemId)
-              );
-              const unit = Number(vi?.purchasePrice || 0);
-              return sum + unit * Number(it.count || 0);
-            }, 0);
+            const items = Array.isArray(r.items) ? r.items : [];
+            const itemCountLabel = `${Number(r.itemKinds ?? items.length ?? 0)}개`;
 
             return (
-              <TableRow key={r.id}>
-                {/* 체크박스: 전송 완료 내역에서는 숨김 */}
+              <TableRow key={`${r.orderNumber}-${r.vendorId ?? 'v'}`}>
+                
                 <TableCell className='text-center'>
                   {isSentView ? null : (
                     <Checkbox
-                      checked={isSelected(r.id)}
-                      onCheckedChange={(checked) =>
-                        toggle(r.id, Boolean(checked))
-                      }
+                      checked={isSelected(r.orderNumber)}
+                      onCheckedChange={(checked) => toggle(r.orderNumber, Boolean(checked))}
                     />
                   )}
                 </TableCell>
 
                 {/* 상태 */}
                 <TableCell className='text-center'>
-                  <span
-                    className={
-                      sent
-                        ? 'text-emerald-600 font-medium'
-                        : 'text-amber-600 font-medium'
-                    }
-                  >
-                    {statusLabel(r.status)}
+                  <span className={`inline-flex items-center gap-1 ${statusClassName(r.status)}`}>
+                  <StatusIcon status={r.status} />
+                  {statusText(r.status)}
                   </span>
                 </TableCell>
 
@@ -142,23 +121,16 @@ export const PurchaseOrderList = ({rows}) => {
                 <TableCell className='text-center'>{r.orderDate}</TableCell>
 
                 {/* 발주번호 */}
-                <TableCell className='text-center font-medium'>
-                  {r.orderNumber}
-                </TableCell>
+                <TableCell className='text-center font-medium'>{r.orderNumber}</TableCell>
 
                 {/* 납기일 */}
                 <TableCell className='text-center'>{r.recieveDate}</TableCell>
 
-                {/*  품목 수 (Popover 상세) */}
+                {/* 품목 수 -- 상세 */}
                 <TableCell className='text-center'>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant='ghost'
-                        size='sm'
-                        className='gap-2'
-                        onMouseDown={(e) => e.stopPropagation()}
-                      >
+                      <Button variant='ghost' size='sm' className='gap-2' onMouseDown={(e) => e.stopPropagation()}>
                         {itemCountLabel}
                         <ChevronDownIcon className='w-4 h-4' />
                       </Button>
@@ -171,9 +143,7 @@ export const PurchaseOrderList = ({rows}) => {
                       onCloseAutoFocus={(e) => e.preventDefault()}
                     >
                       <div className='flex flex-col gap-3'>
-                        <div className='text-sm font-semibold'>
-                          발주 품목 상세
-                        </div>
+                        <div className='text-sm font-semibold'>발주 품목 상세</div>
 
                         <div className='rounded-lg border overflow-hidden'>
                           <div className='grid grid-cols-12 text-xs font-medium bg-muted px-3 py-2'>
@@ -184,35 +154,19 @@ export const PurchaseOrderList = ({rows}) => {
                             <div className='col-span-2 text-center'>발주수량</div>
                           </div>
 
-                          {items.length ? (
-                            items.map((it) => {
-                              const p = MOCK_PRODUCTS?.find(
-                                (x) => String(x.id) === String(it.productId)
-                              );
+                          
 
-                              return (
-                                <div
-                                  key={it.id}
-                                  className='grid grid-cols-12 px-3 py-2 text-sm border-t'
-                                >
-                                  <div className='col-span-4 truncate'>
-                                    {p?.name ?? `상품ID ${it.productId}`}
-                                  </div>
-                                  <div className='col-span-2 text-center'>
-                                    {p?.type ?? '-'}
-                                  </div>
-                                  <div className='col-span-2 text-center'>
-                                    {p?.brand ?? '-'}
-                                  </div>
-                                  <div className='col-span-2 text-center'>
-                                    {p?.safetyStock ?? '-'}
-                                  </div>
-                                  <div className='col-span-2 text-center'>
-                                    {it.count ?? 0}
-                                  </div>
-                                </div>
-                              );
-                            })
+                          {items.length ? (
+                            items.map((it) => (
+
+                              <div key={it.orderId} className='grid grid-cols-12 px-3 py-2 text-sm border-t'>
+                                <div className='col-span-4 truncate'>{it.productName ?? `상품ID ${it.productId}`}</div>
+                                <div className='col-span-2 text-center'>{formatType(it.type)}</div>
+                                <div className='col-span-2 text-center'>{it.brand ?? '-'}</div>
+                                <div className='col-span-2 text-center'>{formatSafetyStock(it.safetyStock) ?? 0}</div>
+                                <div className='col-span-2 text-center'>{it.count ?? 0}</div>
+                              </div>
+                            ))
                           ) : (
                             <div className='px-3 py-6 text-sm text-muted-foreground text-center'>
                               등록된 발주 품목이 없습니다
@@ -220,24 +174,24 @@ export const PurchaseOrderList = ({rows}) => {
                           )}
                         </div>
 
-                        <div className='text-xs text-muted-foreground'>
-                          합계 수량: {formatNumber(totalCount)}
-                        </div>
+                        <div className='text-xs text-muted-foreground'>합계 수량: {formatNumber(r.totalCount)}</div>
                       </div>
                     </PopoverContent>
+
+                    
                   </Popover>
                 </TableCell>
 
-                {/* 거래처ID */}
-                <TableCell className='text-center'>{r.sellerVendorId}</TableCell>
+                {/* 공급처명 */}
+                <TableCell className='text-center'>{r.vendorName ?? '-'}</TableCell>
 
-                {/*  전송 완료 내역일 때: 여러 품목 합산 총액 */}
-                {isSentView ? (
-                  <TableCell className='text-center font-medium'>
-                    {formatNumber(totalPrice)}원
-                  </TableCell>
-                ) : (
-                  <>
+                {/* 단가총액 */}
+                <TableCell className='text-center font-medium'>
+                 {formatNumber(r.totalPrice)}원
+               </TableCell>
+
+                    {isSentView ? null : (
+                      <>
                     {/* 수정 */}
                     <TableCell className='text-center'>
                       <Button
@@ -245,7 +199,7 @@ export const PurchaseOrderList = ({rows}) => {
                         size='sm'
                         className='gap-2'
                         disabled={!draft}
-                        onClick={() => navigate(`${r.id}/edit`)}
+                        onClick={() => navigate(`${encodeURIComponent(r.orderNumber)}/edit`)}
                       >
                         <PencilIcon className='w-4 h-4' />
                         수정
@@ -258,22 +212,21 @@ export const PurchaseOrderList = ({rows}) => {
                         size='sm'
                         className='gap-2'
                         disabled={!draft}
-                        onClick={() => {
+                        onClick={async () => {
                           const message =
-                            `이 정보가 맞습니까?\n\n` +
-                            `공급처명: ${vendor?.vendorName ?? '-'}\n` +
-                            `대표자명: ${vendor?.bossName ?? '-'}\n` +
-                            `전화번호: ${vendor?.telephone ?? '-'}\n` +
-                            `이메일: ${vendor?.email ?? '-'}\n\n` +
+                            `이 발주서를 전송하시겠습니까?\n\n` +
+                            `공급처: ${r.vendorName ?? '-'}\n` +
                             `발주번호: ${r.orderNumber}\n` +
                             `발주일: ${r.orderDate}\n` +
                             `납기일: ${r.recieveDate}\n` +
-                            `발주 수량(합계): ${totalCount}`;
+                            `품목 수: ${r.itemKinds ?? 0}개\n` +
+                            `총 수량: ${r.totalCount ?? 0}`;
 
                           const ok = window.confirm(message);
                           if (!ok) return;
 
-                          markSent(r.id);
+                          await markSent(r.orderNumber);
+                          await onReload();
                         }}
                       >
                         <SendIcon className='w-4 h-4' />
@@ -287,10 +240,11 @@ export const PurchaseOrderList = ({rows}) => {
                         variant='destructive'
                         size='sm'
                         className='gap-2'
-                        onClick={() => {
+                        onClick={async () => {
                           const ok = window.confirm('삭제 하시겠습니까?');
                           if (!ok) return;
-                          remove(r.id);
+                          await remove(r.orderNumber);
+                          await onReload();
                         }}
                       >
                         <Trash2Icon className='w-4 h-4' />
@@ -304,10 +258,7 @@ export const PurchaseOrderList = ({rows}) => {
           })
         ) : (
           <TableRow>
-            <TableCell
-              colSpan={TABLE_HEADER.length}
-              className='text-center py-10 text-muted-foreground'
-            >
+            <TableCell colSpan={TABLE_HEADER.length} className='text-center py-10 text-muted-foreground'>
               표시할 발주 내역이 없습니다
             </TableCell>
           </TableRow>

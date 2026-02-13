@@ -72,7 +72,7 @@ export function OutboundPendingTable({ rows, loading, error, onError }) {
             <th>판매처</th>
             <th>담당자</th>
             <th>품목 수</th>
-            <th>금액</th>
+            <th>단가총액</th>
             <th>등록</th>
           </tr>
         </thead>

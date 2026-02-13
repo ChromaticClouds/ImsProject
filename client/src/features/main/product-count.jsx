@@ -7,7 +7,7 @@ export const ProductCount = () => {
       title='품목 수량 현황'
       description='각 품목 당 현 재고 수량을 확인'
       width='wide'
-      height='md' 
+      height='lg' 
     >
       <ProductCountChart />
     </GraphContainer>

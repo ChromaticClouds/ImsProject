@@ -1,21 +1,18 @@
-import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { useNoticeSearch } from '../hooks/use-notice-search';
+import { useSearchQuery } from '../hooks/use-search-query';
+import { useEffect } from 'react';
 
-export const useNoticeSearch = () => {
-  const [keyword, setKeyword] = useState('');
+export const NoticeSearch = () => {
+  const { input, setInput } = useNoticeSearch();
+  const { data } = useSearchQuery();
 
-  const applySearch = (list) => {
-    if (!keyword.trim()) return list;
-
-    return list.filter(
-      (notice) =>
-        notice.title.includes(keyword) ||
-        notice.userId.includes(keyword)
-    );
-  };
-
-  return {
-    keyword,
-    setKeyword,
-    applySearch,
-  };
+  return (
+    <Input
+      placeholder='제목 또는 작성자 검색'
+      className='w-64'
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+    />
+  );
 };

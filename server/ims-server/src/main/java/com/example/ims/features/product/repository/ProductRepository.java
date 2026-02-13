@@ -26,7 +26,7 @@ public interface ProductRepository
 
     @Query("""
     SELECT new com.example.ims.features.product.dto.ProductSuggest(
-        vi.id, p.id, p.name, p.brand, p.type, vi.purchasePrice, p.salePrice, s.count, p.imageUrl
+        vi.id, p.id, p.name, p.brand, p.type, vi.purchasePrice, p.salePrice, s.count, p.imageUrl, p.boxImageUrl
     )
     FROM Product p
     JOIN p.stock s

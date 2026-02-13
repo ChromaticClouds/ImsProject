@@ -40,7 +40,8 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
       <Table>
         <TableHeader>
           <TableRow className='bg-muted/50'>
-            <TableHead className='w-17.5'>이미지</TableHead>
+            <TableHead className='w-17.5'>품목이미지</TableHead>
+            <TableHead className='w-17.5'>박스이미지</TableHead>
             <TableHead className='text-center'>품목명</TableHead>
             <TableHead>품목 코드</TableHead>
             <TableHead>주종</TableHead>
@@ -64,6 +65,18 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
                       <Avatar className='w-10 h-10 rounded'>
                         <AvatarImage
                           src={product.imageUrl}
+                          alt={product.name}
+                        />
+                        <AvatarFallback className='w-10 h-10 rounded' />
+                      </Avatar>
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <div className='flex items-center gap-2'>
+                      <Avatar className='w-10 h-10 rounded'>
+                        <AvatarImage
+                          src={product.boxImageUrl}
                           alt={product.name}
                         />
                         <AvatarFallback className='w-10 h-10 rounded' />

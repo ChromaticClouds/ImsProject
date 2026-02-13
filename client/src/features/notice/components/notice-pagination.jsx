@@ -4,7 +4,6 @@
  * @typedef {object} PaginationProps
  * @property {number} currentPage
  * @property {number} totalPages
- * @property {React.Dispatch<React.SetStateAction<number>>} setCurrentPage
  */
 
 import {
@@ -19,11 +18,7 @@ import {
 /**
  * @param {PaginationProps} props
  */
-export const NoticePagination = ({
-  currentPage,
-  totalPages,
-  setCurrentPage,
-}) => {
+export const NoticePagination = ({ currentPage, totalPages }) => {
   // 페이지가 0~1이면 페이징 UI 안 보여줌 (실무에서 많이 씀)
   if (!totalPages || totalPages <= 1) return null;
 
@@ -34,26 +29,19 @@ export const NoticePagination = ({
           <PaginationItem>
             {currentPage !== 1 && (
               <PaginationPrevious
-                to='#'
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentPage((p) => p - 1);
-                }}
+                to={`/dashboard/notice?page=${currentPage - 1}`}
               />
             )}
           </PaginationItem>
 
           {Array.from({ length: totalPages }).map((_, idx) => {
             const page = idx + 1;
+
             return (
               <PaginationItem key={page}>
                 <PaginationLink
                   isActive={page === currentPage}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage(page);
-                  }}
-                  to='#'
+                   to={`/dashboard/notice?page=${page}`}
                 >
                   {page}
                 </PaginationLink>
@@ -64,11 +52,7 @@ export const NoticePagination = ({
           <PaginationItem>
             {currentPage !== totalPages && (
               <PaginationNext
-                to='#'
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentPage((p) => p + 1);
-                }}
+                to={`/dashboard/notice?page=${currentPage + 1}`}
               />
             )}
           </PaginationItem>

@@ -11,10 +11,12 @@ import { notices } from '../notice/mocks/notice-mock';
  * - 예: GET /api/notices?size=5&page=0
  */
 const fetchMainNotices = async () => {
-  const res = await fetch('http://localhost:8080/api/notices?size=5&page=0', {
+  const res = await fetch('http://localhost:8080/api/notice/list?size=5&page=1', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
+
+  //console.log("mainNotices",res)
 
   if (!res.ok) throw new Error('공지사항 조회 실패');
 
@@ -25,11 +27,29 @@ const fetchMainNotices = async () => {
 };
 
 const normalizeNotices = (data) => {
+  console.log("normalize notice data:", data);
   if (!data) return [];
+
+  // 1. 이미 배열이면 그대로 반환
   if (Array.isArray(data)) return data;
-  if (Array.isArray(data.items)) return data.items;
-  if (Array.isArray(data.content)) return data.content; // page 응답 대응
-  return [];
+
+  // 2. pinned와 items가 둘 다 있을 수 있으므로 합치기
+  let combined = [];
+
+  if (Array.isArray(data.pinned)) {
+    combined = [...combined, ...data.pinned];
+  }
+
+  if (Array.isArray(data.items)) {
+    combined = [...combined, ...data.items];
+  }
+
+  // 3. 만약 위에서 아무것도 안 담겼는데 content(Page 응답)가 있다면
+  if (combined.length === 0 && Array.isArray(data.content)) {
+    return data.content;
+  }
+
+  return combined;
 };
 
 //임시 모크데이터
@@ -46,10 +66,10 @@ export const MainNotice = () => {
     queryFn: fetchMainNotices,
   });
 
-  const notices = useMemo(() => normalizeNotices(data).slice(0, 5), [data]);
-
+  const notices = useMemo(() => normalizeNotices(data).slice(0, 8), [data]);
+  
   return (
-    <section className="col-span-5 rounded-2xl border p-4 shadow-sm">
+    <section className="col-span-5 rounded-2xl border p-4 shadow-sm bg-card">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-semibold">공지사항</h2>
 
@@ -57,7 +77,7 @@ export const MainNotice = () => {
         <button
           type="button"
           onClick={() => navigate('/dashboard/notice')}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-xl border  text-xl"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-xl border  text-xl hover:bg-gray-50"
           aria-label="공지사항 목록으로 이동"
           title="공지사항 목록"
         >
@@ -97,8 +117,8 @@ export const MainNotice = () => {
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    {n.isImportant ? (
-                      <span className="shrink-0 rounded-lg bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700">
+                    {n.pinned ? (
+                      <span className="shrink-0 rounded-lg bg-red-700 px-2 py-0.5 text-xs font-medium text-red-50">
                         중요
                       </span>
                     ) : null}

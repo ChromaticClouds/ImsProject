@@ -13,7 +13,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 
-import { fetchTodoById, deleteTodo, completeTodo } from '@/features/todo/api/todoApi';
+import { fetchTodoById, deleteTodo } from '@/features/todo/api/todoApi';
 import { toggleTodoStatus } from '@/features/todo/api/todoApi';
 
 

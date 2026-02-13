@@ -1,29 +1,39 @@
-import { useQuery } from '@tanstack/react-query';
-import { fetchNoticessssss } from '../api/noticeApi';
+import { Badge } from "@/components/ui/badge";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { useEffect } from "react";
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-export const NoticeList = () => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['notices'],
-    queryFn: fetchNotices,
-  });
+/**
+ * @typedef {object} NoticeProps
+ * @property {NoticeListResponse['items']} notices
+ * @property {boolean} pinned
+ */
 
-  if (isLoading) return <div>불러오는 중...</div>;
-  if (error) return <div>에러 발생</div>;
+/**
+ * @param {NoticeProps} props
+ */
+export const NoticeList = ({ pinned, notices }) => {
+  const navigate = useNavigate();
 
-  return (
-    <ul>
-      {data.map((notice) => (
-        <li key={notice.id}>
-          <h3>
-            {notice.title}
-            {notice.pinned && <span> 📌</span>}
-          </h3>
-          <p>{notice.content}</p>
-          <small>
-            작성일: {notice.created_at} / 작성자: {notice.user_id}
-          </small>
-        </li>
-      ))}
-    </ul>
-  );
+  return notices.map((notice) => (
+    <TableRow
+      key={notice.id}
+      className='cursor-pointer hover:bg-muted'
+      onClick={() => navigate(`/dashboard/notice/${notice.id}`)}
+    >
+      <TableCell>{notice.id}</TableCell>
+      <TableCell className='flex items-center gap-2'>
+        {pinned ? (
+                      <span className="shrink-0 rounded-lg bg-red-700 px-2 py-0.5 text-xs font-medium text-red-50">
+                        중요
+                      </span>
+                    ) : null}
+
+        {notice.title}
+      </TableCell>
+      <TableCell>{notice.userName}</TableCell>
+      <TableCell>{notice.createdAt}</TableCell>
+    </TableRow>
+  ));
 };

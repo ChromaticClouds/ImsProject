@@ -42,6 +42,9 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
     
+    @Column(name = "box_image_url")
+    private String boxImageUrl;
+    
     @Column(name = "created_at")
     private String createdAt;
 

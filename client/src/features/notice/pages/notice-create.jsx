@@ -1,4 +1,3 @@
-// @ts-check
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -12,27 +11,35 @@ import {
 
 import { NoticeForm } from '@/features/notice/components/notice-form';
 import { createNotice } from '@/features/notice/api/noticeApi';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store';
+
 
 export const NoticeCreate = () => {
   const isAdmin = true;
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { user } = useAuthStore();
 
   const create = useMutation({
     mutationFn: (values) =>
-      
       createNotice({
-       userId: 1,
-        ...values,
+        userId: user.id,
+        frmData : values,
       }),
 
-      // createNotice(values),     //--> 로그인 정보 받아오면 이걸로 바꾸기
+    // createNotice(values),     //--> 로그인 정보 받아오면 이걸로 바꾸기
 
-    
     onSuccess: async (res) => {
       if (!res?.ok) {
         console.error('createNotice failed response:', res);
-        window.alert(res?.message ?? '등록 실패');
+        if(res.success) {
+          window.alert(res?.message);
+          navigate('/dashboard/notice');
+        } else {
+          window.alert(res.message??'등록 실패');
+        }
+
+        
         return;
       }
 
@@ -40,11 +47,8 @@ export const NoticeCreate = () => {
 
       await qc.invalidateQueries({ queryKey: ['notices'] });
 
-     
       navigate('/dashboard/notice');
     },
-
-  
   });
 
   return (
@@ -57,7 +61,6 @@ export const NoticeCreate = () => {
         <CardContent>
           <NoticeForm
             mode='create'
-            isAdmin={isAdmin}
             onCancel={() => navigate('/dashboard/notice')}
             onSubmit={(values) => create.mutate(values)}
             isSubmitting={create.isPending}

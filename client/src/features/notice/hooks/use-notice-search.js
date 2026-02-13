@@ -1,27 +1,33 @@
-import { useState, useMemo } from 'react';
+// @ts-check
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useDebounce } from '@/hooks/use-debounce';
 
 /**
  * 공지사항 검색 훅
- * - 제목
- * - 작성자(userId)
  */
 export const useNoticeSearch = () => {
-  const [keyword, setKeyword] = useState('');
+  const [params, setParams] = useSearchParams();
 
-  const applySearch = (list) => {
-    if (!keyword.trim()) return list;
+  const [input, setInput] = useState(() => params.get('search') ?? '');
 
-    return list.filter((notice) => {
-      return (
-        notice.title.includes(keyword) ||
-        notice.userId.includes(keyword)
-      );
-    });
-  };
+  const debounced = useDebounce(input, 500);
 
-  return {
-    keyword,
-    setKeyword,
-    applySearch,
-  };
+  useEffect(() => {
+    const next = new URLSearchParams(params);
+    const keyword = debounced.trim();
+
+    if (!keyword) {
+      next.delete('search');
+    } else {
+      next.set('search', keyword);
+      next.set('page', '1');
+    }
+
+    if (next.toString() === params.toString()) return;
+
+    setParams(next);
+  }, [debounced, params, setParams]);
+
+  return { input, setInput };
 };

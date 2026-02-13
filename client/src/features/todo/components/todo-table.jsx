@@ -19,6 +19,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const STATUS_BADGE = {
+  IN_ACTIVE: '진행중', // 백엔드 Enum 매칭
+  COMPLETE: '완료',    // 백엔드 Enum 매칭
+  // 기존 mock 데이터용 (하이브리드 대응)
   TODO: '미완료',
   IN_PROGRESS: '진행중',
   DONE: '완료',
@@ -78,11 +81,27 @@ export const TodoTable = ({
 
             <TableCell>
               <div className='flex gap-1 flex-wrap'>
-                {(t.tages ?? []).map((tag) => (
-                  <Badge key={tag} variant='secondary'>
-                    {tag}
-                  </Badge>
-                ))}
+                {(() => {
+                  try {
+                    // 1. 데이터가 아예 없는 경우
+                    if (!t.tags) return null;
+                    
+                    // 2. 데이터가 문자열(JSON)로 넘어온 경우 파싱
+                    const tagList = typeof t.tags === 'string' ? JSON.parse(t.tags) : t.tags;
+                    
+                    // 3. 배열인지 확인 후 map 실행
+                    if (Array.isArray(tagList)) {
+                      return tagList.map((tag) => (
+                        <Badge key={tag} variant='secondary'>
+                          {tag}
+                        </Badge>
+                      ));
+                    }
+                  } catch (e) {
+                    console.error("Tag parsing error:", e);
+                  }
+                  return null;
+                })()}
               </div>
             </TableCell>
 

@@ -18,4 +18,5 @@ public class ProductSuggest {
     private Integer salePrice;
     private Integer count;
     private String imageUrl;
+    private String boxImageUrl;
 }

@@ -3,6 +3,10 @@
 import { useForm } from '@tanstack/react-form';
 import z from 'zod';
 import { passwordBase } from '@/features/auth/schemas/auth-schema.js';
+import { api, hooks } from '@/services/api.js';
+import { toast } from 'sonner';
+import { HTTPError } from 'ky';
+import { ERROR } from '@/services/error.js';
 
 const defaultValues = {
   currentPassword: '',
@@ -22,13 +26,39 @@ const passwordSchema = z
   });
 
 export const usePasswordForm = () => {
-  return useForm({
+  const form = useForm({
     defaultValues,
     validators: {
-      onChange: passwordSchema
+      onChange: passwordSchema,
     },
-    onSubmit: ({ value }) => {
-      console.log(value);
-    }
+    onSubmit: async ({ value }) => {
+      try {
+        /** @type {ApiResponse<void>} */
+        const response = await api
+          .patch('user/change-password', { json: value, hooks })
+          .json();
+
+        if (!response.success) return { success: false };
+        console.log(value);
+        toast.success(response.message);
+        form.reset();
+        return { success: true };
+      } catch (err) {
+        if (err instanceof HTTPError) {
+          const errResponse = await err.response.json()
+            .catch(e => null);
+          toast.error(
+            errResponse?.message
+              || ERROR.UNEXPECTED_ERROR
+          );
+          return { success: false };
+        }
+
+        toast.error(ERROR.SERVER_ERROR);
+        return { success: false };
+      }
+    },
   });
+
+  return form;
 };

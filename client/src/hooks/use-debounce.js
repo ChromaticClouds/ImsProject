@@ -1,13 +1,12 @@
-// hooks/use-debounced-value.ts
+// use-debounce.js
 import { useEffect, useState } from 'react';
 
 /**
  * @template T
  * @param {T} value
  * @param {number} delay
- * @returns {T}
  */
-export const useDebounce = (value, delay = 300) => {
+export const useDebounce = (value, delay = 400) => {
   const [debounced, setDebounced] = useState(value);
 
   useEffect(() => {

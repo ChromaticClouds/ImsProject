@@ -8,10 +8,13 @@ import { useQuery } from '@tanstack/react-query';
  * @param {string} id 
  */
 export function useVendorDetail(id) {
+  const vendorId = Number(id);
+
   return useQuery({
-    queryKey: ['vendor-detail', id],
-    queryFn: () => vendorDetail(id),
-    enabled: !!id,
+    queryKey: ['vendor-detail', vendorId],
+    queryFn: () => vendorDetail(vendorId),
+    enabled: !!vendorId,
   });
 }
+
 

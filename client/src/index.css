@@ -3,6 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.rdp-root {
+  --rdp-accent-color: var(--primary); /* Change the accent color to indigo. */
+  --rdp-accent-background-color: #f0f0f0; /* Change the accent background color. */
+  /* Add more CSS variables here. */
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -113,6 +119,19 @@
   --sidebar-ring: oklch(0.38 0.189 293.745);
 }
 
+::-webkit-scrollbar {
+    @apply w-2 h-2;
+   
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-transparent
+}
+ 
+::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-border border-[1px] border-transparent border-solid bg-clip-padding;
+}
+ 
 @layer base {
   * {
     @apply border-border outline-ring/50;

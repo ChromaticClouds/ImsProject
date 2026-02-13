@@ -1,8 +1,11 @@
 package com.example.ims.features.auth.controllers;
 
+import com.example.ims.features.auth.exceptions.UnauthorizedException;
+import com.example.ims.features.user.dto.UserPrincipal;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,8 +65,10 @@ public class AuthController {
     
     @GetMapping("refresh")
     public ResponseEntity<ApiResponse<AuthResponse>> reIsssueToken(
-    	@CookieValue("refreshToken") String refreshToken
+    	@CookieValue(value = "refreshToken", required = false) String refreshToken
     ) {
+        if (refreshToken == null) throw new UnauthorizedException();
+
     	AuthResult result = service.refresh(refreshToken);
     	
     	ResponseCookie refreshCookie = 

@@ -1,0 +1,149 @@
+package com.example.ims.features.order.services;
+
+import com.example.ims.features.auth.entities.User;
+import com.example.ims.features.auth.enums.UserRole;
+import com.example.ims.features.auth.exceptions.UserNotFoundException;
+import com.example.ims.features.order.dto.OrderBootstrap;
+import com.example.ims.features.order.dto.OrderPostRequest;
+import com.example.ims.features.order.dto.OrderProduct;
+import com.example.ims.features.order.dto.OrderSummary;
+import com.example.ims.features.order.entities.Order;
+import com.example.ims.features.order.enums.OrderStatus;
+import com.example.ims.features.order.exceptions.OrderNotFoundException;
+import com.example.ims.features.order.repositories.OrderRepository;
+import com.example.ims.features.product.entities.Product;
+import com.example.ims.features.product.exceptions.ProductNotFoundException;
+import com.example.ims.features.product.repository.ProductRepository;
+import com.example.ims.features.product.repository.ProductSpecification;
+import com.example.ims.features.user.dto.UserIdentifier;
+import com.example.ims.features.user.repositories.UserRepository;
+import com.example.ims.features.vendor.dto.Vendor;
+import com.example.ims.features.vendor.dto.VendorIdentifier;
+import com.example.ims.features.vendor.entities.VendorItem;
+import com.example.ims.features.vendor.enums.VendorType;
+import com.example.ims.features.vendor.exceptions.VendorNotFoundException;
+import com.example.ims.features.vendor.repositories.VendorItemRepository;
+import com.example.ims.features.vendor.repositories.VendorRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+
+    private final UserRepository userRepository;
+    private final VendorRepository vendorRepository;
+    private final VendorItemRepository vendorItemRepository;
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
+    private final OrderSequenceGenerator sequenceGenerator;
+
+    public OrderBootstrap getOrderBootstrap() {
+        List<UserIdentifier> users = userRepository
+            .findByUserRoleIn(List.of(UserRole.ALL, UserRole.RECEIVE_ORDER))
+            .stream()
+            .map(u -> new UserIdentifier(u.getId(), u.getName()))
+            .toList();
+
+        List<VendorIdentifier> sellers = vendorRepository
+            .findByType(VendorType.Seller)
+            .stream()
+            .map(v -> new VendorIdentifier(v.getId(), v.getVendorName()))
+            .toList();
+
+        String sequence = sequenceGenerator.generate();
+
+        return new OrderBootstrap(users, sellers, sequence);
+    }
+
+    public List<OrderProduct> getProducts(String search) {
+        Specification<VendorItem> spec = Specification
+            .where(ProductSpecification.productsIn(search));
+
+        return vendorItemRepository
+            .findAll(spec)
+            .stream()
+            .map(VendorItem::getProduct)
+            .map(OrderProduct::from)
+            .distinct()
+            .toList();
+    }
+
+    @Transactional
+    public void postOrder(OrderPostRequest request) {
+        User user = userRepository.findById(request.getUserId())
+            .orElseThrow(UserNotFoundException::new);
+
+        Vendor vendor = vendorRepository.findById(request.getSellerId())
+            .orElseThrow(VendorNotFoundException::new);
+
+        String orderNumber = sequenceGenerator.issue();
+
+        List<Order> orders = request.getProducts().stream().map(p -> {
+            Product product = productRepository.findById(p.id())
+                .orElseThrow(ProductNotFoundException::new);
+
+            return Order.builder()
+                .user(user)
+                .vendor(vendor)
+                .product(product)
+                .orderNumber(orderNumber)
+                .orderDate(request.getOrderDate())
+                .recieveDate(request.getReceiveDate())
+                .count(p.amount())
+                .status(OrderStatus.OUTBOUND_PENDING)
+                .build();
+        }).toList();
+
+        orderRepository.saveAll(orders);
+    }
+
+    public List<OrderSummary> getReceiveOrders(
+        String search,
+        LocalDate fromDate,
+        LocalDate toDate
+    ) {
+        return orderRepository.findOrderSummaries(
+            OrderStatus.OUTBOUND_PENDING,
+            search,
+            fromDate,
+            toDate
+        );
+    }
+
+    public List<UserIdentifier> getOutboundManagers() {
+        List<User> managers = userRepository
+            .findByUserRoleIn(List.of(UserRole.OUTBOUND, UserRole.ALL));
+        return managers.stream().map(UserIdentifier::from).toList();
+    }
+
+    @Transactional
+    public void assignOutboundManager(String orderNumber, Long managerId) {
+        List<Order> orders =
+            orderRepository.findOrdersByOrderNumber(orderNumber);
+
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException(orderNumber);
+        }
+
+        boolean noChange = orders.stream()
+            .allMatch(o -> o.isSameManager(managerId));
+
+        if (noChange) return;
+
+        if (managerId == null) {
+            orders.forEach(Order::unassignManager);
+            return;
+        }
+
+        User manager = userRepository.findById(managerId)
+            .orElseThrow(UserNotFoundException::new);
+
+        orders.forEach(o -> o.assignManager(manager));
+    }
+}

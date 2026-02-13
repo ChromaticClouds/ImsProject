@@ -46,5 +46,5 @@ export const deleteVendor = async (id) => {
   return await api.delete(`vendor/${id}`).json();
 };
 
-/** @param {string} id */
+/** @param {number} id */
 export const vendorDetail = (id) => api.get(`vendor/${id}`).json();

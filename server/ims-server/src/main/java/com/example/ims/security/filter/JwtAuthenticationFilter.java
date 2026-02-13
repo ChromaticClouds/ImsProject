@@ -35,6 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
+        System.out.println(token);
+
         try {
             // 토큰 검증
             if (jwtProvider.validate(token)) {
@@ -49,9 +51,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(
-                "{\"success\":false, \"message\":\"Unauthorized\"}"
-            );
+            response.getWriter().write("""
+            {
+              "success": false,
+              "message": "접근 권한이 없습니다."
+            }
+            """);
             return;
         }
 

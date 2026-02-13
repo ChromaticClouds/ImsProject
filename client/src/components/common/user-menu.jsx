@@ -24,9 +24,9 @@ import { RANK_LABEL, ROLE_LABEL } from '@/constants/index.js';
 /**
  * Assets
  */
-import { LockIcon, ChevronUpIcon } from 'lucide-react';
 import { LogOutDialog } from '@/features/auth/components/log-out-dialog.jsx';
 import { PasswordChangeDialog } from '@/features/auth/components/password-change-dialog.jsx';
+import { ChevronUpIcon } from 'lucide-react';
 
 export const UserMenu = () => {
   const [open, setOpen] = useState(false);
@@ -78,9 +78,9 @@ export const UserMenu = () => {
 
           {/* 권한 배지 */}
           <div className='flex flex-wrap gap-1 pt-2'>
-            <Badge variant='default'>{RANK_LABEL[user.rank]}</Badge>
+            <Badge variant='default'>{RANK_LABEL[user.userRank]}</Badge>
 
-            <Badge variant='secondary'>{ROLE_LABEL[user.role]}</Badge>
+            <Badge variant='secondary'>{ROLE_LABEL[user.userRole]}</Badge>
           </div>
         </div>
 

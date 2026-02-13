@@ -20,45 +20,48 @@ export const AdjustStatementDialog = () => {
   const { form } = useAdjustContext();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <div className='flex justify-end'>
+      <Dialog
+        open={open}
+        onOpenChange={setOpen}
+      >
         <form.Subscribe selector={(s) => [s.canSubmit, s.isTouched]}>
           {([canSubmit, isTouched]) => (
-            <div className='flex justify-end'>
+            <DialogTrigger asChild>
               <Button
                 className='w-24'
-                disabled={!isTouched || !canSubmit}
+                disabled={!canSubmit || !isTouched}
               >
                 조정 하기
               </Button>
-            </div>
+            </DialogTrigger>
           )}
         </form.Subscribe>
-      </DialogTrigger>
-      <DialogContent className='min-w-4xl'>
-        <DialogHeader>
-          <DialogTitle>재고 조정 내역</DialogTitle>
-          <DialogDescription>조정 내역을 확인해주세요</DialogDescription>
-        </DialogHeader>
+        <DialogContent className='min-w-4xl'>
+          <DialogHeader>
+            <DialogTitle>재고 조정 내역</DialogTitle>
+            <DialogDescription>조정 내역을 확인해주세요</DialogDescription>
+          </DialogHeader>
 
-        <AdjustStatementList />
+          <AdjustStatementList />
 
-        <form.Subscribe selector={(s) => [s.isSubmitting]}>
-          {([isSubmitting]) => (
-            <div className='flex justify-end pt-4'>
-              <Button
-                onClick={() => {
-                  form.handleSubmit();
-                  setOpen(false);
-                }}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? <Spinner /> : '조정 완료'}
-              </Button>
-            </div>
-          )}
-        </form.Subscribe>
-      </DialogContent>
-    </Dialog>
+          <form.Subscribe selector={(s) => [s.isSubmitting]}>
+            {([isSubmitting]) => (
+              <div className='flex justify-end pt-4'>
+                <Button
+                  onClick={() => {
+                    form.handleSubmit();
+                    setOpen(false);
+                  }}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? <Spinner /> : '조정 완료'}
+                </Button>
+              </div>
+            )}
+          </form.Subscribe>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };

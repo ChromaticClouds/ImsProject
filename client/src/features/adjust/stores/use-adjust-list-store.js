@@ -23,12 +23,12 @@ export const useAdjustListStore = create((set, get) => ({
    */
   addProduct: (product) =>
     set((state) => {
-      const exists = state.products.find((p) => p.id === product.id);
+      const exists = state.products.find((p) => p.id === product.productId);
 
       if (exists) {
         return {
           products: state.products.map((p) =>
-            p.id === product.id
+            p.id === product.productId
               ? { ...p, adjustCount: p.adjustCount + 1 }
               : p
           ),
@@ -39,7 +39,7 @@ export const useAdjustListStore = create((set, get) => ({
         products: [
           ...state.products,
           {
-            id: product.id,
+            id: product.productId,
             name: product.name,
             brand: product.brand,
             type: product.type,

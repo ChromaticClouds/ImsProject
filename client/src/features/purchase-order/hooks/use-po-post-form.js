@@ -56,6 +56,8 @@ export const usePoPostForm = () => {
       try {
         const formatForm = { ...value, date: formatToIsoDate(value.date) };
 
+        console.log(formatForm);
+
         const response = await api.post(
           'purchase/order/post', { json: formatForm, hooks }
         ).json();

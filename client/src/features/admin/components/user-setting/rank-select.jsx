@@ -9,8 +9,8 @@ import {
 } from '@/components/ui/select';
 
 const RANK_OPTIONS = [
-  { value: 'FIRST_ADMIN', label: '최고 관리자' },
-  { value: 'SECOND_ADMIN', label: '관리자' },
+  { value: 'FIRST_ADMIN', label: '총괄 책임자' },
+  { value: 'SECOND_ADMIN', label: '창고 관리자' },
   { value: 'EMPLOYEE', label: '사원' },
 ];
 

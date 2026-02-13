@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.example.ims.features.auth.enums.UserRole;
 import com.example.ims.features.auth.enums.UserStatus;
+import com.example.ims.features.invitation.dto.SoloEmailRequest;
 import org.springframework.stereotype.Service;
 
 import com.example.ims.features.auth.dto.InviteVerifyResponse;
@@ -38,7 +39,12 @@ public class InvitationService {
 
         System.out.println(invitedUsers);
 
-        mailSender.createInvitation(invitedUsers);
+        mailSender.sendBatch(invitedUsers);
+    }
+
+    public void inviteSingle(SoloEmailRequest request) throws ResendException {
+        InvitationMailPayload invitedSingle = createInvitation(request.getEmail());
+        mailSender.sendOne(invitedSingle);
     }
 
     public InvitationMailPayload createInvitation(String email) {

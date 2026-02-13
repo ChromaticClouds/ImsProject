@@ -67,7 +67,7 @@ public class AuthController {
     }
     
     @GetMapping("refresh")
-    public ResponseEntity<ApiResponse<AuthResponse>> reIsssueToken(
+    public ResponseEntity<ApiResponse<AuthResponse>> reIssueToken(
     	@CookieValue(value = "refreshToken", required = false) String refreshToken
     ) {
         if (refreshToken == null) throw new UnauthorizedException();
@@ -80,7 +80,6 @@ public class AuthController {
     	return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
             .body(ApiResponse.success(
-                "안녕하세요, " + result.user().getName() + "님", 
                 new AuthResponse(new AuthPartial(result.user()), result.accessToken())
             ));
     }

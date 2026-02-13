@@ -16,7 +16,7 @@ export const adjustFormSchema = z.object({
     .min(1, '조정할 품목을 최소 1개 이상 선택해주세요'),
   type: z.enum(['PLUS', 'MINUS']),
   date: z
-    .date()
+    .date('날짜를 지정해주세요')
     .max(new Date(), '미래 날짜는 선택할 수 없습니다'),
   memo: z
     .string()

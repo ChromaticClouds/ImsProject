@@ -33,9 +33,9 @@ public interface ProductRepository
     JOIN p.vendorItems vi
   
     WHERE
-        LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
-        OR LOWER(p.type) LIKE LOWER(CONCAT('%', :search, '%'))
-        OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :search, '%'))
+        (p.name IS NOT NULL AND LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')))
+        OR (p.type IS NOT NULL AND LOWER(p.type) LIKE LOWER(CONCAT('%', :search, '%')))
+        OR (p.brand IS NOT NULL AND LOWER(p.brand) LIKE LOWER(CONCAT('%', :search, '%')))
     ORDER BY p.name
     """)
     List<ProductSuggest> suggest(@Param("search") String search);
@@ -44,7 +44,7 @@ public interface ProductRepository
 
     @Query("""
     select new com.example.ims.features.product.dto.ProductSummary(
-        p.id, p.name, p.type, p.brand, p.salePrice, p.imageUrl)
+        p.id, vi.id, p.name, p.type, p.brand, p.salePrice, p.imageUrl)
     from VendorItem vi join vi.product p
     where vi.vendor.id = :supplierId
     and (

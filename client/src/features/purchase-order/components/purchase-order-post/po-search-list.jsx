@@ -1,5 +1,3 @@
-// @ts-check
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { usePoSearchQuery } from '../../hooks/use-po-search-qeury.js';
 import { usePoFormContext } from '../../providers/po-post-form-provder.jsx';

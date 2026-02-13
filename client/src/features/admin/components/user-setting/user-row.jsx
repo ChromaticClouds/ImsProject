@@ -23,7 +23,7 @@ const DescriptionCell = ({ user, isPending }) => (
  * user: ReturnType<typeof toUserRowModel>,
  * onRankChange: (id: number, type: string) => void,
  * onRoleChange: (id: number, type: string) => void,
- * onResend: (id: number) => void
+ * onResend: (id: string) => void
  * onLeave: (id: number) => void
  * onDelete: (id: number) => void
  * onNameChange: (id: number, newName: string) => void

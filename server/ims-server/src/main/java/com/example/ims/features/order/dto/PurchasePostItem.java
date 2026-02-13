@@ -7,8 +7,9 @@ import lombok.Getter;
  * 발주서 작성: 품목 요청 리퀘스트 DTO
  */
 @Getter
-public class PurchasePostItems {
+public class PurchasePostItem {
     private Long id;
+    private Long vendorItemId;
     private String name;
     private ProductType type;
     private String brand;

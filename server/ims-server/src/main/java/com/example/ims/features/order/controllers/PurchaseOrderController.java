@@ -1,11 +1,14 @@
 package com.example.ims.features.order.controllers;
 
 import com.example.ims.features.order.dto.OrderBootstrap;
+import com.example.ims.features.order.dto.PurchaseOrderRequest;
 import com.example.ims.features.order.services.PurchaseOrderService;
 import com.example.ims.features.product.dto.ProductSummary;
+import com.example.ims.features.user.dto.UserPrincipal;
 import com.example.ims.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +36,11 @@ public class PurchaseOrderController {
     }
 
     @PostMapping("post")
-    public ResponseEntity<ApiResponse<Void>> postPlaceOrder() {
-        return ResponseEntity.ok(ApiResponse.success("ok"));
+    public ResponseEntity<ApiResponse<Void>> postPlaceOrder(
+        @RequestBody PurchaseOrderRequest request,
+        @AuthenticationPrincipal UserPrincipal user
+    ) {
+        service.postPurchaseOrder(user.userId(), request);
+        return ResponseEntity.ok(ApiResponse.success("발주 등록에 성공했습니다."));
     }
 }

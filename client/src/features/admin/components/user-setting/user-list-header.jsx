@@ -24,7 +24,7 @@ import { EmailDialog } from '@/features/admin/components/user-setting/email-dial
 import { useUserList } from '@/features/admin/providers/user-provider.jsx';
 
 export const UserListHeader = () => {
-  const { count, search, setSearch } = useUserList();
+  const { count, search } = useUserList();
 
   return (
     <React.Fragment>

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Map;
 
+import org.springframework.cglib.core.CollectionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import com.example.ims.features.vendor.dto.Vendor;
 import com.example.ims.features.vendor.dto.VendorCreateRequest;
 import com.example.ims.features.vendor.dto.VendorListResponse;
 import com.example.ims.features.vendor.dto.VendorResponse;
+import com.example.ims.features.vendor.enums.VendorType;
 import com.example.ims.features.vendor.mapper.VendorMapper;
 import com.example.ims.features.vendor.dto.VendorDetailResponse;
 import com.example.ims.features.vendor.dto.VendorItemResponse;
@@ -29,15 +31,21 @@ public class VendorService {
 
     private final VendorMapper mapper;
 
+    // 거래처 목록
     public VendorListResponse getVendorList(String type, String keyword, int page) {
+    	
+    	// 주종, 검색
         if (type != null && type.isBlank()) type = null;
         if (keyword != null && keyword.isBlank()) keyword = null;
         
+        // 페이지 
         int currentPage = Math.max(page, 1);
         int offset = (currentPage - 1) * PAGE_SIZE;
         
+        // 총 페이지, 검색
         long total = mapper.countVendorList(type, keyword);
         int totalPages = (int) Math.ceil((double) total / PAGE_SIZE);
+        
         
         List<VendorResponse> list =
         	mapper.findVendorList(type, keyword, PAGE_SIZE, offset);
@@ -53,80 +61,89 @@ public class VendorService {
             ).build();
     }
 
+    
+    // 거래처 등록
     @Transactional
     public Long createVendor(VendorCreateRequest request) {
-        Vendor dto = Vendor.from(request);
-        mapper.insertVendor(dto);
+      Vendor dto = Vendor.from(request);
+      mapper.insertVendor(dto);
 
-        Long vendorId = dto.getId();
+      Long vendorId = dto.getId();
+      if (vendorId == null) {
+        throw new IllegalStateException("vendor insert 후 id 생성 실패");
+      }
 
-        if ("Supplier".equals(request.getType())  && request.getItems() != null && !request.getItems().isEmpty()) {
+      // Supplier이고 제품 null 아니고, 제품 수량 0 이상인 것만 가능
+      if (request.getType() == VendorType.Supplier && request.getItems() != null && request.getItems().size() > 0 ) {
+        mapper.insertVendorItems(vendorId, request.getItems());
+      }
 
-            mapper.insertVendorItems(vendorId, request.getItems());
-        }
-
-        return vendorId;
+      return vendorId;
     }
     
-    public List<Map<String, Object>> searchProducts(String keyword, boolean excludeAssigned) {
+    
+    // 제품 검색 
+    public List<Map<String, Object>> searchProducts(String keyword, boolean excludeAssigned, Long currentVendorId) {
         if (keyword != null && keyword.isBlank()) keyword = null;
-        return mapper.searchProducts(keyword, excludeAssigned);
+        return mapper.searchProducts(keyword, excludeAssigned, currentVendorId);
     }
+
     
+
+    // 거래처 상세
     public VendorDetailResponse getVendorDetail(Long id) {
         VendorDetailVendor vendor = mapper.findVendorById(id);
         if (vendor == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found: " + id);
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found: " + id);
         }
 
+        // type이 Supplier이면 mapper
         List<VendorItemResponse> items =
-            "Supplier".equals(vendor.getType())
-                ? mapper.findVendorItems(id)
-                : Collections.emptyList();
+          "Supplier".equals(vendor.getType())
+            ? mapper.findVendorItems(id)
+            : Collections.emptyList();
 
         return VendorDetailResponse.builder()
-            .vendor(vendor)
-            .items(items)
-            .build();
-    }
+          .vendor(vendor)
+          .items(items)
+          .build();
+      }
 
+
+    // 거래처 수정
     @Transactional
     public void updateVendor(Long id, VendorCreateRequest request) {
+      VendorDetailVendor existing = mapper.findVendorById(id);
+      if (existing == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found: " + id);
+      }
 
-        VendorDetailVendor existing = mapper.findVendorById(id);
-        if (existing == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found: " + id);
-        }
+      mapper.updateVendor(id, request);
 
-        // 1) vendor 기본 정보 업데이트
-        mapper.updateVendor(id, request);
-
-        // 2) 판매처면: 품목 연결을 모두 "DELETED" 처리하고 끝
-        if (!"Supplier".equals(request.getType())) {
-            mapper.softDeleteVendorItemsByVendorId(id);
-            return;
-        }
-
-        // 3) 공급처면: 기존 연결을 일단 DELETED로 만든 뒤,
-        //    request.items에 있는 것들은 UPDATE(있으면) or INSERT(없으면) 해서 ACTIVE로 복구
+      // enum 판별
+      if (request.getType() != VendorType.Supplier) {
         mapper.softDeleteVendorItemsByVendorId(id);
+        return;
+      }
 
-        if (request.getItems() == null || request.getItems().isEmpty()) {
-            return;
+      mapper.softDeleteVendorItemsByVendorId(id);
+
+      if (request.getItems() == null || request.getItems().size() == 0) {
+    	    return;
+    	  }
+
+      for (VendorCreateRequest.VendorItemCreate it : request.getItems()) {
+        Long vendorItemId = mapper.findVendorItemId(id, it.getProductId());
+
+        if (vendorItemId != null) {
+          mapper.updateVendorItemPrice(vendorItemId, it.getPurchasePrice());
+        } else {
+          mapper.insertVendorItems(id, List.of(it));
         }
-
-        for (VendorCreateRequest.VendorItemCreate it : request.getItems()) {
-            Long vendorItemId = mapper.findVendorItemId(id, it.getProductId());
-
-            if (vendorItemId != null) {
-                mapper.updateVendorItemPrice(vendorItemId, it.getPurchasePrice());
-            } else {
-                // 기존 bulk insert 메서드 재사용해도 되지만, 단건 insert가 편함
-                mapper.insertVendorItems(id, List.of(it));
-            }
-        }
+      }
     }
 
+    // 거래처 삭제
     @Transactional
     public void deleteVendor(Long id) {
         int updated = mapper.softDeleteVendor(id);
@@ -134,4 +151,14 @@ public class VendorService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found: " + id);
         }
     }
+    
+    @Transactional
+    public void softDeleteVendorItem(Long vendorId, Long productId) {
+      Long id = mapper.findVendorItemId(vendorId, productId);
+      if (id == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "vendor_item not found");
+      }
+      mapper.softDeleteVendorItem(vendorId, productId);
+    }
+
 }

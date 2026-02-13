@@ -4,6 +4,8 @@ import lombok.*;
 
 import java.util.List;
 
+import com.example.ims.features.purchaseorder.dto.PurchaseOrderGroupRow;
+
 @Getter
 @Setter
 @NoArgsConstructor

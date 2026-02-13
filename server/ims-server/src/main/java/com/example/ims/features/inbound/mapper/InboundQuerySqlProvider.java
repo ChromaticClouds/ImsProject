@@ -466,36 +466,109 @@ public class InboundQuerySqlProvider {
     }
     
     // 안전재고
+//    public String selectSafeStock(Map<String, Object> p) {
+//    	  @SuppressWarnings("unchecked")
+//    	  List<Long> productIds = (List<Long>) p.get("productIds");
+//
+//    	  if (productIds == null || productIds.isEmpty()) {
+//    	    // 빈 배열이면 결과도 빈 배열로
+//    	    return "SELECT 1 WHERE 1=0";
+//    	  }
+//
+//    	  String inClause = productIds.stream()
+//    	      .filter(Objects::nonNull)
+//    	      .map(String::valueOf)
+//    	      .collect(Collectors.joining(","));
+//
+//    	  return """
+//    	    SELECT
+//    	      base.product_id AS productId,
+//    	      GREATEST(
+//    	        0,
+//    	        ROUND(
+//    	          IFNULL(out_stats.max_daily_out, 0) * IFNULL(in_stats.max_lt, 0)
+//    	          - IFNULL(out_stats.avg_daily_out, 0) * IFNULL(in_stats.avg_lt, 0)
+//    	        )
+//    	      ) AS safetyStock
+//    	    FROM (
+//    	      SELECT DISTINCT pr.id AS product_id
+//    	      FROM product pr
+//    	      WHERE pr.id IN (""" + inClause + """
+//    	      )
+//    	    ) base
+//    	    LEFT JOIN (
+//    	      SELECT
+//    	        t.product_id,
+//    	        MAX(t.daily_qty) AS max_daily_out,
+//    	        AVG(t.daily_qty) AS avg_daily_out
+//    	      FROM (
+//    	        SELECT
+//    	          o.product_id,
+//    	          DATE(o.order_date) AS d,
+//    	          SUM(o.`count`) AS daily_qty
+//    	        FROM `orders` o
+//    	        WHERE o.status = 'OUTBOUND_COMPLETE'
+//    	          AND o.order_date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)
+//    	        GROUP BY o.product_id, DATE(o.order_date)
+//    	      ) t
+//    	      GROUP BY t.product_id
+//    	    ) out_stats ON out_stats.product_id = base.product_id
+//    	    LEFT JOIN (
+//    	      SELECT
+//    	        vi.product_id,
+//    	        MAX(IFNULL(o.lead_time, 0)) AS max_lt,
+//    	        AVG(IFNULL(o.lead_time, 0)) AS avg_lt
+//    	      FROM `orders` o
+//    	      JOIN vendor_item vi ON vi.id = o.vendor_item_id
+//    	      WHERE o.status = 'INBOUND_COMPLETE'
+//    	        AND o.order_date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)
+//    	      GROUP BY vi.product_id
+//    	    ) in_stats ON in_stats.product_id = base.product_id
+//    	  """;
+//    	}
+    
+    
     public String selectSafeStock(Map<String, Object> p) {
     	  @SuppressWarnings("unchecked")
     	  List<Long> productIds = (List<Long>) p.get("productIds");
 
     	  if (productIds == null || productIds.isEmpty()) {
-    	    // 빈 배열이면 결과도 빈 배열로
     	    return "SELECT 1 WHERE 1=0";
     	  }
 
     	  String inClause = productIds.stream()
     	      .filter(Objects::nonNull)
+    	      .distinct()
     	      .map(String::valueOf)
     	      .collect(Collectors.joining(","));
 
-    	  return """
+    	  String sql = """
     	    SELECT
     	      base.product_id AS productId,
+
+    	      out_stats.max_daily_out AS maxOutbound,
+    	      out_stats.avg_daily_out AS avgOutbound,
+
+    	      in_stats.max_lt AS maxLeadTime,
+    	      in_stats.avg_lt AS avgLeadTime,
+
     	      GREATEST(
-    	        0,
+    	        0.0,
     	        ROUND(
-    	          IFNULL(out_stats.max_daily_out, 0) * IFNULL(in_stats.max_lt, 0)
-    	          - IFNULL(out_stats.avg_daily_out, 0) * IFNULL(in_stats.avg_lt, 0)
+    	          (
+    	            CAST(IFNULL(out_stats.max_daily_out, 0) AS DECIMAL(18,6)) * CAST(IFNULL(in_stats.max_lt, 0) AS DECIMAL(18,6))
+    	            - CAST(IFNULL(out_stats.avg_daily_out, 0) AS DECIMAL(18,6)) * CAST(IFNULL(in_stats.avg_lt, 0) AS DECIMAL(18,6))
+    	          ),
+    	          1
     	        )
     	      ) AS safetyStock
+
     	    FROM (
     	      SELECT DISTINCT pr.id AS product_id
     	      FROM product pr
-    	      WHERE pr.id IN (""" + inClause + """
-    	      )
+    	      WHERE pr.id IN (%s)
     	    ) base
+
     	    LEFT JOIN (
     	      SELECT
     	        t.product_id,
@@ -513,6 +586,7 @@ public class InboundQuerySqlProvider {
     	      ) t
     	      GROUP BY t.product_id
     	    ) out_stats ON out_stats.product_id = base.product_id
+
     	    LEFT JOIN (
     	      SELECT
     	        vi.product_id,
@@ -524,11 +598,11 @@ public class InboundQuerySqlProvider {
     	        AND o.order_date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)
     	      GROUP BY vi.product_id
     	    ) in_stats ON in_stats.product_id = base.product_id
-    	  """;
+    	    """;
+
+    	  return String.format(sql, inClause);
     	}
 
-    
-    
     
 }
 

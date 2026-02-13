@@ -1,9 +1,12 @@
 package com.example.ims.features.statistics.mappers;
 
+import com.example.ims.features.inbound.dto.InboundSafeStockRow;
+
 import com.example.ims.features.statistics.dto.ClientRankRow;
 import com.example.ims.features.statistics.dto.InOutByProductRow;
 import com.example.ims.features.statistics.dto.LeadTimeResponse;
 import com.example.ims.features.statistics.dto.ProductShareResponse;
+import com.example.ims.features.statistics.dto.StockRotationPoint;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -11,6 +14,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -115,4 +119,43 @@ public interface StatisticsMapper {
         @Param("from") LocalDate from,
         @Param("to") LocalDate to
     );
+    
+    // ----------------------------------------------------------------
+    // 품목별 수량 그래프
+
+    @SelectProvider(type=StatisticsProvider.class, method="selectStockByProduct")
+    List<InboundSafeStockRow> selectStockByProduct(
+        @Param("type") String type,
+        @Param("unsafeOnly") boolean unsafeOnly,
+        @Param("limit") int limit
+    );
+    
+    // -------------------------------------------------------------------
+    // 재고 회전율
+    @SelectProvider(type = StatisticsProvider.class, method = "selectStockAt")
+    Integer selectStockAt(
+    	      @Param("productId") Long productId,
+    	      @Param("at") LocalDateTime at
+    	  );
+
+    // 기간 출고 합계
+    @SelectProvider(type = StatisticsProvider.class, method = "selectOutboundQty")
+    Long selectOutboundQty(
+    	      @Param("productId") Long productId,
+    	      @Param("from") LocalDate from,
+    	      @Param("to") LocalDate to
+    	  );
+    
+    @SelectProvider(type=StatisticsProvider.class, method="searchrotationProducts")
+    List<StockRotationPoint> searchrotationProducts(@Param("keyword") String keyword, @Param("limit") int limit);
+    
+    
+
 }
+
+
+
+
+
+
+

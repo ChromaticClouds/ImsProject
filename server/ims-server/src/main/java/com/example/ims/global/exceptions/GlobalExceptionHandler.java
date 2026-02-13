@@ -1,6 +1,10 @@
 package com.example.ims.global.exceptions;
 
 import com.example.ims.features.auth.exceptions.UnauthorizedException;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,6 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.invitation.exceptions.InvalidInvitationTokenException;
 import com.example.ims.global.response.ApiResponse;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,6 +42,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(ApiResponse.fail(e.getMessage()));
     }
+    
 }
 
 

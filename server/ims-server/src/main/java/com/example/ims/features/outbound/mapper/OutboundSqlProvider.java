@@ -20,47 +20,6 @@ public class OutboundSqlProvider {
     """;
   }
 
-  // 출고 대기 summary 
-//  public String selectPendingSummary(Map<String, Object> p) {
-//    Object userId = p.get("userId");
-//
-//    StringBuilder sb = new StringBuilder();
-//    sb.append("""
-//      SELECT
-//        'OUTBOUND_PENDING' AS status,
-//        CASE WHEN MIN(o.recieve_date) < CURDATE() THEN '미납' ELSE '출고 대기' END AS statusText,
-//        o.order_number AS orderNumber,
-//        MIN(o.recieve_date) AS receiveDate,
-//        MIN(o.seller_vendor_id) AS sellerVendorId,
-//        MIN(v.vendor_name) AS sellerVendorName,
-//        COUNT(*) AS itemCount,
-//        SUM(o.`count` * pr.sale_price) AS totalAmount,
-//        MIN(o.user_id) AS userId,
-//        MIN(u.name) AS userName,
-//        MAX(CASE WHEN o.`count` > IFNULL(s.`count`, 0) THEN 1 ELSE 0 END) AS hasShortage
-//      FROM `orders` o
-//      JOIN vendor v ON v.id = o.seller_vendor_id
-//      JOIN product pr ON pr.id = o.product_id
-//      LEFT JOIN stock s ON s.product_id = o.product_id
-//      LEFT JOIN `user` u ON u.id = o.user_id
-//      WHERE o.status = 'OUTBOUND_PENDING'
-//        AND o.recieve_date BETWEEN #{from} AND #{to}
-//    """);
-//
-//    if (userId != null) {
-//      sb.append("""
-//        AND o.user_id = #{userId}
-//      """);
-//    }
-//
-//    sb.append("""
-//      GROUP BY o.order_number
-//      ORDER BY MIN(o.recieve_date) ASC, o.order_number DESC
-//      LIMIT #{size} OFFSET #{offset}
-//    """);
-//
-//    return sb.toString();
-//  }
   
   public String selectPendingSummary(Map<String, Object> p) {
 	  Object userId = p.get("userId");
@@ -88,7 +47,8 @@ public class OutboundSqlProvider {
 	    LEFT JOIN stock s ON s.product_id = o.product_id
 	    LEFT JOIN `user` um ON um.id = o.manager_id  
 	    WHERE o.status = 'OUTBOUND_PENDING'
-	      AND o.recieve_date BETWEEN #{from} AND #{to}
+	    AND o.manager_id IS NOT NULL
+	    AND o.recieve_date BETWEEN #{from} AND #{to}
 	  """);
 
 	  if (userId != null) {

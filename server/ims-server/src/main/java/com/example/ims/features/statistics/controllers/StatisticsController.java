@@ -1,16 +1,19 @@
 package com.example.ims.features.statistics.controllers;
 
 import java.time.LocalDate;
+
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.ims.features.inbound.dto.InboundSafeStockRow;
 import com.example.ims.features.statistics.dto.ClientRankRow;
 import com.example.ims.features.statistics.dto.InOutByProductRow;
 
 import com.example.ims.features.statistics.dto.LeadTimeResponse;
 import com.example.ims.features.statistics.dto.ProductShareResponse;
+import com.example.ims.features.statistics.dto.StockRotationPoint;
 import com.example.ims.features.statistics.dto.WarehouseShareResponse;
 import com.example.ims.features.statistics.services.StatisticsService;
 import com.example.ims.global.response.ApiResponse;
@@ -20,7 +23,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/stats")
@@ -82,6 +84,36 @@ public class StatisticsController {
 
     // -----------------------------------------------------------------------------
     // 품목별 수량 그래프
+    
+    @GetMapping("/stock/by-product")
+    public List<InboundSafeStockRow> stockByProduct(
+        @RequestParam(value="type", required=false) String type,
+        @RequestParam(value="unsafeOnly", required=false, defaultValue="false") boolean unsafeOnly,
+        @RequestParam(value="limit", required=false) Integer limit
+    ) {
+      return service.getStockByProduct(type, unsafeOnly, limit);
+    }
+    
+    // -----------------------------------------------------------------------------
+    // 재고 회전율
+    
+    @GetMapping("/stock-rotation/trend")
+    public List<StockRotationPoint> stockRotationTrend(
+        @RequestParam("year") int year,
+        @RequestParam(value="month", required=false) Integer month,
+        @RequestParam("productId") Long productId
+    ) {
+      return service.getStockRotationTrend(year, month, productId);
+    }
+    
+    @GetMapping("/stock-rotation/products/search")
+    public List<StockRotationPoint> searchrotationProducts(
+        @RequestParam("keyword") String keyword,
+        @RequestParam(value="limit", required=false) Integer limit
+    ) {
+      return service.searchrotationProducts(keyword, limit);
+    }
+    // -----------------------------------------------------------------------------
 
     @GetMapping("by-warehouse")
     public ResponseEntity<ApiResponse<WarehouseShareResponse>> getWarehouseShare() {

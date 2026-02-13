@@ -1,64 +1,85 @@
-//package com.example.ims.features.purchaseorder.controllers;
-//
-//import com.example.ims.features.purchaseorder.common.ApiResponse;
-//import com.example.ims.features.purchaseorder.common.PageResponse;
-//import com.example.ims.features.purchaseorder.dto.PurchaseOrderCreateRequest;
-//import com.example.ims.features.purchaseorder.dto.PurchaseOrderResponse;
-//import com.example.ims.features.purchaseorder.dto.PurchaseOrderSearchCondition;
-//import com.example.ims.features.purchaseorder.dto.PurchaseOrderStatusUpdateRequest;
-//import com.example.ims.features.purchaseorder.services.PurchaseOrderService;
-//
-//import org.springframework.web.bind.annotation.*;
-//
-//@RestController
-//@RequestMapping("/api/purchase-orders")
-//public class PurchaseOrderController {
-//
-//    private final PurchaseOrderService service;
-//
-//    public PurchaseOrderController(PurchaseOrderService service) {
-//        this.service = service;
-//    }
-//
-//    /**
-//     * 목록 조회 (ky/fetch에서 호출)
-//     * 예) GET /api/purchase-orders?status=BEFORE&page=0&size=10
-//     */
-//    @GetMapping
-//    public ApiResponse<PageResponse<PurchaseOrderResponse>> list(
-//            @RequestParam(required = false) String status,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size
-//    ) {
-//        PurchaseOrderSearchCondition cond = new PurchaseOrderSearchCondition();
-//        cond.setStatus(status);
-//        cond.setPage(page);
-//        cond.setSize(size);
-//
-//        return ApiResponse.ok(service.getList(cond));
-//    }
-//
-//    /**
-//     * 상세 조회
-//     * 예) GET /api/purchase-orders/1
-//     */
-//    @GetMapping("/{id}")
-//    public ApiResponse<PurchaseOrderResponse> detail(@PathVariable Long id) {
-//        return ApiResponse.ok(service.getDetail(id));
-//    }
-//
-//    /**
-//     * 발주 등록
-//     * 예) POST /api/purchase-orders
-//     * body: PurchaseOrderCreateRequest(JSON)
-//     */
-//    @PostMapping
-//    public ApiResponse<Long> create(@RequestBody PurchaseOrderCreateRequest req) {
-//        Long id = service.create(req);
-//        return ApiResponse.ok("등록되었습니다.", id);
-//    }
+package com.example.ims.features.purchaseorder.controllers;
 
-///**
-// * 상태 변경(전송완료 처리 등)
-// * 예) PATCH /api/purchase-orders/1/status
-// * body: { "status": "COMPLETE", "recieveDate": "2026-02-10" }
+import java.time.LocalDate;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.ims.features.purchaseorder.dto.*;
+import com.example.ims.features.purchaseorder.services.PurchaseOrderService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/purchase-orders")
+public class PurchaseOrderController {
+
+    private final PurchaseOrderService service;
+
+    // 목록 (그룹)
+    @GetMapping
+    public PurchaseOrderListResponse list(
+        @RequestParam(name = "view", required = false) String view,          // DRAFT | SENT
+        @RequestParam(name = "keyword", required = false) String keyword,
+        @RequestParam(name = "from", required = false) LocalDate from,
+        @RequestParam(name = "to", required = false) LocalDate to,
+        @RequestParam(name = "page", required = false) Integer page,         // 1-base
+        @RequestParam(name = "size", required = false) Integer size
+    ) {
+        return service.list(view, keyword, from, to, page, size);
+    }
+
+    // 단건 조회 (수정 페이지 진입)
+    @GetMapping("/{orderNumber}")
+    public PurchaseOrderGroupRow get(
+        @PathVariable(name = "orderNumber") String orderNumber
+    ) {
+        return service.get(orderNumber);
+    }
+
+    // 수정 (납기일 + 라인 count)
+    @PatchMapping("/{orderNumber}")
+    public ResponseEntity<Void> update(
+        @PathVariable(name = "orderNumber") String orderNumber,
+        @Valid @RequestBody PurchaseOrderUpdateRequest req
+    ) {
+        service.update(orderNumber, req);
+        return ResponseEntity.ok().build();
+    }
+
+    // 삭제 (orderNumber 전체)
+    @DeleteMapping("/{orderNumber}")
+    public ResponseEntity<Void> delete(
+        @PathVariable(name = "orderNumber") String orderNumber
+    ) {
+        service.delete(orderNumber);
+        return ResponseEntity.ok().build();
+    }
+
+    // 전송 (단건)
+    @PostMapping("/{orderNumber}/send")
+    public ResponseEntity<Void> sendOne(
+        @PathVariable(name = "orderNumber") String orderNumber
+    ) {
+        service.sendOne(orderNumber);
+        return ResponseEntity.ok().build();
+    }
+
+    // 전송 (bulk)
+    @PostMapping("/send")
+    public ResponseEntity<Void> bulkSend(@Valid @RequestBody OrderNumbersRequest req) {
+        service.bulkSend(req.getOrderNumbers());
+        return ResponseEntity.ok().build();
+    }
+
+    // 삭제 (bulk)
+    @PostMapping("/delete")
+    public ResponseEntity<Void> bulkDelete(@Valid @RequestBody OrderNumbersRequest req) {
+        service.bulkDelete(req.getOrderNumbers());
+        return ResponseEntity.ok().build();
+    }
+}
+
+

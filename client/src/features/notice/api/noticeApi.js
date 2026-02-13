@@ -13,7 +13,7 @@ const fromServer = (n) => ({
   content: n.content,
   pinned: !!n.pinned,
   createdAt: n.created_at??n.createdAt,
-  fileName: n.file_name, // file_name(경로) -> fileName
+  fileName: n.fileName, // file_name(경로) -> fileName
 });
 
 // 프론트(camelCase) -> 서버(언더바)
@@ -40,7 +40,6 @@ export const getNotices = (page = 1) =>
  */
 export const fetchNoticeById = async (id) => {
   const res = await fetch(`${BASE_URL}/${id}`);
-  console.log(res)
   if (res.status === 404) return null;
   if (!res.ok) throw new Error('공지 상세 조회 실패');
 
@@ -120,6 +119,7 @@ export const createNotice = async (values) => {
  * @param {{
  *   title: string;
  *   content: string;
+ *   oldPinned: boolean;
  *   pinned: boolean;
  *   file?: File | null;
  *   fileName?: string | null;
@@ -127,6 +127,8 @@ export const createNotice = async (values) => {
  * @returns {Promise<{ ok: boolean; message?: string }>}
  */
 export const updateNotice = async (id, values) => {
+  console.log(id, values);
+
   console.log("updateNotice : ", id, values)
   const title = (values?.title ?? '').trim();
   const content = (values?.content ?? '').trim();
@@ -136,7 +138,6 @@ export const updateNotice = async (id, values) => {
   }
 
   const form = new FormData();
-
   // JSON 부분
   form.append(
     'notice',

@@ -1,4 +1,3 @@
-// @ts-check
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -13,6 +12,7 @@ import {
 import { NoticeForm } from '@/features/notice/components/notice-form';
 import { createNotice } from '@/features/notice/api/noticeApi';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store';
+
 
 export const NoticeCreate = () => {
   const isAdmin = true;
@@ -61,7 +61,6 @@ export const NoticeCreate = () => {
         <CardContent>
           <NoticeForm
             mode='create'
-            isAdmin={isAdmin}
             onCancel={() => navigate('/dashboard/notice')}
             onSubmit={(values) => create.mutate(values)}
             isSubmitting={create.isPending}

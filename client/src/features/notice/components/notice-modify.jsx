@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
  * @property {string} title
  * @property {string} content
  * @property {boolean} pinned
+ * @property {boolean} oldPinned
  * @property {string|null} fileName
  */
 

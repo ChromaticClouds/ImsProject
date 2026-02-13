@@ -66,7 +66,7 @@ export const MainNotice = () => {
     queryFn: fetchMainNotices,
   });
 
-  const notices = useMemo(() => normalizeNotices(data).slice(0, 5), [data]);
+  const notices = useMemo(() => normalizeNotices(data).slice(0, 8), [data]);
   
   return (
     <section className="col-span-5 rounded-2xl border p-4 shadow-sm bg-card">

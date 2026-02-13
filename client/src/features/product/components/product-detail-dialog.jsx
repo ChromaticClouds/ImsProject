@@ -36,7 +36,7 @@ export const ProductDetailDialog = ({ product, children }) => {
 
         <div className='flex flex-col gap-2'>
           <span className='text-xs text-muted-foreground'>박스 이미지</span>
-          <div className='w-full h-80 rounded overflow-hidden'>
+          <div className='w-full h-100 rounded overflow-hidden'>
             <img
               src={product.imageUrl}
               alt='box'

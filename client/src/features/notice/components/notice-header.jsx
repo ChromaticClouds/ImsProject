@@ -3,6 +3,7 @@
  */
 import { Button } from '@/components/ui/button';
 import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store';
 
 /**
  * Assets
@@ -17,6 +18,8 @@ import { useNavigate } from 'react-router-dom';
 
 export const NoticeHeader = () => {
   const navigate = useNavigate();
+
+  const { user } = useAuthStore();
 
   return (
     <CardHeader className='flex flex-row items-center justify-between'>
@@ -34,6 +37,7 @@ export const NoticeHeader = () => {
       <Button
         size='sm'
         className='gap-2'
+        disabled={user.userRank !== 'FIRST_ADMIN'}
         onClick={() => navigate('/dashboard/notice/create')}
       >
         <PlusIcon className='w-4 h-4' />

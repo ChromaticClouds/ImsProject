@@ -31,8 +31,6 @@ export const TodoTable = ({
   todos,
   onDetail,
   onEdit,
-  onDelete,
-  onComplete,
 }) => {
   return (
     <Table>

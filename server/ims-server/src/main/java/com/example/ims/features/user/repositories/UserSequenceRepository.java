@@ -5,11 +5,12 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
 public interface UserSequenceRepository extends JpaRepository<UserSequence, Integer> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from UserSequence u where u.year = :year")
-    Optional<UserSequence> findByYearForUpdate(Integer year);
+    Optional<UserSequence> findByYearForUpdate(@Param("year") Integer year);
 }

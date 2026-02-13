@@ -9,6 +9,8 @@ import { SUPPLIER_FIELDS } from '../../constants/index.js';
 export const SupplierInfo = () => {
   const { supplier } = usePoContext();
 
+  console.log(supplier);
+
   return (
     <FieldSet>
       <p className='text-xl font-semibold tracking-tight'>공급처 정보</p>

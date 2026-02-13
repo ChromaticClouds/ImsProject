@@ -68,8 +68,8 @@ public interface StatisticsMapper {
     group by p.name order by leadTime desc;
     """)
     List<LeadTimeResponse> findLeadTimeByProduct(
-        LocalDate startDate,
-        LocalDate endDate
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
     );
 
     /**
@@ -85,8 +85,8 @@ public interface StatisticsMapper {
     group by v.vendor_name order by leadTime desc;
     """)
     List<LeadTimeResponse> findLeadTimeByVendor(
-        LocalDate startDate,
-        LocalDate endDate
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
     );
 
     // 품목별 입출고 조회

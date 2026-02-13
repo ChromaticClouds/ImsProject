@@ -121,7 +121,7 @@ public class VendorSqlProvider {
         }}.toString();
     }
     
-    public String findVendorById(@Param("id") Long id) {
+    public String findVendorById(Map<String, Object> params) {
         return new SQL(){{
             SELECT("id, type, vendor_name AS vendorName, telephone, email, boss_name AS bossName, address, memo, image_url AS imageUrl, created_at AS createdAt");
             FROM("vendor");
@@ -142,7 +142,7 @@ public class VendorSqlProvider {
         }}.toString();
     }
 
-    public String updateVendor(Long id, VendorCreateRequest req) {
+    public String updateVendor(Map<String, Object> params) {
 
         return new SQL(){{
             UPDATE("vendor");

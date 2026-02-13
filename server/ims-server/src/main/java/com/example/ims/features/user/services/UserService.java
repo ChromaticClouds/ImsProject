@@ -44,7 +44,7 @@ public class UserService {
             List.of(UserStatus.DELETED, UserStatus.INACTIVE);
 
         Page<User> users =
-            repository.findByStatusNotInAndNameContainingIgnoreCase(
+            repository.findUsers(
                 excluded,
                 normalize(search),
                 pageable

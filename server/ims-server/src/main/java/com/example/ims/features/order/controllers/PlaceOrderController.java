@@ -2,7 +2,7 @@ package com.example.ims.features.order.controllers;
 
 import com.example.ims.features.order.dto.OrderBootstrap;
 import com.example.ims.features.order.dto.PurchaseOrderRequest;
-import com.example.ims.features.order.services.PurchaseOrderService;
+import com.example.ims.features.order.services.PlaceOrderService;
 import com.example.ims.features.product.dto.ProductSummary;
 import com.example.ims.features.user.dto.UserPrincipal;
 import com.example.ims.global.response.ApiResponse;
@@ -16,9 +16,9 @@ import java.util.List;
 @RestController
 @RequestMapping("purchase/order")
 @RequiredArgsConstructor
-public class PurchaseOrderController {
+public class PlaceOrderController {
 
-    private final PurchaseOrderService service;
+    private final PlaceOrderService service;
 
     @GetMapping("bootstrap")
     public ResponseEntity<ApiResponse<OrderBootstrap>> initBootstrap() {

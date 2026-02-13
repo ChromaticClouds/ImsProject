@@ -16,8 +16,11 @@ import { useEmailStore } from '@/features/admin/stores/use-email-store.js';
  */
 import { api } from '@/services/api.js';
 import { ERROR } from '@/services/error.js';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useEmailSubmit = () => {
+  const queryClient = useQueryClient();
+
   const emails = useEmailStore((s) => s.emails);
   const deleteAllEmails = useEmailStore((s) => s.deleteAllEmails);
 
@@ -29,7 +32,9 @@ export const useEmailSubmit = () => {
         return toast.error('초대할 이메일을 입력해주세요.');
 
       if (emails.length >= 10)
-        return toast.error('초대 메일 입력은 한 번에 10개를 초과할 수 없습니다.');
+        return toast.error(
+          '초대 메일 입력은 한 번에 10개를 초과할 수 없습니다.',
+        );
 
       try {
         const response = /** @type {ApiResponse} */ (
@@ -38,7 +43,11 @@ export const useEmailSubmit = () => {
 
         if (response.success)
           toast.success(response.message ?? '초대 메일을 발송했습니다.');
-
+        
+        queryClient.invalidateQueries({
+          queryKey: ['users']
+        });
+        
         deleteAllEmails();
       } catch (err) {
         if (err instanceof HTTPError) {

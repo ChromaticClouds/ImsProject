@@ -49,7 +49,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     where o.orderNumber = :orderNumber
     """)
     List<Order> findOrdersByOrderNumber(
-            @Param("orderNumber") String orderNumber
+        @Param("orderNumber") String orderNumber
     );
 
     @Query("""
@@ -69,6 +69,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     """)
     List<OrderDetail> getItemsByOrderNumber(
         @Param("orderNumber") String orderNumber,
-        OrderStatus status
+        @Param("status") OrderStatus status
     );
 }

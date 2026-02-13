@@ -24,7 +24,7 @@ import { EmailDialog } from '@/features/admin/components/user-setting/email-dial
 import { useUserList } from '@/features/admin/providers/user-provider.jsx';
 
 export const UserListHeader = () => {
-  const { count, search } = useUserList();
+  const { count, search, setSearch } = useUserList();
 
   return (
     <React.Fragment>
@@ -42,7 +42,7 @@ export const UserListHeader = () => {
               <InputGroupInput
                 placeholder='사용자 검색...'
                 value={search}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => setSearch(e.target.value)}
               />
               <InputGroupAddon>
                 <SearchIcon />

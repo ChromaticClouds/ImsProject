@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class PurchaseOrderService {
+public class PlaceOrderService {
 
     private final VendorRepository vendorRepository;
     private final VendorItemRepository vendorItemRepository;

@@ -59,6 +59,7 @@ export const EmailValidateForm = () => {
                   </form.Subscribe>
                   <Button
                     variant='outline'
+                    type='button'
                     onClick={() => navigate('/login')}
                   >
                     돌아가기

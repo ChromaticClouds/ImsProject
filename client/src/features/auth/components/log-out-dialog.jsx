@@ -23,7 +23,7 @@ export const LogOutDialog = () => {
         <Button
           variant='ghost'
           size='sm'
-          className='justify-start text-destructive'
+          className='justify-start text-destructive hover:text-destructive'
         >
           <LogOutIcon />
           <span>로그아웃</span>

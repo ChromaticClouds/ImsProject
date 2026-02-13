@@ -1,6 +1,7 @@
 package com.example.ims.features.auth.services;
 
 import com.example.ims.features.auth.enums.UserRank;
+import com.example.ims.features.auth.enums.UserStatus;
 import com.example.ims.features.user.entities.UserSequence;
 import com.example.ims.features.user.repositories.UserSequenceRepository;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,9 @@ public class AuthService {
         if (!user.getPassword().equals(request.getPassword())) {
             throw new UserNotFoundException();
         }
+
+        if (user.getStatus() != UserStatus.ACTIVE)
+            throw new UnauthorizedException();
 
         String accessToken = jwtProvider.createAccessToken(
             user.getId(),
@@ -96,6 +100,9 @@ public class AuthService {
 
         User user = repository.findById(userId)
             .orElseThrow(UserNotFoundException::new);
+
+        if (user.getStatus() != UserStatus.ACTIVE)
+            throw new UnauthorizedException();
 
         String newRefresh =
             jwtProvider.createRefreshToken(userId);

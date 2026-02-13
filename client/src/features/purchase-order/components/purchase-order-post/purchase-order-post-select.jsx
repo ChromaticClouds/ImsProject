@@ -51,19 +51,24 @@ export const PurchaseOrderPostSelect = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className='w-60'>
-                <DropdownMenuGroup>
-                  {vendors.map((v) => (
-                    <DropdownMenuItem
-                      key={v.id}
-                      onClick={() => {
-                        setSelectedVendorId(v.id)
-                        field.handleChange(v.id);
-                      }}
-                    >
-                      {v.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
+                <form.Field name='products'>
+                  {(productField) => (
+                    <DropdownMenuGroup>
+                      {vendors.map((v) => (
+                        <DropdownMenuItem
+                          key={v.id}
+                          onClick={() => {
+                            setSelectedVendorId(v.id);
+                            field.handleChange(v.id);
+                            productField.handleChange(() => []);
+                          }}
+                        >
+                          {v.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuGroup>
+                  )}
+                </form.Field>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

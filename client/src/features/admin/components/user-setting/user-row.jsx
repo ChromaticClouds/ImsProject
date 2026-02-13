@@ -47,10 +47,14 @@ export const UserRow = ({
     >
       <TableCell />
 
-      <NameChangeDialog
-        user={user}
-        onNameChange={onNameChange}
-      />
+      {user.status !== 'PENDING' ? (
+        <NameChangeDialog
+          user={user}
+          onNameChange={onNameChange}
+        />
+      ) : (
+        <TableCell />
+      )}
 
       <TableCell>{user.email}</TableCell>
 

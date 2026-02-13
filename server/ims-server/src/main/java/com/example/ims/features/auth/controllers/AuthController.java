@@ -33,8 +33,9 @@ public class AuthController {
     private final AuthService service;
 
     @PostMapping("login")
-    public ResponseEntity<ApiResponse<AuthResponse>> loginUser(@RequestBody LoginRequest request)
-            throws UserNotFoundException {
+    public ResponseEntity<ApiResponse<AuthResponse>> loginUser(
+        @RequestBody LoginRequest request
+    ) throws UserNotFoundException {
         AuthResult result = service.loginUser(request);
 
         ResponseCookie refreshCookie = 
@@ -49,7 +50,9 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<ApiResponse<AuthResponse>> registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> registerUser(
+        @RequestBody RegisterRequest request
+    ) {
         AuthResult result = service.registerUser(request);
 
         ResponseCookie refreshCookie = 
@@ -64,7 +67,7 @@ public class AuthController {
     }
     
     @GetMapping("refresh")
-    public ResponseEntity<ApiResponse<AuthResponse>> reIsssueToken(
+    public ResponseEntity<ApiResponse<AuthResponse>> reIssueToken(
     	@CookieValue(value = "refreshToken", required = false) String refreshToken
     ) {
         if (refreshToken == null) throw new UnauthorizedException();
@@ -77,7 +80,6 @@ public class AuthController {
     	return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
             .body(ApiResponse.success(
-                "안녕하세요, " + result.user().getName() + "님", 
                 new AuthResponse(new AuthPartial(result.user()), result.accessToken())
             ));
     }

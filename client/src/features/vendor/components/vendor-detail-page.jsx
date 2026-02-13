@@ -6,11 +6,13 @@ import { useVendorDetail } from '@/features/vendor/hooks/use-vendor-detail';
 
 export function VendorDetailPage() {
   const navigate = useNavigate();
+
   const { id } = useParams();
   const vendorId = Number(id);
 
   const { data, isLoading, error } = useVendorDetail(vendorId);
-  const { mutateAsync: deleteVendorMutate, isPending: deleting } = useDeleteVendor();
+  const { mutateAsync: deleteVendorMutate, isPending: deleting } =
+    useDeleteVendor();
 
   const onDelete = async () => {
     if (!Number.isFinite(vendorId) || vendorId <= 0) {
@@ -30,9 +32,9 @@ export function VendorDetailPage() {
     }
   };
 
-  if (!Number.isFinite(vendorId) || vendorId <= 0) return <div>잘못된 거래처 ID</div>;
+  if (!Number.isFinite(vendorId) || vendorId <= 0)
+    return <div>잘못된 거래처 ID</div>;
   if (isLoading) return <div>불러오는 중...</div>;
-  if (error) return <div>에러: {String(error?.message ?? error)}</div>;
   if (!data) return <div>데이터가 없습니다.</div>;
 
   //
@@ -68,15 +70,20 @@ export function VendorDetailPage() {
       ) : null}
 
       <div style={{ marginTop: 12 }}>
-        <Button onClick={() => navigate(`/dashboard/vendor/modify/${vendorId}`)}>
+        <Button
+          onClick={() => navigate(`/dashboard/vendor/modify/${vendorId}`)}
+        >
           수정
         </Button>
         <br />
-        <Button onClick={onDelete} disabled={deleting} variant="destructive">
+        <Button
+          onClick={onDelete}
+          disabled={deleting}
+          variant='destructive'
+        >
           {deleting ? '삭제 중...' : '삭제'}
         </Button>
       </div>
     </div>
   );
 }
-

@@ -7,7 +7,6 @@ import { createContext } from 'react';
  */
 import { useFetchOutbound } from '../hooks/use-fetch-outbound.js';
 import { useContext } from 'react';
-import { useState } from 'react';
 
 /** @type {React.Context<{ managers: UserIdentifier[] }>} */
 const TableContext = createContext(null);

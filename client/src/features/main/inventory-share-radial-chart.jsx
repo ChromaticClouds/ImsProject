@@ -4,21 +4,39 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart.js';
 import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from 'recharts';
+import { useWarehouseShareQuery } from '../statistics/hooks/use-warehouse-share-query.js';
 
 export const VENDOR_MONITORED = [{ stocked: 240, limit: 60 }];
 
 const chartConfig = {
-  stocked: {
-    label: 'Total monitored',
+  used: {
+    label: '사용 중',
     color: 'var(--chart-3)',
   },
-  limit: {
-    label: 'Available limit',
+  available: {
+    label: '남은 용량',
     color: 'var(--color-secondary)',
   },
 };
 
-export const  InventoryShareRadialChart = () => {
+export const InventoryShareRadialChart = () => {
+  const { data } = useWarehouseShareQuery();
+
+  if (!data) return null;
+
+  const used = data.usedVolume;
+  const total = data.totalVolume;
+  const available = Math.max(total - used, 0);
+
+  const chartData = [
+    {
+      used,
+      available,
+    },
+  ];
+
+  const usageRate = total > 0 ? (used / total) * 100 : 0;
+
   const totalLimits = VENDOR_MONITORED[0].stocked + VENDOR_MONITORED[0].limit;
 
   return (
@@ -27,23 +45,23 @@ export const  InventoryShareRadialChart = () => {
       className='w-75 h-60'
     >
       <RadialBarChart
-        data={VENDOR_MONITORED}
+        data={chartData}
         innerRadius={120}
         outerRadius={180}
         cy={180}
         startAngle={0}
-        endAngle={180}
+        endAngle={180}  
       >
         <RadialBar
-          dataKey='limit'
+          dataKey='available'
           stackId='a'
-          fill='var(--color-limit)'
+          fill='var(--color-secondary)'
           cornerRadius={20}
           className='stroke-transparent stroke-2'
         />
 
         <RadialBar
-          dataKey='stocked'
+          dataKey='used'
           stackId='a'
           fill='var(--chart-3)'
           cornerRadius={20}
@@ -66,10 +84,18 @@ export const  InventoryShareRadialChart = () => {
                   >
                     <tspan
                       x={viewBox.cx}
-                      y={(viewBox.cy || 0) - 16}
-                      className='fill-foreground text-2xl font-bold'
+                      y={(viewBox.cy || 0) - 24}
+                      className='fill-foreground text-xl font-bold'
                     >
-                      {totalLimits.toLocaleString()}
+                      {usageRate.toFixed(1)}%
+                    </tspan>
+
+                    <tspan
+                      x={viewBox.cx}
+                      y={(viewBox.cy || 0) - 2}
+                      className='fill-muted-foreground text-sm'
+                    >
+                      {used.toLocaleString()} / {total.toLocaleString()}
                     </tspan>
                   </text>
                 );

@@ -25,7 +25,6 @@ public class OrderSequence {
     @Column(nullable = false, name = "pla_seq")
     private int plaSeq;
 
-    public void recIncrease() {
-        this.recSeq += 1;
-    }
+    public void recIncrease() { this.recSeq += 1; }
+    public void plaIncrease() { this.plaSeq += 1; }
 }

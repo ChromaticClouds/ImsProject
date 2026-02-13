@@ -1,5 +1,6 @@
 package com.example.ims.features.invitation.controllers;
 
+import com.example.ims.features.invitation.dto.SoloEmailRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,14 @@ public class InvitationController {
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(ApiResponse.success("초대장 메일이 전송되었습니다."));
+    }
+
+    @PostMapping("single")
+    public ResponseEntity<ApiResponse<Void>> inviteSingle(
+        @RequestBody SoloEmailRequest request
+    ) throws ResendException {
+        service.inviteSingle(request);
+        return ResponseEntity.ok(ApiResponse.success("이메일이 재전송되었습니다."));
     }
     
     @GetMapping("token")

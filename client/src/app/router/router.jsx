@@ -9,7 +9,7 @@ import { Home } from '@/pages/home.jsx';
 import { Auth } from '@/pages/auth.jsx';
 import { Dashboard } from '@/pages/dashboard/dashboard.jsx';
 import { Main } from '@/pages/dashboard/main.jsx';
-import { UserSetting } from '@/pages/dashboard/user-settiing.jsx';
+import { UserSetting } from '@/pages/dashboard/user/user-settiing.jsx';
 import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
 import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
@@ -45,7 +45,6 @@ import { TodoEdit } from '@/features/todo/pages/todo-edit';
 
 // purchase-order pages
 import { PurchaseOrder } from '@/pages/dashboard/purchase-order';
-import { PurchaseOrderCreate } from '@/features/purchase-order/pages/purchse-order-create';
 import { PurchaseOrderEdit } from '@/features/purchase-order/pages/purchase-order-edit';
 
 import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';
@@ -55,6 +54,8 @@ import { ReceiveOrder } from '@/pages/dashboard/receive-order/receive-order.jsx'
 import { ReceiveOrderPost } from '@/pages/dashboard/receive-order/receive-order-post.jsx';
 import { ForgotPassword } from '@/pages/forgot-password.jsx';
 import { PasswordReset } from '@/pages/password-reset.jsx';
+import { PurchaseOrderPost } from '@/pages/dashboard/purchase-order/purchase-order-post.jsx';
+import { UserGroup } from '@/pages/dashboard/user/user-group.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -76,15 +77,25 @@ export const router = createBrowserRouter([
             element: <Dashboard />,
             children: [
               { index: true, element: <Main /> },
-              { path: 'product', element: <Product /> },
+              {
+                path: 'product',
+                element: <Product />,
+              },
               {
                 path: 'user',
                 children: [
                   {
                     path: 'setting',
                     element: <UserSetting />,
-                    handle: { permissions: ['ALL'] },
+                    handle: {
+                      permissions: ['ALL'],
+                      minRank: 3,
+                    },
                   },
+                  {
+                    path: 'group',
+                    element: <UserGroup />
+                  }
                 ],
               },
               {
@@ -95,6 +106,10 @@ export const router = createBrowserRouter([
                   { path: ':id', element: <VendorDetail /> },
                   { path: 'modify/:id', element: <VendorModify /> },
                 ],
+                handle: {
+                  permissions: ['ALL'],
+                  minRank: 3,
+                },
               },
               { path: 'statistics', element: <Statistics /> },
               {
@@ -110,18 +125,37 @@ export const router = createBrowserRouter([
                     element: <InboundRegister />,
                   },
                 ],
+                handle: {
+                  permissions: ['INBOUND', 'ALL'],
+                  minRank: 1,
+                },
               },
               {
                 path: 'notice',
-
                 children: [
                   { index: true, element: <Notice /> },
-                  { path: 'create', element: <NoticeCreate /> },
-                  { path: ':id', element: <NoticeDetail /> },
-                  { path: ':id/edit', element: <NoticeEdit /> },
+                  {
+                    path: 'create',
+                    element: <NoticeCreate />,
+                    handle: {
+                      permissions: ['ALL'],
+                      minRank: 3,
+                    },
+                  },
+                  {
+                    path: ':id',
+                    element: <NoticeDetail />,
+                  },
+                  {
+                    path: ':id/edit',
+                    element: <NoticeEdit />,
+                    handle: {
+                      permissions: ['ALL'],
+                      minRank: 3,
+                    },
+                  },
                 ],
               },
-
               {
                 path: 'todo',
                 children: [
@@ -131,7 +165,6 @@ export const router = createBrowserRouter([
                   { path: ':id/edit', element: <TodoEdit /> },
                 ],
               },
-
               {
                 path: 'outbounds',
                 children: [
@@ -144,10 +177,18 @@ export const router = createBrowserRouter([
                     element: <OutboundRegister />,
                   },
                 ],
+                handle: {
+                  permissions: ['OUTBOUND', 'ALL'],
+                  minRank: 1,
+                },
               },
               {
                 path: 'adjust',
                 element: <Adjust />,
+                handle: {
+                  permissions: ['ALL'],
+                  minRank: 2,
+                },
               },
               {
                 path: 'statistics',
@@ -157,9 +198,14 @@ export const router = createBrowserRouter([
                 path: 'purchase-order',
                 children: [
                   { index: true, element: <PurchaseOrder /> },
-                  { path: 'create', element: <PurchaseOrderCreate /> },
                   { path: ':orderNumber/edit', element: <PurchaseOrderEdit /> },
+                  { path: 'create', element: <PurchaseOrderPost /> },
+                  { path: ':id/edit', element: <PurchaseOrderEdit /> },
                 ],
+                handle: {
+                  permissions: ['PLACE_ORDER', 'ALL'],
+                  minRank: 1,
+                },
               },
               {
                 path: 'history',
@@ -171,6 +217,10 @@ export const router = createBrowserRouter([
                   { index: true, element: <ReceiveOrder /> },
                   { path: 'post', element: <ReceiveOrderPost /> },
                 ],
+                handle: {
+                  permissions: ['RECEIVE_ORDER', 'ALL'],
+                  minRank: 1
+                }
               },
             ],
           },

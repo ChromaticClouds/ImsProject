@@ -8,8 +8,8 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-import { stockShareMock } from '../constants/index.js';
 import { useProductShareQuery } from '../hooks/use-product-share-query.js';
+import { ChartLoading } from './chart-loading.jsx';
 
 export const stockShareConfig = {
   stock: {
@@ -23,7 +23,7 @@ export const stockShareConfig = {
 export const ProductShareChart = () => {
   const { data, isLoading, isError } = useProductShareQuery();
 
-  if (isLoading) return null;
+  if (isLoading) return <ChartLoading />;
   if (isError || !data) return null;
 
   const COLORS = [

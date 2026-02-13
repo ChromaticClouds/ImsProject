@@ -3,10 +3,7 @@ package com.example.ims.features.order.services;
 import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.auth.enums.UserRole;
 import com.example.ims.features.auth.exceptions.UserNotFoundException;
-import com.example.ims.features.order.dto.OrderBootstrap;
-import com.example.ims.features.order.dto.OrderPostRequest;
-import com.example.ims.features.order.dto.OrderProduct;
-import com.example.ims.features.order.dto.OrderSummary;
+import com.example.ims.features.order.dto.*;
 import com.example.ims.features.order.entities.Order;
 import com.example.ims.features.order.enums.OrderStatus;
 import com.example.ims.features.order.exceptions.OrderNotFoundException;
@@ -56,7 +53,7 @@ public class OrderService {
             .map(v -> new VendorIdentifier(v.getId(), v.getVendorName()))
             .toList();
 
-        String sequence = sequenceGenerator.generate();
+        String sequence = sequenceGenerator.generateReceiveOrder();
 
         return new OrderBootstrap(users, sellers, sequence);
     }
@@ -82,7 +79,7 @@ public class OrderService {
         Vendor vendor = vendorRepository.findById(request.getSellerId())
             .orElseThrow(VendorNotFoundException::new);
 
-        String orderNumber = sequenceGenerator.issue();
+        String orderNumber = sequenceGenerator.issueReceiveOrder();
 
         List<Order> orders = request.getProducts().stream().map(p -> {
             Product product = productRepository.findById(p.id())
@@ -106,13 +103,15 @@ public class OrderService {
     public List<OrderSummary> getReceiveOrders(
         String search,
         LocalDate fromDate,
-        LocalDate toDate
+        LocalDate toDate,
+        Long salerId
     ) {
         return orderRepository.findOrderSummaries(
             OrderStatus.OUTBOUND_PENDING,
             search,
             fromDate,
-            toDate
+            toDate,
+            salerId
         );
     }
 
@@ -145,5 +144,16 @@ public class OrderService {
             .orElseThrow(UserNotFoundException::new);
 
         orders.forEach(o -> o.assignManager(manager));
+    }
+
+    public List<VendorIdentifier> getSalers() {
+        return orderRepository.getSalers(OrderStatus.OUTBOUND_PENDING);
+    }
+
+    public List<OrderDetail> getItemsByOrderNumber(String orderNumber) {
+        return orderRepository.getItemsByOrderNumber(
+            orderNumber,
+            OrderStatus.OUTBOUND_PENDING
+        );
     }
 }

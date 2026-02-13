@@ -8,9 +8,9 @@ export const AdjustFooter = () => {
 
   return (
     <form.Subscribe
-      selector={(state) => state.values.products}
+      selector={(state) => [state.values.products]}
     >
-      {(products) => {
+      {([products]) => {
         const total = products.reduce((a, b) => a + b.adjustCount, 0);
 
         return (

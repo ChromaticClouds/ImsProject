@@ -3,6 +3,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { assignOutboundManager, getReceiveOrders } from '../api/index.js';
 import { toast } from 'sonner';
+import { useReceiveOrderFilterStore } from '../stores/use-receive-order-filter-store.js';
+import { formatToIsoDate } from '../utils/format-date.js';
 
 /**
  * 수주(입고 예정) 목록 조회 + 출고 담당자 지정/변경을 위한 훅
@@ -11,26 +13,16 @@ import { toast } from 'sonner';
  * - 담당자 변경 시 optimistic update를 적용하여 즉시 UI를 반영한다.
  * - 요청 실패 시 이전 캐시 상태로 rollback한다.
  *
- * @param {{
+ * @typedef {{
  *  search?: string | null,
  *  fromDate?: string | null,
- *  toDate?: string | null
- * }} searchCond
+ *  toDate?: string | null,
+ *  salerId?: number | null
+ * }} SearchType
  * 조회에 사용할 검색 조건
  *
  * @returns {{
- *  orders: Array<{
- *    orderNumber: string,
- *    userName: string,
- *    vendorName: string,
- *    bossName: string,
- *    orderDate: string,
- *    receiveDate: string | null,
- *    itemCount: number,
- *    totalPrice: number,
- *    managerId: number | null,
- *    managerName: string | null
- *  }>,
+ *  orders: Array<ReceiveOrder>,
  *  mutation: import('@tanstack/react-query').UseMutationResult<
  *    any,
  *    unknown,
@@ -38,7 +30,17 @@ import { toast } from 'sonner';
  *  >
  * }}
  */
-export const useFetchReceiveOrder = (searchCond) => {
+export const useFetchReceiveOrder = () => {
+  const { search, dateRange, salerId } = useReceiveOrderFilterStore();
+  const { from, to } = dateRange;
+
+  const searchCond = {
+    search,
+    salerId,
+    fromDate: formatToIsoDate(from),
+    toDate: formatToIsoDate(to),
+  };
+
   const queryClient = useQueryClient();
 
   const { data } = useQuery({
@@ -88,7 +90,7 @@ export const useFetchReceiveOrder = (searchCond) => {
     },
 
     onSuccess: (_data, variables) => {
-      toast.success('담당자가 지정완료됐습니다.')
+      toast.success('담당자가 지정완료됐습니다.');
     },
 
     /**

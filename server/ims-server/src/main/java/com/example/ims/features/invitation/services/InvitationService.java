@@ -4,6 +4,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.ims.features.auth.enums.UserRole;
+import com.example.ims.features.auth.enums.UserStatus;
+import com.example.ims.features.invitation.dto.SoloEmailRequest;
 import org.springframework.stereotype.Service;
 
 import com.example.ims.features.auth.dto.InviteVerifyResponse;
@@ -36,7 +39,12 @@ public class InvitationService {
 
         System.out.println(invitedUsers);
 
-        mailSender.createInvitation(invitedUsers);
+        mailSender.sendBatch(invitedUsers);
+    }
+
+    public void inviteSingle(SoloEmailRequest request) throws ResendException {
+        InvitationMailPayload invitedSingle = createInvitation(request.getEmail());
+        mailSender.sendOne(invitedSingle);
     }
 
     public InvitationMailPayload createInvitation(String email) {
@@ -46,6 +54,8 @@ public class InvitationService {
         User found = repository.findByEmail(email).orElseGet(() -> {
             User user = new User();
             user.setEmail(email);
+            user.setStatus(UserStatus.PENDING);
+            user.setUserRole(UserRole.NONE);
             repository.save(user);
             return user;
         });
@@ -56,8 +66,6 @@ public class InvitationService {
     public InviteVerifyResponse verifyInviteToken (String token) {
         String email = tokenStore.findEmailByToken(token)
             .orElseThrow(InvalidInvitationTokenException::new);
-
-        System.out.println(email);
 
         User user = repository.findByEmail(email)
             .orElseThrow(UserNotFoundException::new);

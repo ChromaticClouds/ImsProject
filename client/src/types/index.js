@@ -59,6 +59,21 @@
  */
 
 /**
+ * 거래처 상세
+ * @typedef {object} VendorDetail
+ * @property {number} id
+ * @property {'Supplier' | 'Seller'} type
+ * @property {string} vendorName
+ * @property {string} bossName
+ * @property {string} email
+ * @property {string} address
+ * @property {string} telephone
+ * @property {string} imageUrl
+ * @property {string} memo
+ * @property {string} createdAt
+ */
+
+/**
  * @template T
  * @typedef {object} PageResponse
  * @property {T[]} content
@@ -159,10 +174,10 @@
  * @property {string} recieveDate      - 납기일 / 입고 예정일 (YYYY-MM-DD)
  * @property {number} count            - 발주 수량
  * @property {number} leadTime         - 리드타임 (일 단위)
- * @property {('INBOUND_PENDING' | null)} status
+ * @property {('OUTBOUND_PENDING' | null)} status
  *   - 발주 상태
  *   - null: 발주 전송 전
- *   - INBOUND_PENDING: 발주서 전송 완료 (입고 대기)
+ *   - OUTBOUND_PENDING: 주문서 전송 완료 (출고 대기)
  *
  * @property {number} venderItemId     - 거래처 품목 ID
  * @property {number} productId        - 내부 상품 ID
@@ -209,7 +224,7 @@
  */
 
 /**
- * 발주서 전송에 필요한 폼 스키마
+ * 주문서 전송에 필요한 폼 스키마
  * @typedef {object} OrderPostFormSchema
  * @property {number| null} userId
  * @property {number | null} sellerId
@@ -227,4 +242,36 @@
  * @property {number} perCount
  * @property {number} salePrice
  * @property {string} imageUrl
+ */
+
+/**
+ * @typedef {object} ReceiveOrder
+ * @property {string} orderNumber
+ * @property {string} userName
+ * @property {string} vendorName
+ * @property {string} bossName
+ * @property {string} orderDate
+ * @property {string | null} receiveDate
+ * @property {number} itemCount
+ * @property {number} totalPrice
+ * @property {number | null} managerId
+ * @property {string | null} managerName
+ */
+
+/**
+ * 공급처 목록 발주 번호, 유저 목록 스키마
+ * @typedef {object} OrderBootstrap
+ * @property {string} sequence
+ * @property {UserIdentifier[]} users
+ * @property {VendorIdentifier[]} vendors
+ */
+
+/**
+ * @typedef {object} OrderSummary
+ * @property {number} id
+ * @property {string} name
+ * @property {string} brand
+ * @property {ProductType} type
+ * @property {number} salePrice
+ * @property {string | null} imageUrl
  */

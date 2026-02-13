@@ -1,4 +1,5 @@
 // @ts-check
+import { api } from '@/services/api.js';
 import { useQuery } from '@tanstack/react-query';
 
 export function useVendorDetail(id) {
@@ -7,19 +8,11 @@ export function useVendorDetail(id) {
   return useQuery({
     queryKey: ['vendor-detail', vendorId],
     queryFn: async () => {
-      const res = await fetch(`http://localhost:8080/vendor/${vendorId}`, {
-        cache: 'no-store',
-      });
-
-      if (!res.ok) {
-        const text = await res.text().catch(() => '');
-        throw new Error(`GET /vendor/${vendorId} ${res.status} ${res.statusText} :: ${text}`);
-      }
-
-      return res.json();
+      const response = await api.get(`vendor/${vendorId}`).json();
+      console.log(response);
+      return response;
     },
     enabled: Number.isFinite(vendorId) && vendorId > 0,
-    refetchOnMount: 'always',
   });
 }
 

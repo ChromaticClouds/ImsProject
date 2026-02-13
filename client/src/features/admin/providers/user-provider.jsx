@@ -14,6 +14,8 @@ import { useMemo } from 'react';
 import { toUserRowModel } from '../schemas/user-model.js';
 import { useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
+import { useDebounce } from '@/hooks/use-debounce.js';
+import { useEffect } from 'react';
 
 /**
  * @typedef {object} UserListContextValue
@@ -45,10 +47,22 @@ export const useUserList = () => {
  */
 export const UserProvider = ({ children }) => {
   const [search, setSearch] = useState('');
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const pageNumber = Number(params.get('page') ?? 1);
 
-  const { data, isFetching } = useUsers(pageNumber, search);
+  const debounced = useDebounce(search, 500);
+
+  useEffect(() => {
+    if (debounced !== search) return; // debounce 완료 후만 실행
+    const currentParams = Object.fromEntries([...params]);
+    currentParams.page = '1';
+    currentParams.search = debounced;
+    setParams(currentParams, { replace: true });
+  }, [debounced]);
+
+  // useUsers 호출
+  const pageToFetch = debounced ? 1 : pageNumber;
+  const { data, isFetching } = useUsers(pageToFetch, debounced);
 
   const {
     content = [],

@@ -8,8 +8,12 @@ export const authBootstrapLoader = () => {
   const user = useAuthStore.getState().user;
 
   const authPromise = token
-    ? { authenticated: true, role: user.userRole }
-    : bootStrapAuth().then((b) => ({ authenticated: b.success, role: b.role }));
+    ? { authenticated: true, role: user.userRole, rank: user.userRank }
+    : bootStrapAuth().then((b) => ({
+        authenticated: b.success,
+        role: b.role,
+        rank: b.rank,
+      }));
 
   return Promise.resolve({ auth: authPromise });
 };

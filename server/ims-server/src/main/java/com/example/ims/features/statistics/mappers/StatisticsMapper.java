@@ -55,16 +55,40 @@ public interface StatisticsMapper {
     """)
     List<ProductShareResponse> findTop5ByUsedVolume();
 
+    /**
+     * 품목별 리드타임 통계 조회
+     */
+    @Select("""
+    select p.name as name, avg(o.lead_time) as leadTime
+    from orders o
+    join vendor_item vi on o.vendor_item_id = vi.id
+    join product p on vi.product_id = p.id
+    where o.status = 'INBOUND_COMPLETE'
+    and o.recieve_date between #{startDate} and #{endDate}
+    group by p.name order by leadTime desc;
+    """)
+    List<LeadTimeResponse> findLeadTimeByProduct(
+        LocalDate startDate,
+        LocalDate endDate
+    );
+
+    /**
+     * 거래처별 리드타임 통계 조회
+     */
     @Select("""
     select v.vendor_name as name, avg(o.lead_time) as leadTime
     from orders o
     join vendor_item vi on o.vendor_item_id = vi.id
     join vendor v on vi.vendor_id = v.id
     where o.status = 'INBOUND_COMPLETE'
+    and o.recieve_date between #{startDate} and #{endDate}
     group by v.vendor_name order by leadTime desc;
     """)
-    List<LeadTimeResponse> findLeadTimeByVendor();
-    
+    List<LeadTimeResponse> findLeadTimeByVendor(
+        LocalDate startDate,
+        LocalDate endDate
+    );
+
     // 품목별 입출고 조회
     @SelectProvider(type = StatisticsProvider.class, method = "selectInOutByProduct")
     List<InOutByProductRow> selectInOutByProduct(
@@ -90,7 +114,7 @@ public interface StatisticsMapper {
         @Param("keyword") String keyword,
         @Param("limit") int limit
     );
-    
+
     // -------------------------------------------------------------
     // 거래처별 입출고 순위 통계
 

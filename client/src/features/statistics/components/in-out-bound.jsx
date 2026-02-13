@@ -12,9 +12,18 @@ import {
   fetchStatisticsTypes,
 } from '../api/index.js';
 
-function pad2(n) { return String(n).padStart(2, '0'); }
-function toYmd(d) { return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; }
-function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
+function toYmd(d) {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+function startOfMonth(d) {
+  return new Date(d.getFullYear(), d.getMonth(), 1);
+}
+function endOfMonth(d) {
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0);
+}
 
 function isFutureYmd(ymd) {
   const today = toYmd(new Date());
@@ -125,93 +134,86 @@ export const InOutBound = () => {
       width="wide"
       height="lg"
     >
-      
-      <div className="relative">
-      
-        <div
-          className={[
-            'sticky top-0 z-20',
-            'bg-background/95 backdrop-blur',
-            'border-b',
-            'pb-3 mb-3',
-          ].join(' ')}
-        >
-          <div className="flex flex-wrap items-end gap-3 pt-3">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground">기간</label>
-              <StatisticsDateRangePicker
-                value={{ from, to }}
-                onChange={({ from, to }) => {
-                  setFrom(from);
-                  setTo(to);
-                }}
-                disabled={false}
-                minDateYMD={undefined}
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground">품목 검색</label>
-              <input
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="품목명 입력"
-                className="h-9 w-60 rounded-md border px-2"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground">주종</label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                className="h-9 w-28 rounded-md border px-2"
-              >
-                <option value="">전체</option>
-                {(typesQ.data ?? []).map((t) => (
-                  <option key={t} value={t}>
-                    {toKoreanTypeLabel(t)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground">브랜드</label>
-              <select
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-                disabled={!type}
-                className="h-9 w-40 rounded-md border px-2 disabled:opacity-60"
-              >
-                <option value="">{type ? '전체' : '주종 선택 필수'}</option>
-                {(brandsQ.data ?? []).map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {dateError ? (
-            <div className="mt-2 text-sm font-semibold text-red-600">
-              {dateError}
-            </div>
-          ) : null}
+      {/* 필터 */}
+      <div className='flex flex-wrap items-end gap-3 mb-3'>
+        <div className='flex flex-col gap-1'>
+          <label className='text-xs text-muted-foreground'>기간</label>
+          <StatisticsDateRangePicker
+            value={{ from, to }}
+            onChange={({ from, to }) => {
+              setFrom(from);
+              setTo(to);
+            }}
+            disabled={false}
+            minDateYMD={undefined}
+          />
         </div>
 
-       
-        <div className="w-full overflow-x-full">
-          {statsQ.isFetching ? (
-            <div className="text-sm text-muted-foreground">데이터 불러오는 중...</div>
-          ) : statsQ.isError ? (
-            <div className="text-sm text-red-600">통계 조회 실패</div>
-          ) : (
-            <InOutboundChart data={chartData} />
-          )}
+        <div className='flex flex-col gap-1'>
+          <label className='text-xs text-muted-foreground'>품목 검색</label>
+          <input
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder='품목명/코드'
+            className='h-9 w-40 rounded-md border px-2'
+          />
+        </div>
+
+        <div className='flex flex-col gap-1'>
+          <label className='text-xs text-muted-foreground'>주종</label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className='h-9 w-20 rounded-md border px-2'
+          >
+            <option value=''>전체</option>
+            {(typesQ.data ?? []).map((t) => (
+              <option
+                key={t}
+                value={t}
+              >
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className='flex flex-col gap-1'>
+          <label className='text-xs text-muted-foreground'>브랜드</label>
+          <select
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+            disabled={!type}
+            className='h-9 w-40 rounded-md border px-2 disabled:opacity-60'
+          >
+            <option value=''>{type ? '전체' : '주종 선택 필수'}</option>
+            {(brandsQ.data ?? []).map((b) => (
+              <option
+                key={b}
+                value={b}
+              >
+                {b}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+
+      {dateError ? (
+        <div className='mb-2 text-sm font-semibold text-red-600'>
+          {dateError}
+        </div>
+      ) : null}
+
+      {statsQ.isFetching ? (
+        <div className='text-sm text-muted-foreground'>
+          데이터 불러오는 중...
+        </div>
+      ) : statsQ.isError ? (
+        <div className='text-sm text-red-600'>통계 조회 실패</div>
+      ) : (
+        <InOutboundChart data={chartData} />
+      )}
     </GraphContainer>
   );
 };

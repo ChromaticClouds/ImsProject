@@ -58,9 +58,9 @@ public class Order {
     @JoinColumn(name = "manager_id")
     User manager;
 
-      /* =========================
-       Domain Methods
-       ========================= */
+    /* =========================
+      Domain Methods
+    ========================= */
 
     /**
      * 출고 담당자 지정

@@ -16,20 +16,28 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class InvitationMailSender {
-    
+
     private final ResendClient resendClient;
     private final ResendProperties props;
 
-    public void createInvitation(List<InvitationMailPayload> payloads) throws ResendException {
+    public void sendOne(InvitationMailPayload payload) throws ResendException {
+        resendClient.send(buildEmailOptions(payload));
+    }
+
+    public void sendBatch(List<InvitationMailPayload> payloads) throws ResendException {
         List<CreateEmailOptions> batch = payloads.stream()
-            .map(payload -> CreateEmailOptions.builder()
+                .map(this::buildEmailOptions)
+                .toList();
+
+        resendClient.sendBatch(batch);
+    }
+
+    private CreateEmailOptions buildEmailOptions(InvitationMailPayload payload) {
+        return CreateEmailOptions.builder()
                 .from(props.getFromEmail())
                 .to(payload.getUser().getEmail())
                 .subject("IMS PROJECT 초대장이 도착했습니다.")
                 .html(new Invitation(payload.getToken(), props.getBaseUrl()).getMailContents())
-                .build())
-            .toList();
-
-        resendClient.sendBatch(batch);
+                .build();
     }
 }

@@ -2,7 +2,9 @@ package com.example.ims.features.vendor.mapper;
 
 import java.util.Map;
 
+import com.example.ims.features.vendor.dto.VendorCreateRequest;
 import org.apache.ibatis.jdbc.SQL;
+import org.springframework.data.repository.query.Param;
 
 public class VendorSqlProvider {
     
@@ -119,8 +121,7 @@ public class VendorSqlProvider {
         }}.toString();
     }
     
-    // 거래처 찾기
-    public String findVendorById(Map<String, Object> params) {
+    public String findVendorById(@Param("id") Long id) {
         return new SQL(){{
             SELECT("id, type, vendor_name AS vendorName, telephone, email, boss_name AS bossName, address, memo, image_url AS imageUrl, created_at AS createdAt");
             FROM("vendor");
@@ -141,8 +142,8 @@ public class VendorSqlProvider {
         }}.toString();
     }
 
-    // 거래처 수정
-    public String updateVendor(Map<String, Object> params) {
+    public String updateVendor(Long id, VendorCreateRequest req) {
+
         return new SQL(){{
             UPDATE("vendor");
             SET("type = #{req.type}");

@@ -7,6 +7,6 @@ import java.util.List;
 
 public record OrderBootstrap(
     List<UserIdentifier> users,
-    List<VendorIdentifier> sellers,
+    List<VendorIdentifier> vendors,
     String sequence
 ) {}

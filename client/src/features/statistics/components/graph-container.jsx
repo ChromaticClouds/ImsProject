@@ -63,7 +63,7 @@ export const GraphContainer = ({
         </CardHeader>
 
         <CardContent
-          className={`overflow-hidden overflow-x-auto ${HEIGHT_CLASS[height]}`}
+          className={`h-full flex flex-col justify-center overflow-hidden overflow-x-auto ${HEIGHT_CLASS[height]}`}
         >
           {children}
         </CardContent>

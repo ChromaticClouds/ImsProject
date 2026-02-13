@@ -1,5 +1,6 @@
-import { api, hooks } from "@/services/api.js";
+// @ts-check
 
+import { api, hooks } from "@/services/api.js";
 
 /**
  * 통계 - 주종 목록
@@ -32,7 +33,6 @@ export async function fetchInboundPartnerRank(params) {
 export async function fetchOutboundPartnerRank(params) {
   return await api.get('stats/rank/outbound', { searchParams: params }).json();
 }
-
 
 /**
  * @typedef {{
@@ -91,3 +91,25 @@ export async function fetchStatisticsSearchProducts(params) {
     .get('stats/stock-rotation/products/search', { searchParams: params, hooks })
     .json();
 }
+
+/**
+ * @typedef {Object} LeadTimeData
+ * @property {string} name
+ * @property {number} leadTime
+ */
+
+/**
+ * 거래처별 리드타임
+ * @param {{ startDate: string, endDate: string }} date
+ * @returns {Promise<ApiResponse<LeadTimeData[]>>}
+ */
+export const getVendorLeadTime = (date) =>
+  api.get('stats/lead-time/by-vendor', { searchParams: date, hooks }).json();
+
+/**
+ * 품목별 리드타임
+ * @param {{ startDate: string, endDate: string }} date
+ * @returns {Promise<ApiResponse<LeadTimeData[]>>}
+ */
+export const getProductLeadTime = (date) =>
+  api.get('stats/lead-time/by-product', { searchParams: date, hooks }).json();

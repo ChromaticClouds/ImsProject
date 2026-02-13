@@ -79,6 +79,7 @@ public class VendorController {
     }
 
     // 거래처 삭제
+    
     @DeleteMapping("/{id}")
     public void deleteVendor(@PathVariable("id") Long id) {
         vendorService.deleteVendor(id);
@@ -91,12 +92,5 @@ public class VendorController {
       @PathVariable("productId") Long productId
     ) {
       vendorService.softDeleteVendorItem(vendorId, productId);
-    }
-
-    
-    
-    
- 
-    
-    
+    }    
 }

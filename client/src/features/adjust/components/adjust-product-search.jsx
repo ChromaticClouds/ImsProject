@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/popover.js';
 import { useAdjustContext } from '../providers/adjust-provider.jsx';
 import { addOrIncreaseProduct } from '../healper/index.js';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 
 export const AdjustProductSearch = () => {
   const { input, setInput } = useProductSearch();
@@ -37,6 +38,7 @@ export const AdjustProductSearch = () => {
     <div className='relative w-full max-w-120'>
       <Popover
         open={isOpen}
+        modal={true}
         onOpenChange={setIsOpen}
       >
         <PopoverTrigger asChild>
@@ -58,7 +60,9 @@ export const AdjustProductSearch = () => {
 
         <PopoverContent
           align='start'
+          side='bottom'
           className='p-0 w-(--radix-popover-trigger-width)'
+          onOpenAutoFocus={(e) => e.preventDefault()}
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
           <div className='max-h-80 overflow-y-auto'>
@@ -73,10 +77,16 @@ export const AdjustProductSearch = () => {
                     setIsOpen(false);
                   }}
                 >
-                  <img
-                    src={product.imageUrl || '/placeholder.png'}
-                    className='w-10 h-10 rounded object-cover shrink-0'
-                  />
+                  <Avatar className='w-14 h-14 rounded-lg'>
+                    <AvatarImage
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className='object-cover'
+                    />
+                    <AvatarFallback className='rounded-lg text-xs'>
+                      {product.name.slice(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
                   <div className='flex flex-col min-w-0'>
                     <span className='text-sm font-medium truncate'>
                       {product.name}

@@ -43,35 +43,14 @@ export const Todo = () => {
     queryFn: fetchTodos,
   });
 
-  // 목록 조작(삭제/완료)을 위해 로컬 상태로 복사
-  const [localTodos, setLocalTodos] = useState([]);
-  useEffect(() => {
-    setLocalTodos(data);
-  }, [data]);
-
   const search = useTodoSearch();
-  const filterSort = useTodoFilterSort(localTodos);
-
-  const searchedList = useMemo(() => {
-    return search.applySearch(filterSort.filteredSortedList);
-  }, [search, filterSort.filteredSortedList]);
-
-  const pagination = useTodoPagination(searchedList);
-
-  const { paginatedList, currentPage, totalPages, setCurrentPage } = pagination;
 
   const [selectedTodo, setSelectedTodo] = useState(null);
 
   const navigate = useNavigate();
 
 
-  // actions
-  const handleDelete = (id) => {
-    const ok = window.confirm('정말 삭제할까요?');
-    if (!ok) return;
-    setLocalTodos((prev) => prev.filter((t) => t.id !== id));
-    setCurrentPage(1);
-  };
+
 
   // const handleComplete = (id) => {
   //   setLocalTodos((prev) =>
@@ -80,22 +59,6 @@ export const Todo = () => {
   // };
 
 const today = new Date().toISOString().slice(0, 10);
-
-const handleComplete = (id) => {
-  setLocalTodos((prev) =>
-    prev.map((t) => {
-      if (t.id !== id) return t;
-
-      const isDone = t.status === 'DONE';
-
-      return {
-        ...t,
-        status: isDone ? 'IN_PROGRESS' : 'DONE',
-        completedAt: isDone ? null : today,
-      };
-    })
-  );
-};
 
 
 
@@ -128,7 +91,7 @@ const handleComplete = (id) => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant='outline' size='sm' className='gap-2'>
-                  <Filter className='w-4 h-4' /> {TODO_STATUS_LABEL[filterSort.status]}
+                  <Filter className='w-4 h-4' />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end' className='w-40'>
@@ -137,10 +100,6 @@ const handleComplete = (id) => {
                 {Object.keys(TODO_STATUS_LABEL).map((key) => (
                   <DropdownMenuItem
                     key={key}
-                    onClick={() => {
-                      filterSort.setStatus(key);
-                      setCurrentPage(1);
-                    }}
                   >
                     {TODO_STATUS_LABEL[key]}
                   </DropdownMenuItem>
@@ -151,9 +110,9 @@ const handleComplete = (id) => {
             {/* 정렬 */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant='outline' size='sm'>
+                {/* <Button variant='outline' size='sm'>
                   {TODO_SORT_LABEL[filterSort.sort]}
-                </Button>
+                </Button> */}
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end' className='w-44'>
                 <DropdownMenuLabel>정렬</DropdownMenuLabel>
@@ -161,10 +120,6 @@ const handleComplete = (id) => {
                 {Object.keys(TODO_SORT_LABEL).map((key) => (
                   <DropdownMenuItem
                     key={key}
-                    onClick={() => {
-                      filterSort.setSort(key);
-                      setCurrentPage(1);
-                    }}
                   >
                     {TODO_SORT_LABEL[key]}
                   </DropdownMenuItem>
@@ -187,27 +142,12 @@ const handleComplete = (id) => {
               value={search.keyword}
               onChange={(e) => {
                 search.setKeyword(e.target.value);
-                setCurrentPage(1);
               }}
               className='h-9 w-72'
             />
           </div>
 
-          {/* 테이블 */}
-          <TodoTable
-            todos={paginatedList}
-            onDetail={(todo) => navigate(`/dashboard/todo/${todo.id}`)}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onComplete={handleComplete}
-          />
-
           <CardFooter>
-            <TodoPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              setCurrentPage={setCurrentPage}
-            />
           </CardFooter>
         </CardContent>
       </Card>

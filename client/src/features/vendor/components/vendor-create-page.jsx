@@ -426,8 +426,6 @@ export function VendorCreatePage() {
           </div>
         ) : null}
 
-        console.log('payload', JSON.stringify(payload, null, 2));
-
         <div style={{ marginTop: 14 }}>
           {/* Supplier: 필수+품목+단가 */}
           <Button type="submit" disabled={!canSubmit} variant='default'>

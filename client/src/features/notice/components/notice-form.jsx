@@ -67,6 +67,7 @@ export const NoticeForm = ({
         method='post'
         name='frm'
         encType='multipart/form-data'
+        className='space-y-2'
       >
         <Input
           placeholder='제목'

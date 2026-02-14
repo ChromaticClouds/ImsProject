@@ -111,7 +111,7 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
                     {product.perCount}개입
                   </TableCell>
 
-                  <TableCell>
+                  {/* <TableCell>  // 더보기 단추 테이블
                     <Button
                       variant='ghost'
                       size='icon'
@@ -119,7 +119,7 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
                     >
                       <MoreHorizontal className='h-4 w-4' />
                     </Button>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               </ProductDetailDialog>
             ))

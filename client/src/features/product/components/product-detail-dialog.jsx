@@ -34,16 +34,37 @@ export const ProductDetailDialog = ({ product, children }) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className='flex flex-col gap-2'>
-          <span className='text-xs text-muted-foreground'>박스 이미지</span>
-          <div className='w-full h-100 rounded overflow-hidden'>
+       
+
+          {/* 낱개 이미지 */}
+         {/* <div className='grid grid-cols-2 gap-4'>  가로처리로 만들거면 이거 쓸거임 */}
+          <div className='flex flex-col gap-2'>
+          {/* <div className='flex flex-col gap-2'>  가로처리로 만들거면 이거 쓸거임*/}
+          <div className='flex flex-col gap-2'>
+            <span className='text-xs text-muted-foreground'>
+              낱개 이미지
+            </span>
             <img
               src={product.imageUrl}
+              alt='single'
+              className='h-70 w-full object-contain rounded border bg-white'
+            />
+          </div>
+
+          {/* 박스 이미지 */}
+          <div className='flex flex-col gap-2'>
+            <span className='text-xs text-muted-foreground'>
+              박스 이미지
+            </span>
+            <img
+              src={product.boxImageUrl}
               alt='box'
-              className='w-full h-full object-cover'
+              className='h-50 w-full object-contain rounded border bg-white'
             />
           </div>
         </div>
+
+
 
         {/* 상세 정보 */}
         <div className='mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm'>

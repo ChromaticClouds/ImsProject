@@ -19,7 +19,7 @@ import {
  * @param {PaginationProps} props
  */
 export const NoticePagination = ({ currentPage, totalPages }) => {
-  // 페이지가 0~1이면 페이징 UI 안 보여줌 (실무에서 많이 씀)
+  // 페이지가 0~1이면 페이징 UI 안 보여줌
   if (!totalPages || totalPages <= 1) return null;
 
   return (

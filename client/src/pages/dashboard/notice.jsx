@@ -14,7 +14,7 @@ import { NoticeTable } from '@/features/notice/components/notice-table';
 import { useSearchParams } from 'react-router-dom';
 import { NoticeHeader } from '@/features/notice/components/notice-header';
 import { NoticePagination } from '@/features/notice/components/notice-pagination';
-import { NoticeSearch } from '@/features/notice/components/notice-search';
+// import { NoticeSearch } from '@/features/notice/components/notice-search'; 없애는 기능
 
 /**
  * 공지사항 목록 페이지
@@ -38,8 +38,8 @@ export const Notice = () => {
         <NoticeHeader />
 
         <CardContent className='space-y-4'>
-          {/* 검색 영역 */}
-          <NoticeSearch />
+          {/* 검색 영역 - 없애는 기능*/}
+          {/* <NoticeSearch /> */}
 
           {/* 공지사항 목록 */}
           <NoticeTable data={data} />

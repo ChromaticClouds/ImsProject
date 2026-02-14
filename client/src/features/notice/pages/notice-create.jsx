@@ -56,6 +56,7 @@ export const NoticeCreate = () => {
       <Card>
         <CardHeader>
           <CardTitle>공지사항 작성</CardTitle>
+          
           <CardDescription>제목/내용을 입력하고 등록하세요.</CardDescription>
         </CardHeader>
         <CardContent>

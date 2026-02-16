@@ -82,4 +82,14 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         "vendorItem.product"
     })
     List<Order> findAllByOrderNumber(String orderNumber);
+
+    /**
+     * 해당 주문 번호들의 발주서를 모두 조회하기 위한 쿼리
+     */
+    @EntityGraph(attributePaths = {
+        "vendorItem",
+        "vendorItem.vendor",
+        "vendorItem.product"
+    })
+    List<Order> findAllByOrderNumberIn(List<String> orderNumber);
 }

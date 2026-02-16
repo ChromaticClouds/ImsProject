@@ -1,6 +1,6 @@
 package com.example.ims.features.purchaseorder.services;
 
-import com.example.ims.features.purchaseorder.dto.PurchaseOrderPdfContent;
+import com.example.ims.features.purchaseorder.dto.PurchaseOrderContext;
 import com.example.ims.global.external.resend.ResendClient;
 import com.example.ims.global.properties.ResendProperties;
 import com.resend.core.exception.ResendException;
@@ -19,23 +19,21 @@ public class PurchaseOrderMailSender {
     private final ResendClient resendClient;
 
     public void sendPurchaseOrder(
-        String to,
-        String subject,
+        PurchaseOrderContext context,
         String htmlBody,
-        byte[] pdfBytes,
-        String fileName
+        byte[] pdfBytes
     ) throws ResendException {
         String encoded = Base64.getEncoder().encodeToString(pdfBytes);
 
         Attachment attachment = Attachment.builder()
-            .fileName(fileName)
+            .fileName(context.orderNumber() + ".pdf")
             .content(encoded)
             .build();
 
         CreateEmailOptions options = CreateEmailOptions.builder()
             .from(props.getFromEmail())
-            .to(to)
-            .subject(subject)
+            .to(context.vendor().getEmail())
+            .subject("[발주서]" + context.orderNumber())
             .html(htmlBody)
             .attachments(attachment)
             .build();

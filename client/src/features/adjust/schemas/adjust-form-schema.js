@@ -2,13 +2,12 @@
 
 import z from 'zod';
 
-export const adjustProductSchema = z
-  .object({
-    adjustCount: z
-      .number('숫자만 입력해주세요')
-      .int('정수만 입력 가능합니다')
-      .min(0, '변동 수량은 음수가 될 수 없습니다')
-  })
+export const adjustProductSchema = z.object({
+  adjustCount: z
+    .number('숫자만 입력해주세요')
+    .int('정수만 입력 가능합니다')
+    .min(0, '변동 수량은 음수가 될 수 없습니다'),
+});
 
 export const adjustFormSchema = z.object({
   products: z
@@ -18,5 +17,6 @@ export const adjustFormSchema = z.object({
   memo: z
     .string()
     .trim()
-    .min(1, '조정 사유를 입력해주세요'),
+    .min(1, '조정 사유를 입력해주세요')
+    .max(300, '최대 300자 까지만 입력할 수 있습니다'),
 });

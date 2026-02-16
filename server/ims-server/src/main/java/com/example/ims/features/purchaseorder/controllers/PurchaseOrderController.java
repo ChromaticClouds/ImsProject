@@ -71,9 +71,15 @@ public class PurchaseOrderController {
 
     // 전송 (bulk)
     @PostMapping("/send")
-    public ResponseEntity<Void> bulkSend(@Valid @RequestBody OrderNumbersRequest req) {
-        service.bulkSend(req.getOrderNumbers());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ApiResponse<BulkSendResponse>> bulkSend(
+        @Valid @RequestBody OrderNumbersRequest request
+    ) {
+        SendGroupResult result = service.bulkSend(request.getOrderNumbers());
+        int total = (request.getOrderNumbers() == null)
+            ? 0 : request.getOrderNumbers().size();
+        BulkSendResponse response = BulkSendResponse.from(result, total);
+
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     // 삭제 (bulk)

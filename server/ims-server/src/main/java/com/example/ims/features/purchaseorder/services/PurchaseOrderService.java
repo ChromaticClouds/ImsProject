@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.example.ims.features.order.entities.Order;
 import com.example.ims.features.order.repositories.OrderRepository;
 import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +24,9 @@ public class PurchaseOrderService {
 
     private final PurchaseOrderMapper mapper;
     private final PurchaseOrderPdfService pdfService;
-    private final PurchaseOrderLoader purchaseOrderLoader;
+    private final PurchaseOrderLoader loader;
     private final PurchaseOrderMailSender mailSender;
+    private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
     public PurchaseOrderListResponse list(String view, String keyword, LocalDate from, LocalDate to, Integer page, Integer size) {
@@ -140,30 +143,44 @@ public class PurchaseOrderService {
 
     @Transactional
     public void sendOne(String orderNumber) throws ResendException {
-        if (orderNumber == null || !orderNumber.startsWith("PLA-"))
-            throw new IllegalArgumentException("발주(PLA) 주문번호만 전송 가능합니다.");
-
-        PurchaseOrderContext ctx = purchaseOrderLoader.load(orderNumber);
+        PurchaseOrderContext ctx = loader.load(orderNumber);
         PurchaseOrderPdfContent content = pdfService.buildDto(ctx);
         byte[] pdf = pdfService.generate(content);
 
-        String mailHtml = PurchaseOrderHtmlTemplate.render(ctx, content);
+        String html = PurchaseOrderHtmlTemplate.render(ctx, content);
 
-        mailSender.sendPurchaseOrder(
-            ctx.vendor().getEmail(),
-            "[발주서] " + orderNumber,
-            mailHtml,
-            pdf,
-            orderNumber + ".pdf"
-        );
+        mailSender.sendPurchaseOrder(ctx, html, pdf);
 
         mapper.markSentByOrderNumber(orderNumber);
     }
 
-    @Transactional
-    public void bulkSend(List<String> orderNumbers) {
-        if (orderNumbers == null || orderNumbers.isEmpty()) return;
-        mapper.bulkMarkSentByOrderNumbers(orderNumbers);
+    public SendGroupResult bulkSend(List<String> orderNumbers) {
+        LoadGroupResult load = loader.loadGroup(orderNumbers);
+
+        List<SendGroupResult.Success> success = new ArrayList<>();
+        List<SendGroupResult.Fail> failed = new ArrayList<>(
+            load.failed().stream()
+                .map(f -> new SendGroupResult.Fail(f.orderNumber(), "LOAD", f.reason()))
+                .toList()
+        );
+
+        for (PurchaseOrderContext ctx : load.contexts()) {
+            try {
+                PurchaseOrderPdfContent content = pdfService.buildDto(ctx);
+                byte[] pdf = pdfService.generate(content);
+                String html = PurchaseOrderHtmlTemplate.render(ctx, content);
+
+                mailSender.sendPurchaseOrder(ctx, html, pdf);
+
+                mapper.markSentByOrderNumber(ctx.orderNumber());
+
+                success.add(new SendGroupResult.Success(ctx.orderNumber()));
+            } catch (Exception e) {
+                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), "SEND", e.getMessage()));
+            }
+        }
+
+        return new SendGroupResult(success, failed);
     }
 
     @Transactional

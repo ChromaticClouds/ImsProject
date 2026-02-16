@@ -64,8 +64,6 @@ export const UserProvider = ({ children }) => {
   const pageToFetch = debounced ? 1 : pageNumber;
   const { data, isFetching } = useUsers(pageToFetch, debounced);
 
-  console.log(data);
-
   const {
     content = [],
     page = 1,

@@ -7,9 +7,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { BadgeCheckIcon } from 'lucide-react';
 
-/** @param {{page:any, onChange:(p:number)=>void}} props */
+/**
+ * @typedef {object} PageType
+ * @property {number} number
+ * @property {number} totalPages
+ */
+
+/** @param {{ page: PageType, onChange:(p: number)=>void}} props */
 export const PurchaseOrderPagination = ({ page, onChange }) => {
   const currentPage = Number(page?.number || 1);
   const totalPages = Number(page?.totalPages || 1);

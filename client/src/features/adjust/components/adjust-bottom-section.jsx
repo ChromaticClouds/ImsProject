@@ -24,7 +24,7 @@ export const AdjustBottomSection = () => {
                 <InputGroupTextarea
                   id='block-start-textarea'
                   placeholder='조정 사유를 입력해주세요'
-                  className='min-h-32 resize-none'
+                  className='max-h-32 min-h-32 resize-none'
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />

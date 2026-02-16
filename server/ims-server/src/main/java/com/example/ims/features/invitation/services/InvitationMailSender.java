@@ -26,18 +26,18 @@ public class InvitationMailSender {
 
     public void sendBatch(List<InvitationMailPayload> payloads) throws ResendException {
         List<CreateEmailOptions> batch = payloads.stream()
-                .map(this::buildEmailOptions)
-                .toList();
+            .map(this::buildEmailOptions)
+            .toList();
 
         resendClient.sendBatch(batch);
     }
 
     private CreateEmailOptions buildEmailOptions(InvitationMailPayload payload) {
         return CreateEmailOptions.builder()
-                .from(props.getFromEmail())
-                .to(payload.getUser().getEmail())
-                .subject("IMS PROJECT 초대장이 도착했습니다.")
-                .html(new Invitation(payload.getToken(), props.getBaseUrl()).getMailContents())
-                .build();
+            .from(props.getFromEmail())
+            .to(payload.getUser().getEmail())
+            .subject("IMS PROJECT 초대장이 도착했습니다.")
+            .html(new Invitation(payload.getToken(), props.getBaseUrl()).getMailContents())
+            .build();
     }
 }

@@ -138,7 +138,7 @@ export const PurchaseOrderList = ({ rows, onReload }) => {
 
                     <PopoverContent
                       align='start'
-                      className='w-[520px] p-4'
+                      className='w-130 p-4'
                       onOpenAutoFocus={(e) => e.preventDefault()}
                       onCloseAutoFocus={(e) => e.preventDefault()}
                     >

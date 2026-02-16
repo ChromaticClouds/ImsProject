@@ -21,19 +21,20 @@ import { ProductDetailDialog } from './product-detail-dialog.jsx';
  * Hooks
  */
 import { useProductQuery } from '../hooks/use-product-query.js';
+import { Spinner } from '@/components/ui/spinner.js';
 
 export const ProductTable = () => {
-  const { content } = useProductQuery();
+  const { content, isFetching } = useProductQuery();
 
-    const typeLabelMap = {
-  SOJU: '소주',
-  LIQUOR: '양주',
-  KAOLIANG_LIQUOR: '고량주',
-  TRADITIONAL: '전통주',
-  WHISKEY: '위스키',
-};
+  const typeLabelMap = {
+    SOJU: '소주',
+    LIQUOR: '양주',
+    KAOLIANG_LIQUOR: '고량주',
+    TRADITIONAL: '전통주',
+    WHISKEY: '위스키',
+  };
 
-const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
+  const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
 
   return (
     <div className='rounded-md border'>
@@ -48,14 +49,27 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
             <TableHead>브랜드</TableHead>
             <TableHead className='text-right'>단가</TableHead>
             <TableHead className='text-right'>수량(박스)</TableHead>
-            <TableHead className='w-12.5'></TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {content.length > 0 ? (
+          {isFetching ? (
+            <TableRow>
+              <TableCell
+                colSpan={8}
+                className='h-24'
+              >
+                <div className='w-full h-full flex items-center justify-center'>
+                  <Spinner />
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : content.length > 0 ? (
             content.map((product) => (
-              <ProductDetailDialog key={product.id} product={product}>
+              <ProductDetailDialog
+                key={product.id}
+                product={product}
+              >
                 <TableRow
                   key={product.id}
                   className='hover:bg-muted/20 transition-colors cursor-pointer'
@@ -110,16 +124,6 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
                   <TableCell className='text-right font-medium'>
                     {product.perCount}개입
                   </TableCell>
-
-                  {/* <TableCell>  // 더보기 단추 테이블
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      className='h-8 w-8'
-                    >
-                      <MoreHorizontal className='h-4 w-4' />
-                    </Button>
-                  </TableCell> */}
                 </TableRow>
               </ProductDetailDialog>
             ))

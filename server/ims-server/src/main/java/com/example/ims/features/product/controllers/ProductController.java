@@ -35,12 +35,12 @@ public class ProductController {
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
 
         List<String> types = type.isBlank()
-                ? List.of()
-                : Arrays.asList(type.split(","));
+            ? List.of()
+            : Arrays.asList(type.split(","));
 
         List<String> brands = brand.isBlank()
-                ? List.of()
-                : Arrays.asList(brand.split(","));
+            ? List.of()
+            : Arrays.asList(brand.split(","));
 
         PageResponse<Product> products =
             productService.getProducts(pageable, search, types, brands);

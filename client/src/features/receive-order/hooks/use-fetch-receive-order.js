@@ -89,9 +89,7 @@ export const useFetchReceiveOrder = () => {
       return { prev };
     },
 
-    onSuccess: (_data, variables) => {
-      toast.success('담당자가 지정완료됐습니다.');
-    },
+    onSuccess: () => toast.success('요청이 성공적으로 완료되었습니다.'),
 
     /**
      * 담당자 변경 실패 시 optimistic update rollback

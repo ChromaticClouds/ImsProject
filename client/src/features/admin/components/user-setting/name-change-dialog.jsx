@@ -24,14 +24,16 @@ import { Button } from '@/components/ui/button.js';
 import { toUserRowModel } from '../../schemas/user-model.js';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils.js';
 
 /**
  * @param {{
  *  user: ReturnType<typeof toUserRowModel>,
  *  onNameChange: (userId: number, name: string) => void
+ *  className?: string,
  * }} props
  */
-export const NameChangeDialog = ({ user, onNameChange }) => {
+export const NameChangeDialog = ({ user, onNameChange, className }) => {
   const inputRef = React.useRef(null);
 
   const [open, setOpen] = useState(false);
@@ -46,8 +48,8 @@ export const NameChangeDialog = ({ user, onNameChange }) => {
   };
 
   return (
-    <TableCell>
-      <div className='flex gap-2 items-center'>
+    <TableCell className={cn(`${className}`)}>
+      <div className='flex gap-2 items-center justify-center'>
         <span>{user.name}</span>
 
         <Dialog

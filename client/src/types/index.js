@@ -126,6 +126,7 @@
  * @property {number} volumn
  * @property {string | null} imageUrl
  * @property {string | null} boxImageUrl // db는 box_image_url로 컬럼을 생성
+ * @property {string} createdAt
  */
 
 /**

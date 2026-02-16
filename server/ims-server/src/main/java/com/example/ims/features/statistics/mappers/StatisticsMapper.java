@@ -26,32 +26,18 @@ public interface StatisticsMapper {
     Long sumUsedVolume();
 
     /*
-     * TOP5 외 기타 면적을 가장 많이 차지하는 품목에 대한 개수 및 품목명 조회
+     * TOP5 면적을 가장 많이 차지하는 품목에 대한 개수 및 품목명 조회
      */
-    @Select("""
-    select
-      case
-        when rnk <= 5 then item
-        else '기타'
-      end as item,
-      sum(stock) as stock,
-      sum(used_volume) as usedVolume
-    from (
-      select
-        p.name as item,
-        sum(s.count) as stock,
-        sum(p.volume * s.count) as used_volume,
-        dense_rank() over (order by sum(p.volume * s.count) desc) as rnk
-      from product p
-      join stock s on p.id = s.product_id
-      group by p.id, p.name
-    ) t
-    group by
-      case
-        when rnk <= 5 then item
-        else '기타'
-      end
-    order by usedVolume desc;                        
+     @Select("""
+     select
+         p.name as item,
+         sum(s.count) as stock,
+         sum(p.volume * s.count) as usedVolume
+     from product p
+     join stock s on p.id = s.product_id
+     group by p.id, p.name
+     order by usedVolume desc
+     limit 5
     """)
     List<ProductShareResponse> findTop5ByUsedVolume();
 

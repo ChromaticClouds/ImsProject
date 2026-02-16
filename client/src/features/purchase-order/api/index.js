@@ -119,7 +119,11 @@ export async function deletePurchaseOrder(orderNumber) {
     .catch(() => null);
 }
 
-/** 전송 @param {string} orderNumber */
+/** 
+ * 전송
+ * @param {string} orderNumber 
+ * @returns {Promise<ApiResponse<any>>}
+ */
 export async function sendPurchaseOrder(orderNumber) {
   return await api
     .post(`api/purchase-orders/${encodeURIComponent(orderNumber)}/send`, { hooks })

@@ -51,22 +51,25 @@ export const UserRow = ({
         <NameChangeDialog
           user={user}
           onNameChange={onNameChange}
+          className='text-center'
         />
       ) : (
         <TableCell />
       )}
 
-      <TableCell>{user.email}</TableCell>
+      <TableCell className='text-center'>{user.eid}</TableCell>
 
       {/* 직급 / 권한 / 설명 등 공통 표시 영역 */}
       <RankCell
         user={user}
         onRankChange={onRankChange}
+        className='text-center'
       />
 
       <RoleCell
         user={user}
         onRoleChange={onRoleChange}
+        className='text-center'
       />
 
       <DescriptionCell

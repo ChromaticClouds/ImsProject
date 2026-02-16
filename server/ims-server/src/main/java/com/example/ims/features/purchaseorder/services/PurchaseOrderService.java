@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.example.ims.features.order.repositories.OrderRepository;
+import com.resend.core.exception.ResendException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,9 @@ import lombok.RequiredArgsConstructor;
 public class PurchaseOrderService {
 
     private final PurchaseOrderMapper mapper;
+    private final PurchaseOrderPdfService pdfService;
+    private final PurchaseOrderLoader purchaseOrderLoader;
+    private final PurchaseOrderMailSender mailSender;
 
     @Transactional(readOnly = true)
     public PurchaseOrderListResponse list(String view, String keyword, LocalDate from, LocalDate to, Integer page, Integer size) {
@@ -134,7 +139,24 @@ public class PurchaseOrderService {
     }
 
     @Transactional
-    public void sendOne(String orderNumber) {
+    public void sendOne(String orderNumber) throws ResendException {
+        if (orderNumber == null || !orderNumber.startsWith("PLA-"))
+            throw new IllegalArgumentException("발주(PLA) 주문번호만 전송 가능합니다.");
+
+        PurchaseOrderContext ctx = purchaseOrderLoader.load(orderNumber);
+        PurchaseOrderPdfContent content = pdfService.buildDto(ctx);
+        byte[] pdf = pdfService.generate(content);
+
+        String mailHtml = PurchaseOrderHtmlTemplate.render(ctx, content);
+
+        mailSender.sendPurchaseOrder(
+            ctx.vendor().getEmail(),
+            "[발주서] " + orderNumber,
+            mailHtml,
+            pdf,
+            orderNumber + ".pdf"
+        );
+
         mapper.markSentByOrderNumber(orderNumber);
     }
 

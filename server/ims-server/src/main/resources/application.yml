@@ -1,4 +1,8 @@
 spring:
+  devtools:
+    restart:
+      enabled: false
+
   config:
     import: optional:file:.env[.properties]
 
@@ -33,6 +37,9 @@ spring:
 app:
   cors:
     allowed-origins: ${RESEND_URL}
+
+  storage:
+    upload-dir: ${UPLOAD_DIR:./uploads}
 
 resend:
   api-key: ${RESEND_API_KEY}

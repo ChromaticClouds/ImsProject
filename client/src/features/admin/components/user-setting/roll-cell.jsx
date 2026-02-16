@@ -1,15 +1,17 @@
 import { TableCell } from '@/components/ui/table.js';
 import { RoleSelect } from './role-select.jsx';
 import { toUserRowModel } from '../../schemas/user-model.js';
+import { cn } from '@/lib/utils.js';
 
 /**
  * @param {{
  * user: ReturnType<typeof toUserRowModel>,
  * onRoleChange (id: number, type: string) => void
+ * className?: string
  * }} props
  */
-export const RoleCell = ({ user, onRoleChange }) => (
-  <TableCell className='w-40'>
+export const RoleCell = ({ user, onRoleChange, className }) => (
+  <TableCell className={cn(`w-40 ${className}`)}>
     {user.rank === 'EMPLOYEE' ? (
       <RoleSelect
         value={user.role}

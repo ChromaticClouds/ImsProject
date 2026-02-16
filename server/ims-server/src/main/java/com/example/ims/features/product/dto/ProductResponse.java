@@ -17,7 +17,8 @@ public record ProductResponse(
     ProductType type,
     String brand,
     Integer salePrice,
-    Integer perCount
+    Integer perCount,
+    String createdAt
 ) {
     public static PageResponse<ProductResponse> from(PageResponse<Product> products) {
         List<ProductResponse> productList = products.content().stream().map(product ->
@@ -30,7 +31,8 @@ public record ProductResponse(
                 product.getType(),
                 product.getBrand(),
                 product.getSalePrice(),
-                product.getPerCount()
+                product.getPerCount(),
+                product.getCreatedAt()
             )
         ).toList();
 

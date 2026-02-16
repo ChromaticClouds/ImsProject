@@ -7,6 +7,9 @@ import {
   bulkSendPurchaseOrders,
   bulkDeletePurchaseOrders,
 } from '@/features/purchase-order/api/index.js';
+import { toast } from 'sonner';
+import { HTTPError } from 'ky';
+import { ERROR } from '@/services/error.js';
 
 /**
  * @typedef {{ orderKinds:number, totalCount:number, totalPrice:number }} PurchaseOrderSummary
@@ -15,7 +18,8 @@ import {
 const EMPTY_SUMMARY = { orderKinds: 0, totalCount: 0, totalPrice: 0 };
 
 export const purchaseOrderStatus = {
-  isSent: (status) => status === 'INBOUND_PENDING' || status === 'INBOUND_COMPLETE',
+  isSent: (status) =>
+    status === 'INBOUND_PENDING' || status === 'INBOUND_COMPLETE',
   isDraft: (status) => status == null,
 };
 
@@ -28,8 +32,15 @@ const normalizeSummary = (s) => ({
 
 export const usePurchaseOrders = () => {
   const [rows, setRows] = useState([]);
-  const [page, setPage] = useState({ number: 1, size: 10, totalElements: 0, totalPages: 1 });
-  const [summary, setSummary] = useState(/** @type {PurchaseOrderSummary} */ (EMPTY_SUMMARY));
+  const [page, setPage] = useState({
+    number: 1,
+    size: 10,
+    totalElements: 0,
+    totalPages: 1,
+  });
+  const [summary, setSummary] = useState(
+    /** @type {PurchaseOrderSummary} */ (EMPTY_SUMMARY),
+  );
   const [loading, setLoading] = useState(false);
 
   const load = useCallback(async (params) => {
@@ -44,7 +55,7 @@ export const usePurchaseOrders = () => {
           size: params?.size ?? 10,
           totalElements: 0,
           totalPages: 1,
-        }
+        },
       );
 
       setSummary(normalizeSummary(data?.summary));
@@ -59,9 +70,29 @@ export const usePurchaseOrders = () => {
     await deletePurchaseOrder(orderNumber);
   }, []);
 
-  const markSent = useCallback(async (orderNumber) => {
-    await sendPurchaseOrder(orderNumber);
-  }, []);
+  const markSent = useCallback(
+    /** @param {string} orderNumber */
+    async (orderNumber) => {
+      try {
+        const response = await sendPurchaseOrder(orderNumber);
+        if (!response.success) return;
+        toast.success(response.message);
+      } catch (err) {
+        if (err instanceof HTTPError) {
+          const errResponse = await err.response.json().catch(() => null);
+
+          return toast.error(
+            typeof errResponse?.message === 'string'
+              ? errResponse?.message
+              : ERROR.UNEXPECTED_ERROR
+          );
+        }
+
+        toast.error(ERROR.SERVER_ERROR);
+      }
+    },
+    [],
+  );
 
   const bulkMarkSent = useCallback(async (orderNumbers) => {
     await bulkSendPurchaseOrders(orderNumbers);

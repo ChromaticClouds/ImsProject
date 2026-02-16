@@ -12,9 +12,44 @@ import { useProductShareQuery } from '../hooks/use-product-share-query.js';
 import { ChartLoading } from './chart-loading.jsx';
 
 export const stockShareConfig = {
+  item: {
+    label: '품목명',
+  },
   stock: {
     label: '재고 수량',
   },
+};
+
+const truncate = (text, max = 6) =>
+  text.length > max ? text.slice(0, max) + '…' : text;
+
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+  name,
+}) => {
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill='white'
+      fontSize={11}
+      textAnchor={x > cx ? 'start' : 'end'}
+      dominantBaseline='central'
+    >
+      {`${truncate(name)} ${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
 };
 
 /**
@@ -45,10 +80,10 @@ export const ProductShareChart = () => {
   return (
     <ChartContainer
       config={stockShareConfig}
-      className='h-80 w-full'
+      className='h-80 w-full overflow-hidden'
     >
       <PieChart>
-        <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+        <ChartTooltip content={<ChartTooltipContent />} />
 
         <Pie
           data={chartData}
@@ -56,6 +91,8 @@ export const ProductShareChart = () => {
           nameKey='item'
           innerRadius={70}
           outerRadius={110}
+          label={renderCustomizedLabel}
+          labelLine={false}
         >
           {chartData.map((entry, index) => (
             <Cell
@@ -88,4 +125,3 @@ export const ProductShareChart = () => {
     </ChartContainer>
   );
 };
-

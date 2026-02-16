@@ -5,6 +5,7 @@ import com.example.ims.features.order.dto.OrderSummary;
 import com.example.ims.features.order.entities.Order;
 import com.example.ims.features.order.enums.OrderStatus;
 import com.example.ims.features.vendor.dto.VendorIdentifier;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -71,4 +72,14 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         @Param("orderNumber") String orderNumber,
         @Param("status") OrderStatus status
     );
+
+    /**
+     * 해당 주문 번호의 발주서를 모두 조회하기 위한 쿼리
+     */
+    @EntityGraph(attributePaths = {
+        "vendorItem",
+        "vendorItem.vendor",
+        "vendorItem.product"
+    })
+    List<Order> findAllByOrderNumber(String orderNumber);
 }

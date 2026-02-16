@@ -14,7 +14,8 @@ export const receiveOrderFormSchema = z.object({
   sellerId: z.number()
     .nullable('판매처를 선택해주세요'),
 
-  receiveDate: z.date('날짜를 선택해주세요'),
+  receiveDate: z.date('날짜를 선택해주세요')
+    .min(new Date(), '과거 날짜는 선택 불가능합니다'),
 
   products: z
     .array(productAmountSchema)

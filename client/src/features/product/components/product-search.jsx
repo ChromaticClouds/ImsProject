@@ -26,7 +26,7 @@ export const ProductSearch = () => {
     <div className='w-full flex justify-end'>
       <InputGroup className='w-80'>
         <InputGroupInput
-          placeholder='품목명 / 코드 / 브랜드 검색'
+          placeholder='품목명 / 브랜드 검색'
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className='pl-8'

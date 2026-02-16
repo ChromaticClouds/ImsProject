@@ -17,7 +17,7 @@ const DetailRow = ({ label, value }) => (
 );
 
 /**
- * @param {{ product: Product} & React.PropsWithChildren} param0
+ * @param {{ product: Product } & React.PropsWithChildren} param0
  */
 export const ProductDetailDialog = ({ product, children }) => {
   return (
@@ -63,8 +63,6 @@ export const ProductDetailDialog = ({ product, children }) => {
             />
           </div>
         </div>
-
-
 
         {/* 상세 정보 */}
         <div className='mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm'>

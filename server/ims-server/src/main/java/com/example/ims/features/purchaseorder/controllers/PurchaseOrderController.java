@@ -2,6 +2,8 @@ package com.example.ims.features.purchaseorder.controllers;
 
 import java.time.LocalDate;
 
+import com.example.ims.global.response.ApiResponse;
+import com.resend.core.exception.ResendException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,11 +62,11 @@ public class PurchaseOrderController {
 
     // 전송 (단건)
     @PostMapping("/{orderNumber}/send")
-    public ResponseEntity<Void> sendOne(
+    public ResponseEntity<ApiResponse<Void>> sendOne(
         @PathVariable(name = "orderNumber") String orderNumber
-    ) {
+    ) throws ResendException {
         service.sendOne(orderNumber);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success("발주서가 전송되었습니다."));
     }
 
     // 전송 (bulk)

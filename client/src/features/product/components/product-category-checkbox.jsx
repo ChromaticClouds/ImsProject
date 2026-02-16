@@ -51,7 +51,8 @@ export const ProductCategoryCheckbox = ({ categories = [], queryKey }) => {
           size='sm'
           className='gap-2'
         >
-          <FilterIcon className='w-4 h-4' /> 주종 필터링
+          <FilterIcon className='w-4 h-4' />
+          <span>{queryKey === 'type' ? '주종 필터링' : '브랜드 필터링'}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

@@ -19,9 +19,9 @@ public class ProductSpecification {
             String like = "%" + search.toLowerCase() + "%";
 
             return cb.or(
-                    cb.like(cb.lower(root.get("name")), like),
-                    cb.like(cb.lower(root.get("type")), like),
-                    cb.like(cb.lower(root.get("brand")), like)
+                cb.like(cb.lower(root.get("name")), like),
+                cb.like(cb.lower(root.get("type")), like),
+                cb.like(cb.lower(root.get("brand")), like)
             );
         };
     }

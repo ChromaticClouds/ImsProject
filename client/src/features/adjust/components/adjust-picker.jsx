@@ -12,25 +12,14 @@ export const AdjustPicker = () => {
 
   return (
     <section className='flex flex-col gap-4'>
-      <div className='flex gap-3 items-center'>
-        <span>날짜선택</span>
-        <form.Field name='date'>
-          {(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <React.Fragment>
-                <AppDatePicker
-                  date={field.state.value}
-                  setDate={(e) => field.handleChange(e)}
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </React.Fragment>
-            );
-          }}
-        </form.Field>
+      <div className='grid grid-cols-1 md:grid-cols-[120px_1fr] items-center'>
+        <span>조정일</span>
+        <AppDatePicker
+          date={new Date()}
+          disabled
+        />
       </div>
-      <div className='flex gap-3 items-center'>
+      <div className='grid grid-cols-1 md:grid-cols-[120px_1fr] items-center'>
         <span>조정선택</span>
         <form.Field name='type'>
           {(field) => (

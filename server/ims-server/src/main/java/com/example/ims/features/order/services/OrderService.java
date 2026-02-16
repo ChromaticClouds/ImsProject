@@ -2,6 +2,7 @@ package com.example.ims.features.order.services;
 
 import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.auth.enums.UserRole;
+import com.example.ims.features.auth.enums.UserStatus;
 import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.order.dto.*;
 import com.example.ims.features.order.entities.Order;
@@ -13,6 +14,7 @@ import com.example.ims.features.product.exceptions.ProductNotFoundException;
 import com.example.ims.features.product.repository.ProductRepository;
 import com.example.ims.features.product.repository.ProductSpecification;
 import com.example.ims.features.user.dto.UserIdentifier;
+import com.example.ims.features.user.exceptions.NoPermissionException;
 import com.example.ims.features.user.repositories.UserRepository;
 import com.example.ims.features.vendor.dto.Vendor;
 import com.example.ims.features.vendor.dto.VendorIdentifier;
@@ -42,7 +44,7 @@ public class OrderService {
 
     public OrderBootstrap getOrderBootstrap() {
         List<UserIdentifier> users = userRepository
-            .findByUserRoleIn(List.of(UserRole.ALL, UserRole.RECEIVE_ORDER))
+            .findByUserRoleIn(List.of(UserRole.OUTBOUND))
             .stream()
             .map(u -> new UserIdentifier(u.getId(), u.getName()))
             .toList();
@@ -72,8 +74,16 @@ public class OrderService {
     }
 
     @Transactional
-    public void postOrder(OrderPostRequest request) {
-        User user = userRepository.findById(request.getUserId())
+    public void postOrder(Long userId, OrderPostRequest request) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(UserNotFoundException::new);
+
+        System.out.println(user.getUserRole());
+
+        if (!List.of(UserRole.ALL, UserRole.RECEIVE_ORDER).contains(user.getUserRole()))
+            throw new NoPermissionException();
+
+        User manager = userRepository.findById(request.getUserId())
             .orElseThrow(UserNotFoundException::new);
 
         Vendor vendor = vendorRepository.findById(request.getSellerId())
@@ -87,6 +97,7 @@ public class OrderService {
 
             return Order.builder()
                 .user(user)
+                .manager(manager)
                 .vendor(vendor)
                 .product(product)
                 .orderNumber(orderNumber)
@@ -117,7 +128,7 @@ public class OrderService {
 
     public List<UserIdentifier> getOutboundManagers() {
         List<User> managers = userRepository
-            .findByUserRoleIn(List.of(UserRole.OUTBOUND, UserRole.ALL));
+            .findByUserRoleIn(List.of(UserRole.OUTBOUND));
         return managers.stream().map(UserIdentifier::from).toList();
     }
 

@@ -3,11 +3,13 @@ package com.example.ims.features.order.controllers;
 import com.example.ims.features.order.dto.*;
 import com.example.ims.features.order.services.OrderService;
 import com.example.ims.features.user.dto.UserIdentifier;
+import com.example.ims.features.user.dto.UserPrincipal;
 import com.example.ims.features.vendor.dto.VendorIdentifier;
 import com.example.ims.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -52,8 +54,11 @@ public class OrderController {
     }
 
     @PostMapping("post")
-    public ResponseEntity<ApiResponse<Void>> postOrder(@RequestBody OrderPostRequest request) {
-        service.postOrder(request);
+    public ResponseEntity<ApiResponse<Void>> postOrder(
+        @RequestBody OrderPostRequest request,
+        @AuthenticationPrincipal UserPrincipal user
+    ) {
+        service.postOrder(user.userId(), request);
         return ResponseEntity.ok(ApiResponse.success("주문서가 성공적으로 업로드 되었습니다."));
     }
 

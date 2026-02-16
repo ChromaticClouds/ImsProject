@@ -10,12 +10,11 @@ import { useOutboundManagersContext } from '../../providers/receive-order-table-
 
 /**
  * @param {{
- *  orderNumber: string,
  *  manager: { managerName: string | null, managerId: number | null },
  *  onChange: (managerId: number | null) => void
  * }} props
  */
-export const AssignOutboundManager = ({ orderNumber, manager, onChange }) => {
+export const AssignOutboundManager = ({ manager, onChange }) => {
   const { managers } = useOutboundManagersContext();
 
   const value =
@@ -27,7 +26,6 @@ export const AssignOutboundManager = ({ orderNumber, manager, onChange }) => {
       onValueChange={(nextValue) => {
         const nextManagerId =
           nextValue === 'UNASSIGNED' ? null : Number(nextValue);
-
         onChange(nextManagerId);
       }}
     >

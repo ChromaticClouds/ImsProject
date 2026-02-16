@@ -21,14 +21,9 @@ export const ReceiveOrderList = () => {
     <CardContent className='p-0 max-h-120 overflow-y-auto'>
       <Table noWrapper>
         <TableHeader>
-          <TableRow>
+          <TableRow className='bg-accent sticky top-0 z-10'>
             {RECEIVE_ORDER_TABLE_HEADER.map((head) => (
-              <TableHead
-                key={head}
-                className='bg-accent text-center sticky top-0 z-10'
-              >
-                {head}
-              </TableHead>
+              <TableHead className='text-center' key={head}>{head}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -49,7 +44,6 @@ export const ReceiveOrderList = () => {
               <TableCell>
                 <div className='w-full h-full flex justify-center items-center'>
                   <AssignOutboundManager
-                    orderNumber={o.orderNumber}
                     manager={{
                       managerName: o.managerName,
                       managerId: o.managerId,

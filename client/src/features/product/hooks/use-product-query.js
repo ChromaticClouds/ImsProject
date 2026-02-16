@@ -25,9 +25,7 @@ export const useProductQuery = () => {
     [page, search, type, brand],
   );
 
-  const { data, error } = useProductView(query);
-
-  if (error) console.log(error);
+  const { data, isFetching } = useProductView(query);
 
   const pageData = data?.data;
 
@@ -42,5 +40,6 @@ export const useProductQuery = () => {
           isLast: pageData.isLast,
         }
       : null,
+    isFetching
   };
 };

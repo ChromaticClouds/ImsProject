@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { HTTPError } from 'ky';
 import { ERROR } from '@/services/error.js';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * @typedef {z.infer<typeof receiveOrderFormSchema>} OrderSchema
@@ -32,6 +33,7 @@ const defaultValues = {
 
 export const useOrderPostForm = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const form = useForm({
     defaultValues,
@@ -48,6 +50,7 @@ export const useOrderPostForm = () => {
         
         toast.success(response.message);
         form.reset();
+        navigate('/dashboard/receive-order');
         return form;
       } catch (err) {
         if (err instanceof HTTPError) {

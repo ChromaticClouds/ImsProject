@@ -34,7 +34,6 @@ import { formatToIsoDate } from '@/features/receive-order/utils/format-date.js';
 const defaultValues = {
   products: [],
   type: 'PLUS',
-  date: new Date(),
   memo: '',
 };
 

@@ -46,7 +46,7 @@ export const LeadTimeChart = () => {
     <div className='w-full overflow-x-auto'>
       <ChartContainer
         config={leadTimeConfig}
-        className='h-80 w-full'
+        className='h-72 w-full'
         style={{ minWidth: chartWidth }}
       >
         <BarChart

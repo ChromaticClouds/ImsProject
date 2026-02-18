@@ -293,3 +293,57 @@
  * @property {number} totalElements
  * @property {number} totalPages
  */
+
+/**
+ * @typedef {null | 'INBOUND_PENDING' | 'INBOUND_COMPLETE' | 'OUTBOUND_PENDING' | 'OUTBOUND_COMPLETE'} OrderStatus
+ */
+
+/**
+ * @typedef {object} OrderDetail
+ * @property {number} orderId
+ * @property {number} productId
+ * @property {string} productName
+ * @property {number} vendorItemId
+ * @property {ProductType} type
+ * @property {string} brand
+ * @property {number} count
+ * @property {number} productPrice
+ * @property {number} safetyStock
+ */
+
+/**
+ * @typedef {object} OrderRequest
+ * @property {number} itemKinds
+ * @property {OrderDetail[]} items
+ * @property {string} orderDate
+ * @property {string} recieveDate
+ * @property {string} orderNumber
+ * @property {OrderStatus} status
+ * @property {number} totalCount
+ * @property {number} totalPrice
+ * @property {number} vendorId
+ * @property {string} vendorName
+ */
+
+/**
+ * @typedef {object} PageMetaData
+ * @property {number} number
+ * @property {number} size
+ * @property {number} totalElements
+ * @property {number} totalPages
+ */
+
+/**
+ * @typedef {object} OrderListSummary
+ * @property {number} orderKinds
+ * @property {number} totalCount
+ * @property {number} totalPrice
+ */
+
+/**
+ * 발주 내역 API 정의
+ * @typedef {object} OrderResponse
+ * @property {OrderRequest[]} content
+ * @property {PageMetaData} page
+ * @property {OrderListSummary} summary
+ */

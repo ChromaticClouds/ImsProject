@@ -21,12 +21,6 @@ import { useUserList } from '../../providers/user-provider.jsx';
 import { usePatchUser } from '../../hooks/use-patch-user.js';
 import { useResendEmail } from '@/features/admin/hooks/use-resend-email.js';
 
-/**
- * Constants
- */
-
-const COLUMN_COUNT = 9;
-
 export const UserList = () => {
   const { mutate: resendEmailMutate } = useResendEmail();
   const { users, isFetching } = useUserList();
@@ -118,6 +112,7 @@ const renderTableBody = ({
 const HEAD_NAMES = [
   '',
   '이름',
+  '사원번호',
   '이메일',
   '직급',
   '담당',
@@ -130,7 +125,7 @@ const HEAD_NAMES = [
 const UserTableHeader = () => (
   <TableHeader>
     <TableRow className='bg-border hover:bg-muted'>
-      {Array.from({ length: COLUMN_COUNT }, (_, i) => (
+      {Array.from({ length: HEAD_NAMES.length }, (_, i) => (
         <TableHead
           key={i}
           className='text-center'
@@ -145,7 +140,7 @@ const UserTableHeader = () => (
 const EmptyRow = () => (
   <TableRow>
     <TableCell
-      colSpan={COLUMN_COUNT}
+      colSpan={HEAD_NAMES.length}
       className='h-24 text-center text-muted-foreground'
     >
       사용자 정보가 없습니다.

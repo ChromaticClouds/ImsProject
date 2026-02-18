@@ -6,7 +6,6 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 
 import { getNotices } from '@/features/notice/api/noticeApi';
 import { NoticeTable } from '@/features/notice/components/notice-table';
@@ -37,11 +36,7 @@ export const Notice = () => {
       <Card>
         <NoticeHeader />
 
-        <CardContent className='space-y-4'>
-          {/* 검색 영역 - 없애는 기능*/}
-          {/* <NoticeSearch /> */}
-
-          {/* 공지사항 목록 */}
+        <CardContent className='space-y-4 p-0'>
           <NoticeTable data={data} />
         </CardContent>
 

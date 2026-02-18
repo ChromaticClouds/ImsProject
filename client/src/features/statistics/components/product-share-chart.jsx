@@ -20,7 +20,7 @@ export const stockShareConfig = {
   },
 };
 
-const truncate = (text, max = 6) =>
+const truncate = (text, max = 8) =>
   text.length > max ? text.slice(0, max) + '…' : text;
 
 const renderCustomizedLabel = ({
@@ -42,9 +42,10 @@ const renderCustomizedLabel = ({
     <text
       x={x}
       y={y}
-      fill='white'
+      fill='var(--color-foreground)'
       fontSize={11}
-      textAnchor={x > cx ? 'start' : 'end'}
+      className='font-bold'
+      textAnchor='middle'
       dominantBaseline='central'
     >
       {`${truncate(name)} ${(percent * 100).toFixed(0)}%`}
@@ -62,14 +63,17 @@ export const ProductShareChart = () => {
   if (isError || !data) return null;
 
   const COLORS = [
-    'var(--chart-1)',
-    'var(--chart-2)',
-    'var(--chart-3)',
-    'var(--chart-4)',
     'var(--chart-5)',
+    'var(--chart-4)',
+    'var(--chart-3)',
+    'var(--chart-2)',
+    'var(--chart-1)',
   ];
 
-  const chartData = data.map((item, index) => ({
+ const chartData = [...data]
+  .sort((a, b) => b.stock - a.stock)
+
+  .map((item, index) => ({
     item: item.item,
     stock: item.stock,
     fill: COLORS[index % COLORS.length],
@@ -80,7 +84,7 @@ export const ProductShareChart = () => {
   return (
     <ChartContainer
       config={stockShareConfig}
-      className='h-80 w-full overflow-hidden'
+      className='h-80 w-full'
     >
       <PieChart>
         <ChartTooltip content={<ChartTooltipContent />} />

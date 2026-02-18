@@ -1,8 +1,8 @@
-import { Badge } from "@/components/ui/badge";
-import { TableCell, TableRow } from "@/components/ui/table";
-import { useEffect } from "react";
-import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Badge } from '@/components/ui/badge';
+import { TableCell, TableRow } from '@/components/ui/table';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 /**
  * @typedef {object} NoticeProps
@@ -22,13 +22,14 @@ export const NoticeList = ({ pinned, notices }) => {
       className='cursor-pointer hover:bg-muted'
       onClick={() => navigate(`/dashboard/notice/${notice.id}`)}
     >
+      <TableCell />
       <TableCell>{notice.id}</TableCell>
       <TableCell className='flex items-center gap-2'>
         {pinned ? (
-                      <span className="shrink-0 rounded-lg bg-red-700 px-2 py-0.5 text-xs font-medium text-red-50">
-                        중요
-                      </span>
-                    ) : null}
+          <span className='shrink-0 rounded-lg bg-primary px-2 py-0.5 text-xs font-medium text-white'>
+            중요
+          </span>
+        ) : null}
 
         {notice.title}
       </TableCell>

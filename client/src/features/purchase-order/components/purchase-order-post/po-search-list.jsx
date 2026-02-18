@@ -27,8 +27,6 @@ export const PoSearchList = ({
 
   const form = usePoFormContext();
 
-  console.log(products);
-
   return products.length === 0 ? (
     <div className='h-24 flex items-center justify-center'>
       <p className='text-muted-foreground text-sm'>품목이 없습니다.</p>

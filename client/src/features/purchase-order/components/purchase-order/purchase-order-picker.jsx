@@ -1,12 +1,24 @@
+// @ts-check
+
+/**
+ * Components
+ */
 import { Button } from '@/components/ui/button.js';
-import { useNavigate } from 'react-router-dom';
-import { usePurchaseOrderFilterStore } from '@/features/purchase-order/stores/use-purchase-order-filter-store.js';
 import { ClockIcon, CheckCircleIcon, NotebookPenIcon } from 'lucide-react';
 
+/**
+ * Hooks
+ */
+import { useShallow } from 'zustand/shallow';
+import { useNavigate } from 'react-router-dom';
+import { usePoParamStore } from '@/features/purchase-order/stores/use-po-param-store.js';
 
 export const PurchaseOrderPicker = () => {
   const navigate = useNavigate();
-  const { view, setView } = usePurchaseOrderFilterStore();
+
+  const [view, setView] = usePoParamStore(
+    useShallow((s) => [s.view, s.setView]),
+  );
 
   return (
     <section className='flex flex-col gap-4 mt-4'>
@@ -30,12 +42,14 @@ export const PurchaseOrderPicker = () => {
             전송 완료 내역
           </Button>
         </div>
-        <Button className='gap-2' onClick={() => navigate('create')} >
+        <Button
+          className='gap-2'
+          onClick={() => navigate('create')}
+        >
           <NotebookPenIcon className='w-5 h-5' />
           발주서 작성
         </Button>
       </div>
-      
     </section>
   );
 };

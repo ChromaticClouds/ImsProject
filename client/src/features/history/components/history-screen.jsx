@@ -22,7 +22,7 @@ export function HistoryScreen() {
   } = useHistoryCtx();
 
   return (
-    <div style={{ padding: 16 }}>
+    <div>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
         <HistoryDateRangePicker value={range} onChange={setRange} disabled={loading} minDateYMD={minDateYMD} />
 

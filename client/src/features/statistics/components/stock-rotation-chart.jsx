@@ -26,6 +26,8 @@ import {
   fetchStatisticsSearchProducts,
   fetchStatisticsStockRotationTrend,
 } from '@/features/statistics/api/index.js';
+import { ChartLoading } from '@/features/statistics/components/chart-loading.jsx';
+import { XIcon } from 'lucide-react';
 
 const turnoverTrendConfig =
   /** @type {import('@/components/ui/chart').ChartConfig} */ ({
@@ -48,9 +50,9 @@ function TurnoverTooltip({ active, payload }) {
   if (!d) return null;
 
   return (
-    <div className="rounded-md border bg-background px-3 py-2 text-sm shadow-md">
-      <div className="font-semibold">{d.period}</div>
-      <div className="mt-1 flex flex-col gap-1">
+    <div className='rounded-md border bg-background px-3 py-2 text-sm shadow-md'>
+      <div className='font-semibold'>{d.period}</div>
+      <div className='mt-1 flex flex-col gap-1'>
         <div>
           회전율: <b>{Number(d.turnover ?? 0).toFixed(2)}</b>
         </div>
@@ -90,9 +92,9 @@ function TurnoverLabel(props) {
     <text
       x={dx}
       y={dy - 10}
-      textAnchor="middle"
+      textAnchor='middle'
       fontSize={12}
-      fill="currentColor"
+      fill='currentColor'
       opacity={0.9}
     >
       {t.toFixed(2)}
@@ -127,7 +129,7 @@ export const StockRotationChart = () => {
   const maxMonth = useMemo(() => getMaxMonthForYear(year), [year]);
   const monthOptions = useMemo(
     () => Array.from({ length: maxMonth }, (_, i) => i + 1),
-    [maxMonth]
+    [maxMonth],
   );
 
   // ✅ 제품 검색/선택
@@ -136,7 +138,9 @@ export const StockRotationChart = () => {
   const debouncedKeyword = useDebounced(keyword.trim(), 200);
 
   const [selectedProduct, setSelectedProduct] = useState(
-    /** @type {{ productId: number, productName: string, productCode?: string } | null} */ (null)
+    /** @type {{ productId: number, productName: string, productCode?: string } | null} */ (
+      null
+    ),
   );
 
   const searchBoxRef = useRef(/** @type {HTMLInputElement | null} */ (null));
@@ -190,23 +194,32 @@ export const StockRotationChart = () => {
   }, [trendQ.data]);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className='flex flex-col h-full justify-between'>
       {/* ✅ 필터 바 */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className='flex flex-wrap items-center gap-2 py-2'>
         {/* Year */}
-        <Popover open={yearOpen} onOpenChange={setYearOpen}>
+        <Popover
+          open={yearOpen}
+          onOpenChange={setYearOpen}
+        >
           <PopoverTrigger asChild>
-            <Button variant="outline" className="h-9">
+            <Button
+              variant='outline'
+              className='h-10'
+            >
               {year}년
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-36 p-2" align="start">
-            <div className="flex flex-col gap-1">
+          <PopoverContent
+            className='w-36 p-2'
+            align='start'
+          >
+            <div className='flex flex-col gap-1'>
               {yearOptions.map((y) => (
                 <Button
                   key={y}
                   variant={y === year ? 'default' : 'ghost'}
-                  className="h-9 justify-start"
+                  className='h-9 justify-start'
                   onClick={() => {
                     setYear(y);
                     setYearOpen(false);
@@ -220,19 +233,29 @@ export const StockRotationChart = () => {
         </Popover>
 
         {/* Month */}
-        <Popover open={monthOpen} onOpenChange={setMonthOpen}>
+        <Popover
+          open={monthOpen}
+          onOpenChange={setMonthOpen}
+        >
           <PopoverTrigger asChild>
-            <Button variant="outline" className="h-9" disabled={!year}>
+            <Button
+              variant='outline'
+              className='h-10'
+              disabled={!year}
+            >
               {month ? `${month}월` : '월 선택'}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-52 p-2" align="start">
-            <div className="grid grid-cols-3 gap-1">
+          <PopoverContent
+            className='w-52 p-2'
+            align='start'
+          >
+            <div className='grid grid-cols-3 gap-1'>
               {monthOptions.map((m) => (
                 <Button
                   key={m}
                   variant={m === month ? 'default' : 'ghost'}
-                  className="h-9"
+                  className='h-10'
                   onClick={() => {
                     setMonth(m);
                     setMonthOpen(false);
@@ -243,7 +266,7 @@ export const StockRotationChart = () => {
               ))}
               <Button
                 variant={month == null ? 'default' : 'ghost'}
-                className="h-9 col-span-3"
+                className='h-10 col-span-3'
                 onClick={() => {
                   setMonth(null);
                   setMonthOpen(false);
@@ -253,7 +276,7 @@ export const StockRotationChart = () => {
               </Button>
             </div>
             {year === new Date().getFullYear() ? (
-              <div className="mt-2 text-xs text-muted-foreground">
+              <div className='mt-2 text-xs text-muted-foreground'>
                 올해는 {maxMonth}월까지만 선택 가능합니다.
               </div>
             ) : null}
@@ -261,9 +284,13 @@ export const StockRotationChart = () => {
         </Popover>
 
         {/* 제품 검색 */}
-        <Popover open={searchOpen} onOpenChange={setSearchOpen}>
-          <div className="flex items-center gap-2">
-            <div className="min-w-[320px] relative">
+        <Popover
+          open={searchOpen}
+          onOpenChange={setSearchOpen}
+          modal
+        >
+          <div className='flex items-center gap-2'>
+            <div className={`${isMobile ? 'w-44' : 'min-w-[320px]'} relative`}>
               <Input
                 ref={searchBoxRef}
                 value={keyword}
@@ -271,61 +298,62 @@ export const StockRotationChart = () => {
                   setKeyword(e.target.value);
                   if (!searchOpen) setSearchOpen(true);
                 }}
-                placeholder="조회할 품목을 검색해주세요"
-                className="h-9"
+                placeholder='조회할 품목을 검색해주세요'
+                className='h-10'
                 onFocus={() => setSearchOpen(true)}
               />
               <PopoverAnchor asChild>
                 <div
                   ref={anchorRef}
-                  className="absolute left-0 top-full w-0 h-0 pointer-events-none"
-                  aria-hidden="true"
+                  className='absolute left-0 top-full w-0 h-0 pointer-events-none'
+                  aria-hidden='true'
                 />
               </PopoverAnchor>
             </div>
 
             {selectedProduct ? (
               <Button
-                type="button"
-                variant="ghost"
-                className="h-9"
+                type='button'
+                variant='outline'
+                className='h-10'
                 onClick={() => {
                   setSelectedProduct(null);
                   setKeyword('');
                   setSearchOpen(false);
                   searchBoxRef.current?.focus();
                 }}
+                size={isMobile ? 'icon-lg' : 'default'}
               >
-                선택 해제
+                {isMobile ? <XIcon /> : '선택 해제'}
               </Button>
             ) : null}
           </div>
 
           <PopoverContent
-            className="w-[420px] p-2"
-            align="start"
+            className='w-105 p-2'
+            align='start'
             onOpenAutoFocus={(e) => e.preventDefault()}
             onCloseAutoFocus={(e) => e.preventDefault()}
           >
             {debouncedKeyword.length < 1 ? (
-              <div className="px-2 py-2 text-sm text-muted-foreground">
+              <div className='px-2 py-2 text-sm text-muted-foreground'>
                 검색어를 입력하세요.
               </div>
             ) : productsQ.isFetching ? (
-              <div className="px-2 py-2 text-sm text-muted-foreground">
+              <div className='px-2 py-2 text-sm text-muted-foreground'>
                 검색 중...
               </div>
             ) : productOptions.length === 0 ? (
-              <div className="px-2 py-2 text-sm text-muted-foreground">
+              <div className='px-2 py-2 text-sm text-muted-foreground'>
                 검색 결과가 없습니다.
               </div>
             ) : (
-              <div className="max-h-64 overflow-auto">
+              <div className='max-h-64 overflow-auto'>
                 {productOptions.map((p) => (
                   <button
                     key={p.productId}
-                    type="button"
-                    className="w-full rounded-md px-2 py-2 text-left hover:bg-muted"
+                    type='button'
+                    className='w-full rounded-md px-2 py-2 text-left hover:bg-muted'
                     onClick={() => {
                       setSelectedProduct({
                         productId: Number(p.productId),
@@ -335,15 +363,17 @@ export const StockRotationChart = () => {
                       setKeyword(
                         `${p.productName ?? ''}${
                           p.productCode ? ` (${p.productCode})` : ''
-                        }`
+                        }`,
                       );
                       setSearchOpen(false);
-                      
+
                       searchBoxRef.current?.focus();
                     }}
                   >
-                    <div className="text-sm font-medium">{p.productName ?? '-'}</div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className='text-sm font-medium'>
+                      {p.productName ?? '-'}
+                    </div>
+                    <div className='text-xs text-muted-foreground'>
                       {p.brand ? `${p.brand}` : ''}
                       {p.type ? ` · ${p.type}` : ''}
                     </div>
@@ -353,53 +383,60 @@ export const StockRotationChart = () => {
             )}
           </PopoverContent>
         </Popover>
-
-        {trendQ.isFetching ? (
-          <span className="text-sm text-muted-foreground">불러오는 중...</span>
-        ) : null}
       </div>
 
       {/* 그래프 미표시 */}
       {!selectedProduct ? (
-        <div className="text-sm text-muted-foreground">조회할 제품을 검색해주세요.</div>
-      ) : trendQ.isError ? (
-        <div className="text-sm text-red-600">재고 회전율 조회 실패</div>
-      ) : chartData.length === 0 ? (
-        <div className="text-sm text-muted-foreground">표시할 데이터가 없습니다.</div>
+        <div className='w-full h-full flex justify-center items-center text-sm text-muted-foreground border-dashed border-3 rounded-lg'>
+          조회할 제품을 검색해주세요.
+        </div>
       ) : (
-        <ChartContainer config={turnoverTrendConfig} className="h-70 w-full">
-          <LineChart data={chartData} margin={{ top: 18, right: 12, left: 4, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="period"
-              tickLine={false}
-              axisLine={false}
-              interval={0}
-              height={isMobile ? 40 : 32}
-              tickMargin={8}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              width={isMobile ? 34 : 44}
-              tickFormatter={(v) => Number(v).toFixed(isMobile ? 0 : 1)}
-            />
-
-            <ChartTooltip content={<TurnoverTooltip />} />
-
-            <Line
-              type="monotone"
-              dataKey="turnover"
-              strokeWidth={2}
-              stroke="var(--chart-4)"
-              fill="var(--chart-4)"
-              dot
-              isAnimationActive={false}
+        <ChartContainer
+          config={turnoverTrendConfig}
+          className='h-60 w-full'
+        >
+          {trendQ.isFetching ? (
+            <ChartLoading />
+          ) : (
+            <LineChart
+              data={chartData}
+              margin={{ top: 18, right: 12, left: 4, bottom: 8 }}
             >
-              
-              <LabelList content={<TurnoverLabel />} />
-            </Line>
-          </LineChart>
+              <CartesianGrid strokeDasharray='3 3' />
+
+              <XAxis
+                dataKey='period'
+                tickLine={false}
+                axisLine={false}
+                interval={0}
+                height={isMobile ? 40 : 32}
+                tickMargin={8}
+              />
+
+              {!isMobile && (
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  width={isMobile ? 34 : 44}
+                  tickFormatter={(v) => Number(v).toFixed(isMobile ? 0 : 1)}
+                />
+              )}
+
+              <ChartTooltip content={<TurnoverTooltip />} />
+
+              <Line
+                type='monotone'
+                dataKey='turnover'
+                strokeWidth={2}
+                stroke='var(--chart-4)'
+                fill='var(--chart-4)'
+                dot
+                isAnimationActive={false}
+              >
+                <LabelList content={<TurnoverLabel />} />
+              </Line>
+            </LineChart>
+          )}
         </ChartContainer>
       )}
     </div>

@@ -40,13 +40,13 @@ export const LeadTimeChart = () => {
 
   const BAR_WIDTH = 32;
   const GAP = isMobile ? 16 : 32;
-  const chartWidth = chartData.length * (BAR_WIDTH + GAP);
+  const chartWidth = chartData.length * (BAR_WIDTH + GAP * 3);
 
   return (
     <div className='w-full overflow-x-auto'>
       <ChartContainer
         config={leadTimeConfig}
-        className='h-72 w-full'
+        className='h-78 w-full'
         style={{ minWidth: chartWidth }}
       >
         <BarChart
@@ -60,9 +60,9 @@ export const LeadTimeChart = () => {
           {/* 거래처 및 품목 */}
           <XAxis
             dataKey='name'
-            height={50}
-            angle={-15}
-            textAnchor='end'
+            height={40}
+            angle={0}
+            textAnchor='middle'
             hide={isMobile}
             tickFormatter={(value) =>
               value.length > 8 ? value.slice(0, 12) + '…' : value
@@ -70,7 +70,7 @@ export const LeadTimeChart = () => {
           />
 
           {/* 평균 리드타임 */}
-          <YAxis />
+          {!isMobile && <YAxis width={30} />}
 
           <ChartTooltip content={<ChartTooltipContent />} />
 

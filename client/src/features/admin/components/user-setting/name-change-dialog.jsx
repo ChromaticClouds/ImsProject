@@ -40,10 +40,7 @@ export const NameChangeDialog = ({ user, onNameChange, className }) => {
 
   const handleSubmit = () => {
     const newName = inputRef.current?.value.trim();
-
-    if (!newName || newName === user.name)
-      return toast.error('이름을 입력해주세요');
-
+    if (!newName) return toast.error('이름을 입력해주세요');
     onNameChange(user.id, newName);
   };
 
@@ -54,7 +51,7 @@ export const NameChangeDialog = ({ user, onNameChange, className }) => {
 
         <Dialog
           open={open}
-          onOpenChange={(o) => setOpen(o)}
+          onOpenChange={setOpen}
         >
           <DialogTrigger asChild>
             <PencilIcon

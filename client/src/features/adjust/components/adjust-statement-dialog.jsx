@@ -37,7 +37,7 @@ export const AdjustStatementDialog = () => {
             </DialogTrigger>
           )}
         </form.Subscribe>
-        <DialogContent className='min-w-4xl'>
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>재고 조정 내역</DialogTitle>
             <DialogDescription>조정 내역을 확인해주세요</DialogDescription>

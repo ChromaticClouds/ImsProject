@@ -59,6 +59,8 @@ export const UserRow = ({
 
       <TableCell className='text-center'>{user.eid}</TableCell>
 
+      <TableCell className='text-center'>{user.email}</TableCell>
+
       {/* 직급 / 권한 / 설명 등 공통 표시 영역 */}
       <RankCell
         user={user}

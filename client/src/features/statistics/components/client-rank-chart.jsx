@@ -1,19 +1,25 @@
 // @ts-check
+
+/**
+ * Components
+ */
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { useIsMobile } from '@/hooks/use-mobile.js';
 
 /**
- * @param {{ data: {partner:string, qty:number}[], mode:'inbound'|'outbound' }} props
+ * Hooks
  */
-export const ClientRankChart = ({ data = [], mode }) => {
-  const isMobile = useIsMobile();
+import { useIsMobile } from '@/hooks/use-mobile.js';
+import { useClientRankQuery } from '@/features/statistics/hooks/use-client-rank-query.js';
 
-  
+export const ClientRankChart = () => {
+  const { mode, chartData: data } = useClientRankQuery();
+
+  const isMobile = useIsMobile();
 
   const chartConfig = {
     qty: {
@@ -22,27 +28,28 @@ export const ClientRankChart = ({ data = [], mode }) => {
     },
   };
 
-  
-
   return (
-    <ChartContainer className="h-50 w-full" config={chartConfig}>
+    <ChartContainer
+      className='h-80 w-full'
+      config={chartConfig}
+    >
       <BarChart
         data={data}
-        layout="vertical"
+        layout='vertical'
         barSize={isMobile ? 18 : 24}
         margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
       >
         <CartesianGrid horizontal={false} />
-        <XAxis type="number" />
+        <XAxis type='number' />
         <YAxis
-          dataKey="partner"
-          type="category"
+          dataKey='partner'
+          type='category'
           width={90}
           tick={{ fontSize: 12 }}
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <Bar
-          dataKey="qty"
+          dataKey='qty'
           fill={mode === 'inbound' ? 'var(--chart-1)' : 'var(--chart-2)'}
           radius={[0, 8, 8, 0]}
         />

@@ -1,16 +1,24 @@
 // @ts-check
-import React, { useEffect, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { StatisticsDateRangePicker } from './statistics-date-range-picker.jsx';
 
+/**
+ * Components
+ */
+import { StatisticsDateRangePicker } from './statistics-date-range-picker.jsx';
 import { GraphContainer } from './graph-container.jsx';
 import { InOutboundChart } from './in-out-bound-chart.jsx';
-
 import {
-  fetchStatisticsBrands,
   fetchStatisticsInOutByProduct,
   fetchStatisticsTypes,
 } from '../api/index.js';
+import { BrandDropdown } from '@/features/statistics/components/brand-dropdown.jsx';
+
+/**
+ * Hooks
+ */
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { TypeDropdown } from '@/features/statistics/components/type-dropdown.jsx';
+import { useIsMobile } from '@/hooks/use-mobile.js';
 
 function pad2(n) {
   return String(n).padStart(2, '0');
@@ -20,9 +28,6 @@ function toYmd(d) {
 }
 function startOfMonth(d) {
   return new Date(d.getFullYear(), d.getMonth(), 1);
-}
-function endOfMonth(d) {
-  return new Date(d.getFullYear(), d.getMonth() + 1, 0);
 }
 
 function isFutureYmd(ymd) {
@@ -36,18 +41,9 @@ function overOneYear(from, to) {
   return plus < t;
 }
 
-function toKoreanTypeLabel(v) {
-  const map = {
-    WHISKEY: '위스키',
-    SOJU: '소주',
-    TRADITIONAL: '전통주',
-    LIQUOR: '양주',
-    KAOLIANG_LIQUOR: '고량주',
-  };
-  return map[String(v)] ?? String(v ?? '');
-}
-
 export const InOutBound = () => {
+  const isMobile = useIsMobile();
+
   const today = useMemo(() => new Date(), []);
   const defaultFrom = useMemo(() => toYmd(startOfMonth(today)), [today]);
   const defaultTo = useMemo(() => toYmd(today), [today]);
@@ -86,24 +82,7 @@ export const InOutBound = () => {
     setDateError('');
   }, [from, to]);
 
-  const typesQ = useQuery({
-    queryKey: ['stats-types'],
-    queryFn: fetchStatisticsTypes,
-    staleTime: 60_000,
-  });
-
-  const brandsQ = useQuery({
-    queryKey: ['stats-brands', type],
-    queryFn: () => fetchStatisticsBrands({ type }),
-    enabled: Boolean(type),
-    staleTime: 60_000,
-  });
-
-  useEffect(() => {
-    setBrand('');
-  }, [type]);
-
-  const statsQ = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ['stats-inout', { from, to, debouncedKeyword, type, brand }],
     enabled: Boolean(from && to && !dateError),
     queryFn: () =>
@@ -118,25 +97,25 @@ export const InOutBound = () => {
   });
 
   const chartData = useMemo(() => {
-    const rows = Array.isArray(statsQ.data) ? statsQ.data : [];
+    const rows = Array.isArray(data) ? data : [];
     return rows.map((r) => ({
       item: r.productName ?? '-',
       inbound: Number(r.inboundQty ?? 0),
       outbound: Number(r.outboundQty ?? 0),
       total: Number(r.totalQty ?? 0),
     }));
-  }, [statsQ.data]);
+  }, [data]);
 
   return (
     <GraphContainer
-      title="입출고 수량 합계 통계"
-      description="기간/품목/주종/브랜드 기준 품목별 입출고 수량 합계"
-      width="wide"
-      height="lg"
+      title='입출고 수량 합계 통계'
+      description='기간/품목/주종/브랜드 기준 품목별 입출고 수량 합계'
+      width='wide'
+      height='lg'
     >
       {/* 필터 */}
-      <div className='flex flex-wrap items-end gap-3 mb-3'>
-        <div className='flex flex-col gap-1'>
+      <div className='flex flex-wrap items-end gap-2'>
+        <div className='flex flex-col gap-2'>
           <label className='text-xs text-muted-foreground'>기간</label>
           <StatisticsDateRangePicker
             value={{ from, to }}
@@ -145,75 +124,52 @@ export const InOutBound = () => {
               setTo(to);
             }}
             disabled={false}
-            minDateYMD={undefined}
           />
         </div>
 
-        <div className='flex flex-col gap-1'>
+        <div className='flex flex-col gap-2'>
           <label className='text-xs text-muted-foreground'>품목 검색</label>
           <input
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder='품목명/코드'
-            className='h-9 w-40 rounded-md border px-2'
+            className={`${isMobile ? 'h-10' : 'h-9'} w-40 rounded-md border px-2`}
           />
         </div>
 
-        <div className='flex flex-col gap-1'>
+        <div className='flex flex-col gap-2'>
           <label className='text-xs text-muted-foreground'>주종</label>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className='h-9 w-20 rounded-md border px-2'
-          >
-            <option value=''>전체</option>
-            {(typesQ.data ?? []).map((t) => (
-              <option
-                key={t}
-                value={t}
-              >
-                {t}
-              </option>
-            ))}
-          </select>
+          <TypeDropdown
+            type={type}
+            setType={setType}
+          />
         </div>
 
-        <div className='flex flex-col gap-1'>
+        <div className='flex flex-col gap-2'>
           <label className='text-xs text-muted-foreground'>브랜드</label>
-          <select
-            value={brand}
-            onChange={(e) => setBrand(e.target.value)}
-            disabled={!type}
-            className='h-9 w-40 rounded-md border px-2 disabled:opacity-60'
-          >
-            <option value=''>{type ? '전체' : '주종 선택 필수'}</option>
-            {(brandsQ.data ?? []).map((b) => (
-              <option
-                key={b}
-                value={b}
-              >
-                {b}
-              </option>
-            ))}
-          </select>
+          <BrandDropdown
+            type={type}
+            brand={brand}
+            setBrand={setBrand}
+          />
+        </div>
+
+        <div className='flex flex-col gap-1 items-center'>
+          <div className='flex gap-1 items-center'>
+            <div className='rounded w-3 h-3 bg-chart-1' />
+            <span className='text-muted-foreground text-xs'>입고</span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <div className='rounded w-3 h-3 bg-chart-2' />
+            <span className='text-muted-foreground text-xs'>출고</span>
+          </div>
         </div>
       </div>
 
-      {dateError ? (
-        <div className='mb-2 text-sm font-semibold text-red-600'>
-          {dateError}
-        </div>
-      ) : null}
-
-      {statsQ.isFetching ? (
-        <div className='text-sm text-muted-foreground'>
-          데이터 불러오는 중...
-        </div>
-      ) : statsQ.isError ? (
-        <div className='text-sm text-red-600'>통계 조회 실패</div>
-      ) : (
-        <InOutboundChart data={chartData} />
-      )}
+      <InOutboundChart
+        data={chartData}
+        isFetching={isFetching}
+      />
     </GraphContainer>
   );
 };

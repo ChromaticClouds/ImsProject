@@ -45,7 +45,7 @@ export const GraphContainer = ({
   return (
     <div className={WIDTH_CLASS[width]}>
       <Card>
-        <CardHeader className='border-b gap-0'>
+        <CardHeader className='w-full border-b gap-0 overflow-hidden'>
           <div className='p-0 flex justify-between items-center'>
             <div className='min-w-0 flex flex-col gap-3'>
               <CardTitle className='truncate'>{title}</CardTitle>
@@ -63,7 +63,7 @@ export const GraphContainer = ({
         </CardHeader>
 
         <CardContent
-          className={`h-full flex flex-col justify-center overflow-hidden overflow-x-auto ${HEIGHT_CLASS[height]}`}
+          className={`h-full flex flex-col justify-center overflow-hidden ${HEIGHT_CLASS[height]}`}
         >
           {children}
         </CardContent>

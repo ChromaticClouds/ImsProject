@@ -2,7 +2,7 @@ import { AppHeader } from '@/components/common/app-header.jsx';
 import { Card } from '@/components/ui/card.js';
 import { useNavigate } from 'react-router-dom';
 
-import { PurchaseOrderForm } from '@/features/purchase-order/components/purchase-order-form.jsx';
+import { PurchaseOrderForm } from '@/features/purchase-order/components/purchase-order/purchase-order-form.jsx';
 import { usePurchaseOrders } from '@/features/purchase-order/hooks/use-purchase-orders.js';
 
 /**
@@ -51,7 +51,6 @@ export const PurchaseOrderCreate = () => {
   };
 
   const handleSubmit = (payload) => {
-   
     const nextId = rows.reduce((m, r) => Math.max(m, r.id), 0) + 1;
 
     setRows([
@@ -76,10 +75,17 @@ export const PurchaseOrderCreate = () => {
 
   return (
     <div className='w-full flex flex-col'>
-      <AppHeader title='발주서 작성' description='공급처/품목을 선택해 발주서를 작성합니다' />
+      <AppHeader
+        title='발주서 작성'
+        description='공급처/품목을 선택해 발주서를 작성합니다'
+      />
       <div className='mt-6'>
         <Card className='p-6'>
-          <PurchaseOrderForm mode='create' initialValue={initialValue} onSubmit={handleSubmit} />
+          <PurchaseOrderForm
+            mode='create'
+            initialValue={initialValue}
+            onSubmit={handleSubmit}
+          />
         </Card>
       </div>
     </div>

@@ -1,6 +1,7 @@
 // @ts-check
 
 import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 
 /**
  * Components
@@ -36,7 +37,7 @@ export const AppDatePicker = ({
           className='data-[empty=true]:text-muted-foreground md:w-60 w-full justify-start text-left font-normal'
         >
           <CalendarIcon />
-          {date ? format(date, 'PPP') : <span>날짜를 선택해주세요</span>}
+          {date ? format(date, 'PPP', { locale: ko }) : <span>날짜를 선택해주세요</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent

@@ -5,9 +5,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AppHeader } from '@/components/common/app-header.jsx';
 import { Card } from '@/components/ui/card.js';
 
-import { PurchaseOrderForm } from '@/features/purchase-order/components/purchase-order-form.jsx';
-import { fetchPurchaseOrder, updatePurchaseOrder } from '@/features/purchase-order/api/index.js';
-
+import { PurchaseOrderForm } from '@/features/purchase-order/components/purchase-order/purchase-order-form.jsx';
+import {
+  fetchPurchaseOrder,
+  updatePurchaseOrder,
+} from '@/features/purchase-order/api/index.js';
 
 export const PurchaseOrderEdit = () => {
   const navigate = useNavigate();
@@ -62,7 +64,10 @@ export const PurchaseOrderEdit = () => {
   if (!orderNumber) {
     return (
       <div className='w-full flex flex-col'>
-        <AppHeader title='발주서 수정' description='잘못된 접근입니다' />
+        <AppHeader
+          title='발주서 수정'
+          description='잘못된 접근입니다'
+        />
       </div>
     );
   }
@@ -70,7 +75,10 @@ export const PurchaseOrderEdit = () => {
   if (loading) {
     return (
       <div className='w-full flex flex-col'>
-        <AppHeader title='발주서 수정' description='불러오는 중...' />
+        <AppHeader
+          title='발주서 수정'
+          description='불러오는 중...'
+        />
       </div>
     );
   }
@@ -78,7 +86,10 @@ export const PurchaseOrderEdit = () => {
   if (!initialValue) {
     return (
       <div className='w-full flex flex-col'>
-        <AppHeader title='발주서 수정' description='존재하지 않는 발주서입니다' />
+        <AppHeader
+          title='발주서 수정'
+          description='존재하지 않는 발주서입니다'
+        />
       </div>
     );
   }
@@ -90,11 +101,17 @@ export const PurchaseOrderEdit = () => {
 
   return (
     <div className='w-full flex flex-col'>
-      <AppHeader title='발주서 수정' description='납기일/수량을 수정합니다' />
+      <AppHeader
+        title='발주서 수정'
+        description='납기일/수량을 수정합니다'
+      />
 
       <div className='mt-6'>
         <Card className='p-6'>
-          <PurchaseOrderForm initialValue={initialValue} onSubmit={handleSubmit} />
+          <PurchaseOrderForm
+            initialValue={initialValue}
+            onSubmit={handleSubmit}
+          />
         </Card>
       </div>
     </div>

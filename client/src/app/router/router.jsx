@@ -44,7 +44,7 @@ import { TodoDetail } from '@/features/todo/pages/todo-detail';
 import { TodoEdit } from '@/features/todo/pages/todo-edit';
 
 // purchase-order pages
-import { PurchaseOrder } from '@/pages/dashboard/purchase-order';
+import { PurchaseOrder } from '@/pages/dashboard/purchase-order/purchase-order';
 import { PurchaseOrderEdit } from '@/features/purchase-order/pages/purchase-order-edit';
 
 import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';

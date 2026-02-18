@@ -37,8 +37,8 @@ const buildParams = (searchCond) =>
   }, {});
 
 /**
- * @param {{ search?: string, fromDate?: string, toDate?: string, salerId?: number }} searchCond
- * @returns {Promise<ApiResponse<ReceivedOrder[]>>}
+ * @param {{ page?: number, search?: string, fromDate?: string, toDate?: string, salerId?: number }} searchCond
+ * @returns {Promise<ApiResponse<PageResponse<ReceivedOrder>>>}
  */
 export const getReceiveOrders = (searchCond) => {
   const params = buildParams(searchCond);

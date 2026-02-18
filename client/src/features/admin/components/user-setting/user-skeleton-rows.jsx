@@ -19,6 +19,7 @@ export const UserSkeletonRows = ({ rows = 10 }) => {
       <SkeletonCell />
       <SkeletonCell />
       <SkeletonCell />
+      <SkeletonCell />
     </TableRow>
   ));
 };

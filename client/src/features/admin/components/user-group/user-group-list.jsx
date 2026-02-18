@@ -9,20 +9,22 @@ export const UserGroupList = () => {
   const { users } = useUserList();
 
   return (
-    <CardContent>
+    <CardContent className='p-0'>
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead />
             <TableHead>사용자명</TableHead>
             <TableHead>이메일</TableHead>
             <TableHead>직급</TableHead>
             <TableHead>역할</TableHead>
-            <TableHead>상태</TableHead>
+            <TableHead className='text-center'>상태</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id}>
+              <TableCell />
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.rankLabel}</TableCell>
@@ -34,15 +36,9 @@ export const UserGroupList = () => {
                   </span>
                 )}
               </TableCell>
-              <TableCell>
+              <TableCell className='text-center'>
                 <Badge
-                  className={` ${
-                    user.status === 'ACTIVE'
-                      ? 'bg-green-100 text-green-800'
-                      : user.status === 'PENDING'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                  }`}
+                  className='bg-primary text-white'
                 >
                   {user.statusLabel}
                 </Badge>

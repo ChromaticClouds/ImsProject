@@ -28,8 +28,21 @@ const productCountSchema = z
   })
   .loose();
 
+/** @param {Date} date */
+const isSameOrAfterToday = (date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const target = new Date(date);
+  target.setHours(0, 0, 0, 0);
+
+  return target >= today;
+};
+
 const poPostSchema = z.object({
-  date: z.date(),
+  date: z
+    .date('날짜를 선택해주세요')
+    .refine(isSameOrAfterToday, '과거 날짜는 선택할 수 없습니다.'),
   supplierId: z
     .number()
     .nullable()
@@ -58,9 +71,9 @@ export const usePoPostForm = () => {
 
         console.log(formatForm);
 
-        const response = await api.post(
-          'purchase/order/post', { json: formatForm, hooks }
-        ).json();
+        const response = await api
+          .post('purchase/order/post', { json: formatForm, hooks })
+          .json();
 
         if (!response?.success) return;
         toast.success(response?.message);
@@ -73,7 +86,7 @@ export const usePoPostForm = () => {
           return toast.error(
             typeof errResponse?.message === 'string'
               ? errResponse?.message
-              : ERROR.UNEXPECTED_ERROR
+              : ERROR.UNEXPECTED_ERROR,
           );
         }
 

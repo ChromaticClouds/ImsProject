@@ -5,6 +5,8 @@ import com.example.ims.features.order.dto.OrderSummary;
 import com.example.ims.features.order.entities.Order;
 import com.example.ims.features.order.enums.OrderStatus;
 import com.example.ims.features.vendor.dto.VendorIdentifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,15 +35,18 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     and (:fromDate is null or o.orderDate >= :fromDate)
     and (:toDate   is null or o.orderDate <= :toDate)
     and (:salerId  is null or o.vendor.id = :salerId)
-    group by o.orderNumber, o.user.id, o.vendor.id, o.orderDate, o.recieveDate, m.id, m.name
+    group by
+        o.orderNumber, o.user.id, o.vendor.id, o.vendor.vendorName,
+        o.vendor.bossName, o.orderDate, o.recieveDate, m.id, m.name
     order by o.orderDate desc
     """)
-    List<OrderSummary> findOrderSummaries(
+    Page<OrderSummary> findOrderSummaries(
         @Param("status") OrderStatus status,
         @Param("search") String search,
         @Param("fromDate") LocalDate fromDate,
         @Param("toDate") LocalDate toDate,
-        @Param("salerId") Long salerId
+        @Param("salerId") Long salerId,
+        Pageable pageable
     );
 
     @Query("""

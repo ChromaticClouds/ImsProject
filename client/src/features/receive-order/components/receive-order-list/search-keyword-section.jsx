@@ -19,8 +19,10 @@ import { useDebounce } from '@/hooks/use-debounce.js';
 import { useReceiveOrderFilterStore } from '../../stores/use-receive-order-filter-store.js';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export const SearchKeywordSection = () => {
+  const [, setParams] = useSearchParams();
   const [input, setInput] = useState('');
 
   const setKeyword = useReceiveOrderFilterStore((state) => state.setKeyword);
@@ -29,6 +31,7 @@ export const SearchKeywordSection = () => {
 
   useEffect(() => {
     setKeyword(debounced?.trim() || null);
+    setParams((prev) => ({ ...prev, page: 1 }));
   }, [debounced, setKeyword]);
 
   return (

@@ -24,6 +24,9 @@ import com.example.ims.features.vendor.exceptions.VendorNotFoundException;
 import com.example.ims.features.vendor.repositories.VendorItemRepository;
 import com.example.ims.features.vendor.repositories.VendorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +37,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
+
+    private static final Integer PAGE_SIZE = 10;
 
     private final UserRepository userRepository;
     private final VendorRepository vendorRepository;
@@ -111,18 +116,22 @@ public class OrderService {
         orderRepository.saveAll(orders);
     }
 
-    public List<OrderSummary> getReceiveOrders(
+    public Page<OrderSummary> getReceiveOrders(
+        Integer page,
         String search,
         LocalDate fromDate,
         LocalDate toDate,
         Long salerId
     ) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+
         return orderRepository.findOrderSummaries(
             OrderStatus.OUTBOUND_PENDING,
             search,
             fromDate,
             toDate,
-            salerId
+            salerId,
+            pageable
         );
     }
 

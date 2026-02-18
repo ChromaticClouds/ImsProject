@@ -1,10 +1,10 @@
 import { AppHeader } from '@/components/common/app-header.jsx';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
-import { InventoryShare } from '@/features/main/inventory-share.jsx';
-import { ProductCount } from '@/features/main/product-count.jsx';
+import { InventoryShare } from '@/features/main/components/inventory-share.jsx';
+import { ProductCount } from '@/features/main/components/product-count.jsx';
 
-import { MainNotice } from '@/features/main/main-notice';
-import { MainTodo } from '@/features/main/main-todo';
+import { MainNotice } from '@/features/main/components/main-notice';
+import { MainTodo } from '@/features/main/components/main-todo';
 
 export const Main = () => {
   const { user } = useAuthStore();

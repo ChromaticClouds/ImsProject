@@ -3,21 +3,18 @@ import { useEffect, useMemo } from 'react';
 import { AppHeader } from '@/components/common/app-header.jsx';
 import { Card } from '@/components/ui/card.js';
 
-import { PurchaseOrderFooter } from '@/features/purchase-order/components/purchase-order-footer.jsx';
-import { PurchaseOrderHeader } from '@/features/purchase-order/components/purchase-order-header.jsx';
-import { PurchaseOrderList } from '@/features/purchase-order/components/purchase-order-list.jsx';
-import { PurchaseOrderPicker } from '@/features/purchase-order/components/purchase-order-picker.jsx';
+import { PurchaseOrderFooter } from '@/features/purchase-order/components/purchase-order/purchase-order-footer.jsx';
+import { PurchaseOrderHeader } from '@/features/purchase-order/components/purchase-order/purchase-order-header.jsx';
+import { PurchaseOrderList } from '@/features/purchase-order/components/purchase-order/purchase-order-list.jsx';
+import { PurchaseOrderPicker } from '@/features/purchase-order/components/purchase-order/purchase-order-picker.jsx';
 
 import { usePurchaseOrders } from '@/features/purchase-order/hooks/use-purchase-orders.js';
 import { usePurchaseOrderFilterStore } from '@/features/purchase-order/stores/use-purchase-order-filter-store.js';
+import { PoListProvider } from '@/features/purchase-order/providers/po-list-provider.jsx';
 
 export const PurchaseOrder = () => {
-  const { rows, page, summary, load, summaryDraft, summarySent } = usePurchaseOrders();
+  const { page, load } = usePurchaseOrders();
   const { view, keyword, range } = usePurchaseOrderFilterStore();
-
-  const totalQty = view === 'SENT'
-  ? (summarySent?.totalCount ?? 0)
-  : (summaryDraft?.totalCount ?? 0);
 
   const params = useMemo(() => {
     const from = range?.from ? String(range.from) : undefined;
@@ -32,7 +29,6 @@ export const PurchaseOrder = () => {
     };
   }, [view, keyword, range, page?.number, page?.size]);
 
-
   useEffect(() => {
     load({ ...params, page: 1 });
   }, [view, keyword, range]);
@@ -40,13 +36,6 @@ export const PurchaseOrder = () => {
   const onReload = async () => {
     await load(params);
   };
-
-  const pagination = {
-    currentPage: page?.number ?? 1,
-    totalPages: page?.totalPages ?? 1,
-    setCurrentPage: (p) => load({ ...params, page: p }),
-  };
-  
 
   return (
     <div className='w-full flex flex-col'>
@@ -57,13 +46,15 @@ export const PurchaseOrder = () => {
 
       <PurchaseOrderPicker />
 
-      <div className='mt-6'>
-        <Card>
-          <PurchaseOrderHeader onReload={onReload} />
-          <PurchaseOrderList rows={rows} onReload={onReload} />
-          <PurchaseOrderFooter pagination={pagination} totalCount={page?.totalElements ?? 0} summary={summary} />
-        </Card>
-      </div>
+      <PoListProvider>
+        <div className='mt-6'>
+          <Card>
+            <PurchaseOrderHeader onReload={onReload} />
+            <PurchaseOrderList />
+            <PurchaseOrderFooter />
+          </Card>
+        </div>
+      </PoListProvider>
     </div>
   );
 };

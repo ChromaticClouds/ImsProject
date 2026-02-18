@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/tooltip.js';
 import { FieldError } from '@/components/ui/field.js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
+import { typeMap } from '@/constants/product-type.js';
 
 const TABLE_HEADER = [
   '',
@@ -90,7 +91,7 @@ export const AdjustList = () => {
                       {row.salePrice}원
                     </TableCell>
                     <TableCell className='text-center'>{row.brand}</TableCell>
-                    <TableCell className='text-center'>{row.type}</TableCell>
+                    <TableCell className='text-center'>{typeMap[row.type]}</TableCell>
                     <TableCell className='text-center'>
                       {row.currentStock}
                     </TableCell>

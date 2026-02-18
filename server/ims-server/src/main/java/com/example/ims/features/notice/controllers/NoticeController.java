@@ -78,8 +78,6 @@ public class NoticeController {
 
     @PatchMapping("/{id}/pinned")
     public ApiResponse<Void> pinned(@PathVariable("id") Long id, @RequestParam boolean pinned) {
-        System.out.println("수정 폼 들어옴");
-
         return nPinned.execute(id, pinned);
     }
 

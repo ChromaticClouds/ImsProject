@@ -1,6 +1,6 @@
 // @ts-check
 import { useNavigate, useParams } from 'react-router-dom';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import {
   Card,
@@ -47,8 +47,7 @@ export const NoticeEdit = () => {
               fileName: notice.fileName,
             }}
             onCancel={() => navigate(`/dashboard/notice/${id}`)}
-            // onSubmit={(values) => update.mutate({ id: Number(id), values })} // values를 formData로 수정 할 뻔
-            onSubmit={(formData) => update.mutate({ id: Number(id), formData })} // values를 formData로 수정 할 뻔
+            onSubmit={(formData) => update.mutate({ id: Number(id), formData })}
             isSubmitting={update.isPending}
           />
         </CardContent>

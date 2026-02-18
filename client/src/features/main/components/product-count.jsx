@@ -1,4 +1,4 @@
-import { GraphContainer } from '../statistics/components/graph-container.jsx';
+import { GraphContainer } from '../../statistics/components/graph-container.jsx';
 import { ProductCountChart } from '@/features/main/components/product-count-chart.jsx';
 
 export const ProductCount = () => {
@@ -7,7 +7,7 @@ export const ProductCount = () => {
       title='품목 수량 현황'
       description='각 품목 당 현 재고 수량을 확인'
       width='wide'
-      height='lg' 
+      height='lg'
     >
       <ProductCountChart />
     </GraphContainer>

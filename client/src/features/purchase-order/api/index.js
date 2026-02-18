@@ -22,62 +22,9 @@ import { api, hooks } from '@/services/api.js';
  */
 
 /**
- * @typedef {{
- *  orderNumber: string,
- *  orderDate: string,
- *  recieveDate: string,
- *  status: (null|'INBOUND_PENDING'),
- *  vendorId?: number,
- *  vendorName?: string,
- *  itemKinds?: number,
- *  totalCount?: number,
- *  totalPrice?: number,
- *  items?: Array<{
- *    orderNumber: string,
- *    orderId: number,
- *    vendorItemId: number,
- *    productId: number,
- *    productName?: string,
- *    type?: string,
- *    brand?: string,
- *    count?: number,
- *    purchasePrice?: number,
- *    safetyStock?: number,
- *  }>
- * }} PurchaseOrderGroupRow
- */
-
-/**
- * 
- * @typedef {{
- *   orderKinds: number,
- *   totalCount: number,
- *   totalPrice: number
- * }} PurchaseOrderSummary
- */
-
-/**
- * @typedef {{
- *   number: number,
- *   size: number,
- *   totalElements: number,
- *   totalPages: number
- * }} PageMeta
- */
-
-/**
- * 
- * @typedef {{
- *   content: PurchaseOrderGroupRow[],
- *   page: PageMeta,
- *   summary: PurchaseOrderSummary
- * }} PurchaseOrderListResponse
- */
-
-/**
  * 목록
  * @param {{ view?:'DRAFT'|'SENT', keyword?:string, from?:string, to?:string, page?:number, size?:number }} params
- * @returns {Promise<PurchaseOrderListResponse>}
+ * @returns {Promise<OrderResponse>}
  */
 export async function fetchPurchaseOrders(params) {
   return await api
@@ -88,7 +35,7 @@ export async function fetchPurchaseOrders(params) {
 /**
  * 수정
  * @param {string} orderNumber
- * @returns {Promise<PurchaseOrderGroupRow>}
+ * @returns {Promise<OrderResponse>}
  */
 export async function fetchPurchaseOrder(orderNumber) {
   return await api

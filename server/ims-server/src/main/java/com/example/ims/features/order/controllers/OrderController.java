@@ -5,8 +5,10 @@ import com.example.ims.features.order.services.OrderService;
 import com.example.ims.features.user.dto.UserIdentifier;
 import com.example.ims.features.user.dto.UserPrincipal;
 import com.example.ims.features.vendor.dto.VendorIdentifier;
+import com.example.ims.global.dto.PageResponse;
 import com.example.ims.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,7 +25,8 @@ public class OrderController {
     private final OrderService service;
 
     @GetMapping("receive")
-    public ResponseEntity<ApiResponse<List<OrderSummary>>> getReceiveOrders(
+    public ResponseEntity<ApiResponse<PageResponse<OrderSummary>>> getReceiveOrders(
+        @RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(required = false, value = "search") String search,
         @RequestParam(required = false, value = "fromDate")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -33,9 +36,9 @@ public class OrderController {
         LocalDate toDate,
         @RequestParam(required = false, value = "salerId") Long salerId
     ) {
-        List<OrderSummary> orders =
-            service.getReceiveOrders(search, fromDate, toDate, salerId);
-        return ResponseEntity.ok(ApiResponse.success(orders));
+        Page<OrderSummary> orders =
+            service.getReceiveOrders(page - 1, search, fromDate, toDate, salerId);
+        return ResponseEntity.ok(ApiResponse.success(PageResponse.from(orders)));
     }
 
     @GetMapping("bootstrap")

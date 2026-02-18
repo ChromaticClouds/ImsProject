@@ -8,6 +8,7 @@ import { USER_STATUS } from '../constants/index.js';
 export const toUserRowModel = (user) => ({
   id: user.id,
   name: user.name,
+  email: user.email,
   eid: user.eid,
   rankLabel: RANK_LABEL[user.userRank],
   roleLabel: ROLE_LABEL[user.userRole],

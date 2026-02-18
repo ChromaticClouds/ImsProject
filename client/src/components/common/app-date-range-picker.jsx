@@ -40,7 +40,7 @@ export const AppDateRangePicker = ({ value, onChange }) => {
               format(value.from, 'yyyy-MM-dd')
             )
           ) : (
-            'Choose date'
+            '날짜를 선택해주세요'
           )}
           <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
         </Button>

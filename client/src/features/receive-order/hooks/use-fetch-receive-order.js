@@ -5,6 +5,8 @@ import { assignOutboundManager, getReceiveOrders } from '../api/index.js';
 import { toast } from 'sonner';
 import { useReceiveOrderFilterStore } from '../stores/use-receive-order-filter-store.js';
 import { formatToIsoDate } from '../utils/format-date.js';
+import { useShallow } from 'zustand/shallow';
+import { useMemo } from 'react';
 
 /**
  * 수주(입고 예정) 목록 조회 + 출고 담당자 지정/변경을 위한 훅
@@ -21,96 +23,43 @@ import { formatToIsoDate } from '../utils/format-date.js';
  * }} SearchType
  * 조회에 사용할 검색 조건
  *
- * @returns {{
- *  orders: Array<ReceiveOrder>,
- *  mutation: import('@tanstack/react-query').UseMutationResult<
- *    any,
- *    unknown,
- *    { orderNumber: string, managerId: number | null }
- *  >
- * }}
+ * @param {number} [page]
+ * @returns {PageResponse<ReceiveOrder>}
  */
-export const useFetchReceiveOrder = () => {
-  const { search, dateRange, salerId } = useReceiveOrderFilterStore();
-  const { from, to } = dateRange;
+export const useFetchReceiveOrder = (page) => {
+  const [search, dateRange, salerId] = useReceiveOrderFilterStore(
+    useShallow((s) => [s.search, s.dateRange, s.salerId]),
+  );
 
-  const searchCond = {
-    search,
-    salerId,
-    fromDate: formatToIsoDate(from),
-    toDate: formatToIsoDate(to),
-  };
+  const fromDate = formatToIsoDate(dateRange?.from);
+  const toDate = formatToIsoDate(dateRange?.to);
 
-  const queryClient = useQueryClient();
+  const queryKey = useMemo(
+    () => [
+      'receive-orders',
+      search ?? null,
+      salerId ?? null,
+      fromDate ?? null,
+      toDate ?? null,
+      page ?? null,
+    ],
+    [page, search, salerId, fromDate, toDate],
+  );
 
   const { data } = useQuery({
-    queryKey: ['receive-orders', searchCond],
-    queryFn: () => getReceiveOrders(searchCond),
+    queryKey,
+    queryFn: async () => {
+      const response = await getReceiveOrders({
+        page,
+        search,
+        salerId,
+        fromDate,
+        toDate,
+      });
+      return response?.data;
+    },
     staleTime: 0,
   });
 
-  const mutation = useMutation({
-    mutationFn: assignOutboundManager,
-
-    /**
-     * 담당자 변경 optimistic update
-     *
-     * - 서버 응답을 기다리지 않고 캐시를 먼저 갱신한다.
-     * - 실패 시 이전 상태로 rollback하기 위해 prev 값을 반환한다.
-     */
-    onMutate: async ({ orderNumber, managerId }) => {
-      await queryClient.cancelQueries({
-        queryKey: ['receive-orders', searchCond],
-      });
-
-      const prev = queryClient.getQueryData(['receive-orders', searchCond]);
-
-      queryClient.setQueryData(
-        ['receive-orders', searchCond],
-        /** @param {ApiResponse<import('../api/index.js').ReceivedOrder[]>} old */
-        (old) => {
-          if (!old) return old;
-
-          return {
-            ...old,
-            data: old.data.map((o) =>
-              o.orderNumber === orderNumber
-                ? {
-                    ...o,
-                    managerId,
-                    managerName: managerId == null ? null : o.managerName,
-                  }
-                : o,
-            ),
-          };
-        },
-      );
-
-      return { prev };
-    },
-
-    onSuccess: () => toast.success('요청이 성공적으로 완료되었습니다.'),
-
-    /**
-     * 담당자 변경 실패 시 optimistic update rollback
-     */
-    onError: (err, _vars, ctx) => {
-      if (ctx?.prev) {
-        queryClient.setQueryData(['receive-orders', searchCond], ctx.prev);
-      }
-    },
-
-    /**
-     * 요청 성공/실패 여부와 관계없이 서버 상태와 동기화
-     */
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['receive-orders', searchCond],
-      });
-    },
-  });
-
-  const orders = data?.data ?? [];
-
-  return { orders, mutation };
+  return data;
 };

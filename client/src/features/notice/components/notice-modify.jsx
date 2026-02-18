@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 
 /**
  * @typedef {object} NoticeFormValues
@@ -44,9 +45,8 @@ export const NoticeForm = ({
     const data = new FormData(e.currentTaget);
     data.set('pinned', pinned ? 'true' : 'false');
 
-
     if (!t || !c) {
-      window.alert('미입력되었습니다');
+      toast.error('게시글 제목 혹은 내용을 입력해주세요.');
       return;
     }
 
@@ -66,9 +66,6 @@ export const NoticeForm = ({
       pinned,
       fileName,
     });
-
-
-    
   };
 
   return (

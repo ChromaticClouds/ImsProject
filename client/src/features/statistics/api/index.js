@@ -25,11 +25,19 @@ export async function fetchStatisticsInOutByProduct(params) {
   return await api.get('stats/in-out/by-product', { searchParams: params }).json();
 }
 
-// 거래처 순위 통계
+/**
+ * @typedef {object} ClientRankData
+ * @property {string} name
+ * @property {number} qty
+ * @returns {Promise<ClientRankData[]>}
+ */
 export async function fetchInboundPartnerRank(params) {
   return await api.get('stats/rank/inbound', { searchParams: params }).json();
 }
 
+/**
+ * @returns {Promise<ClientRankData[]>} 
+ */
 export async function fetchOutboundPartnerRank(params) {
   return await api.get('stats/rank/outbound', { searchParams: params }).json();
 }

@@ -124,7 +124,7 @@ export const createNotice = async (values) => {
  *   file?: File | null;
  *   fileName?: string | null;
  * }} values
- * @returns {Promise<{ ok: boolean; message?: string }>}
+ * @returns {Promise<ApiResponse>}
  */
 export const updateNotice = async (id, values) => {
   console.log(id, values);
@@ -134,7 +134,7 @@ export const updateNotice = async (id, values) => {
   const content = (values?.content ?? '').trim();
 
   if (!title || !content) {
-    return { ok: false, message: '미입력되었습니다' };
+    return { success: false, message: '미입력되었습니다' };
   }
 
   const form = new FormData();
@@ -166,7 +166,7 @@ export const updateNotice = async (id, values) => {
     return response;
   } catch (error) {
     console.error(error);
-    return { ok: false, message: '서버 오류가 발생했습니다' };
+    return { success: false, message: '서버 오류가 발생했습니다' };
   }
 };
 

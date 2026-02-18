@@ -16,6 +16,19 @@ import {
 import { fetchNoticeById, deleteNotice } from '@/features/notice/api/noticeApi';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store';
 import { downloadFile } from '../api/notice';
+import { toast } from 'sonner';
+import { Spinner } from '@/components/ui/spinner.js';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog.js';
 
 export const NoticeDetail = () => {
   /**
@@ -36,13 +49,13 @@ export const NoticeDetail = () => {
     mutationFn: () => deleteNotice(id),
     onSuccess: async (res) => {
       if (!res?.ok) {
-        window.alert(res?.message ?? '삭제 실패');
+        toast.error(res?.message ?? '삭제 실패');
         if (res?.success != false) {
           navigate('/dashboard/notice');
         }
         return;
       }
-      window.alert(res.message); // "삭제 완료 되었습니다."
+      toast.success(res.message); // "삭제 완료 되었습니다."
       await qc.invalidateQueries({ queryKey: ['notices'] });
       await qc.invalidateQueries({ queryKey: ['notice', id] });
 
@@ -59,7 +72,7 @@ export const NoticeDetail = () => {
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             {notice.pinned ? (
-              <span className='shrink-0 rounded-lg bg-red-700 px-2 py-0.5 text-xs font-medium text-red-50'>
+              <span className='shrink-0 rounded-lg bg-primary px-2 py-0.5 text-xs font-medium text-white'>
                 중요
               </span>
             ) : null}
@@ -106,19 +119,44 @@ export const NoticeDetail = () => {
             수정
           </Button>
 
-          <Button
-            variant='destructive'
-            disabled={userRank !== 'FIRST_ADMIN' || del.isPending}
-            onClick={() => {
-              const ok = window.confirm(
-                '정말 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.',
-              );
-              if (!ok) return;
-              del.mutate();
-            }}
-          >
-            {del.isPending ? '삭제중...' : '삭제'}
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger
+              asChild
+              disabled={userRank !== 'FIRST_ADMIN' || del.isPending}
+            >
+              <Button
+                variant='outline'
+                className='text-destructive hover:text-destructive'
+                disabled={userRank !== 'FIRST_ADMIN' || del.isPending}
+              >
+                삭제
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>게시글 삭제</AlertDialogTitle>
+                <AlertDialogDescription>
+                  정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel asChild>
+                  <Button className='text-muted-foreground'>취소</Button>
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  asChild
+                  variant='outline'
+                >
+                  <Button
+                    className='text-destructive hover:text-destructive'
+                    onClick={() => del.mutate()}
+                  >
+                    삭제
+                  </Button>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardFooter>
       </Card>
     </div>

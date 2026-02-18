@@ -20,23 +20,10 @@ import { SearchIcon } from 'lucide-react';
 /**
  * Hooks
  */
-import { useDebounce } from '@/hooks/use-debounce.js';
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.js';
 import { ReceiveOrderListFilter } from './receive-order-list-filter.jsx';
 import { SearchDateSection } from './search-date-section.jsx';
 import { SearchKeywordSection } from './search-keyword-section.jsx';
-
-const formatDate = (date) => (date ? date.toISOString().slice(0, 10) : null);
 
 /**
  * @typedef {object} AppDateRange

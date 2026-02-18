@@ -16,8 +16,9 @@ export const PoDeleteDialog = () => {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant='destructive'
+          variant='outline'
           size='sm'
+          className='text-destructive hover:text-destructive'
         >
           삭제
         </Button>

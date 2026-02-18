@@ -35,7 +35,7 @@ export const ReceiveOrderPagination = () => {
   /** @param {number} n */
   const toPage = (n) => `/dashboard/receive-order?page=${n}`;
 
-  return p.totalPages && (
+  return p.totalPages >= 1 && (
     <Pagination>
       <PaginationContent>
         <PaginationItem>

@@ -44,7 +44,7 @@ export const PoSendDialog = ({ content }) => {
       <DialogTrigger asChild>
         <Button
           size='sm'
-          className='gap-2'
+          variant='outline'
         >
           <SendIcon />
           전송

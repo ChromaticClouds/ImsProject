@@ -144,7 +144,7 @@ export const PurchaseOrderList = () => {
                 <TableCell className='text-center'>{c.orderDate}</TableCell>
 
                 {/* 발주번호 */}
-                <TableCell className='text-center font-medium'>
+                <TableCell className='text-center font-mono text-muted-foreground'>
                   {c.orderNumber}
                 </TableCell>
 
@@ -172,7 +172,7 @@ export const PurchaseOrderList = () => {
                     <TableCell className='text-center'>
                       <Button
                         size='sm'
-                        variant='secondary'
+                        variant='outline'
                         disabled={isSentView}
                         onClick={() =>
                           navigate(`${encodeURIComponent(c.orderNumber)}/edit`)
@@ -190,18 +190,6 @@ export const PurchaseOrderList = () => {
 
                     {/* 삭제 */}
                     <TableCell className='text-center'>
-                      {/* <Button
-                        variant='destructive'
-                        size='sm'
-                        onClick={async () => {
-                          const ok = window.confirm('삭제 하시겠습니까?');
-                          if (!ok) return;
-                          await remove(c.orderNumber);
-                        }}
-                      >
-                        <Trash2Icon />
-                        삭제
-                      </Button> */}
                       <PoDeleteDialog />
                     </TableCell>
                   </>

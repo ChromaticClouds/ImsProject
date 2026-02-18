@@ -25,42 +25,59 @@ export const ReceiveOrderList = () => {
         <TableHeader>
           <TableRow className='bg-accent'>
             {RECEIVE_ORDER_TABLE_HEADER.map((head) => (
-              <TableHead className='text-center' key={head}>{head}</TableHead>
+              <TableHead
+                className='text-center'
+                key={head}
+              >
+                {head}
+              </TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {content?.map((o) => (
-            <TableRow
-              key={o.orderNumber}
-              className='text-center h-16'
-            >
-              <TableCell>{o.orderNumber}</TableCell>
-              <TableCell>{o.orderDate}</TableCell>
-              <TableCell>{o.vendorName}</TableCell>
-              <TableCell>{o.bossName}</TableCell>
-              <TableCell>{o.userName}</TableCell>
-              <ReceiveOrderDetail order={o} />
-              <TableCell>{o.totalPrice}</TableCell>
-              <TableCell>{o.receiveDate}</TableCell>
-              <TableCell>
-                <div className='w-full h-full flex justify-center items-center'>
-                  <AssignOutboundManager
-                    manager={{
-                      managerName: o.managerName,
-                      managerId: o.managerId,
-                    }}
-                    onChange={(nextManagerId) =>
-                      mutation.mutate({
-                        orderNumber: o.orderNumber,
-                        managerId: nextManagerId,
-                      })
-                    }
-                  />
+          {content.length > 0 ? (
+            content?.map((o) => (
+              <TableRow
+                key={o.orderNumber}
+                className='text-center h-16'
+              >
+                <TableCell className='text-muted-foreground font-mono'>
+                  {o.orderNumber}
+                </TableCell>
+                <TableCell>{o.orderDate}</TableCell>
+                <TableCell>{o.vendorName}</TableCell>
+                <TableCell>{o.bossName}</TableCell>
+                <TableCell>{o.userName}</TableCell>
+                <ReceiveOrderDetail order={o} />
+                <TableCell>{o.totalPrice}</TableCell>
+                <TableCell>{o.receiveDate}</TableCell>
+                <TableCell>
+                  <div className='w-full h-full flex justify-center items-center'>
+                    <AssignOutboundManager
+                      manager={{
+                        managerName: o.managerName,
+                        managerId: o.managerId,
+                      }}
+                      onChange={(nextManagerId) =>
+                        mutation.mutate({
+                          orderNumber: o.orderNumber,
+                          managerId: nextManagerId,
+                        })
+                      }
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={RECEIVE_ORDER_TABLE_HEADER.length}>
+                <div className='flex h-24 items-center justify-center'>
+                  데이터가 없습니다
                 </div>
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </CardContent>

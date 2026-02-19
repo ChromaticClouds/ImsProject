@@ -122,15 +122,6 @@ export function VendorModifyPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  /** @param {VendorType} type */
-  const setType = (type) => {
-    setForm((prev) => ({ ...prev, type }));
-    if (type === 'Seller') {
-      setItemKeyword('');
-      setSelectedItems([]);
-    }
-  };
-
   const markTouched = (key) => () => {
     setTouched((prev) => ({ ...prev, [key]: true }));
   };
@@ -177,7 +168,9 @@ export function VendorModifyPage() {
   const onChangeUnitPrice = (itemId) => (e) => {
     const v = e.target.value.replace(/[^\d]/g, '');
     const num = v ? Number(v) : 0;
-    setSelectedItems((prev) => prev.map((x) => (x.itemId === itemId ? { ...x, unitPrice: num } : x)));
+    setSelectedItems((prev) =>
+      prev.map((x) => (x.itemId === itemId ? { ...x, unitPrice: num } : x))
+    );
   };
 
   const onRemoveItem = async (itemId) => {
@@ -245,7 +238,7 @@ export function VendorModifyPage() {
   if (isLoading)
     return (
       <div className="mx-auto max-w-[1100px] px-5 py-6">
-        <div className="rounded-2xl border bg-white p-6 text-sm text-muted-foreground">로딩 중...</div>
+        <div className="rounded-2xl border bg-secondary p-6 text-sm text-muted-foreground">로딩 중...</div>
       </div>
     );
 
@@ -261,7 +254,7 @@ export function VendorModifyPage() {
   if (!vendor)
     return (
       <div className="mx-auto max-w-[1100px] px-5 py-6">
-        <div className="rounded-2xl border bg-white p-6 text-sm text-muted-foreground">
+        <div className="rounded-2xl border bg-secondary p-6 text-sm text-muted-foreground">
           거래처 정보를 찾을 수 없습니다.
         </div>
       </div>
@@ -297,7 +290,7 @@ export function VendorModifyPage() {
           <div className="grid grid-cols-12 gap-4">
             {/* Left: base fields */}
             <div className="col-span-12 lg:col-span-7">
-              <div className="rounded-2xl border bg-white">
+              <div className="rounded-2xl border bg-secondary">
                 <div className="border-b px-5 py-4">
                   <div className="font-semibold">기본 정보</div>
                   <div className="mt-1 text-xs text-muted-foreground">
@@ -408,7 +401,7 @@ export function VendorModifyPage() {
 
             {/* Right: supplier items */}
             <div className="col-span-12 lg:col-span-5">
-              <div className="rounded-2xl border bg-white">
+              <div className="rounded-2xl border bg-secondary">
                 <div className="border-b px-5 py-4">
                   <div className="flex items-center justify-between">
                     <div className="font-semibold">품목 / 구매 단가</div>
@@ -435,7 +428,7 @@ export function VendorModifyPage() {
                           />
 
                           {itemKeyword.trim().length > 0 ? (
-                            <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 overflow-hidden rounded-xl border bg-white shadow-sm">
+                            <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 overflow-hidden rounded-xl border bg-secondary shadow-sm">
                               <div className="max-h-60 overflow-y-auto">
                                 {itemsLoading ? (
                                   <div className="px-3 py-2 text-sm text-muted-foreground">검색 중...</div>
@@ -462,48 +455,57 @@ export function VendorModifyPage() {
                       {/* selected list */}
                       {selectedItems.length > 0 ? (
                         <div className="overflow-hidden rounded-xl border">
+                          {/* ✅ 해결 1: 단가 칸 + 삭제 버튼을 같은 칸(col-span-5)으로 합치기 */}
                           <div className="grid grid-cols-12 bg-muted/40 px-3 py-2 text-xs font-medium text-muted-foreground">
                             <div className="col-span-7">품목</div>
-                            <div className="col-span-4 text-right">단가</div>
-                            <div className="col-span-1 text-right"> </div>
+                            <div className="col-span-5 text-right">단가</div>
                           </div>
 
                           <div className="divide-y">
                             {selectedItems.map((x) => {
-                              const priceInvalid = form.type === 'Supplier' && (!x.unitPrice || x.unitPrice <= 0);
+                              const priceInvalid =
+                                form.type === 'Supplier' && (!x.unitPrice || x.unitPrice <= 0);
+
                               return (
-                                <div key={x.itemId} className="grid grid-cols-12 items-center gap-2 px-3 py-3 hover:bg-muted/20">
+                                <div
+                                  key={x.itemId}
+                                  className="grid grid-cols-12 items-center gap-2 px-3 py-3 hover:bg-muted/20"
+                                >
                                   <div className="col-span-7 min-w-0">
                                     <div className="truncate text-sm font-medium">{x.itemName}</div>
-                                    <div className="mt-1 text-[11px] text-muted-foreground">상품ID {x.itemId}</div>
+                                    <div className="mt-1 text-[11px] text-muted-foreground">
+                                      상품ID {x.itemId}
+                                    </div>
                                   </div>
 
-                                  <div className="col-span-4">
-                                    <Input
-                                      value={String(x.unitPrice ?? 0)}
-                                      onChange={onChangeUnitPrice(x.itemId)}
-                                      placeholder="단가"
-                                      inputMode="numeric"
-                                      className={`text-right tabular-nums ${
-                                        priceInvalid ? 'border-destructive focus-visible:ring-destructive' : ''
-                                      }`}
-                                    />
-                                    {priceInvalid ? (
-                                      <div className="mt-1 text-[11px] text-destructive">1원 이상 입력</div>
-                                    ) : null}
-                                  </div>
+                                  {/* 단가 + 삭제 버튼 */}
+                                  <div className="col-span-5">
+  <div className="flex items-center gap-2">
+    <Input
+      value={String(x.unitPrice ?? 0)}
+      onChange={onChangeUnitPrice(x.itemId)}
+      placeholder="단가"
+      inputMode="numeric"
+      className={`flex-1 text-right tabular-nums ${
+        priceInvalid ? 'border-destructive focus-visible:ring-destructive' : ''
+      }`}
+    />
 
-                                  <div className="col-span-1 flex justify-end">
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      onClick={() => onRemoveItem(x.itemId)}
-                                      className="h-9 w-9 px-0"
-                                      title="삭제"
-                                    >
-                                      X
-                                    </Button>
-                                  </div>
+    <Button
+      type="button"
+      variant="outline"
+      onClick={() => onRemoveItem(x.itemId)}
+      className="h-9 w-9 shrink-0 px-0"
+      title="삭제"
+    >
+      X
+    </Button>
+  </div>
+
+  {priceInvalid ? (
+    <div className="mt-1 text-[11px] text-destructive">1원 이상 입력</div>
+  ) : null}
+</div>
                                 </div>
                               );
                             })}

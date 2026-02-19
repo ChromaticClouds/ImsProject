@@ -33,6 +33,26 @@ import { Spinner } from '@/components/ui/spinner.js';
 
 const formatNumber = (n) => Number(n || 0).toLocaleString();
 
+/**
+ * 날짜
+ * @param {string | null | undefined} dateStr
+ */
+const formatDateWithDay = (dateStr) => {
+  if (!dateStr) return '-';
+
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return dateStr;
+
+  const week = ['일', '월', '화', '수', '목', '금', '토'];
+  const day = week[d.getDay()];
+
+  // YYYY-MM-DD만 표시 (datetime 잘림 방지)
+  const s = String(dateStr);
+  const dateOnly = s.length >= 10 ? s.slice(0, 10) : s;
+
+  return `${dateOnly} (${day})`;
+};
+
 const isPending = (status) => status === 'INBOUND_PENDING';
 const isComplete = (status) => status === 'INBOUND_COMPLETE';
 
@@ -141,7 +161,7 @@ export const PurchaseOrderList = () => {
                 </TableCell>
 
                 {/* 발주일 */}
-                <TableCell className='text-center'>{c.orderDate}</TableCell>
+                <TableCell className='text-center'>{formatDateWithDay(c.orderDate)}</TableCell>
 
                 {/* 발주번호 */}
                 <TableCell className='text-center font-mono text-muted-foreground'>
@@ -149,7 +169,7 @@ export const PurchaseOrderList = () => {
                 </TableCell>
 
                 {/* 납기일 */}
-                <TableCell className='text-center'>{c.recieveDate}</TableCell>
+                <TableCell className='text-center'>{formatDateWithDay(c.recieveDate)}</TableCell>
 
                 {/* 품목 수 -- 상세 */}
                 <TableCell className='text-center'>

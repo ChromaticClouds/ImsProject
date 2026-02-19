@@ -252,7 +252,7 @@ export function VendorCreatePage() {
         <form onSubmit={onSubmit} className="grid grid-cols-12 gap-4">
           {/* Left */}
           <div className="col-span-12 lg:col-span-7 space-y-4">
-            <div className="rounded-2xl border bg-white p-4">
+            <div className="rounded-2xl border bg-secondary p-4">
               <div className="mb-3 flex items-center justify-between">
                 <div className="font-semibold">구분</div>
                 
@@ -283,7 +283,7 @@ export function VendorCreatePage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border bg-white p-4">
+            <div className="rounded-2xl border bg-secondary p-4">
               <div className="mb-3 font-semibold">기본 정보</div>
 
               <div className="grid grid-cols-12 gap-3">
@@ -363,7 +363,7 @@ export function VendorCreatePage() {
           {/* Right */}
           <div className="col-span-12 lg:col-span-5">
             <div className="sticky top-5 space-y-4">
-              <div className="rounded-2xl border bg-white p-4">
+              <div className="rounded-2xl border bg-secondary p-4">
                 <div className="mb-2 flex items-center justify-between">
                   <div className="font-semibold">품목 설정</div>
                   <Badge variant="secondary">{isSupplier ? '필수' : '미사용'}</Badge>
@@ -387,7 +387,7 @@ export function VendorCreatePage() {
                       />
 
                       {showSearchDropdown ? (
-                        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-20 overflow-hidden rounded-xl border bg-white shadow-xl">
+                        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-20 overflow-hidden rounded-xl border bg-secondary shadow-xl">
                           {itemsLoading ? (
                             <div className="px-3 py-3 text-sm text-muted-foreground">검색 중...</div>
                           ) : filteredItems.length === 0 ? (
@@ -481,7 +481,7 @@ export function VendorCreatePage() {
               </div>
 
               {/* Submit card */}
-              <div className="rounded-2xl border bg-white p-4">
+              <div className="rounded-2xl border bg-secondary p-4">
                 <div className="mb-2 text-sm font-semibold">저장</div>
                 <div className="text-xs text-muted-foreground">
                   필수 항목을 확인한 뒤 완료를 눌러 저장하세요.
@@ -491,7 +491,7 @@ export function VendorCreatePage() {
                   <Button id="vendor-create-submit" type="submit" disabled={!canSubmit} className="w-full">
                     {isPending ? '저장 중...' : '완료'}
                   </Button>
-                  <Button type="button" variant="secondary" onClick={() => navigate(-1)} disabled={isPending} className="w-full">
+                  <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isPending} className="w-full">
                     취소
                   </Button>
                 </div>

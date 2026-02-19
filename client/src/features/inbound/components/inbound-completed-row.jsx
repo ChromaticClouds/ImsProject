@@ -167,7 +167,7 @@ function formatDateWithDay(dateStr) {
         {fmt(row.totalAmount)}원
       </td>
 
-      <td className="py-3 text-right">
+      <td className="py-3 text-center">
           {Number(row.qtyChanged ?? 0) === 1 ? (
             <Badge variant="secondary" className="bg-amber-100 text-amber-700">
               변경됨

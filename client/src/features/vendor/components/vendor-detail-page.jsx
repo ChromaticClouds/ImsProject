@@ -37,7 +37,7 @@ export function VendorDetailPage() {
   if (!Number.isFinite(vendorId) || vendorId <= 0)
     return (
       <div className="mx-auto max-w-[1100px] px-5 py-6">
-        <div className="rounded-2xl border bg-white p-6 text-sm text-muted-foreground">
+        <div className="rounded-2xl border bg-secondary p-6 text-sm text-muted-foreground">
           잘못된 거래처 ID
         </div>
       </div>
@@ -46,7 +46,7 @@ export function VendorDetailPage() {
   if (isLoading)
     return (
       <div className="mx-auto max-w-[1100px] px-5 py-6">
-        <div className="rounded-2xl border bg-white p-6 text-sm text-muted-foreground">
+        <div className="rounded-2xl border bg-secondary p-6 text-sm text-muted-foreground">
           불러오는 중...
         </div>
       </div>
@@ -64,7 +64,7 @@ export function VendorDetailPage() {
   if (!data)
     return (
       <div className="mx-auto max-w-[1100px] px-5 py-6">
-        <div className="rounded-2xl border bg-white p-6 text-sm text-muted-foreground">
+        <div className="rounded-2xl border bg-secondary p-6 text-sm text-muted-foreground">
           데이터가 없습니다.
         </div>
       </div>
@@ -121,7 +121,7 @@ export function VendorDetailPage() {
         <div className="grid grid-cols-12 gap-4">
           {/* Left: vendor info */}
           <div className="col-span-12 lg:col-span-7">
-            <div className="rounded-2xl border bg-white">
+            <div className="rounded-2xl border bg-secondary">
               <div className="border-b px-5 py-4">
                 <div className="font-semibold">기본 정보</div>
                 <div className="mt-1 text-xs text-muted-foreground">
@@ -181,7 +181,7 @@ export function VendorDetailPage() {
 
           {/* Right: items */}
           <div className="col-span-12 lg:col-span-5">
-            <div className="rounded-2xl border bg-white">
+            <div className="rounded-2xl border bg-secondary">
               <div className="border-b px-5 py-4">
                 <div className="flex items-center justify-between">
                   <div className="font-semibold">거래 품목 및 구매 단가</div>

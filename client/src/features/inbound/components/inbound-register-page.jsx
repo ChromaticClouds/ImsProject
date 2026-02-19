@@ -248,7 +248,7 @@ export function InboundRegisterPage() {
         <div className="grid grid-cols-12 gap-4 lg:min-h-[calc(100vh-64px-140px)]">
           {/* 좌측: 입고 품목 */}
           <div className="col-span-12 lg:col-span-8 lg:flex">
-            <div className="flex w-full flex-col rounded-2xl border bg-white">
+            <div className="flex w-full flex-col rounded-2xl border bg-secondary">
               {/* 헤더 */}
               <div className="flex items-center justify-between border-b px-5 py-4">
                 <div className="text-lg font-semibold">입고 품목</div>
@@ -301,11 +301,8 @@ export function InboundRegisterPage() {
                                   변경됨
                                 </Badge>
                               )}
-                              {belowSafe ? (
-                                <Badge className="bg-red-100 text-red-700">
-                                  안전재고 미달
-                                </Badge>
-                              ) : null}
+                              
+                              
                             </div>
                             <div className="mt-1 text-xs text-muted-foreground">
                               {toKoreanType(it.type)} · {it.brand ?? '-'}
@@ -384,7 +381,7 @@ export function InboundRegisterPage() {
           {/* 우측 요약 */}
           <div className="col-span-12 lg:col-span-4">
             <div className="sticky top-5 space-y-4">
-              <div className="rounded-2xl border bg-white p-5">
+              <div className="rounded-2xl border bg-secondary p-5">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="text-lg font-semibold">요약</div>
                   <Badge variant="secondary">확정 전</Badge>
@@ -417,7 +414,7 @@ export function InboundRegisterPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border bg-white p-5">
+              <div className="rounded-2xl border bg-secondary p-5">
                 <div className="mb-2 flex items-center justify-between">
                   <div className="font-semibold">메모</div>
                   <div
@@ -437,7 +434,7 @@ export function InboundRegisterPage() {
                 />
               </div>
 
-              <div className="rounded-2xl border bg-white p-5">
+              <div className="rounded-2xl border bg-secondary p-5">
                 <Button
                   onClick={handleComplete}
                   disabled={submitDisabled}
@@ -446,7 +443,7 @@ export function InboundRegisterPage() {
                   {submitting ? '처리중...' : '입고 완료'}
                 </Button>
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   onClick={() => nav(-1)}
                   disabled={submitting}
                   className="w-full mt-2"

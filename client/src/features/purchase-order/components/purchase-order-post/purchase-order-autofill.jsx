@@ -48,6 +48,7 @@ export const PurchaseOrderAutofill = () => {
           <AppDatePicker
             disabled
             date={new Date()}
+            className='w-60'
           />
         </FieldContainer>
       </div>
@@ -66,6 +67,7 @@ export const PurchaseOrderAutofill = () => {
                   <AppDatePicker
                     date={field.state.value}
                     setDate={(e) => field.handleChange(e)}
+                    className='w-60'
                   />
                 </FieldContainer>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}

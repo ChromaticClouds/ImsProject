@@ -80,7 +80,7 @@ export const OrderPostList = () => {
 
                     {/* 단가 */}
                     <TableCell className='text-center w-60'>
-                      {product.salePrice * product.amount}원
+                      {product.salePrice}원
                     </TableCell>
 
                     <TableCell className='w-20'>

@@ -101,7 +101,7 @@ export function InboundPendingRow(props) {
   return (
     <tr className="border-b last:border-0 hover:bg-accent/30 transition-colors">
       <td className="py-3 text-center">
-        <Badge variant="secondary" className="text-amber-700">
+        <Badge variant="secondary" className="text-amber-700 bg-amber-100">
           {statusText}
         </Badge>
       </td>

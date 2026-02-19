@@ -67,31 +67,6 @@ public class OutboundSqlProvider {
 	}
   
   
-//  public String countPendingSummary(Map<String, Object> p) {
-//    Object userId = p.get("userId");
-//
-//    StringBuilder sb = new StringBuilder();
-//    sb.append("""
-//      SELECT COUNT(*) FROM (
-//        SELECT o.order_number
-//        FROM `orders` o
-//        WHERE o.status = 'OUTBOUND_PENDING'
-//          AND o.recieve_date BETWEEN #{from} AND #{to}
-//    """);
-//
-//    if (userId != null) {
-//      sb.append("""
-//          AND o.user_id = #{userId}
-//      """);
-//    }
-//
-//    sb.append("""
-//        GROUP BY o.order_number
-//      ) t
-//    """);
-//
-//    return sb.toString();
-//  }
   
   public String countPendingSummary(Map<String, Object> p) {
 	  Object userId = p.get("userId");
@@ -131,7 +106,8 @@ public class OutboundSqlProvider {
       o.`count` AS orderQty,
       IFNULL(s.`count`, 0) AS stockCount,
       CASE WHEN o.`count` > IFNULL(s.`count`, 0) THEN 1 ELSE 0 END AS shortage,
-      pr.sale_price AS salePrice
+      pr.sale_price AS salePrice,
+      pr.image_url AS imageUrl
     FROM `orders` o
     JOIN product pr ON pr.id = o.product_id
     LEFT JOIN stock s ON s.product_id = o.product_id
@@ -140,35 +116,7 @@ public class OutboundSqlProvider {
     ORDER BY o.id ASC
   """; }
 
-//  public String selectCompletedTodaySummary(Map<String, Object> p) {
-//	  return """
-//	    SELECT
-//	      'OUTBOUND_COMPLETE' AS status,
-//	      '출고 완료' AS statusText,
-//	      o.order_number AS orderNumber,
-//	      MIN(o.order_date) AS orderDate,
-//	      MIN(o.seller_vendor_id) AS sellerVendorId,
-//	      MIN(v.vendor_name) AS sellerVendorName,
-//	      COUNT(DISTINCT o.id) AS itemCount,
-//	      SUM(o.`count` * pr.sale_price) AS totalAmount,
-//	      MIN(o.user_id) AS userId,
-//	      MIN(u.name) AS userName
-//	    FROM `orders` o
-//	    JOIN vendor v ON v.id = o.seller_vendor_id
-//	    JOIN product pr ON pr.id = o.product_id
-//	    LEFT JOIN `user` u ON u.id = o.user_id
-//	    LEFT JOIN `history` h 
-//	      ON h.product_id = o.product_id 
-//	     AND h.seller_vendor_id = o.seller_vendor_id
-//	    LEFT JOIN `history_lot` hl ON hl.id = h.lot_id
-//	    WHERE o.status = 'OUTBOUND_COMPLETE'
-//	      AND o.order_date = CURDATE()
-//	    GROUP BY o.order_number
-//	    ORDER BY MAX(h.created_at) DESC
-//	    LIMIT #{size} OFFSET #{offset}
-//	  """;
-//	}
-  
+
   public String selectCompletedTodaySummary(Map<String, Object> p) {
 	  return """
 	    SELECT
@@ -225,7 +173,8 @@ public class OutboundSqlProvider {
       pr.type AS type,
       pr.brand AS brand,
       o.`count` AS orderQty,
-      pr.sale_price AS salePrice
+      pr.sale_price AS salePrice,
+      pr.image_url AS imageUrl
     FROM `orders` o
     JOIN product pr ON pr.id = o.product_id
     WHERE o.status = 'OUTBOUND_COMPLETE'
@@ -233,19 +182,6 @@ public class OutboundSqlProvider {
     ORDER BY o.id ASC
   """; }
 
-//  public String selectOrdersForOutboundComplete(Map<String, Object> p) { 
-//	  return """
-//    SELECT
-//	 o.id AS orderId,
-//	 o.product_id AS productId,
-//     o.`count` AS orderQty,
-//     o.seller_vendor_id AS sellerVendorId,
-//     o.manager_id AS managerId
-//     FROM `orders` o
-//     WHERE o.order_number = #{orderNumber}
-//     AND o.status = 'OUTBOUND_PENDING'
-//     ORDER BY o.id ASC
-//  """; }
   
   public String selectOrdersForOutboundComplete(Map<String, Object> p) {
 	  return """

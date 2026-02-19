@@ -1,3 +1,4 @@
+
 // @ts-check
 import { GraphContainer } from './graph-container.jsx';
 import { ClientRankChart } from './client-rank-chart.jsx';
@@ -16,4 +17,3 @@ export const ClientRank = () => {
     </GraphContainer>
   );
 };
-

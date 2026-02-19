@@ -9,6 +9,7 @@ public class PurchaseOrderItemRow {
     private Long orderId;            // orders.id (수정용)
     private Long vendorItemId;       // orders.vendor_item_id
     private Long productId;
+    private String imageUrl;
 
     private String productName;
     private String type;

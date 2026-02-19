@@ -50,15 +50,13 @@ export const GraphContainer = ({
             <div className='min-w-0 flex flex-col gap-3'>
               <CardTitle className='truncate'>{title}</CardTitle>
               {description && (
-                <CardDescription className='truncate'>
+                <CardDescription className="truncate">
                   {description}
                 </CardDescription>
               )}
             </div>
 
-            {headerAction && (
-              <div className='shrink-0'>{headerAction}</div>
-            )}
+            {headerAction && <div className="shrink-0">{headerAction}</div>}
           </div>
         </CardHeader>
 

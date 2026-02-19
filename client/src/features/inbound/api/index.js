@@ -54,7 +54,7 @@ export async function completeInboundOrder(orderId) {
 /**
  * 입고 - complete by order number
  * @param {string} orderNumber
- * @param {{ memo?: string, receivedAt?: string }=} body
+ * @param {{ memo?: string, items?: { orderId: number, orderQty: number }[] }=} body
  */
 export async function completeInboundByOrderNumber(orderNumber, body) {
   return await api

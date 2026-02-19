@@ -1,3 +1,4 @@
+
 // @ts-check
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -5,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useQueryClient } from '@tanstack/react-query';
 import { softDeleteVendorItem } from '@/features/vendor/api';
-import { useVendorDetail } from '@/features/vendor/hooks/use-vendor-detail'; // 이미 쓰고 있는 상세 훅
+import { useVendorDetail } from '@/features/vendor/hooks/use-vendor-detail';
 import { useUpdateVendor } from '@/features/vendor/hooks/use-update-vendor';
 import { useItemsSearch } from '@/features/vendor/hooks/use-items-search';
+import { Badge } from '@/components/ui/badge';
 
 /**
  * @typedef {'Supplier'|'Seller'} VendorType
@@ -28,8 +30,6 @@ import { useItemsSearch } from '@/features/vendor/hooks/use-items-search';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^(01[0-9]-\d{3,4}-\d{4}|0\d{1,2}-\d{3,4}-\d{4})$/;
-
-
 
 function normalizePhone(value) {
   const digits = value.replace(/[^\d]/g, '');
@@ -78,12 +78,11 @@ export function VendorModifyPage() {
   const [itemKeyword, setItemKeyword] = useState('');
   const [selectedItems, setSelectedItems] = useState(/** @type {SelectedItem[]} */ ([]));
 
-  // 최초 로딩 시: 기존 vendor 데이터로 폼 자동 채우기 + 공급처면 품목/단가도 채우기
   useEffect(() => {
     if (!vendor) return;
 
     setForm({
-      type: vendor.type, // 'Supplier'|'Seller'
+      type: vendor.type,
       거래처명: vendor.vendorName ?? '',
       전화번호: vendor.telephone ?? '',
       이메일: vendor.email ?? '',
@@ -104,7 +103,6 @@ export function VendorModifyPage() {
     }
   }, [vendor, vendorItems]);
 
-  // 품목 검색 (이미 다른 거래처에 지정된 품목 제외)
   const { data: itemsData, isFetching: itemsLoading } = useItemsSearch({
     keyword: itemKeyword.trim(),
     excludeAssigned: true,
@@ -113,7 +111,6 @@ export function VendorModifyPage() {
 
   const items = /** @type {{ id: number, name: string }[]} */ (itemsData ?? []);
 
-  // 검색 결과에서 이미 선택한 품목 제외
   const filteredItems = useMemo(() => {
     const selectedSet = new Set(selectedItems.map((x) => x.itemId));
     return items.filter((it) => !selectedSet.has(it.id));
@@ -129,7 +126,6 @@ export function VendorModifyPage() {
   const setType = (type) => {
     setForm((prev) => ({ ...prev, type }));
     if (type === 'Seller') {
-      // 판매처면 품목 영역 숨김 + 상태 초기화
       setItemKeyword('');
       setSelectedItems([]);
     }
@@ -139,7 +135,6 @@ export function VendorModifyPage() {
     setTouched((prev) => ({ ...prev, [key]: true }));
   };
 
-  // 필수값 검증
   const errors = useMemo(() => {
     /** @type {Record<string, string | undefined>} */
     const e = {};
@@ -166,15 +161,12 @@ export function VendorModifyPage() {
     return !errors.거래처명 && !errors.전화번호 && !errors.이메일 && !errors.주소;
   }, [errors]);
 
-  // 공급처일 때: 품목 1개 이상 + 단가 모두 > 0
   const isValidSupplierItems = useMemo(() => {
     if (form.type !== 'Supplier') return true;
     if (selectedItems.length < 1) return false;
     return selectedItems.every((x) => Number(x.unitPrice) > 0);
   }, [form.type, selectedItems]);
 
-
-  // 완료 버튼 활성 조건
   const canSubmit = isValidRequired && isValidSupplierItems && !updating;
 
   const onSelectItem = (it) => {
@@ -188,20 +180,16 @@ export function VendorModifyPage() {
     setSelectedItems((prev) => prev.map((x) => (x.itemId === itemId ? { ...x, unitPrice: num } : x)));
   };
 
-  // const onRemoveItem = (itemId) => {
-  //   setSelectedItems((prev) => prev.filter((x) => x.itemId !== itemId));
-  // };
-
   const onRemoveItem = async (itemId) => {
-  try {
-    await softDeleteVendorItem({ vendorId, productId: itemId });
-    setSelectedItems((prev) => prev.filter((x) => x.itemId !== itemId));
-    queryClient.invalidateQueries({ queryKey: ['items-search'] }); 
-  } catch (e) {
-    console.error(e);
-    alert('품목 삭제 중 오류가 발생했습니다.');
-  }
-};
+    try {
+      await softDeleteVendorItem({ vendorId, productId: itemId });
+      setSelectedItems((prev) => prev.filter((x) => x.itemId !== itemId));
+      queryClient.invalidateQueries({ queryKey: ['items-search'] });
+    } catch (e) {
+      console.error(e);
+      alert('품목 삭제 중 오류가 발생했습니다.');
+    }
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -213,7 +201,6 @@ export function VendorModifyPage() {
       주소: true,
     });
 
-    
     if (!isValidRequired) {
       alert('미입력되었습니다');
       return;
@@ -229,228 +216,334 @@ export function VendorModifyPage() {
 
     /** @type {any} */
     const payload = {
-      type: form.type, // Supplier|Seller
+      type: form.type,
       vendorName: form.거래처명.trim(),
       telephone: form.전화번호.trim(),
       email: form.이메일.trim(),
       address: form.주소.trim(),
       memo: form.메모?.trim() || null,
-
-      
       bossName: vendor?.bossName ?? null,
-
-      items: form.type === 'Supplier'
-        ? selectedItems.map((x) => ({
-            productId: x.itemId,
-            purchasePrice: x.unitPrice,
-          }))
-        : [],
+      items:
+        form.type === 'Supplier'
+          ? selectedItems.map((x) => ({
+              productId: x.itemId,
+              purchasePrice: x.unitPrice,
+            }))
+          : [],
     };
 
     try {
-  await updateVendorMutate({ id: vendorId, payload });
-
-  alert('수정되었습니다');
-  navigate(`/dashboard/vendor/${vendorId}`); // ✅ 상세로 이동
-} catch (err) {
-  console.error('updateVendor failed:', err);
-  alert(err?.message ?? '수정 중 오류가 발생했습니다.');
-}
+      await updateVendorMutate({ id: vendorId, payload });
+      alert('수정되었습니다');
+      navigate(`/dashboard/vendor/${vendorId}`);
+    } catch (err) {
+      console.error('updateVendor failed:', err);
+      alert(err?.message ?? '수정 중 오류가 발생했습니다.');
+    }
   };
 
-  if (isLoading) return <div>로딩 중...</div>;
-  if (error) return <div style={{ color: 'crimson' }}>에러: {error.message}</div>;
-  if (!vendor) return <div>거래처 정보를 찾을 수 없습니다.</div>;
+  if (isLoading)
+    return (
+      <div className="mx-auto max-w-[1100px] px-5 py-6">
+        <div className="rounded-2xl border bg-white p-6 text-sm text-muted-foreground">로딩 중...</div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="mx-auto max-w-[1100px] px-5 py-6">
+        <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-6 text-sm text-destructive">
+          에러: {error.message}
+        </div>
+      </div>
+    );
+
+  if (!vendor)
+    return (
+      <div className="mx-auto max-w-[1100px] px-5 py-6">
+        <div className="rounded-2xl border bg-white p-6 text-sm text-muted-foreground">
+          거래처 정보를 찾을 수 없습니다.
+        </div>
+      </div>
+    );
 
   return (
-    <div>
-      <h1>거래처 수정</h1>
-
-      <form onSubmit={onSubmit}>
-        {/* 공급처/판매처 라디오 */}
-        <div>
-  <span>구분</span>
-  <br />
-
-  {form.type === 'Supplier' ? (
-    <label>
-      <input type="radio" name="vendorType" checked readOnly />
-      공급처
-    </label>
-  ) : (
-    <label>
-      <input type="radio" name="vendorType" checked readOnly />
-      판매처
-    </label>
-  )}
-</div>
-
-        {/* 거래처명 */}
-        <div>
+    <div className="min-h-[calc(100vh-64px)] bg-muted/40">
+      <div className="mx-auto max-w-[1100px] px-5 py-6">
+        {/* Top bar */}
+        <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <span>거래처명 *</span>
-            {touched.거래처명 && errors.거래처명 ? (
-              <span style={{ color: 'crimson', marginLeft: 8 }}>{errors.거래처명}</span>
-            ) : null}
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-semibold">거래처 수정</h1>
+              <Badge variant="secondary">{form.type === 'Supplier' ? '공급처' : '판매처'}</Badge>
+              {updating ? <Badge className="bg-amber-500 text-white">저장중</Badge> : null}
+            </div>
+            <div className="mt-1 text-sm text-muted-foreground">
+              기본 정보를 수정하고, 공급처인 경우 품목/단가를 관리합니다.
+            </div>
           </div>
-          <Input value={form.거래처명} onChange={setField('거래처명')} onBlur={markTouched('거래처명')} />
-        </div>
 
-        {/* 전화번호 */}
-        <div>
-          <div>
-            <span>전화번호 *</span>
-            {touched.전화번호 && errors.전화번호 ? (
-              <span style={{ color: 'crimson', marginLeft: 8 }}>{errors.전화번호}</span>
-            ) : null}
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => navigate(-1)} disabled={updating}>
+              뒤로
+            </Button>
+            <Button type="submit" form="vendor-modify-form" disabled={!canSubmit}>
+              {updating ? '저장 중...' : '완료'}
+            </Button>
           </div>
-          <Input
-            value={form.전화번호}
-            onChange={setField('전화번호')}
-            onBlur={markTouched('전화번호')}
-            placeholder="010-1234-5678"
-            inputMode="numeric"
-          />
         </div>
 
-        {/* 이메일 */}
-        <div>
-          <div>
-            <span>이메일 *</span>
-            {touched.이메일 && errors.이메일 ? (
-              <span style={{ color: 'crimson', marginLeft: 8 }}>{errors.이메일}</span>
-            ) : null}
-          </div>
-          <Input
-            value={form.이메일}
-            onChange={setField('이메일')}
-            onBlur={markTouched('이메일')}
-            placeholder="1234@gmail.com"
-          />
-        </div>
-
-        {/* 주소 */}
-        <div>
-          <div>
-            <span>주소 *</span>
-            {touched.주소 && errors.주소 ? (
-              <span style={{ color: 'crimson', marginLeft: 8 }}>{errors.주소}</span>
-            ) : null}
-          </div>
-          <Input value={form.주소} onChange={setField('주소')} onBlur={markTouched('주소')} />
-        </div>
-
-        {/* 메모 */}
-        <div>
-          <span>메모</span>
-          <Input value={form.메모} onChange={setField('메모')} />
-        </div>
-
-        {/* 공급처일 때만 품목/단가 */}
-        {form.type === 'Supplier' ? (
-          <div style={{ marginTop: 12 }}>
-            <span style={{ fontWeight: 600 }}>품목 검색</span>
-
-            <div style={{ position: 'relative', marginTop: 8 }}>
-              <Input
-                value={itemKeyword}
-                onChange={(e) => setItemKeyword(e.target.value)}
-                placeholder="품목 검색"
-              />
-
-              {itemKeyword.trim().length > 0 ? (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 6px)',
-                    left: 0,
-                    right: 0,
-                    border: '1px solid #ddd',
-                    background: 'white',
-                    borderRadius: 8,
-                    overflow: 'hidden',
-                    zIndex: 10,
-                    maxHeight: 240,
-                    overflowY: 'auto',
-                  }}
-                >
-                  {itemsLoading ? (
-                    <div style={{ padding: 10 }}>검색 중...</div>
-                  ) : filteredItems.length === 0 ? (
-                    <div style={{ padding: 10 }}>검색 결과가 없습니다</div>
-                  ) : (
-                    filteredItems.map((it) => (
-                      <button
-                        key={it.id}
-                        type="button"
-                        onClick={() => onSelectItem(it)}
-                        style={{
-                          width: '100%',
-                          textAlign: 'left',
-                          padding: 10,
-                          border: 'none',
-                          background: 'white',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {it.name}
-                      </button>
-                    ))
-                  )}
+        <form id="vendor-modify-form" onSubmit={onSubmit}>
+          <div className="grid grid-cols-12 gap-4">
+            {/* Left: base fields */}
+            <div className="col-span-12 lg:col-span-7">
+              <div className="rounded-2xl border bg-white">
+                <div className="border-b px-5 py-4">
+                  <div className="font-semibold">기본 정보</div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    * 표시는 필수 입력입니다.
+                  </div>
                 </div>
-              ) : null}
+
+                <div className="p-5">
+                  {/* 구분 */}
+                  <div className="mb-4">
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-sm font-semibold">구분</span>
+                      <span className="text-xs text-muted-foreground">수정 불가</span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 rounded-xl border bg-muted/20 px-4 py-3">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input type="radio" name="vendorType" checked={form.type === 'Supplier'} readOnly />
+                        공급처
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input type="radio" name="vendorType" checked={form.type === 'Seller'} readOnly />
+                        판매처
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* 거래처명 */}
+                  <div className="mb-4">
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-sm font-semibold">거래처명 *</span>
+                      {touched.거래처명 && errors.거래처명 ? (
+                        <span className="text-xs text-destructive">{errors.거래처명}</span>
+                      ) : null}
+                    </div>
+                    <Input
+                      value={form.거래처명}
+                      onChange={setField('거래처명')}
+                      onBlur={markTouched('거래처명')}
+                      className={touched.거래처명 && errors.거래처명 ? 'border-destructive focus-visible:ring-destructive' : ''}
+                      placeholder="거래처명을 입력하세요"
+                    />
+                  </div>
+
+                  {/* 전화번호 */}
+                  <div className="mb-4">
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-sm font-semibold">전화번호 *</span>
+                      {touched.전화번호 && errors.전화번호 ? (
+                        <span className="text-xs text-destructive">{errors.전화번호}</span>
+                      ) : null}
+                    </div>
+                    <Input
+                      value={form.전화번호}
+                      onChange={setField('전화번호')}
+                      onBlur={markTouched('전화번호')}
+                      placeholder="010-1234-5678"
+                      inputMode="numeric"
+                      className={touched.전화번호 && errors.전화번호 ? 'border-destructive focus-visible:ring-destructive' : ''}
+                    />
+                  </div>
+
+                  {/* 이메일 */}
+                  <div className="mb-4">
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-sm font-semibold">이메일 *</span>
+                      {touched.이메일 && errors.이메일 ? (
+                        <span className="text-xs text-destructive">{errors.이메일}</span>
+                      ) : null}
+                    </div>
+                    <Input
+                      value={form.이메일}
+                      onChange={setField('이메일')}
+                      onBlur={markTouched('이메일')}
+                      placeholder="example@email.com"
+                      className={touched.이메일 && errors.이메일 ? 'border-destructive focus-visible:ring-destructive' : ''}
+                    />
+                  </div>
+
+                  {/* 주소 */}
+                  <div className="mb-4">
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-sm font-semibold">주소 *</span>
+                      {touched.주소 && errors.주소 ? (
+                        <span className="text-xs text-destructive">{errors.주소}</span>
+                      ) : null}
+                    </div>
+                    <Input
+                      value={form.주소}
+                      onChange={setField('주소')}
+                      onBlur={markTouched('주소')}
+                      placeholder="주소를 입력하세요"
+                      className={touched.주소 && errors.주소 ? 'border-destructive focus-visible:ring-destructive' : ''}
+                    />
+                  </div>
+
+                  {/* 메모 */}
+                  <div className="mb-1">
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-sm font-semibold">메모</span>
+                      <span className="text-xs text-muted-foreground">선택</span>
+                    </div>
+                    <Input value={form.메모} onChange={setField('메모')} placeholder="메모를 입력하세요" />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* 선택 품목 + 단가 수정 */}
-            {selectedItems.length > 0 ? (
-              <div style={{ marginTop: 10, display: 'grid', gap: 8 }}>
-                {selectedItems.map((x) => (
-                  <div
-                    key={x.itemId}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 200px 80px',
-                      gap: 8,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <div>{x.itemName}</div>
-                    <Input
-                      value={String(x.unitPrice ?? 0)}
-                      onChange={onChangeUnitPrice(x.itemId)}
-                      placeholder="단가"
-                      inputMode="numeric"
-                    />
-                    <Button type="button" variant="outline" onClick={() => onRemoveItem(x.itemId)}>
-                      X
-                    </Button>
+            {/* Right: supplier items */}
+            <div className="col-span-12 lg:col-span-5">
+              <div className="rounded-2xl border bg-white">
+                <div className="border-b px-5 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="font-semibold">품목 / 구매 단가</div>
+                    <Badge variant="secondary">
+                      {form.type === 'Supplier' ? `${selectedItems.length}개` : '해당 없음'}
+                    </Badge>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div style={{ fontSize: 12, color: '#666', marginTop: 8 }}>
-                공급처는 품목을 1개 이상 등록해야 합니다.
-              </div>
-            )}
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    공급처일 때만 사용합니다.
+                  </div>
+                </div>
 
-            {!isValidSupplierItems ? (
-              <div style={{ color: 'crimson', marginTop: 8, fontSize: 12 }}>
-                품목 1개 이상 등록 + 단가를 모두 0보다 크게 입력해야 합니다.
+                <div className="p-5">
+                  {form.type === 'Supplier' ? (
+                    <>
+                      {/* search */}
+                      <div className="mb-3">
+                        <div className="mb-2 text-sm font-semibold">품목 검색</div>
+                        <div className="relative">
+                          <Input
+                            value={itemKeyword}
+                            onChange={(e) => setItemKeyword(e.target.value)}
+                            placeholder="품목 검색"
+                          />
+
+                          {itemKeyword.trim().length > 0 ? (
+                            <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 overflow-hidden rounded-xl border bg-white shadow-sm">
+                              <div className="max-h-60 overflow-y-auto">
+                                {itemsLoading ? (
+                                  <div className="px-3 py-2 text-sm text-muted-foreground">검색 중...</div>
+                                ) : filteredItems.length === 0 ? (
+                                  <div className="px-3 py-2 text-sm text-muted-foreground">검색 결과가 없습니다</div>
+                                ) : (
+                                  filteredItems.map((it) => (
+                                    <button
+                                      key={it.id}
+                                      type="button"
+                                      onClick={() => onSelectItem(it)}
+                                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted/40"
+                                    >
+                                      {it.name}
+                                    </button>
+                                  ))
+                                )}
+                              </div>
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      {/* selected list */}
+                      {selectedItems.length > 0 ? (
+                        <div className="overflow-hidden rounded-xl border">
+                          <div className="grid grid-cols-12 bg-muted/40 px-3 py-2 text-xs font-medium text-muted-foreground">
+                            <div className="col-span-7">품목</div>
+                            <div className="col-span-4 text-right">단가</div>
+                            <div className="col-span-1 text-right"> </div>
+                          </div>
+
+                          <div className="divide-y">
+                            {selectedItems.map((x) => {
+                              const priceInvalid = form.type === 'Supplier' && (!x.unitPrice || x.unitPrice <= 0);
+                              return (
+                                <div key={x.itemId} className="grid grid-cols-12 items-center gap-2 px-3 py-3 hover:bg-muted/20">
+                                  <div className="col-span-7 min-w-0">
+                                    <div className="truncate text-sm font-medium">{x.itemName}</div>
+                                    <div className="mt-1 text-[11px] text-muted-foreground">상품ID {x.itemId}</div>
+                                  </div>
+
+                                  <div className="col-span-4">
+                                    <Input
+                                      value={String(x.unitPrice ?? 0)}
+                                      onChange={onChangeUnitPrice(x.itemId)}
+                                      placeholder="단가"
+                                      inputMode="numeric"
+                                      className={`text-right tabular-nums ${
+                                        priceInvalid ? 'border-destructive focus-visible:ring-destructive' : ''
+                                      }`}
+                                    />
+                                    {priceInvalid ? (
+                                      <div className="mt-1 text-[11px] text-destructive">1원 이상 입력</div>
+                                    ) : null}
+                                  </div>
+
+                                  <div className="col-span-1 flex justify-end">
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      onClick={() => onRemoveItem(x.itemId)}
+                                      className="h-9 w-9 px-0"
+                                      title="삭제"
+                                    >
+                                      X
+                                    </Button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border bg-muted/20 px-4 py-10 text-center text-sm text-muted-foreground">
+                          공급처는 품목을 1개 이상 등록해야 합니다.
+                        </div>
+                      )}
+
+                      {!isValidSupplierItems ? (
+                        <div className="mt-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs text-destructive">
+                          품목 1개 이상 등록 + 단가를 모두 0보다 크게 입력해야 합니다.
+                        </div>
+                      ) : null}
+                    </>
+                  ) : (
+                    <div className="rounded-xl border bg-muted/20 px-4 py-10 text-center text-sm text-muted-foreground">
+                      판매처는 품목/단가를 사용하지 않습니다.
+                    </div>
+                  )}
+                </div>
               </div>
-            ) : null}
+            </div>
           </div>
-        ) : null}
 
+          {/* bottom action (mobile) */}
+          <div className="mt-4 flex items-center justify-end gap-2 lg:hidden">
+            <Button variant="secondary" onClick={() => navigate(-1)} disabled={updating}>
+              뒤로
+            </Button>
+            <Button type="submit" disabled={!canSubmit}>
+              {updating ? '저장 중...' : '완료'}
+            </Button>
+          </div>
+        </form>
 
-
-        <div style={{ marginTop: 14 }}>
-          <Button type="submit" disabled={!canSubmit}>
-            {updating ? '저장 중...' : '완료'}
-          </Button>
-
-        
-        </div>
-      </form>
+        <div className="h-8" />
+      </div>
     </div>
   );
 }

@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor 
 @Builder
 public class PendingUpdateRequest {
-    private LocalDate receiveDate;         // 전체 납기일(선택)
+    private String memo;         // 전체 납기일(선택)
     private List<Item> items;              // 라인별 수량 변경(선택)
 
 @Getter

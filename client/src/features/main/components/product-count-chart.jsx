@@ -1,5 +1,5 @@
 // @ts-check
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Bar,
@@ -13,6 +13,7 @@ import {
 
 import { useIsMobile } from '@/hooks/use-mobile.js';
 import { ChartContainer } from '@/components/ui/chart.js';
+import { Checkbox } from '@/components/ui/checkbox';
 
 import {
   fetchStatisticsTypes,
@@ -29,8 +30,6 @@ import {
 } from '@/components/ui/dropdown-menu.js';
 import { Button } from '@/components/ui/button.js';
 import { ChevronDownIcon } from 'lucide-react';
-import { Input } from '@/components/ui/input.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
 import { CheckIcon } from 'lucide-react';
 
 const chartConfig =
@@ -231,7 +230,9 @@ export const ProductCountChart = () => {
               </ChartContainer>
             ) : (
               <div className='w-full h-full rounded-lg border-dashed border-3 flex items-center justify-center'>
-                <span className='text-muted-foreground text-sm'>데이터가 없습니다</span>
+                <span className='text-muted-foreground text-sm'>
+                  데이터가 없습니다
+                </span>
               </div>
             )}
           </div>

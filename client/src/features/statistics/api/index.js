@@ -75,10 +75,25 @@ export const getLeadTimeStats = () =>
 // --------------------------------------------------------------
 // 품목별 수량 그래프
 
+// /** @typedef {{ type?: string, unsafeOnly?: boolean, limit?: number }} StockByProductParams */
+
+// export async function fetchStatisticsStockByProduct(params) {
+//   return await api.get('stats/stock/by-product', { searchParams: params, hooks }).json();
+// }
+
 /** @typedef {{ type?: string, unsafeOnly?: boolean, limit?: number }} StockByProductParams */
 
+/** @param {StockByProductParams & { type?: string }} params */
 export async function fetchStatisticsStockByProduct(params) {
-  return await api.get('stats/stock/by-product', { searchParams: params, hooks }).json();
+  const normalized = {
+    ...params,
+    // shadcn Select에서 전체값을 'ALL'로 쓰는 경우 서버에는 type을 안 보냄
+    type: params?.type && params.type !== 'ALL' ? params.type : undefined,
+  };
+
+  return await api
+    .get('stats/stock/by-product', { searchParams: normalized, hooks })
+    .json();
 }
 
 // ---------------------------------------------------------------------

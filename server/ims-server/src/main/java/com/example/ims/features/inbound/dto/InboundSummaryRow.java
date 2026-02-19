@@ -16,4 +16,5 @@ public class InboundSummaryRow {
     private String vendorName;
     private Long itemCount;
     private Long totalAmount;
+    private Integer qtyChanged;
 }

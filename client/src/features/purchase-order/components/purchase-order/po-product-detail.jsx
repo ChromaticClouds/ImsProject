@@ -1,12 +1,15 @@
 // @ts-check
 
 import { Button } from '@/components/ui/button.js';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog.js';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover.js';
 import { ChevronDownIcon } from 'lucide-react';
+import { useMemo } from 'react';
+import { useState } from 'react';
 
 const typeLabelMap = {
   SOJU: '소주',
@@ -27,8 +30,129 @@ const formatSafetyStock = (v) => {
   return n.toFixed(1);
 };
 
+/** @param {{ src?: string, alt?: string, size?: number }} props */
+export function ZoomImage({ src, alt, size = 48 }) {
+  const safeSrc = typeof src === 'string' ? src.trim() : '';
+  const [open, setOpen] = useState(false);
+
+  const boxStyle = useMemo(
+    () => ({ width: size, height: size, minWidth: size, minHeight: size }),
+    [size],
+  );
+
+  // ✅ 이미지가 없어도 "박스는 항상 고정" (레이아웃 흔들림 방지)
+  if (!safeSrc) {
+    return (
+      <div
+        style={boxStyle}
+        className='shrink-0 overflow-hidden rounded-md border bg-muted'
+      />
+    );
+  }
+
+  //   return (
+  //     <Dialog open={open} onOpenChange={setOpen}>
+  //       <DialogTrigger asChild>
+  //         <button
+  //           type="button"
+  //           className="group relative h-12 w-12 overflow-hidden rounded-md border bg-muted"
+  //           onMouseDown={(e) => e.stopPropagation()}
+  //           onClick={(e) => e.stopPropagation()}
+  //           aria-label="이미지 확대"
+  //           title="클릭하여 확대"
+  //         >
+  //           <img
+  //             src={safeSrc}
+  //             alt={alt ?? ''}
+  //             className="h-full w-full object-cover transition-transform group-hover:scale-105"
+  //             loading="lazy"
+  //             onError={(e) => {
+  //               // 이미지가 깨지면 썸네일만 숨김
+  //               e.currentTarget.style.display = 'none';
+  //             }}
+  //           />
+  //         </button>
+  //       </DialogTrigger>
+
+  //       <DialogContent
+  //         className="max-w-[92vw] p-0"
+  //         onOpenAutoFocus={(e) => e.preventDefault()}
+  //       >
+  //         {/* 큰 이미지 클릭하면 닫힘 */}
+  //         <button
+  //           type="button"
+  //           className="block w-full"
+  //           onClick={() => setOpen(false)}
+  //           aria-label="닫기"
+  //           title="클릭하여 닫기"
+  //         >
+  //           <img
+  //             src={safeSrc}
+  //             alt={alt ?? ''}
+  //             className="max-h-[85vh] w-full object-contain"
+  //           />
+  //         </button>
+  //       </DialogContent>
+  //     </Dialog>
+  //   );
+  // }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <DialogTrigger asChild>
+        <button
+          type='button'
+          style={boxStyle}
+          className='shrink-0 overflow-hidden rounded-md border bg-muted'
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+          aria-label='이미지 확대'
+          title='클릭하여 확대'
+        >
+          <img
+            src={safeSrc}
+            alt={alt ?? ''}
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'block',
+              objectFit: 'cover',
+            }}
+            loading='lazy'
+            onError={(e) => {
+              e.currentTarget.src = '';
+            }}
+          />
+        </button>
+      </DialogTrigger>
+
+      <DialogContent
+        className='max-w-[92vw] p-0'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <button
+          type='button'
+          className='block w-full'
+          onClick={() => setOpen(false)}
+          aria-label='닫기'
+        >
+          <img
+            src={safeSrc}
+            alt={alt ?? ''}
+            className='max-h-[85vh] w-full object-contain'
+            style={{ display: 'block' }}
+          />
+        </button>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 /**
- * @param {{ content: OrderRequest }} param0 
+ * @param {{ content: OrderRequest }} param0
  */
 export const PoProductDetail = ({ content }) => {
   const items = content?.items ?? [];
@@ -69,25 +193,37 @@ export const PoProductDetail = ({ content }) => {
               items.map((it) => (
                 <div
                   key={it.orderId}
-                  className='grid grid-cols-12 px-3 py-2 text-sm border-t'
+                  className='grid min-h-14 grid-cols-12 items-center border-t px-3 py-2 text-sm'
                 >
-                  <div className='col-span-4 truncate'>
-                    {it.productName ?? `상품ID ${it.productId}`}
+                  {/* 품목명 + 이미지 */}
+                  <div className='col-span-4 flex items-center gap-3'>
+                    <ZoomImage
+                      src={it.imageUrl ?? ''}
+                      alt={it.productName}
+                    />
+                    <div className='min-w-0'>
+                      <div className='truncate'>
+                        {it.productName ?? `상품ID ${it.productId}`}
+                      </div>
+                    </div>
                   </div>
-                  <div className='col-span-2 text-center'>
+
+                  <div className='col-span-2 flex items-center justify-center'>
                     {formatType(it.type)}
                   </div>
-                  <div className='col-span-2 text-center'>
+                  <div className='col-span-2 flex items-center justify-center text-center'>
                     {it.brand ?? '-'}
                   </div>
-                  <div className='col-span-2 text-center'>
-                    {formatSafetyStock(it.safetyStock) ?? 0}
+                  <div className='col-span-2 flex items-center justify-center'>
+                    {it.safetyStock}
                   </div>
-                  <div className='col-span-2 text-center'>{it.count ?? 0}</div>
+                  <div className='col-span-2 flex items-center justify-center'>
+                    {it.count ?? 0}
+                  </div>
                 </div>
               ))
             ) : (
-              <div className='px-3 py-6 text-sm text-muted-foreground text-center'>
+              <div className='px-3 py-6 text-center text-sm text-muted-foreground'>
                 등록된 발주 품목이 없습니다
               </div>
             )}

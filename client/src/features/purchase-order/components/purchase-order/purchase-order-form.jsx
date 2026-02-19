@@ -135,7 +135,7 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
         />
       </div>
 
-      <div className='grid grid-cols-12 gap-4 items-center'>
+      {/* <div className='grid grid-cols-12 gap-4 items-center'>
         <Label className='col-span-2'>납기일</Label>
         <Input
           className='col-span-10'
@@ -143,6 +143,39 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
           value={form.recieveDate ?? ''}
           onChange={(e) => setField('recieveDate', e.target.value)}
         />
+      </div> */}
+
+      <div className='grid grid-cols-12 gap-4 items-center'>
+        <Label className='col-span-2'>납기일</Label>
+
+        {/** 오늘(로컬 기준) YYYY-MM-DD */}
+        {(() => {
+          const today = new Date();
+          const y = today.getFullYear();
+          const m = String(today.getMonth() + 1).padStart(2, '0');
+          const d = String(today.getDate()).padStart(2, '0');
+          const minDate = `${y}-${m}-${d}`;
+
+          return (
+            <Input
+              className='col-span-10'
+              type='date'
+              min={minDate}                       
+              value={form.recieveDate ?? ''}
+              onChange={(e) => {
+                const v = e.target.value;
+
+                if (v && v < minDate) {
+                  alert('과거 날짜는 선택할 수 없습니다.');
+                  setField('recieveDate', minDate);
+                  return;
+                }
+
+                setField('recieveDate', v);
+              }}
+            />
+          );
+        })()}
       </div>
 
       {/* 품목 라인 */}
@@ -164,7 +197,7 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
               <div className='col-span-4 truncate'>{it.productName ?? '-'}</div>
               <div className='col-span-2 text-center'>{formatType(it.type) ?? '-'}</div>
               <div className='col-span-2 text-center'>{it.brand ?? '-'}</div>
-              <div className='col-span-2 text-center'>{formatSafetyStock(it.safetyStock) ?? 0}</div>
+              <div className='col-span-2 text-center'>{it.safetyStock ?? 0}</div>
 
               <div className='col-span-2'>
                 <Input

@@ -134,9 +134,9 @@ public class InboundQueryService {
         String on = orderNumber.trim();
         if (req == null) throw new IllegalArgumentException("수정할 내용이 없어요"); // 
 
-        if (req.getReceiveDate() != null) { // 납기일 0 아니면 납기일 수정 
-            mapper.updateReceiveDateByOrderNumber(on, req.getReceiveDate());
-        }
+//        if (req.getReceiveDate() != null) { // 납기일 0 아니면 납기일 수정 
+//            mapper.updateReceiveDateByOrderNumber(on, req.getReceiveDate());
+//        }
 
         if (req.getItems() != null) { // 제품 null이 아니면 for 
             for (PendingUpdateRequest.Item it : req.getItems()) {
@@ -174,78 +174,41 @@ public class InboundQueryService {
         return mapper.selectCompletedItemsByOrderNumber(orderNumber.trim());
     }
 
-    // -----------------------------------------------------------------------------------------
-    // 발주번호로 입고완료 + history + stock + memo 
-//    @Transactional
-//    public int markCompleteByOrderNumberAndWriteHistory(String orderNumber, String memo) {
-//        if (!StringUtils.hasText(orderNumber)) throw new IllegalArgumentException("orderNumber 필수");
-//        String on = orderNumber.trim();
-//
-//        List<InboundCompleteOrderRow> rows = mapper.selectOrdersForInboundCompleteByOrderNumber(on);
-//        if (rows == null || rows.isEmpty()) {
-//            throw new IllegalArgumentException("입고 완료 대상이 없습니다(이미 완료됐거나 발주번호 없음): " + on);
-//        }
-//
-//        Long fallbackUserId = rows.get(0).getUserId();
-//        if (fallbackUserId == null) throw new IllegalArgumentException("userId가 없습니다: " + on);
-//
-//        // historyLot
-//        HistoryLot lot = new HistoryLot();
-//        lot.setUserId(fallbackUserId);
-//        lot.setStatus("INBOUND");
-//        lot.setMemo(StringUtils.hasText(memo) ? memo.trim() : null);
-//
-//        int lotInserted = mapper.insertHistoryLot(lot);
-//        if (lotInserted != 1 || lot.getId() == null) {
-//            throw new IllegalStateException("history_lot 생성 실패");
-//        }
-//        Long lotId = lot.getId();
-//
-//        // history + stock
-//        for (InboundCompleteOrderRow r : rows) {
-//            Long vendorItemId = r.getVendorItemId();
-//            if (vendorItemId == null || vendorItemId <= 0) continue;
-//
-//            int qty = (r.getOrderQty() == null ? 0 : r.getOrderQty().intValue());
-//            if (qty <= 0) continue;
-//
-//            Long productId = mapper.selectProductIdByVendorItemId(vendorItemId);
-//            if (productId == null || productId <= 0) {
-//                throw new IllegalArgumentException("productId 없음. vendorItemId=" + vendorItemId);
-//            }
-//
-//            Integer latestAfter = mapper.selectLatestAfterCountForUpdate(vendorItemId);
-//            int beforeCount = (latestAfter == null ? 0 : latestAfter.intValue());
-//            int afterCount = beforeCount + qty;
-//
-//            mapper.insertHistoryRow(lotId, vendorItemId, productId, beforeCount, afterCount);
-//            mapper.upsertStockByProductId(productId, qty);
-//        }
-//
-//        // 주문 상태 완료
-//        int updated = mapper.markInboundCompleteByOrderNumber(on);
-//        if (updated <= 0) throw new IllegalArgumentException("입고 완료 처리 실패: " + on);
-//
-//        return updated;
-//    }
-    
     @Transactional
-    public int markCompleteByOrderNumberAndWriteHistory(String orderNumber, String memo, Long loginUserId) {
+    public int markCompleteByOrderNumberAndWriteHistory(String orderNumber, PendingUpdateRequest req, Long loginUserId) {
         if (!StringUtils.hasText(orderNumber)) throw new IllegalArgumentException("orderNumber 필수");
-        if (loginUserId == null || loginUserId <= 0) throw new IllegalArgumentException("로그인 userId 없음");
+//        if (loginUserId == null || loginUserId <= 0) throw new IllegalArgumentException("로그인 userId 없음");
 
         String on = orderNumber.trim();
+        
+        if (req != null && req.getItems() != null) {
+            for (PendingUpdateRequest.Item it : req.getItems()) {
+                if (it.getOrderId() == null || it.getOrderId() <= 0) continue;
+                Integer qty = it.getOrderQty();
+                if (qty == null || qty <= 0) throw new IllegalArgumentException("입고 수량은 1 이상 정수");
+
+                int updated = mapper.updateOrderQty(it.getOrderId(), qty);
+                if (updated != 1) throw new IllegalArgumentException("수량 수정 실패: orderId=" + it.getOrderId());
+            }
+        }
 
         List<InboundCompleteOrderRow> rows = mapper.selectOrdersForInboundCompleteByOrderNumber(on);
         if (rows == null || rows.isEmpty()) {
             throw new IllegalArgumentException("입고 완료 대상이 없습니다(이미 완료됐거나 발주번호 없음): " + on);
+        }
+        
+        Long fallbackUserId = rows.get(0).getUserId();
+        Long actorUserId = (loginUserId != null && loginUserId > 0) ? loginUserId : fallbackUserId;
+
+        if (actorUserId == null || actorUserId <= 0) {
+            throw new IllegalArgumentException("history_lot userId를 결정할 수 없습니다. orderNumber=" + on);
         }
 
         // ✅ history_lot은 로그인 유저
         HistoryLot lot = new HistoryLot();
         lot.setUserId(loginUserId);
         lot.setStatus("INBOUND");
-        lot.setMemo(StringUtils.hasText(memo) ? memo.trim() : null);
+        lot.setMemo(req != null && StringUtils.hasText(req.getMemo()) ? req.getMemo().trim() : null);
 
         int lotInserted = mapper.insertHistoryLot(lot);
         if (lotInserted != 1 || lot.getId() == null) throw new IllegalStateException("history_lot 생성 실패");

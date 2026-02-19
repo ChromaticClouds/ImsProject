@@ -20,4 +20,5 @@ public class InboundItemRow {
 
     private String imageUrl;
     private Integer salePrice;
+    private Integer currentStock;
 }

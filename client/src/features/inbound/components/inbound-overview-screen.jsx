@@ -14,9 +14,9 @@ export function InboundOverviewScreen() {
   return (
     <div style={{ padding: 16 }}>
       <AppHeader
-              title='입고 내역'
-              description='입고 내역을 확인하세요'
-            />
+        title='입고 내역'
+        description='입고 내역을 확인하세요'
+      />
       <div style={{ marginBottom: 10 }}>
         <InboundDateRangePicker
           value={pending.search}
@@ -25,12 +25,20 @@ export function InboundOverviewScreen() {
         />
       </div>
 
-      {error ? <div style={{ color: 'crimson', marginBottom: 10 }}>{error}</div> : null}
+      {error ? (
+        <div style={{ color: 'crimson', marginBottom: 10 }}>{error}</div>
+      ) : null}
 
       <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12 }}>
-        <section style={{ border: '1px solid #ddd', borderRadius: 10, background: '#fff' }}>
-          <div style={{ padding: 12, fontWeight: 700 }}>입고 대기 내역</div>
-          <div style={{ height: 360, overflow: 'auto', padding: 12, paddingTop: 0 }}>
+        <section className='bg-secondary shadow-xl rounded-xl'>
+          <div className='p-4 font-bold'>입고 대기 내역</div>
+          <div
+            style={{
+              height: 360,
+              overflow: 'auto',
+              paddingTop: 0,
+            }}
+          >
             <InboundPendingTable
               rows={pending.rows}
               loading={pending.loading}
@@ -40,10 +48,22 @@ export function InboundOverviewScreen() {
           </div>
         </section>
 
-        <section style={{ border: '1px solid #ddd', borderRadius: 10, background: '#fff' }}>
-          <div style={{ padding: 12, fontWeight: 700 }}>입고 완료 내역 (오늘)</div>
-          <div style={{ height: 360, overflow: 'auto', padding: 12, paddingTop: 0 }}>
-            <InboundCompletedTable rows={completedRows} loading={loading} />
+        <section className='bg-secondary shadow-xl rounded-xl'>
+          <div className='p-4 font-bold'>
+            금일 입고 완료 내역
+          </div>
+          <div
+            style={{
+              height: 360,
+              overflow: 'auto',
+              paddingTop: 0,
+              position: 'relative',
+            }}
+          >
+            <InboundCompletedTable
+              rows={completedRows}
+              loading={loading}
+            />
           </div>
         </section>
       </div>

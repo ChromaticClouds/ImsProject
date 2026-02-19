@@ -1,3 +1,4 @@
+
 // @ts-check
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -5,6 +6,14 @@ import { useQuery } from '@tanstack/react-query';
 import { GraphContainer } from './graph-container.jsx';
 import { ClientRankChart } from './client-rank-chart.jsx';
 import { StatisticsDateRangePicker } from './statistics-date-range-picker.jsx';
+
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from '@/components/ui/select';
 
 import {
   fetchInboundPartnerRank,
@@ -29,7 +38,7 @@ export const ClientRank = () => {
   });
 
   /** @type {[('inbound'|'outbound'), import('react').Dispatch<import('react').SetStateAction<('inbound'|'outbound')>>]} */
-  const [mode, setMode] = useState('inbound'); // inbound | outbound
+  const [mode, setMode] = useState('inbound');
 
   const query = useQuery({
     queryKey: ['partner-rank', range, mode],
@@ -54,16 +63,27 @@ export const ClientRank = () => {
     >
       {/* 필터 영역 */}
       <div className="flex items-end gap-3 mb-3 flex-wrap">
-        <StatisticsDateRangePicker value={range} onChange={setRange} disabled={false} minDateYMD={undefined} />
+        <StatisticsDateRangePicker
+          value={range}
+          onChange={setRange}
+          disabled={false}
+          minDateYMD={undefined}
+        />
 
-        <select
+        {/* ✅ 기존 select → shadcn Select로 교체 */}
+        <Select
           value={mode}
-          onChange={(e) => setMode(e.target.value === 'inbound' ? 'inbound' : 'outbound')}
-          className="h-9 rounded-md border px-2"
+          onValueChange={(v) => setMode(v === 'outbound' ? 'outbound' : 'inbound')}
         >
-          <option value="inbound">공급처</option>
-          <option value="outbound">판매처</option>
-        </select>
+          <SelectTrigger className="h-9 w-[110px] rounded-md">
+            <SelectValue placeholder="구분" />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectItem value="inbound">공급처</SelectItem>
+            <SelectItem value="outbound">판매처</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {query.isFetching ? (
@@ -74,4 +94,3 @@ export const ClientRank = () => {
     </GraphContainer>
   );
 };
-

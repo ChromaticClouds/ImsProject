@@ -1,4 +1,4 @@
-// src/features/purchase-order/components/purchase-order-header.jsx
+
 import { Button } from '@/components/ui/button.js';
 import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
 

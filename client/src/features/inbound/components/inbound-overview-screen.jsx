@@ -41,8 +41,8 @@ export function InboundOverviewScreen() {
         </section>
 
         <section style={{ border: '1px solid #ddd', borderRadius: 10, background: '#fff' }}>
-          <div style={{ padding: 12, fontWeight: 700 }}>입고 완료 내역 (오늘)</div>
-          <div style={{ height: 360, overflow: 'auto', padding: 12, paddingTop: 0 }}>
+          <div style={{ padding: 12, fontWeight: 700 }}>금일 입고 완료 내역</div>
+          <div style={{ height: 360, overflow: 'auto', padding: 12, paddingTop: 0, position: 'relative' }}>
             <InboundCompletedTable rows={completedRows} loading={loading} />
           </div>
         </section>

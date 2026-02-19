@@ -5,13 +5,25 @@ import { InboundPendingItemsDropdown } from './inbound-pending-items-dropdown';
 import { useInboundItems } from '../hooks/use-inbound-items';
 
 /**
+ * @typedef {Object} InboundRow
+ * @property {string} orderNumber
+ * @property {string} vendorName
+ * @property {string} statusText
+ * @property {string} receiveDate
+ * @property {number} itemCount
+ * @property {number} totalAmount
+ */
+
+/**
  * @param {{
- *  row: any,
+ *  row: InboundRow,
  *  loading?: boolean,
  *  onError?: (msg: string) => void,
  * }} props
  */
-export function InboundOverviewPendingRow({ row, loading = false, onError }) {
+export function InboundOverviewPendingRow(props) {
+  const { row, loading = false, onError } = props; // ⭐ 핵심: 구조분해를 내부에서
+
   const nav = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -99,18 +111,11 @@ export function InboundOverviewPendingRow({ row, loading = false, onError }) {
         </div>
       </td>
 
-      <td style={{ textAlign: 'right' }}>{Number(row.totalAmount || 0).toLocaleString()}</td>
-
-      <td>
-        <button
-          disabled={loading}
-          onClick={() =>
-            nav(`/dashboard/inbounds/pending/edit/${encodeURIComponent(row.orderNumber)}`)
-          }
-        >
-          수정
-        </button>
+      <td style={{ textAlign: 'right' }}>
+        {Number(row.totalAmount || 0).toLocaleString()}
       </td>
+
+
       <td>
         <button disabled={loading} onClick={goRegister}>
           등록

@@ -109,68 +109,6 @@ public class PurchaseOrderSqlProvider {
         }
     }
 
-
-//    public String selectSafeStock(Map<String, Object> p) {
-//        @SuppressWarnings("unchecked")
-//        List<Long> productIds = (List<Long>) p.get("productIds");
-//
-//        if (productIds == null || productIds.isEmpty()) {
-//            return "SELECT 1 WHERE 1=0";
-//        }
-//
-//        List<Long> cleaned = productIds.stream()
-//                .filter(Objects::nonNull)
-//                .distinct()
-//                .collect(Collectors.toList());
-//
-//        if (cleaned.isEmpty()) {
-//            return "SELECT 1 WHERE 1=0";
-//        }
-//
-//        String inClause = cleaned.stream()
-//                .map(String::valueOf)
-//                .collect(Collectors.joining(","));
-//
-//        StringBuilder sb = new StringBuilder();
-//
-//        sb.append("SELECT ")
-//          .append("base.product_id AS productId, ")
-//          .append("GREATEST(0, ROUND(")
-//          .append("IFNULL(out_stats.max_daily_out,0) * IFNULL(in_stats.max_lt,0) ")
-//          .append("- IFNULL(out_stats.avg_daily_out,0) * IFNULL(in_stats.avg_lt,0)")
-//          .append(")) AS safetyStock ")
-//          .append("FROM ( ")
-//          .append("SELECT DISTINCT pr.id AS product_id ")
-//          .append("FROM product pr ")
-//          .append("WHERE pr.id IN (").append(inClause).append(") ")
-//          .append(") base ")
-//
-//          .append("LEFT JOIN ( ")
-//          .append("SELECT t.product_id, ")
-//          .append("MAX(t.daily_qty) AS max_daily_out, ")
-//          .append("AVG(t.daily_qty) AS avg_daily_out ")
-//          .append("FROM ( ")
-//          .append("SELECT o.product_id, DATE(o.order_date) AS d, SUM(o.`count`) AS daily_qty ")
-//          .append("FROM `orders` o ")
-//          .append("WHERE o.status='OUTBOUND_COMPLETE' ")
-//          .append("AND o.order_date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY) ")
-//          .append("GROUP BY o.product_id, DATE(o.order_date) ")
-//          .append(") t GROUP BY t.product_id ")
-//          .append(") out_stats ON out_stats.product_id = base.product_id ")
-//
-//          .append("LEFT JOIN ( ")
-//          .append("SELECT vi.product_id, ")
-//          .append("MAX(IFNULL(o.lead_time,0)) AS max_lt, ")
-//          .append("AVG(IFNULL(o.lead_time,0)) AS avg_lt ")
-//          .append("FROM `orders` o ")
-//          .append("JOIN vendor_item vi ON vi.id = o.vendor_item_id ")
-//          .append("WHERE o.status='INBOUND_COMPLETE' ")
-//          .append("AND o.order_date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY) ")
-//          .append("GROUP BY vi.product_id ")
-//          .append(") in_stats ON in_stats.product_id = base.product_id");
-//
-//        return sb.toString();
-//    }
     
     public String selectSafeStock(Map<String, Object> p) {
   	  @SuppressWarnings("unchecked")
@@ -198,12 +136,12 @@ public class PurchaseOrderSqlProvider {
 
   	      GREATEST(
   	        0.0,
-  	        ROUND(
+  	        CEIL(
   	          (
   	            CAST(IFNULL(out_stats.max_daily_out, 0) AS DECIMAL(18,6)) * CAST(IFNULL(in_stats.max_lt, 0) AS DECIMAL(18,6))
   	            - CAST(IFNULL(out_stats.avg_daily_out, 0) AS DECIMAL(18,6)) * CAST(IFNULL(in_stats.avg_lt, 0) AS DECIMAL(18,6))
-  	          ),
-  	          1
+  	          )
+  	          
   	        )
   	      ) AS safetyStock
 

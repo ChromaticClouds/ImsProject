@@ -1,4 +1,16 @@
 // @ts-check
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table.js';
+
+// ❌ 이 줄 삭제
+// import { Alert, AlertDescription } from '@/components/ui/alert.js';
+
 import { InboundOverviewPendingRow } from './inbound-overview-pending-row';
 
 /**
@@ -10,30 +22,33 @@ import { InboundOverviewPendingRow } from './inbound-overview-pending-row';
  * }} props
  */
 export function InboundOverviewPendingTable({ rows, loading = false, error = '', onError }) {
-  return (
-    <div>
-      {error ? <div style={{ color: 'crimson', marginBottom: 8 }}>{error}</div> : null}
+  const safeRows = Array.isArray(rows) ? rows : [];
 
-      <table
-        width="100%"
-        cellPadding="6"
-        style={{ borderCollapse: 'collapse' }}
-      >
+  return (
+    <div className="rounded-lg border bg-background p-4">
+      {/* 🔥 에러 표시 (Alert 대신) */}
+      {error ? (
+        <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+          {error}
+        </div>
+      ) : null}
+
+      <table className="w-full border-collapse">
         <thead>
-          <tr>
-            <th>상태</th>
-            <th>입고 예정일</th>
-            <th>발주 번호</th>
-            <th>거래처</th>
-            <th>품목 수</th>
-            <th>단가 총액</th>
-            <th>수정</th>
-            <th>등록</th>
+          <tr className="bg-muted/50">
+            <th className="text-center py-2">상태</th>
+            <th className="text-center py-2">입고 예정일</th>
+            <th className="text-center py-2">발주 번호</th>
+            <th className="text-center py-2">거래처</th>
+            <th className="text-center py-2">품목 수</th>
+            <th className="text-right py-2">단가 총액</th>
+            <th className="text-center py-2">등록</th>
           </tr>
         </thead>
+
         <tbody>
-          {Array.isArray(rows) && rows.length ? (
-            rows.map((row) => (
+          {safeRows.length ? (
+            safeRows.map((row) => (
               <InboundOverviewPendingRow
                 key={row.orderNumber}
                 row={row}
@@ -43,7 +58,7 @@ export function InboundOverviewPendingTable({ rows, loading = false, error = '',
             ))
           ) : (
             <tr>
-              <td colSpan={8} style={{ textAlign: 'center', padding: 12 }}>
+              <td colSpan={8} className="text-center py-10 text-muted-foreground">
                 데이터가 없습니다.
               </td>
             </tr>

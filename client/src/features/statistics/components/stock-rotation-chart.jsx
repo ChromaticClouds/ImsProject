@@ -1,5 +1,6 @@
-// @ts-check
 
+
+// @ts-check
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -9,6 +10,7 @@ import {
   YAxis,
   CartesianGrid,
   LabelList,
+  ResponsiveContainer,
 } from 'recharts';
 
 import { useIsMobile } from '@/hooks/use-mobile.js';
@@ -70,28 +72,26 @@ function TurnoverTooltip({ active, payload }) {
 }
 
 /**
- * ✅ 라벨이 0.0으로만 보이는 문제를 확실히 끊는 방법:
- * LabelList formatter 대신 content로 "payload.turnover"를 직접 읽어서 그린다.
- *
+ * 그래프 위 데이터 라벨 (재고 회전율)
+ * LabelList는 payload가 아니라 value 기반이 제일 안정적임
  * @param {any} props
  */
 function TurnoverLabel(props) {
-  const { x, y, payload } = props;
-  const t = Number(payload?.turnover ?? 0);
+  const { x, y, value } = props;
 
-  // 평균재고 0이면 회전율 의미 없으니 라벨 숨김(원하면 제거해도 됨)
+  const t = Number(value ?? 0);
   if (!Number.isFinite(t) || t === 0) return null;
 
-  // 라벨 위치 (점 위)
   const dx = Number(x ?? 0);
   const dy = Number(y ?? 0);
 
   return (
     <text
       x={dx}
-      y={dy - 10}
+      y={dy - 14} // 라인 위로 조금 더 띄워서 겹침 방지
       textAnchor="middle"
       fontSize={12}
+      fontWeight={500}
       fill="currentColor"
       opacity={0.9}
     >
@@ -175,10 +175,6 @@ export const StockRotationChart = () => {
 
   const chartData = useMemo(() => {
     const rows = Array.isArray(trendQ.data) ? trendQ.data : [];
-
-    // ✅ 여기서 값이 진짜로 뭐가 들어오는지 한번만 확인해도 됨
-    // console.log('trend rows:', rows);
-
     return rows.map((r) => ({
       period: String(r.period ?? ''),
       turnover: Number(r.turnover ?? 0),
@@ -190,7 +186,7 @@ export const StockRotationChart = () => {
   }, [trendQ.data]);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="h-full flex flex-col gap-3">
       {/* ✅ 필터 바 */}
       <div className="flex flex-wrap items-center gap-2">
         {/* Year */}
@@ -338,7 +334,6 @@ export const StockRotationChart = () => {
                         }`
                       );
                       setSearchOpen(false);
-                      
                       searchBoxRef.current?.focus();
                     }}
                   >
@@ -367,39 +362,47 @@ export const StockRotationChart = () => {
       ) : chartData.length === 0 ? (
         <div className="text-sm text-muted-foreground">표시할 데이터가 없습니다.</div>
       ) : (
-        <ChartContainer config={turnoverTrendConfig} className="h-70 w-full">
-          <LineChart data={chartData} margin={{ top: 18, right: 12, left: 4, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="period"
-              tickLine={false}
-              axisLine={false}
-              interval={0}
-              height={isMobile ? 40 : 32}
-              tickMargin={8}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              width={isMobile ? 34 : 44}
-              tickFormatter={(v) => Number(v).toFixed(isMobile ? 0 : 1)}
-            />
+        <ChartContainer config={turnoverTrendConfig} className="flex-1 min-h-0 w-full">
+          <div className="h-full w-full overflow-visible">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={chartData}
+                margin={{ top: 24, right: 24, left: 4, bottom: 18 }} // ✅ 라벨 공간 확보
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="period"
+                  tickLine={false}
+                  axisLine={false}
+                  interval={0}
+                  height={isMobile ? 40 : 32}
+                  tickMargin={8}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  width={isMobile ? 34 : 44}
+                  tickFormatter={(v) => Number(v).toFixed(isMobile ? 0 : 1)}
+                />
 
-            <ChartTooltip content={<TurnoverTooltip />} />
+                <ChartTooltip content={<TurnoverTooltip />} />
 
-            <Line
-              type="monotone"
-              dataKey="turnover"
-              strokeWidth={2}
-              stroke="var(--chart-4)"
-              fill="var(--chart-4)"
-              dot
-              isAnimationActive={false}
-            >
-              
-              <LabelList content={<TurnoverLabel />} />
-            </Line>
-          </LineChart>
+                <Line
+                  type="monotone"
+                  dataKey="turnover"
+                  strokeWidth={2}
+                  stroke="var(--chart-4)"
+                  fill="var(--chart-4)"
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                  isAnimationActive={false}
+                >
+                  {/* ✅ 재고 회전율 라벨 표시 (핵심: dataKey + value 기반 TurnoverLabel) */}
+                  <LabelList dataKey="turnover" content={<TurnoverLabel />} />
+                </Line>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </ChartContainer>
       )}
     </div>

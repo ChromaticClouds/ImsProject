@@ -228,6 +228,30 @@ public class InboundQuerySqlProvider {
     }
 
     // 입고 대기 물품(주문번호 별로)
+//    public String selectPendingItemsByOrderNumber(Map<String, Object> params) {
+//        return new SQL() {{
+//            SELECT(
+//                "o.id AS orderId",
+//                "o.vendor_item_id AS vendorItemId",
+//                "vi.product_id AS productId",
+//                "p.name AS productName",
+//                "p.type AS type",
+//                "p.brand AS brand",
+//                "o.`count` AS orderQty",
+//                "vi.purchase_price AS purchasePrice",
+//                "(o.`count` * vi.purchase_price) AS lineAmount",
+//                "p.image_url AS imageUrl",
+//                "p.sale_price AS salePrice"
+//            );
+//            FROM("`orders` o");
+//            JOIN("vendor_item vi ON vi.id = o.vendor_item_id");
+//            JOIN("product p ON p.id = vi.product_id");
+//            WHERE("o.status = 'INBOUND_PENDING'");
+//            WHERE("o.order_number = #{orderNumber}");
+//            ORDER_BY("o.id ASC");
+//        }}.toString();
+//    }
+    
     public String selectPendingItemsByOrderNumber(Map<String, Object> params) {
         return new SQL() {{
             SELECT(
@@ -241,11 +265,15 @@ public class InboundQuerySqlProvider {
                 "vi.purchase_price AS purchasePrice",
                 "(o.`count` * vi.purchase_price) AS lineAmount",
                 "p.image_url AS imageUrl",
-                "p.sale_price AS salePrice"
+                "p.sale_price AS salePrice",
+                // ⭐ 여기 추가 (현재고)
+                "IFNULL(s.`count`, 0) AS currentStock"
             );
             FROM("`orders` o");
             JOIN("vendor_item vi ON vi.id = o.vendor_item_id");
             JOIN("product p ON p.id = vi.product_id");
+            // ⭐ 여기 추가 (stock 조인)
+            LEFT_OUTER_JOIN("stock s ON s.product_id = vi.product_id");
             WHERE("o.status = 'INBOUND_PENDING'");
             WHERE("o.order_number = #{orderNumber}");
             ORDER_BY("o.id ASC");
@@ -261,11 +289,13 @@ public class InboundQuerySqlProvider {
           SELECT
             '입고 완료' AS statusText,
             o.order_number AS orderNumber,
+            MIN(o.order_date) AS orderDate,
             MIN(o.recieve_date) AS receiveDate,
             MIN(vi.vendor_id) AS vendorId,
             MIN(v.vendor_name) AS vendorName,
             COUNT(*) AS itemCount,
-            SUM(o.`count` * vi.purchase_price) AS totalAmount
+            SUM(o.`count` * vi.purchase_price) AS totalAmount,
+            MAX(o.qty_changed) AS qtyChanged
           FROM `orders` o
           JOIN vendor_item vi ON vi.id = o.vendor_item_id
           JOIN vendor v ON v.id = vi.vendor_id
@@ -386,14 +416,25 @@ public class InboundQuerySqlProvider {
     }
 
     // 입고 수정 수량
+//    public String updateOrderQty(Map<String, Object> p) {
+//        return new SQL(){{
+//            UPDATE("`orders`");
+//            SET("`count` = #{orderQty}");
+//            WHERE("id = #{orderId}");
+//            WHERE("status = 'INBOUND_PENDING'");
+//        }}.toString();
+//    }
+    
     public String updateOrderQty(Map<String, Object> p) {
-        return new SQL(){{
-            UPDATE("`orders`");
-            SET("`count` = #{orderQty}");
-            WHERE("id = #{orderId}");
-            WHERE("status = 'INBOUND_PENDING'");
-        }}.toString();
-    }
+    	  return new SQL(){{
+    	    UPDATE("`orders`");
+    	    // ✅ 기존 count와 다르면 1로 고정
+    	    SET("qty_changed = CASE WHEN `count` <> #{orderQty} THEN 1 ELSE qty_changed END");
+    	    SET("`count` = #{orderQty}");
+    	    WHERE("id = #{orderId}");
+    	    WHERE("status = 'INBOUND_PENDING'");
+    	  }}.toString();
+    	}
 
     // 발주번호별로 입고 완료 
     public String selectOrdersForInboundCompleteByOrderNumber(Map<String, Object> p) {
@@ -554,12 +595,12 @@ public class InboundQuerySqlProvider {
 
     	      GREATEST(
     	        0.0,
-    	        ROUND(
+    	        CEIL(
     	          (
     	            CAST(IFNULL(out_stats.max_daily_out, 0) AS DECIMAL(18,6)) * CAST(IFNULL(in_stats.max_lt, 0) AS DECIMAL(18,6))
     	            - CAST(IFNULL(out_stats.avg_daily_out, 0) AS DECIMAL(18,6)) * CAST(IFNULL(in_stats.avg_lt, 0) AS DECIMAL(18,6))
-    	          ),
-    	          1
+    	          )
+    	          
     	        )
     	      ) AS safetyStock
 

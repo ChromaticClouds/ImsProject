@@ -1,35 +1,39 @@
 // @ts-check
 import { InboundPendingRow } from './inbound-pending-row';
-import { Button } from '@/components/ui/button';
 
 /**
  * @param {{
- *  rows: import('../types').InboundPendingRow[],
- *  loading: boolean,
- *  error: string,
+ *  rows: any[],
+ *  loading?: boolean,
+ *  error?: string,
  *  onError?: (msg: string) => void
  * }} props
  */
-export function InboundPendingTable({ rows, loading, error, onError }) {
+export function InboundPendingTable({ rows, loading = false, error = '', onError }) {
   const list = Array.isArray(rows) ? rows : [];
 
+  const th =
+    'sticky top-0 z-20 bg-background ' +
+    'px-3 py-3 text-center text-xs font-semibold text-muted-foreground border-b';
+
   return (
-    <>
+    <div className="flex flex-col gap-2">
       {error ? (
-        <div style={{ color: 'red', marginBottom: 12, whiteSpace: 'pre-wrap' }}>{error}</div>
+        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 whitespace-pre-wrap">
+          {error}
+        </div>
       ) : null}
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #999' }}>
+      <table className="w-full text-sm border-separate border-spacing-0">
         <thead>
           <tr>
-            <th>상태</th>
-            <th>입고 예정일</th>
-            <th>발주번호</th>
-            <th>공급처</th>
-            <th>품목 수</th>
-            <th>단가 총액</th>
-            <th>수정</th>
-            <th>등록</th>
+            <th className={`${th} w-[90px]`}>상태</th>
+            <th className={`${th} w-[200px]`}>입고 예정일</th>
+            <th className={`${th} w-[200px]`}>발주번호</th>
+            <th className={`${th} w-[100px]`}>공급처</th>
+            <th className={`${th} w-[180px]`}>품목 수</th>
+            <th className={`${th} w-[80px] text-right`}>단가 총액</th>
+            <th className={`${th} w-[150px]`}>등록</th>
           </tr>
         </thead>
 
@@ -45,13 +49,15 @@ export function InboundPendingTable({ rows, loading, error, onError }) {
             ))
           ) : (
             <tr>
-              <td colSpan={7} style={{ textAlign: 'center' }}>
+              <td colSpan={7} className="h-24 text-center text-muted-foreground">
                 데이터가 없습니다
               </td>
             </tr>
           )}
         </tbody>
       </table>
-    </>
+
+      {loading ? <div className="text-sm text-muted-foreground">불러오는 중...</div> : null}
+    </div>
   );
 }

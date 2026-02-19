@@ -50,6 +50,7 @@ public interface PurchaseOrderMapper {
         "  pr.name AS productName,",
         "  pr.type AS type,",
         "  pr.brand AS brand,",
+        "  pr.image_url AS imageUrl,",
         "  o.`count` AS count,",
         "  vi.purchase_price AS purchasePrice",
         "FROM orders o",

@@ -254,12 +254,12 @@ public class StatisticsProvider {
 	        base.product_id AS productId,
 	        GREATEST(
 	          0.0,
-	          ROUND(
+	          CEIL(
 	            (
 	              CAST(IFNULL(out_stats.max_daily_out, 0) AS DECIMAL(18,6)) * CAST(IFNULL(in_stats.max_lt, 0) AS DECIMAL(18,6))
 	              - CAST(IFNULL(out_stats.avg_daily_out, 0) AS DECIMAL(18,6)) * CAST(IFNULL(in_stats.avg_lt, 0) AS DECIMAL(18,6))
-	            ),
-	            1
+	            )
+	            
 	          )
 	        ) AS safetyStock
 	      FROM (

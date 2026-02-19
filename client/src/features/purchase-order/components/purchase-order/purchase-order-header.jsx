@@ -15,7 +15,6 @@ import { PurchaseOrderBulkActions } from '@/features/purchase-order/components/p
  * Hooks
  */
 import { usePurchaseOrderSelectionStore } from '@/features/purchase-order/stores/use-purchase-order-selection-store.js';
-import { usePurchaseOrders } from '@/features/purchase-order/hooks/use-purchase-orders.js';
 import { usePoParamStore } from '@/features/purchase-order/stores/use-po-param-store.js';
 import {
   AlertDialog,
@@ -70,7 +69,7 @@ export const PurchaseOrderHeader = ({ onReload }) => {
                 <PurchaseOrderBulkActions onReload={onReload} />
 
                 <AlertDialog>
-                  <AlertDialogTrigger>
+                  <AlertDialogTrigger asChild>
                     <Button
                       variant='outline'
                       disabled={!hasSelection}

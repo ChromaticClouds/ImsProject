@@ -6,7 +6,7 @@ export const adjustProductSchema = z.object({
   adjustCount: z
     .number('숫자만 입력해주세요')
     .int('정수만 입력 가능합니다')
-    .min(0, '변동 수량은 음수가 될 수 없습니다'),
+    .min(1, '수량은 1 이상이어야 합니다'),
 });
 
 export const adjustFormSchema = z.object({

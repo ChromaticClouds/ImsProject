@@ -210,7 +210,7 @@ export const PurchaseOrderList = () => {
 
                     {/* 삭제 */}
                     <TableCell className='text-center'>
-                      <PoDeleteDialog />
+                      <PoDeleteDialog orderNumber={c.orderNumber} />
                     </TableCell>
                   </>
                 )}

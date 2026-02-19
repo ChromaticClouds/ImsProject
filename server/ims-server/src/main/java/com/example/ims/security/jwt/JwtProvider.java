@@ -56,19 +56,19 @@ public class JwtProvider {
         Instant now = Instant.now();
 
         return Jwts.builder()
-                .subject(userId.toString())
-                .issuedAt(Date.from(now))
-                .expiration(getExpiration(now, props.getRefreshExpDays(), ChronoUnit.DAYS))
-                .signWith(keyProvider.getKey())
-                .compact();
+            .subject(userId.toString())
+            .issuedAt(Date.from(now))
+            .expiration(getExpiration(now, props.getRefreshExpDays(), ChronoUnit.DAYS))
+            .signWith(keyProvider.getKey())
+            .compact();
     }
 
     public Claims parseClaims(String token) {
         return Jwts.parser()
-                .verifyWith(keyProvider.getKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+            .verifyWith(keyProvider.getKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
     }
 
     public boolean validate(String token) {

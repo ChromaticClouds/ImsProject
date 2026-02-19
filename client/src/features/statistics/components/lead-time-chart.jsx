@@ -54,6 +54,7 @@ export const LeadTimeChart = () => {
           data={chartData}
           barSize={isMobile ? 12 : 24}
           barCategoryGap={GAP}
+          margin={{ top: 30 }}
         >
           <CartesianGrid strokeDasharray='3 3' />
 

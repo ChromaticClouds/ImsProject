@@ -155,7 +155,7 @@ export function OutboundRegisterPage() {
         <div className="grid grid-cols-12 gap-4 lg:min-h-[calc(100vh-64px-140px)]">
           {/* 좌측: 출고 품목 */}
           <div className="col-span-12 lg:col-span-8 lg:flex">
-            <div className="flex w-full flex-col rounded-2xl border bg-secondary">
+            <div className="flex w-full flex-col rounded-2xl border bg-card">
               {/* 헤더 */}
               <div className="flex items-center justify-between border-b px-5 py-4">
                 <div className="text-lg font-semibold">출고 품목</div>
@@ -232,7 +232,7 @@ export function OutboundRegisterPage() {
           {/* 우측 요약 (sticky) */}
           <div className="col-span-12 lg:col-span-4">
             <div className="sticky top-5 space-y-4">
-              <div className="rounded-2xl border bg-secondary p-5">
+              <div className="rounded-2xl border bg-card p-5">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="text-lg font-semibold">요약</div>
                   <Badge variant="secondary">확정 전</Badge>
@@ -271,7 +271,7 @@ export function OutboundRegisterPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border bg-secondary p-5">
+              <div className="rounded-2xl border bg-card p-5">
                 <div className="mb-2 flex items-center justify-between">
                   <div className="font-semibold">메모</div>
                   <div className={`text-xs ${memoOver ? 'text-destructive' : 'text-muted-foreground'}`}>
@@ -287,7 +287,7 @@ export function OutboundRegisterPage() {
                 />
               </div>
 
-              <div className="rounded-2xl border bg-secondary p-5">
+              <div className="rounded-2xl border bg-card p-5">
                 <ObRegisterDialog 
                   totals={totals}
                   submitDisabled={submitDisabled}

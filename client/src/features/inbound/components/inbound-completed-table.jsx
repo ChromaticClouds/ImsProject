@@ -12,8 +12,8 @@ export function InboundCompletedTable({ rows, loading = false, error = '' }) {
   const list = Array.isArray(rows) ? rows : [];
 
   const th =
-    'sticky top-0 z-20 bg-popover ' +
-    'px-3 py-3 text-center text-xs font-semibold text-muted-foreground border-b';
+    'sticky top-0 z-20 bg-accent ' +
+    'px-3 py-3 text-center text-xs font-semibold text-muted-foreground';
 
   return (
     <div className="flex flex-col gap-2">

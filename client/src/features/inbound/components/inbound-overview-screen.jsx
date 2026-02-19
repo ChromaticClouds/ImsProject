@@ -30,7 +30,7 @@ export function InboundOverviewScreen() {
       ) : null}
 
       <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12 }}>
-        <section className='bg-secondary shadow-xl rounded-xl'>
+        <section className='bg-card shadow-xl rounded-xl'>
           <div className='p-4 font-bold'>입고 대기 내역</div>
           <div
             style={{
@@ -48,7 +48,7 @@ export function InboundOverviewScreen() {
           </div>
         </section>
 
-        <section className='bg-secondary shadow-xl rounded-xl'>
+        <section className='bg-card shadow-xl rounded-xl'>
           <div className='p-4 font-bold'>
             금일 입고 완료 내역
           </div>

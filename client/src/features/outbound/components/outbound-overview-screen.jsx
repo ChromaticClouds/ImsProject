@@ -1,6 +1,4 @@
 
-
-
 // @ts-check
 import { useEffect, useMemo, useState } from 'react';
 import { useOutboundOverviewCtx } from '../providers/outbound-overview-provider.jsx';
@@ -20,6 +18,28 @@ import {
   SelectValue,
 } from '@/components/ui/select.js';
 
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
+
+function decodeJwtPayload(token) {
+  try {
+    const parts = String(token || '').split('.');
+    if (parts.length < 2) return null;
+    const json = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+function getMyUserIdFromToken(token) {
+  const p = decodeJwtPayload(token);
+  if (!p) return null;
+  if (p.id != null && !Number.isNaN(Number(p.id))) return Number(p.id);
+  if (p.userId != null && !Number.isNaN(Number(p.userId))) return Number(p.userId);
+  if (p.sub != null && !Number.isNaN(Number(p.sub))) return Number(p.sub);
+  return null;
+}
+
 function toYMD(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -35,17 +55,11 @@ function applyQuickDay(setSearch, kind) {
 }
 
 export function OutboundOverviewScreen() {
-  const {
-    search,
-    setSearch,
-    pendingRows,
-    completedRows,
-    myId,               // ✅ provider에서 받음
-    myTodayPendingRows, // ✅ provider에서 받음
-    loading,
-    error,
-    setError,
-  } = useOutboundOverviewCtx();
+  const { search, setSearch, pendingRows, completedRows, loading, error, setError } =
+    useOutboundOverviewCtx();
+
+  const accessToken = useAuthStore((s) => s.accessToken);
+  const myId = useMemo(() => getMyUserIdFromToken(accessToken), [accessToken]);
 
   const [quickDay, setQuickDay] = useState('today');
   const [assignee, setAssignee] = useState('all');
@@ -79,16 +93,25 @@ export function OutboundOverviewScreen() {
     return u ? `${u.name}` : '담당자';
   }, [assignee, assignees]);
 
-  // ✅ 필터에 영향 받지 않는 "내 금일 출고 대기" 고정 카운트
+  const todayYmd = useMemo(() => toYMD(new Date()), []);
+
   const myTodayPendingCount = useMemo(() => {
-    if (myId == null) return 0;
-    return Array.isArray(myTodayPendingRows) ? myTodayPendingRows.length : 0;
-  }, [myId, myTodayPendingRows]);
+    if (!Array.isArray(pendingRows) || myId == null) return 0;
+
+    return pendingRows.filter((r) => {
+      const managerId = r?.managerId == null ? null : Number(r.managerId);
+      const isMine = managerId != null && managerId === myId;
+      const ymd = String(r?.receiveDate ?? '').slice(0, 10);
+      const isToday = ymd === todayYmd;
+      return isMine && isToday;
+    }).length;
+  }, [pendingRows, myId, todayYmd]);
 
   return (
     <div style={{ padding: 16 }}>
       <AppHeader title="출고 내역" description="출고 내역을 확인하세요" />
 
+      {/* ⭐ 핵심: 좌측 필터 / 우측 카운트 분리 */}
       <div
         style={{
           marginBottom: 10,
@@ -99,6 +122,7 @@ export function OutboundOverviewScreen() {
           flexWrap: 'wrap',
         }}
       >
+        {/* 좌측 컨트롤 그룹 */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <OutboundDateRangePicker
             value={search}
@@ -167,10 +191,14 @@ export function OutboundOverviewScreen() {
           </Button>
         </div>
 
+        {/* ⭐ 맨 오른쪽 고정 영역 (요청한 위치) */}
         <div className="flex items-center">
           <span className="inline-flex items-center rounded-full border bg-muted/40 px-3 py-1.5 text-sm font-semibold shadow-sm">
             내 금일 출고 대기&nbsp;
-            <span className="ml-1 text-primary tabular-nums">{myTodayPendingCount}</span>건
+            <span className="ml-1 text-primary tabular-nums">
+              {myTodayPendingCount}
+            </span>
+            건
           </span>
         </div>
       </div>
@@ -178,21 +206,16 @@ export function OutboundOverviewScreen() {
       {error ? <div style={{ color: 'crimson', marginBottom: 10 }}>{error}</div> : null}
 
       <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12 }}>
-        <section className="bg-secondary shadow-xl rounded-xl">
-          <div className="p-4 font-bold">출고 대기 내역</div>
-          <div style={{ height: 380, overflow: 'auto', paddingTop: 0 }}>
-            <OutboundPendingTable
-              rows={pendingRows}
-              loading={loading}
-              error={error}
-              onError={setError}
-            />
+        <section style={{ border: '1px solid #ddd', borderRadius: 10 }}>
+          <div style={{ padding: 12, fontWeight: 700 }}>출고 대기 내역</div>
+          <div style={{ height: 380, overflow: 'auto', padding: 12, paddingTop: 0 }}>
+            <OutboundPendingTable rows={pendingRows} loading={loading} error={error} onError={setError} />
           </div>
         </section>
 
-        <section className="bg-secondary shadow-xl rounded-xl">
-          <div className="p-4 font-bold">출고 완료 내역 (오늘)</div>
-          <div style={{ height: 380, overflow: 'auto', paddingTop: 0, position: 'relative' }}>
+        <section style={{ border: '1px solid #ddd', borderRadius: 10 }}>
+          <div style={{ padding: 12, fontWeight: 700 }}>출고 완료 내역 (오늘)</div>
+          <div style={{ height: 380, overflow: 'auto', padding: 12, paddingTop: 0 }}>
             <OutboundCompletedTable rows={completedRows} loading={loading} />
           </div>
         </section>

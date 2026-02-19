@@ -27,12 +27,13 @@ export function HistorySearchBox({ q, setQ, pick, setPick }) {
         placeholder="제품명/등록자/거래처 검색 입력"
         style={{
           width: '100%',
+          border: '1px solid #ddd',
           borderRadius: 8,
           padding: '8px 10px',
           outline: 'none',
           fontSize: '13px',
           lineHeight: '13px'
-        }} className='bg-secondary border border-border'
+        }}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 120)}
       />
@@ -40,9 +41,9 @@ export function HistorySearchBox({ q, setQ, pick, setPick }) {
       {open && q && (
         <div style={{
           position: 'absolute', zIndex: 20, top: 40, left: 0, right: 0,
-           borderRadius: 8,
+          background: '#fff', border: '1px solid #ddd', borderRadius: 8,
           overflow: 'hidden'
-        }} className='bg-secondary'>
+        }}>
           {searchQ.isFetching ? (
             <div style={{ padding: 10, fontSize: 12, color: '#666' }}>검색 중...</div>
           ) : items.length === 0 ? (

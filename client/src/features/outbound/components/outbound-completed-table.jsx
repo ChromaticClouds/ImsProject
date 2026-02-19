@@ -12,7 +12,7 @@ export function OutboundCompletedTable({ rows, loading = false, error = '' }) {
   const list = Array.isArray(rows) ? rows : [];
 
   const th =
-    'sticky top-0 z-20 bg-popover ' +
+    'sticky top-0 z-20 bg-background ' +
     'px-3 py-3 text-center text-xs font-semibold text-muted-foreground border-b';
 
   return (

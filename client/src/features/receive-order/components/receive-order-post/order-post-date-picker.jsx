@@ -22,7 +22,6 @@ export const ReceiveOrderDatePicker = () => {
               <AppDatePicker
                 date={field.state.value}
                 setDate={(e) => field.handleChange(e)}
-                className='w-60'
               />
 
               {isInvalid && <FieldError errors={field.state.meta.errors} />}

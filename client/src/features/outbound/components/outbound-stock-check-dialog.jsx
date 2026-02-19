@@ -61,7 +61,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
       }}
       className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4"
     >
-      <div className="w-[760px] max-w-[95vw] overflow-hidden rounded-2xl border bg-secondary shadow-2xl">
+      <div className="w-[760px] max-w-[95vw] overflow-hidden rounded-2xl border bg-white shadow-2xl">
         {/* Header */}
         <div className="relative flex items-center justify-center border-b bg-background px-4 py-3">
           <div className="text-base font-extrabold tracking-tight">현재고 확인</div>
@@ -69,7 +69,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
           <button
             type="button"
             onClick={close}
-            className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-xl border bg-secondary hover:bg-muted/40"
+            className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-xl border bg-white hover:bg-muted/40"
             aria-label="닫기"
           >
             <X className="h-4 w-4" />
@@ -84,7 +84,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
 
             <div className="grid gap-1">
               {typesQ.isLoading ? (
-                <div className="rounded-xl border bg-secondary px-3 py-2 text-sm text-muted-foreground">
+                <div className="rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground">
                   로딩 중...
                 </div>
               ) : typesQ.isError ? (
@@ -92,7 +92,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                   오류 발생
                 </div>
               ) : types.length === 0 ? (
-                <div className="rounded-xl border bg-secondary px-3 py-2 text-sm text-muted-foreground">
+                <div className="rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground">
                   데이터 없음
                 </div>
               ) : (
@@ -107,7 +107,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                         'flex items-center justify-between rounded-xl border px-3 py-2 text-left text-sm font-semibold transition',
                         active
                           ? 'border-primary bg-primary/10 text-primary'
-                          : 'bg-secondary hover:bg-muted/40',
+                          : 'bg-white hover:bg-muted/40',
                       ].join(' ')}
                     >
                       <span>{toKoreanType(t)}</span>
@@ -135,7 +135,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                 주종을 선택하세요
               </div>
             ) : brandsQ.isLoading ? (
-              <div className="rounded-xl border bg-secondary px-3 py-2 text-sm text-muted-foreground">
+              <div className="rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground">
                 로딩 중...
               </div>
             ) : brandsQ.isError ? (
@@ -143,7 +143,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                 오류 발생
               </div>
             ) : brands.length === 0 ? (
-              <div className="rounded-xl border bg-secondary px-3 py-2 text-sm text-muted-foreground">
+              <div className="rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground">
                 브랜드 없음
               </div>
             ) : (
@@ -159,7 +159,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                         'rounded-xl border px-3 py-2 text-left text-sm font-semibold transition',
                         active
                           ? 'border-primary bg-primary/10 text-primary'
-                          : 'bg-secondary hover:bg-muted/40',
+                          : 'bg-white hover:bg-muted/40',
                       ].join(' ')}
                       title={b}
                     >
@@ -187,7 +187,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                 주종/브랜드를 선택하세요
               </div>
             ) : productsQ.isLoading ? (
-              <div className="rounded-xl border bg-secondary px-3 py-2 text-sm text-muted-foreground">
+              <div className="rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground">
                 로딩 중...
               </div>
             ) : productsQ.isError ? (
@@ -195,7 +195,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                 오류 발생
               </div>
             ) : products.length === 0 ? (
-              <div className="rounded-xl border bg-secondary px-3 py-2 text-sm text-muted-foreground">
+              <div className="rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground">
                 제품 없음
               </div>
             ) : (
@@ -211,7 +211,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                         'rounded-xl border px-3 py-2 text-left text-sm font-semibold transition',
                         active
                           ? 'border-primary bg-primary/10 text-primary'
-                          : 'bg-secondary hover:bg-muted/40',
+                          : 'bg-white hover:bg-muted/40',
                       ].join(' ')}
                       title={formatProductLabel(p)}
                     >
@@ -237,7 +237,7 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="rounded-2xl border bg-secondary px-4 py-2 text-center">
+              <div className="rounded-2xl border bg-white px-4 py-2 text-center">
                 <div className="text-[11px] font-semibold text-muted-foreground">
                     현재고 : &nbsp; {selectedProduct ? Number(selectedProduct.stockCount ?? 0).toLocaleString() : '-'}    
                 </div>

@@ -5,7 +5,10 @@ export async function fetchOutboundPendingSummary(params) {
   return await api.get('api/outbounds/pending/summary', { searchParams: params, hooks }).json();
 }
 
-/** @param {string} orderNumber */
+/** 
+ * @param {string} orderNumber
+ * @returns {Promise<Omit<OrderRegisterProduct, '_baseQty'>>}
+ */
 export async function fetchOutboundPendingItems(orderNumber) {
   return await api.get(`api/outbounds/pending/${encodeURIComponent(orderNumber)}/items`).json();
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,6 +48,17 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(userList));
     }
 
+    @GetMapping("group/list")
+    public ResponseEntity<ApiResponse<PageResponse<UserListResponse>>> getUserGroupList(
+        @RequestParam(value = "page", defaultValue = "1") Integer page,
+        @RequestParam(value = "search", defaultValue = "") String search
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
+        PageResponse<UserListResponse> userList = service.getUserGroupList(pageable, search);
+
+        return ResponseEntity.ok(ApiResponse.success(userList));
+    }
+
     @PatchMapping("permission/{id}")
     public ResponseEntity<ApiResponse<Void>> patchUserPermission(
         @PathVariable("id") Long id,
@@ -68,16 +80,16 @@ public class UserController {
 
     @PostMapping("logout")
     public ResponseEntity<ApiResponse<Void>> logoutUser(
-            @AuthenticationPrincipal UserPrincipal user
+        @AuthenticationPrincipal UserPrincipal user
     ) {
         service.logoutUser(user.userId());
 
         ResponseCookie deleteCookie =
-                RefreshTokenCookieStore.delete(false);
+            RefreshTokenCookieStore.delete(false);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .body(ApiResponse.success("로그아웃 되었습니다."));
+            .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+            .body(ApiResponse.success("로그아웃 되었습니다."));
     }
 
     @PostMapping("forgot-password")

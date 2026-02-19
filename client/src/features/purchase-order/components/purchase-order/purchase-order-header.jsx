@@ -17,6 +17,20 @@ import { PurchaseOrderBulkActions } from '@/features/purchase-order/components/p
 import { usePurchaseOrderSelectionStore } from '@/features/purchase-order/stores/use-purchase-order-selection-store.js';
 import { usePurchaseOrders } from '@/features/purchase-order/hooks/use-purchase-orders.js';
 import { usePoParamStore } from '@/features/purchase-order/stores/use-po-param-store.js';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog.js';
+import { toast } from 'sonner';
+import { usePoBulkRemoveMutation } from '../../hooks/use-po-bulk-remove-mutation.js';
+import { Spinner } from '@/components/ui/spinner.js';
 
 /**
  * @param {{ onReload?: () => Promise<any> }} props
@@ -25,7 +39,7 @@ export const PurchaseOrderHeader = ({ onReload }) => {
   const view = usePoParamStore((s) => s.view);
 
   const { selectedOrderNumbers, clear } = usePurchaseOrderSelectionStore();
-  const { bulkRemove } = usePurchaseOrders();
+  const { mutate: bulkRemove, isPending } = usePoBulkRemoveMutation();
 
   const selectedCount = selectedOrderNumbers.length;
   const hasSelection = selectedCount > 0;
@@ -55,24 +69,44 @@ export const PurchaseOrderHeader = ({ onReload }) => {
                 {/* 선택 전송 */}
                 <PurchaseOrderBulkActions onReload={onReload} />
 
-                {/* 선택 삭제 */}
-                <Button
-                  size='sm'
-                  variant='destructive'
-                  disabled={!hasSelection}
-                  onClick={async () => {
-                    const ok = window.confirm(
-                      '선택한 발주서를 삭제 하시겠습니까?',
-                    );
-                    if (!ok) return;
+                <AlertDialog>
+                  <AlertDialogTrigger>
+                    <Button
+                      variant='outline'
+                      disabled={!hasSelection}
+                      className='text-destructive hover:text-destructive'
+                    >
+                      {isPending ? <Spinner /> : '선택 삭제'}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>발주서 삭제</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        선택한 발주서를 삭제하시겠습니까? 삭제하면 복구가
+                        불가능합니다.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>취소</AlertDialogCancel>
+                      <AlertDialogAction
+                        variant='outline'
+                        className='text-destructive hover:text-destructive'
+                        onClick={() => {
+                          if (!selectedOrderNumbers.length) {
+                            toast.warning('삭제할 항목을 선택해주세요.');
+                            return;
+                          }
 
-                    await bulkRemove(selectedOrderNumbers);
-                    clear();
-                    await onReload?.();
-                  }}
-                >
-                  선택 삭제
-                </Button>
+                          bulkRemove({ orderNumbers: selectedOrderNumbers });
+                          clear();
+                        }}
+                      >
+                        삭제
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>

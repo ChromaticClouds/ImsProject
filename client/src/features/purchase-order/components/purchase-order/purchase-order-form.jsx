@@ -3,6 +3,9 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button.js';
 import { Input } from '@/components/ui/input.js';
 import { Label } from '@/components/ui/label.js';
+import { toast } from 'sonner';
+import { AppDatePicker } from '@/components/common/app-date-picker.jsx';
+import { formatToIsoDate } from '@/features/receive-order/utils/format-date.js';
 
 const formatNumber = (n) => Number(n || 0).toLocaleString();
 
@@ -47,50 +50,51 @@ export const PurchaseOrderForm = ({ initialValue, onSubmit }) => {
     () =>
       (Array.isArray(form.items) ? form.items : []).reduce(
         (sum, it) => sum + Number(it.count || 0),
-        0
+        0,
       ),
-    [form.items]
+    [form.items],
   );
 
   const typeLabelMap = {
-  SOJU: '소주',
-  LIQUOR: '양주',
-  KAOLIANG_LIQUOR: '고량주',
-  TRADITIONAL: '전통주',
-  WHISKEY: '위스키',
-};
+    SOJU: '소주',
+    LIQUOR: '양주',
+    KAOLIANG_LIQUOR: '고량주',
+    TRADITIONAL: '전통주',
+    WHISKEY: '위스키',
+  };
 
-const isValidCount = (value) => {
-  const n = Number(value);
-  return Number.isInteger(n) && n > 0;
-};
+  const isValidCount = (value) => {
+    const n = Number(value);
+    return Number.isInteger(n) && n > 0;
+  };
 
-const formatSafetyStock = (v) => {
-  if (v == null) return '-';
-  const n = Number(v);
-  if (!Number.isFinite(n)) return String(v);
-  return n.toFixed(1);
-};
+  const formatSafetyStock = (v) => {
+    if (v == null) return '-';
+    const n = Number(v);
+    if (!Number.isFinite(n)) return String(v);
+    return n.toFixed(1);
+  };
 
-const submitDisabled =
-  !form.recieveDate ||
-  !Array.isArray(form.items) ||
-  form.items.length === 0 ||
-  form.items.some((it) => !isValidCount(it.count));
+  const submitDisabled =
+    !form.recieveDate ||
+    !Array.isArray(form.items) ||
+    form.items.length === 0 ||
+    form.items.some((it) => !isValidCount(it.count));
 
-const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
+  const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
 
   const totalPrice = useMemo(
     () =>
       (Array.isArray(form.items) ? form.items : []).reduce(
-        (sum, it) => sum + Number(it.count || 0) * Number(it.purchasePrice || 0),
-        0
+        (sum, it) =>
+          sum + Number(it.count || 0) * Number(it.purchasePrice || 0),
+        0,
       ),
-    [form.items]
+    [form.items],
   );
 
   const submit = () => {
-    if (!form.recieveDate) return alert('납기일을 선택해주세요');
+    if (!form.recieveDate) return toast.error('납기일을 선택해주세요');
 
     const payload = {
       recieveDate: form.recieveDate,
@@ -135,47 +139,30 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
         />
       </div>
 
-      {/* <div className='grid grid-cols-12 gap-4 items-center'>
-        <Label className='col-span-2'>납기일</Label>
-        <Input
-          className='col-span-10'
-          type='date'
-          value={form.recieveDate ?? ''}
-          onChange={(e) => setField('recieveDate', e.target.value)}
-        />
-      </div> */}
-
       <div className='grid grid-cols-12 gap-4 items-center'>
         <Label className='col-span-2'>납기일</Label>
 
-        {/** 오늘(로컬 기준) YYYY-MM-DD */}
-        {(() => {
-          const today = new Date();
-          const y = today.getFullYear();
-          const m = String(today.getMonth() + 1).padStart(2, '0');
-          const d = String(today.getDate()).padStart(2, '0');
-          const minDate = `${y}-${m}-${d}`;
+        <AppDatePicker
+          className='col-span-10'
+          min={new Date()}
+          date={new Date(form.recieveDate)}
+          setDate={(date) => {
+            if (!date) return;
 
-          return (
-            <Input
-              className='col-span-10'
-              type='date'
-              min={minDate}                       
-              value={form.recieveDate ?? ''}
-              onChange={(e) => {
-                const v = e.target.value;
+            const today = new Date();
+            const minDate = formatToIsoDate(today);
+            const iso = formatToIsoDate(date);
 
-                if (v && v < minDate) {
-                  alert('과거 날짜는 선택할 수 없습니다.');
-                  setField('recieveDate', minDate);
-                  return;
-                }
+            // 과거 날짜 방지
+            if (iso < minDate) {
+              toast.error('과거 날짜는 선택할 수 없습니다.');
+              setField('recieveDate', minDate);
+              return;
+            }
 
-                setField('recieveDate', v);
-              }}
-            />
-          );
-        })()}
+            setField('recieveDate', iso);
+          }}
+        />
       </div>
 
       {/* 품목 라인 */}
@@ -195,9 +182,13 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
               className='grid grid-cols-12 px-3 py-2 text-sm border-t items-center'
             >
               <div className='col-span-4 truncate'>{it.productName ?? '-'}</div>
-              <div className='col-span-2 text-center'>{formatType(it.type) ?? '-'}</div>
+              <div className='col-span-2 text-center'>
+                {formatType(it.type) ?? '-'}
+              </div>
               <div className='col-span-2 text-center'>{it.brand ?? '-'}</div>
-              <div className='col-span-2 text-center'>{it.safetyStock ?? 0}</div>
+              <div className='col-span-2 text-center'>
+                {it.safetyStock ?? 0}
+              </div>
 
               <div className='col-span-2'>
                 <Input
@@ -216,7 +207,7 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
                         items: prevItems.map((x) =>
                           String(x.orderId) === String(it.orderId)
                             ? { ...x, count: next }
-                            : x
+                            : x,
                         ),
                       };
                     });
@@ -238,7 +229,12 @@ const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
       </div>
 
       <div className='flex justify-end gap-2'>
-        <Button onClick={submit} disabled={submitDisabled}>수정 저장</Button>
+        <Button
+          onClick={submit}
+          disabled={submitDisabled}
+        >
+          수정 저장
+        </Button>
       </div>
     </div>
   );

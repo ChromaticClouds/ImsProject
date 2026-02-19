@@ -50,7 +50,7 @@ public class PurchaseOrderPdfService {
         int amount = unitPrice * qty;
 
         return new PurchaseOrderPdfContent.Line(
-            p.getId(), p.getName(), p.getType(), p.getBrand(), qty, unitPrice, amount
+            p.getId(), p.getName(), p.getType().format(), p.getBrand(), qty, unitPrice, amount
         );
     }
 

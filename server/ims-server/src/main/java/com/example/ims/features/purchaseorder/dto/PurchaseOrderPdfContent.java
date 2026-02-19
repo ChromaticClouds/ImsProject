@@ -14,7 +14,7 @@ public record PurchaseOrderPdfContent(
     public record Line(
         Long productId,
         String productName,
-        ProductType productType,
+        String productType,
         String brand,
         int quantity,
         int unitPrice,

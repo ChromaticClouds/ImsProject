@@ -8,6 +8,8 @@ import { useCompleteOutbound } from '../hooks/use-complete-outbound.js';
 import { Button } from '@/components/ui/button.js';
 import { Textarea } from '@/components/ui/textarea.js';
 import { Badge } from '@/components/ui/badge.js';
+import { toast } from 'sonner';
+import { ObRegisterDialog } from './ob-register-dialog.jsx';
 
 const MEMO_MAX = 300;
 const toMoney = (n) => Number(n || 0).toLocaleString();
@@ -105,11 +107,9 @@ export function OutboundRegisterPage() {
     if (!items.length) return setError('해당 수주번호에 품목이 없습니다.');
     if (hasShortage) return setError('재고 부족 품목이 있어 출고 처리할 수 없습니다.');
 
-    const ok = window.confirm(`총 ${totals.n}종, ${totals.m}개의 제품을 출고 확정하시겠습니까?`);
-    if (!ok) return;
-
     try {
       await mutateAsync({ orderNumber, memo });
+      toast.success('출고 처리가 완료됐습니다.');
       nav('/dashboard/outbounds/pending'); // 필요하면 너 라우트에 맞게 수정
     } catch (e) {
       setError(/** @type {any} */ (e)?.message || '출고 완료 처리 실패');
@@ -288,13 +288,12 @@ export function OutboundRegisterPage() {
               </div>
 
               <div className="rounded-2xl border bg-secondary p-5">
-                <Button
-                  onClick={handleComplete}
-                  disabled={submitDisabled}
-                  className="w-full text-base h-11"
-                >
-                  {isPending ? '처리중...' : '출고 완료'}
-                </Button>
+                <ObRegisterDialog 
+                  totals={totals}
+                  submitDisabled={submitDisabled}
+                  isPending={isPending}
+                  handleComplete={handleComplete}
+                />
 
                 <Button
                   variant="outline"

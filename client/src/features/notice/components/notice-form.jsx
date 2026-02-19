@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 
 /**
  * @typedef {object} NoticeFormValues
@@ -47,7 +48,7 @@ export const NoticeForm = ({
     const c = content.trim();
 
     if (!t || !c) {
-      window.alert('미입력되었습니다');
+      toast.error('미입력되었습니다');
       return;
     }
 

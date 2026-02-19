@@ -28,7 +28,7 @@ import { PURCHASE_ORDER_TABLE_HEADER } from '../../constants/index.js';
 import { usePoFormContext } from '../../providers/po-post-form-provder.jsx';
 import { Input } from '@/components/ui/input.js';
 import { CircleXIcon } from 'lucide-react';
-import { FieldError } from '@/components/ui/field.js';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 
 export const ToPurchaseProductList = () => {
   const form = usePoFormContext();
@@ -68,7 +68,18 @@ export const ToPurchaseProductList = () => {
                   products.map((product, index) => (
                     <TableRow key={`${product.id}-${index}`}>
                       <TableCell className='text-center w-100'>
-                        {product.name}
+                        <div className='flex items-center gap-6'>
+                          <Avatar className='rounded w-10 h-10'>
+                            <AvatarImage
+                              src={product.imageUrl}
+                              alt={product.name}
+                            />
+                            <AvatarFallback>
+                              {product.name?.slice(0, 2)}
+                            </AvatarFallback>
+                          </Avatar>
+                          {product.name}
+                        </div>
                       </TableCell>
 
                       <TableCell className='text-center w-20'>
@@ -79,27 +90,28 @@ export const ToPurchaseProductList = () => {
                               !countField.state.meta.isValid;
 
                             return (
-                                <Tooltip open>
-                                  <TooltipTrigger asChild>
-                                    <Input
-                                      value={countField.state.value ?? ''}
-                                      onChange={(e) => {
-                                        countField.handleChange(
-                                          Number(e.target.value) || 0,
-                                        );
-                                      }}
-                                      aria-invalid={isInvalid}
-                                      className='w-20 text-center'
-                                    />
-                                  </TooltipTrigger>
+                              <Tooltip open>
+                                <TooltipTrigger asChild>
+                                  <Input
+                                    value={countField.state.value ?? ''}
+                                    onChange={(e) => {
+                                      countField.handleChange(
+                                        Number(e.target.value) || 0,
+                                      );
+                                    }}
+                                    aria-invalid={isInvalid}
+                                    className='w-20 text-center'
+                                  />
+                                </TooltipTrigger>
 
-                                  {isInvalid && (
-                                    <TooltipContent className='bg-muted border'>
-                                      <p className='text-destructive'>{countField.state.meta.errors[0]?.message}</p>
-                                    </TooltipContent>
-                                  )}
-                                </Tooltip>
-      
+                                {isInvalid && (
+                                  <TooltipContent className='bg-muted border'>
+                                    <p className='text-destructive'>
+                                      {countField.state.meta.errors[0]?.message}
+                                    </p>
+                                  </TooltipContent>
+                                )}
+                              </Tooltip>
                             );
                           }}
                         </form.Field>
@@ -116,6 +128,7 @@ export const ToPurchaseProductList = () => {
                           onClick={() => {
                             const current =
                               form.getFieldValue('products') ?? [];
+
                             form.setFieldValue(
                               'products',
                               current.filter((_, i) => i !== index),

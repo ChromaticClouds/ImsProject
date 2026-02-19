@@ -1,4 +1,5 @@
 import z from 'zod';
+import { subDays } from 'date-fns';
 
 export const productAmountSchema = z.object({
   amount: z
@@ -6,6 +7,8 @@ export const productAmountSchema = z.object({
     .int('정수를 입력해주세요')
     .positive('수량은 0보다 커야합니다'),
 }).loose();
+
+const yesterday = () => subDays(new Date(), 1);
 
 export const receiveOrderFormSchema = z.object({
   userId: z.number()
@@ -15,7 +18,7 @@ export const receiveOrderFormSchema = z.object({
     .nullable('판매처를 선택해주세요'),
 
   receiveDate: z.date('날짜를 선택해주세요')
-    .min(new Date(), '과거 날짜는 선택 불가능합니다'),
+    .min(yesterday(), '과거 날짜는 선택 불가능합니다'),
 
   products: z
     .array(productAmountSchema)

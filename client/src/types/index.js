@@ -348,3 +348,22 @@
  * @property {PageMetaData} page
  * @property {OrderListSummary} summary
  */
+
+/**
+ * 입고 등록 품목 스키마
+ * @typedef {object} OrderRegisterProduct
+ * @property {string} brand
+ * @property {number} currentStock
+ * @property {string} imageUrl
+ * @property {number} lineAmount
+ * @property {number} orderId
+ * @property {number} orderQty
+ * @property {number} productId
+ * @property {string} productName
+ * @property {number} purchasePrice
+ * @property {string} qty
+ * @property {number} salePrice
+ * @property {ProductType} type
+ * @property {number} vendorItemId
+ * @property {number} _baseQty
+ */

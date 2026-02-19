@@ -10,6 +10,7 @@ import {
   fetchPurchaseOrder,
   updatePurchaseOrder,
 } from '@/features/purchase-order/api/index.js';
+import { toast } from 'sonner';
 
 export const PurchaseOrderEdit = () => {
   const navigate = useNavigate();
@@ -95,8 +96,14 @@ export const PurchaseOrderEdit = () => {
   }
 
   const handleSubmit = async (payload) => {
-    await updatePurchaseOrder(orderNumber, payload);
-    navigate('..'); // 목록으로
+    try {
+      await updatePurchaseOrder(orderNumber, payload);
+      toast.success('발주서가 수정되었습니다');
+      navigate('..'); // 목록으로
+    } catch (err) {
+      console.error(err);
+      toast.error('발주서 수정에 실패했습니다');
+    }
   };
 
   return (

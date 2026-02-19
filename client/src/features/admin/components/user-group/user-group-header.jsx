@@ -18,14 +18,43 @@ import {
  * Assets
  */
 import { SearchIcon } from 'lucide-react';
+import { useState } from 'react';
 
 /**
  * Hooks
  */
-import { useUserList } from '@/features/admin/providers/user-provider.jsx';
+import { useSearchParams } from 'react-router-dom';
+import { useGetUserGroup } from '../../hooks/use-get-user-group.js';
+import { useDebounce } from '@/hooks/use-debounce.js';
+import { useEffect } from 'react';
 
 export const UserGroupHeader = () => {
-  const { search, setSearch } = useUserList();
+  const [params, setParams] = useSearchParams();
+
+  const searchParam = params.get('search') ?? '';
+
+  const [search, setSearch] = useState(searchParam);
+  const debounced = useDebounce(search, 500);
+
+  useEffect(() => {
+    setSearch(searchParam);
+  }, [searchParam]);
+
+  useEffect(() => {
+    const next = debounced.trim();
+
+    if (next === searchParam) return;
+
+    setParams((prev) => {
+      const p = new URLSearchParams(prev);
+
+      if (next) p.set('search', next);
+      else p.delete('search');
+      p.set('page', '1');
+
+      return p;
+    });
+  }, [debounced, searchParam, setParams]);
 
   return (
     <CardHeader className='border-b gap-0'>
@@ -34,7 +63,7 @@ export const UserGroupHeader = () => {
           <CardTitle>조직도 목록</CardTitle>
           <CardDescription>사내 모든 임원들을 확인하세요</CardDescription>
         </div>
-        <InputGroup className='w-100'>
+        <InputGroup className='w-80'>
           <InputGroupInput
             placeholder='사용자명 검색'
             value={search}

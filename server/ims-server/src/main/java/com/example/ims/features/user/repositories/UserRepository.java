@@ -20,12 +20,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
 	SELECT u FROM User u
 	WHERE u.status NOT IN :excluded
-	AND (:search IS NULL OR u.name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')))
+	AND (
+	   TRIM(:search) = ''
+	   OR (
+		 u.name IS NOT NULL
+		 AND LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%'))
+	   )
+	)
 	""")
 	Page<User> findUsers(@Param("excluded") List<UserStatus> excluded,
 	                     @Param("search") String search,
 	                     Pageable pageable);
-
 
     List<User> findByUserRoleIn(List<UserRole> roles);
 

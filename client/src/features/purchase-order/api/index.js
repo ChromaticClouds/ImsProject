@@ -78,7 +78,10 @@ export async function sendPurchaseOrder(orderNumber) {
     .catch(() => null);
 }
 
-/** 일괄 전송 @param {string[]} orderNumbers */
+/** 일괄 전송 
+ * @param {string[]} orderNumbers
+ * @returns {Promise<ApiResponse>} 
+ */
 export async function bulkSendPurchaseOrders(orderNumbers) {
   return await api
     .post('api/purchase-orders/send', { hooks, json: { orderNumbers } })

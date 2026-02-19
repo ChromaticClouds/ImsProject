@@ -11,6 +11,16 @@ export const fetchUsers = (page, keyword) =>
     .json();
 
 /**
+ * @param {number} [page]
+ * @param {string} [keyword]
+ * @returns {Promise<ApiResponse<PageResponse<User>>>}
+ */
+export const fetchUserGroup = (page, keyword) =>
+  api
+    .get('user/group/list', { searchParams: { page, search: keyword }, hooks })
+    .json();
+
+/**
  * @param {number} userId
  * @param {{ rank?: string; role?: string, status?: string, name?: string }} body
  */

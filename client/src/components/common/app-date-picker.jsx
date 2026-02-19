@@ -18,14 +18,17 @@ import {
  * Assets
  */
 import { CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils.js';
 
 /**
- * @param {{ date?: Date, setDate?: (date: Date) => void, disabled?: boolean }} props
+ * @param {{ date?: Date, setDate?: (date: Date) => void, disabled?: boolean, className?: string, min?: Date }} props
  */
 export const AppDatePicker = ({
   date = new Date(),
   setDate = () => {},
   disabled = false,
+  min,
+  className
 }) => {
   return (
     <Popover>
@@ -34,7 +37,7 @@ export const AppDatePicker = ({
           variant='outline'
           data-empty={!date}
           disabled={disabled}
-          className='data-[empty=true]:text-muted-foreground md:w-60 w-full justify-start text-left font-normal'
+          className={cn(`${className} data-[empty=true]:text-muted-foreground justify-start text-left font-normal`)}
         >
           <CalendarIcon />
           {date ? format(date, 'PPP', { locale: ko }) : <span>날짜를 선택해주세요</span>}
@@ -49,6 +52,7 @@ export const AppDatePicker = ({
           mode='single'
           selected={date}
           onSelect={setDate}
+          disabled={{ before: min }}
         />
       </PopoverContent>
     </Popover>

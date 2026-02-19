@@ -1,4 +1,3 @@
-
 // @ts-check
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, CartesianGrid, LabelList } from 'recharts';
@@ -40,9 +39,9 @@ function makeValueLabel(isMobile) {
       <text
         x={cx}
         y={cy}
-        textAnchor="middle"
+        textAnchor='middle'
         fontSize={isMobile ? 10 : 12}
-        fill="hsl(var(--foreground))"
+        fill='var(--foreground)'
         opacity={0.9}
       >
         {n.toLocaleString()}
@@ -59,7 +58,7 @@ export const InOutboundChart = ({ data }) => {
 
   const BAR_WIDTH = 32;
   const GAP = isMobile ? 16 : 32;
-  const chartWidth = Math.max(1, data.length) * (BAR_WIDTH + GAP);
+  const chartWidth = Math.max(1, data.length) * (BAR_WIDTH + GAP * 3);
 
   // ✅ 라벨이 너무 빽빽하면 여기 기준값을 올려서 표시 개수 줄이기
   const MIN_LABEL_VALUE = isMobile ? 5 : 1;
@@ -73,63 +72,77 @@ export const InOutboundChart = ({ data }) => {
     return n; // 실제 텍스트는 ValueLabel에서 toLocaleString 처리
   };
 
+  /** @param {string} label */
+  const formatter = (label) =>
+    label.length > 10 ? label.slice(0, 10) + '...' : label;
 
-  
   return (
-    <div className="h-full w-full overflow-x-auto flex items-star">
+    <div className='h-full w-full overflow-x-auto flex'>
       <ChartContainer
         config={inboundOutboundConfig}
-        className="h-70 w-full"
+        className='h-60 w-full'
         style={{ minWidth: chartWidth }}
       >
         <BarChart
           data={data}
           barSize={isMobile ? 12 : 24}
           barCategoryGap={16}
-          margin={{ top: 18, right: 20, left: 0, bottom: 30 }} // top을 조금 늘려 라벨 공간 확보
+          margin={{ top: 20, right: 0, left: 0, bottom: 0 }} // top을 조금 늘려 라벨 공간 확보
         >
-
-
           <CartesianGrid vertical={false} />
-          <XAxis dataKey="item" tickLine={false} axisLine={false} angle={-25} textAnchor='end' height={60} />
+          <XAxis
+            dataKey='item'
+            tickLine={false}
+            axisLine={false}
+            textAnchor='middle'
+            height={10}
+            tickFormatter={formatter}
+          />
 
           <ChartTooltip
             content={({ active, payload, label }) => {
               if (!active || !payload?.length) return null;
               const p = payload?.[0]?.payload;
               return (
-                <div className="rounded-md border bg-background p-2 text-sm shadow">
-                  <div className="font-semibold mb-1">{label}</div>
-                  <div className="flex flex-col gap-0.5">
+                <div className='rounded-md border bg-background p-2 text-sm shadow'>
+                  <div className='font-semibold mb-1'>{label}</div>
+                  <div className='flex flex-col gap-0.5'>
                     <div>입고: {Number(p?.inbound ?? 0).toLocaleString()}</div>
                     <div>출고: {Number(p?.outbound ?? 0).toLocaleString()}</div>
-                    <div className="font-semibold">
+                    <div className='font-semibold'>
                       합계: {Number(p?.total ?? 0).toLocaleString()}
                     </div>
                   </div>
                 </div>
-                
               );
             }}
           />
 
           <ChartLegend content={<ChartLegendContent />} />
 
-          <Bar dataKey="inbound" fill="var(--chart-1)" radius={[6, 6, 0, 0]}>
+          <Bar
+            dataKey='inbound'
+            fill='var(--chart-1)'
+            radius={[6, 6, 0, 0]}
+          >
             {/* ✅ 막대 위 데이터 라벨 */}
             <LabelList
-              dataKey="inbound"
-              position="top"
+              dataKey='inbound'
+              position='top'
               formatter={labelFormatter}
               content={<ValueLabel />}
             />
           </Bar>
 
-          <Bar dataKey="outbound" fill="var(--chart-2)" radius={[6, 6, 0, 0]}>
+          <Bar
+            dataKey='outbound'
+            fill='var(--chart-2)'
+            radius={[6, 6, 0, 0]}
+          >
             {/* ✅ 막대 위 데이터 라벨 */}
             <LabelList
-              dataKey="outbound"
-              position="top"
+              dataKey='outbound'
+              position='top'
               formatter={labelFormatter}
               content={<ValueLabel />}
             />

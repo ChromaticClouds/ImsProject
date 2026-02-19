@@ -32,7 +32,12 @@ export const PoDeleteDialog = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>취소</AlertDialogCancel>
-          <AlertDialogAction>삭제</AlertDialogAction>
+          <AlertDialogAction
+            variant='outline'
+            className='text-destructive hover:text-destructive'
+          >
+            삭제
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

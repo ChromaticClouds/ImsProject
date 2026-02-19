@@ -53,6 +53,20 @@ public class UserService {
         return PageResponse.from(users.map(UserListResponse::from));
     }
 
+    public PageResponse<UserListResponse> getUserGroupList(Pageable pageable, String search) {
+        List<UserStatus> excluded =
+            List.of(UserStatus.DELETED, UserStatus.INACTIVE, UserStatus.PENDING);
+
+        Page<User> users =
+            repository.findUsers(
+                excluded,
+                normalize(search),
+                pageable
+            );
+
+        return PageResponse.from(users.map(UserListResponse::from));
+    }
+
     @Transactional
     public void updateUser(Long id, UpdateUserRequest request) {
         User user = repository.findById(id)

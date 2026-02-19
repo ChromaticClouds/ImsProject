@@ -84,9 +84,9 @@ public class PurchaseOrderController {
 
     // 삭제 (bulk)
     @PostMapping("/delete")
-    public ResponseEntity<Void> bulkDelete(@Valid @RequestBody OrderNumbersRequest req) {
+    public ResponseEntity<ApiResponse<Void>> bulkDelete(@Valid @RequestBody OrderNumbersRequest req) {
         service.bulkDelete(req.getOrderNumbers());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success("일괄 삭제되었습니다."));
     }
 }
 

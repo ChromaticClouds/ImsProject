@@ -15,6 +15,25 @@ import { ReceiveOrderDetail } from './receive-order-detail.jsx';
 import { useAssignManager } from '@/features/receive-order/hooks/use-assign-manager.js';
 import { useRoListContext } from '@/features/receive-order/providers/ro-list-provider.jsx';
 
+/**
+ * 날짜
+ * @param {string | null | undefined} dateStr
+ */
+const formatDateWithDay = (dateStr) => {
+  if (!dateStr) return '-';
+
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return dateStr;
+
+  const week = ['일', '월', '화', '수', '목', '금', '토'];
+  const day = week[d.getDay()];
+
+  // YYYY-MM-DD만 표시 (datetime 잘림 방지)
+  const s = String(dateStr);
+  const dateOnly = s.length >= 10 ? s.slice(0, 10) : s;
+
+  return `${dateOnly} (${day})`;
+};
 export const ReceiveOrderList = () => {
   const { content = [] } = useRoListContext();
   const { mutation } = useAssignManager();
@@ -44,13 +63,13 @@ export const ReceiveOrderList = () => {
                 <TableCell className='text-muted-foreground font-mono'>
                   {o.orderNumber}
                 </TableCell>
-                <TableCell>{o.orderDate}</TableCell>
+                <TableCell>{formatDateWithDay(o.orderDate)}</TableCell>
                 <TableCell>{o.vendorName}</TableCell>
                 <TableCell>{o.bossName}</TableCell>
                 <TableCell>{o.userName}</TableCell>
                 <ReceiveOrderDetail order={o} />
-                <TableCell>{o.totalPrice}</TableCell>
-                <TableCell>{o.receiveDate}</TableCell>
+                <TableCell>{o.totalPrice?.toLocaleString()}</TableCell>
+                <TableCell>{formatDateWithDay(o.receiveDate)}</TableCell>
                 <TableCell>
                   <div className='w-full h-full flex justify-center items-center'>
                     <AssignOutboundManager

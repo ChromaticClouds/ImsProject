@@ -206,17 +206,17 @@ export function VendorCreatePage() {
     });
 
     if (!isValidRequired) {
-      alert('필수 입력값을 확인해주세요.');
+      toast.error('필수 입력값을 확인해주세요.');
       return;
     }
 
     if (form.type === 'Supplier') {
       if (selectedItems.length === 0) {
-        alert('공급처는 품목을 1개 이상 선택해야 합니다.');
+        toast.error('공급처는 품목을 1개 이상 선택해야 합니다.');
         return;
       }
       if (selectedItems.some((x) => !x.unitPrice || x.unitPrice <= 0)) {
-        alert('공급처는 선택된 모든 품목의 단가를 1원 이상 입력해야 합니다.');
+        toast.error('공급처는 선택된 모든 품목의 단가를 1원 이상 입력해야 합니다.');
         return;
       }
     }

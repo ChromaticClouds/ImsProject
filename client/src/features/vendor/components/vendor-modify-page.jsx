@@ -192,7 +192,7 @@ export function VendorModifyPage() {
       queryClient.invalidateQueries({ queryKey: ['items-search'] });
     } catch (e) {
       console.error(e);
-      alert('품목 삭제 중 오류가 발생했습니다.');
+      toast.error('품목 삭제 중 오류가 발생했습니다.');
     }
   };
 
@@ -207,15 +207,15 @@ export function VendorModifyPage() {
     });
 
     if (!isValidRequired) {
-      alert('미입력되었습니다');
+      toast.error('미입력되었습니다');
       return;
     }
     if (form.type === 'Supplier' && !isValidSupplierItems) {
-      alert('공급처는 품목 1개 이상 등록하고 단가를 모두 입력해야 합니다.');
+      toast.error('공급처는 품목 1개 이상 등록하고 단가를 모두 입력해야 합니다.');
       return;
     }
     if (!Number.isFinite(vendorId)) {
-      alert('잘못된 거래처 ID입니다.');
+      toast.error('잘못된 거래처 ID입니다.');
       return;
     }
 

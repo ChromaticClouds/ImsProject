@@ -29,7 +29,7 @@ export function VendorDetailPage() {
 
   const onDelete = async () => {
     if (!Number.isFinite(vendorId) || vendorId <= 0) {
-      alert('잘못된 거래처 ID입니다.');
+      toast.error('잘못된 거래처 ID입니다.');
       return;
     }
 

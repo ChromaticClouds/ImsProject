@@ -7,6 +7,8 @@ import { fetchUsers } from "../api/index.js";
 export const useUsers = (page, keyword) => {
   return useQuery({
     queryKey: ['users', page, keyword],
-    queryFn: () => fetchUsers(page, keyword)
+    queryFn: () => fetchUsers(page, keyword),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }

@@ -7,6 +7,7 @@ export const afterResponseHooks = [
   async (request, options, response) => {
     // accessToken 만료
     if (response.status !== 401) {
+      console.log('unauthorized')
       return response;
     }
 

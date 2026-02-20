@@ -7,6 +7,6 @@ public class UnauthorizedException extends BusinessException {
 	private static final long serialVersionUID = 1L;
 
 	public UnauthorizedException() {
-		super(AuthError.UNAUTORIZED);
+		super(AuthError.UNAUTHORIZED);
 	}
 }

@@ -1,11 +1,14 @@
 package com.example.ims.global.exceptions;
 
+import com.example.ims.features.auth.exceptions.ForbiddenException;
 import com.example.ims.features.auth.exceptions.UnauthorizedException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -42,7 +45,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(ApiResponse.fail(e.getMessage()));
     }
-    
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiResponse<Void>> handle(ForbiddenException e) {
+        ResponseCookie expired = ResponseCookie.from("refreshToken", "")
+            .path("/")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("Lax")
+            .maxAge(0)
+            .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .header(HttpHeaders.SET_COOKIE, expired.toString())
+            .body(ApiResponse.fail(e.getMessage()));
+    }
 }
 
 

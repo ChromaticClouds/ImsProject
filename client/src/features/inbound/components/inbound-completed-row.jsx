@@ -45,23 +45,21 @@ export function InboundCompletedRow(props) {
   const fmt = (n) => Number(n || 0).toLocaleString();
 
   /**
- * 날짜 + 요일 표시 (예: 2026-02-18 (수))
- * @param {string | null | undefined} dateStr
- */
-function formatDateWithDay(dateStr) {
-  if (!dateStr) return '-';
+   * 날짜 + 요일 표시 (예: 2026-02-18 (수))
+   * @param {string | null | undefined} dateStr
+   */
+  function formatDateWithDay(dateStr) {
+    if (!dateStr) return '-';
 
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return dateStr; // 파싱 실패 시 원본 유지
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return dateStr;
 
-  const week = ['일', '월', '화', '수', '목', '금', '토'];
-  const day = week[d.getDay()];
+    const week = ['일', '월', '화', '수', '목', '금', '토'];
+    const day = week[d.getDay()];
+    const dateOnly = dateStr.length >= 10 ? dateStr.slice(0, 10) : dateStr;
 
-  // ISO / datetime 대응해서 날짜 부분만 잘라줌
-  const dateOnly = dateStr.length >= 10 ? dateStr.slice(0, 10) : dateStr;
-
-  return `${dateOnly} (${day})`;
-}
+    return `${dateOnly} (${day})`;
+  }
 
   const toggle = () => setIsOpen((v) => !v);
   const close = () => setIsOpen(false);
@@ -95,6 +93,7 @@ function formatDateWithDay(dateStr) {
   }, [isOpen]);
 
   const statusText = row.statusText ?? '입고 완료';
+  const isChanged = Number(row.qtyChanged ?? 0) === 1; // 
 
   return (
     <tr className="border-b last:border-0 hover:bg-muted/30 transition-colors">
@@ -154,6 +153,7 @@ function formatDateWithDay(dateStr) {
                 </div>
               ) : (
                 <div className="rounded-lg border bg-background shadow-lg">
+                
                   <InboundPendingItemsDropdown items={items} qtyLabel="입고수량" />
                 </div>
               )}
@@ -167,13 +167,14 @@ function formatDateWithDay(dateStr) {
         {fmt(row.totalAmount)}원
       </td>
 
+      {/* 변경됨 배지 */}
       <td className="py-3 text-center">
-          {Number(row.qtyChanged ?? 0) === 1 ? (
-            <Badge variant="secondary" className="bg-amber-100 text-amber-700">
-              변경됨
-            </Badge>
-          ) : null}      </td>
+        {isChanged ? (
+          <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+            변경됨
+          </Badge>
+        ) : null}
+      </td>
     </tr>
   );
 }
-

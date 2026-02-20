@@ -35,7 +35,7 @@ export function VendorSearch({
   const [inputValue, setInputValue] = useState(search.keyword ?? '');
   const [isComposing, setIsComposing] = useState(false);
 
-  // ✅ SelectItem은 '' value를 금지 → ''는 ALL_VALUE로 치환해서 렌더
+  // SelectItem
   const normalizedTypeOptions = useMemo(() => {
     return typeOptions.map((opt) => ({
       ...opt,
@@ -43,12 +43,12 @@ export function VendorSearch({
     }));
   }, [typeOptions]);
 
-  // ✅ store 값(undefined/Supplier/Seller) -> Select 값(ALL_VALUE/Supplier/Seller)
+  // store 값(undefined/Supplier/Seller) -> Select 값(ALL_VALUE/Supplier/Seller)
   const selectTypeValue = search.type ? String(search.type) : ALL_VALUE;
 
   /** @param {string} v */
   const onValueChangeType = (v) => {
-    // ✅ Select 값(ALL_VALUE) -> store 값(undefined)
+    
     const nextType = v === ALL_VALUE ? undefined : v;
     setSearch({ type: nextType, page: 1 });
   };
@@ -87,7 +87,7 @@ export function VendorSearch({
             {normalizedTypeOptions.map((opt) => (
               <SelectItem
                 key={opt.value}
-                value={opt.value} // ✅ 절대 '' 안 들어감
+                value={opt.value} // 
                 className="
                   rounded-lg
                   text-sm

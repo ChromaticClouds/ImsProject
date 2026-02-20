@@ -531,7 +531,7 @@ export function VendorModifyPage() {
                       {/* selected list */}
                       {selectedItems.length > 0 ? (
                         <div className='overflow-hidden rounded-xl border'>
-                          {/* ✅ 해결 1: 단가 칸 + 삭제 버튼을 같은 칸(col-span-5)으로 합치기 */}
+                          
                           <div className='grid grid-cols-12 bg-muted/40 px-3 py-2 text-xs font-medium text-muted-foreground'>
                             <div className='col-span-7'>품목</div>
                             <div className='col-span-5 text-right'>단가</div>

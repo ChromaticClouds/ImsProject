@@ -174,71 +174,123 @@ public class InboundQueryService {
         return mapper.selectCompletedItemsByOrderNumber(orderNumber.trim());
     }
 
+    
+    
+    
     @Transactional
-    public int markCompleteByOrderNumberAndWriteHistory(String orderNumber, PendingUpdateRequest req, Long loginUserId) {
-        if (!StringUtils.hasText(orderNumber)) throw new IllegalArgumentException("orderNumber 필수");
-//        if (loginUserId == null || loginUserId <= 0) throw new IllegalArgumentException("로그인 userId 없음");
+    public int markCompleteByOrderNumberAndWriteHistory(
+        String orderNumber,
+        PendingUpdateRequest req,
+        Long loginUserId
+    ) {
+        if (!StringUtils.hasText(orderNumber)) {
+            throw new IllegalArgumentException("orderNumber 필수");
+        }
 
-        String on = orderNumber.trim();
-        
+        final String on = orderNumber.trim();
+
+        // 1) 요청 수량 맵 (orderId -> receivedQty)
+        final Map<Long, Integer> receivedQtyMap = new HashMap<>();
         if (req != null && req.getItems() != null) {
             for (PendingUpdateRequest.Item it : req.getItems()) {
-                if (it.getOrderId() == null || it.getOrderId() <= 0) continue;
-                Integer qty = it.getOrderQty();
-                if (qty == null || qty <= 0) throw new IllegalArgumentException("입고 수량은 1 이상 정수");
+                if (it == null) continue;
 
-                int updated = mapper.updateOrderQty(it.getOrderId(), qty);
-                if (updated != 1) throw new IllegalArgumentException("수량 수정 실패: orderId=" + it.getOrderId());
+                Long orderId = it.getOrderId();
+                if (orderId == null || orderId <= 0) continue;
+
+                Integer qty = it.getOrderQty();
+                if (qty == null || qty <= 0) {
+                    throw new IllegalArgumentException("입고 수량은 1 이상 정수여야 합니다. orderId=" + orderId);
+                }
+                receivedQtyMap.put(orderId, qty);
             }
         }
 
+        // 2) 완료 대상 rows 조회 (INBOUND_PENDING만)
         List<InboundCompleteOrderRow> rows = mapper.selectOrdersForInboundCompleteByOrderNumber(on);
         if (rows == null || rows.isEmpty()) {
             throw new IllegalArgumentException("입고 완료 대상이 없습니다(이미 완료됐거나 발주번호 없음): " + on);
         }
-        
+
+        // 3) history_lot userId 결정
         Long fallbackUserId = rows.get(0).getUserId();
         Long actorUserId = (loginUserId != null && loginUserId > 0) ? loginUserId : fallbackUserId;
-
         if (actorUserId == null || actorUserId <= 0) {
             throw new IllegalArgumentException("history_lot userId를 결정할 수 없습니다. orderNumber=" + on);
         }
 
-        // ✅ history_lot은 로그인 유저
+        // 4) history_lot 생성
         HistoryLot lot = new HistoryLot();
-        lot.setUserId(loginUserId);
+        lot.setUserId(actorUserId);
         lot.setStatus("INBOUND");
         lot.setMemo(req != null && StringUtils.hasText(req.getMemo()) ? req.getMemo().trim() : null);
 
         int lotInserted = mapper.insertHistoryLot(lot);
-        if (lotInserted != 1 || lot.getId() == null) throw new IllegalStateException("history_lot 생성 실패");
+        if (lotInserted != 1 || lot.getId() == null) {
+            throw new IllegalStateException("history_lot 생성 실패");
+        }
         Long lotId = lot.getId();
 
-        // history + stock 그대로
+        // 5) history + stock + (중요) qty_changed 판정/세팅
         for (InboundCompleteOrderRow r : rows) {
+            if (r == null) continue;
+
+            Long orderId = r.getOrderId();
             Long vendorItemId = r.getVendorItemId();
             if (vendorItemId == null || vendorItemId <= 0) continue;
 
-            int qty = (r.getOrderQty() == null ? 0 : r.getOrderQty().intValue());
-            if (qty <= 0) continue;
+            // DB 발주수량 (orders.count)
+            int orderCount = 0;
+            if (orderId != null && orderId > 0) {
+                Integer c = mapper.selectOrderCountById(orderId);
+                orderCount = (c == null ? 0 : c.intValue());
+            } else {
+                // 혹시 orderId가 비정상으로 안 오면 fallback
+                orderCount = (r.getOrderQty() == null ? 0 : r.getOrderQty().intValue());
+            }
 
+            // 이번 입고수량 (req 우선, 없으면 발주수량 fallback)
+            int receivedQty = 0;
+            if (orderId != null && orderId > 0) {
+                receivedQty = receivedQtyMap.getOrDefault(orderId, orderCount);
+            } else {
+                receivedQty = orderCount;
+            }
+
+            if (receivedQty <= 0) continue;
+
+            // ✅ 배지용: 입고수량 != 발주수량이면 qty_changed=1
+            if (orderId != null && orderId > 0 && receivedQty != orderCount) {
+                mapper.markQtyChangedByOrderId(orderId);
+            }
+
+            // productId
             Long productId = mapper.selectProductIdByVendorItemId(vendorItemId);
-            if (productId == null || productId <= 0) throw new IllegalArgumentException("productId 없음. vendorItemId=" + vendorItemId);
+            if (productId == null || productId <= 0) {
+                throw new IllegalArgumentException("productId 없음. vendorItemId=" + vendorItemId);
+            }
 
+            // before/after (vendorItem 기준 최신 after_count)
             Integer latestAfter = mapper.selectLatestAfterCountForUpdate(vendorItemId);
             int beforeCount = (latestAfter == null ? 0 : latestAfter.intValue());
-            int afterCount = beforeCount + qty;
+            int afterCount = beforeCount + receivedQty;
 
+            // history insert
             mapper.insertHistoryRow(lotId, vendorItemId, productId, beforeCount, afterCount);
-            mapper.upsertStockByProductId(productId, qty);
+
+            // stock upsert
+            mapper.upsertStockByProductId(productId, receivedQty);
         }
 
-        
-        int updated = mapper.markInboundCompleteByOrderNumber(on, loginUserId);
-        if (updated <= 0) throw new IllegalArgumentException("입고 완료 처리 실패: " + on);
+        // 6) orders 상태를 완료로 변경
+        int updated = mapper.markInboundCompleteByOrderNumber(on, actorUserId);
+        if (updated <= 0) {
+            throw new IllegalArgumentException("입고 완료 처리 실패: " + on);
+        }
 
         return updated;
     }
+
 
 
     // -----------------------------------------------------------------------------------------

@@ -126,7 +126,7 @@ function OutboundCompletedItemsDropdown({ items }) {
                 key={it.orderId}
                 className="grid grid-cols-12 items-center gap-2 px-3 py-2 text-sm hover:bg-muted/30 transition-colors"
               >
-                {/* ✅ 이미지 + 품목 */}
+                {/* 이미지 + 품목 */}
                 <div className="col-span-8 min-w-0 flex items-center gap-3">
                   <ZoomImage src={it.imageUrl ?? ''} alt={it.productName ?? ''} size={40} />
 

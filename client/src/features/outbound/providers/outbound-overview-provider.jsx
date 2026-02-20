@@ -56,7 +56,7 @@ export function OutboundOverviewProvider() {
   const [search, setSearch] = useState(() => ({ from: t, to: toYMD }));
   const [error, setError] = useState('');
 
-  // ✅ 내 ID
+  // 내 ID
   const accessToken = useAuthStore((s) => s.accessToken);
   const myId = useMemo(() => getMyUserIdFromToken(accessToken), [accessToken]);
 

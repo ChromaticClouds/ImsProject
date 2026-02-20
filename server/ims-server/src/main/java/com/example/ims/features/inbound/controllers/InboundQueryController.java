@@ -78,23 +78,7 @@ public class InboundQueryController {
     }
 
     //
-//    @PatchMapping("/orders/by-number/{orderNumber}/complete")
-//    public InboundStatusUpdateResponse markCompleteByOrderNumber(
-//        @PathVariable("orderNumber") String orderNumber,
-//        @RequestBody(required = false) HistoryLot req,
-//        @AuthenticationPrincipal UserPrincipal user
-//    ) {
-//    	
-//    	Long loginUserId = (user == null? null : user.userId());
-//    	System.out.println("userdfdfdfdsfsdfsdfdsf : " + user);
-//        service.markCompleteByOrderNumberAndWriteHistory(orderNumber, req == null ? null : req.getMemo(), loginUserId);
-//
-//        return InboundStatusUpdateResponse.builder()
-//            .orderId(null)
-//            .status("INBOUND_COMPLETE")
-//            .orderDate(LocalDate.now())
-//            .build();
-//    }
+
     
     @PatchMapping("/orders/by-number/{orderNumber}/complete")
     public InboundStatusUpdateResponse markCompleteByOrderNumber(
@@ -104,10 +88,6 @@ public class InboundQueryController {
     ) {
         Long loginUserId = (user == null? null : user.userId());
 
-        // ✅ 추가: 수량 수정 먼저
-//        if (req != null && req.getItems() != null) {
-//            service.updatePendingByOrderNumber(orderNumber, req);
-//        }
 
         // 기존 로직 그대로 + memo만 추가 전달
         service.markCompleteByOrderNumberAndWriteHistory(

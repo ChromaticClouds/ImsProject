@@ -46,7 +46,6 @@ export function ZoomImage({ src, alt, size = 40 }) {
             }}
             loading="lazy"
             onError={(e) => {
-              // 깨지면 placeholder로
               e.currentTarget.src = '';
             }}
           />
@@ -131,7 +130,6 @@ export function InboundPendingItemsDropdown({ items, qtyLabel = '발주수량' }
   const formatSafety = (v) => {
     if (v == null) return '-';
     const n = Number(v);
-    // 서버가 CEIL로 줘서 정수일 가능성이 높지만, 혹시 소수로 오면 그대로 표시
     return Number.isFinite(n) ? n.toLocaleString() : String(v);
   };
 

@@ -461,11 +461,11 @@ export function VendorModifyPage() {
 
                       {/* selected list */}
                       {selectedItems.length > 0 ? (
-                        <div className="overflow-hidden rounded-xl border">
-                          <div className="grid grid-cols-12 bg-muted/40 px-3 py-2 text-xs font-medium text-muted-foreground">
-                            <div className="col-span-7">품목</div>
-                            <div className="col-span-4 text-right">단가</div>
-                            <div className="col-span-1 text-right"> </div>
+                        <div className='overflow-hidden rounded-xl border'>
+                          
+                          <div className='grid grid-cols-12 bg-muted/40 px-3 py-2 text-xs font-medium text-muted-foreground'>
+                            <div className='col-span-7'>품목</div>
+                            <div className='col-span-5 text-right'>단가</div>
                           </div>
 
                           <div className="divide-y">

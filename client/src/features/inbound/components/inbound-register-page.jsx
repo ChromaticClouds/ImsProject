@@ -141,7 +141,7 @@ export function InboundRegisterPage() {
     );
   }, [orderNumber, items]);
 
-  // ✅ 안전재고: productIds 뽑아서 조회
+  //안전재고: productIds 뽑아서 조회
   const productIds = useMemo(() => {
     const ids = editableItems
       .map((it) => Number(it.productId))
@@ -368,7 +368,7 @@ export function InboundRegisterPage() {
                           </div>
                         </div>
 
-                        {/* 현재고 + ✅ 안전재고 */}
+                        {/* 현재고 + 안전재고 */}
                         <div className='col-span-1 text-right'>
                           <div className='text-sm font-bold tabular-nums'>
                             {toMoney(it.currentStock ?? 0)}개

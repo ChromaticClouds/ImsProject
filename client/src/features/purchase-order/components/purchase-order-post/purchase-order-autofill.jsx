@@ -48,6 +48,7 @@ export const PurchaseOrderAutofill = () => {
           <AppDatePicker
             disabled
             date={new Date()}
+            className='w-60'
           />
         </FieldContainer>
       </div>

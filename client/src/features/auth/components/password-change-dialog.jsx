@@ -50,7 +50,7 @@ export const PasswordChangeDialog = () => {
       </DialogTrigger>
       <DialogContent className='w-sm'>
         <DialogHeader>
-          <DialogTitle>비밀번호를 바꿔주세요</DialogTitle>
+          <DialogTitle>비밀번호 변경</DialogTitle>
           <DialogDescription>
             현재 비밀번호와 새 비밀번호를 입력하세요.
           </DialogDescription>
@@ -133,6 +133,8 @@ export const PasswordChangeDialog = () => {
                 disabled={!canSubmit || !isTouched || isSubmitting}
                 onClick={async () => {
                   const result = await form.handleSubmit();
+                  console.log(result);
+
                   if (result?.success) {
                     setOpen(false);
                   }

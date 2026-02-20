@@ -12,6 +12,7 @@ import com.example.ims.features.product.repository.ProductRepository;
 import com.example.ims.features.user.repositories.UserRepository;
 import com.example.ims.features.vendor.dto.VendorIdentifier;
 import com.example.ims.features.vendor.entities.VendorItem;
+import com.example.ims.features.vendor.enums.VendorStatus;
 import com.example.ims.features.vendor.enums.VendorType;
 import com.example.ims.features.vendor.exceptions.VendorItemNotFoundException;
 import com.example.ims.features.vendor.repositories.VendorItemRepository;
@@ -37,7 +38,7 @@ public class PlaceOrderService {
 
     public OrderBootstrap initBootstrap() {
         List<VendorIdentifier> vendors = vendorRepository
-            .findByType(VendorType.Supplier)
+            .findByTypeAndStatusNot(VendorType.Supplier, VendorStatus.DELETED)
             .stream()
             .map(VendorIdentifier::from)
             .toList();

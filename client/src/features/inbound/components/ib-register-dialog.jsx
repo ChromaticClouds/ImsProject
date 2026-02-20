@@ -43,7 +43,7 @@ export const IbRegisterDialog = ({
           className='w-full text-base'
           disabled={submitDisabled}
         >
-          {submitting ? <Spinner /> : '입고 완료'}
+          입고 완료
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -57,7 +57,9 @@ export const IbRegisterDialog = ({
           <DialogClose asChild>
             <Button variant='outline'>취소</Button>
           </DialogClose>
-          <Button onClick={handleComplete}>입고 확정</Button>
+          <Button onClick={handleComplete}>
+            {submitting ? <Spinner /> : '입고 확정'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

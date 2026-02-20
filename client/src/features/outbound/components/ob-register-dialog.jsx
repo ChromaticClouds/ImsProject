@@ -42,7 +42,7 @@ export const ObRegisterDialog = ({
           className='w-full text-base'
           disabled={submitDisabled}
         >
-          {isPending ? <Spinner /> : '출고 완료'}
+          출고 완료
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -56,7 +56,9 @@ export const ObRegisterDialog = ({
           <DialogClose asChild>
             <Button variant='outline'>취소</Button>
           </DialogClose>
-          <Button onClick={handleComplete}>출고 확정</Button>
+          <Button onClick={handleComplete}>
+            {isPending ? <Spinner /> : '출고 확정'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

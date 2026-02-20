@@ -323,6 +323,11 @@ export function InboundRegisterPage() {
                                   변경됨
                                 </Badge>
                               )}
+                              {belowSafe ? (
+                                <Badge className='bg-red-100 text-red-700'>
+                                  안전재고 미달
+                                </Badge>
+                              ) : null}
                             </div>
                             <div className='mt-1 text-xs text-muted-foreground'>
                               {toKoreanType(it.type)} · {it.brand ?? '-'}
@@ -476,8 +481,9 @@ export function InboundRegisterPage() {
                   submitting={submitting}
                   handleComplete={handleComplete}
                 />
+
                 <Button
-                  variant='outline'
+                  variant='secondary'
                   onClick={() => nav(-1)}
                   disabled={submitting}
                   className='w-full mt-2'

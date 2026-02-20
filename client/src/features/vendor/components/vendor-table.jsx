@@ -15,7 +15,7 @@ import {
  */
 export const VendorTable = ({ vendors, onRowClick }) => {
   return (
-    <div className="rounded-2xl border bg-secondary">
+    <div className="rounded-2xl border bg-white">
       <Table>
         <TableHeader>
           <TableRow className="h-12">

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
 import { Calendar } from '@/components/ui/calendar.js';
 import { format, parseISO, isValid, differenceInCalendarDays } from 'date-fns';
+import { toast } from 'sonner';
 
 /**
  * 화면에서 쓰는 값(문자열)
@@ -53,7 +54,7 @@ export function InboundDateRangePicker({ value, onChange, disabled }) {
 
     const diff = Math.abs(differenceInCalendarDays(next.to, next.from));
     if (diff > 365) {
-      alert('기간은 최대 1년까지만 선택할 수 있습니다.');
+      toast.warning('기간은 최대 1년까지만 선택할 수 있습니다.');
       return;
     }
 

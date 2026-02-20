@@ -1,3 +1,5 @@
+
+
 // @ts-check
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +32,7 @@ function getMyUserIdFromToken(token) {
   if (!p) return null;
 
   if (p.id != null && !Number.isNaN(Number(p.id))) return Number(p.id);
-  if (p.userId != null && !Number.isNaN(Number(p.userId))) return Number(p.userId);
+  if (p.userId !=null && !Number.isNaN(Number(p.userId))) return Number(p.userId);
   if (p.sub != null && !Number.isNaN(Number(p.sub))) return Number(p.sub);
   return null;
 }
@@ -61,18 +63,16 @@ function formatDateWithDay(dateStr) {
   if (!dateStr || dateStr === '-') return '-';
 
   const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return dateStr; // 파싱 실패 시 원본 유지
+  if (Number.isNaN(d.getTime())) return dateStr;
 
   const week = ['일', '월', '화', '수', '목', '금', '토'];
   const day = week[d.getDay()];
 
-  // ISO / datetime 대응 (YYYY-MM-DD만 표시)
   const s = String(dateStr);
   const dateOnly = s.length >= 10 ? s.slice(0, 10) : s;
 
   return `${dateOnly} (${day})`;
 }
-
 
 /** @param {{ src?: string, alt?: string, size?: number }} props */
 function ZoomImage({ src, alt, size = 40 }) {
@@ -160,11 +160,12 @@ function OutboundPendingItemsDropdown({ items }) {
           <div className="divide-y">
             {list.map((it) => {
               const shortage = Number(it.shortage || 0) === 1;
+
               return (
                 <div
                   key={it.orderId}
                   className={`grid grid-cols-12 items-center gap-2 px-3 py-2 text-sm hover:bg-muted/30 transition-colors ${
-                    shortage ? 'bg-red-50/60' : ''
+                    shortage ? 'bg-red-100 dark:bg-red-950' : ''
                   }`}
                 >
                   {/* 품목 + 이미지 */}
@@ -183,8 +184,6 @@ function OutboundPendingItemsDropdown({ items }) {
                         <span className="rounded-md border bg-background px-1.5 py-0.5">
                           {it.brand ?? '-'}
                         </span>
-
-                       
                       </div>
                     </div>
                   </div>
@@ -199,7 +198,11 @@ function OutboundPendingItemsDropdown({ items }) {
                     </div>
                     <div>
                       <span className="text-muted-foreground">현재고 </span>
-                      <span className={`font-semibold ${shortage ? 'text-red-700' : 'text-foreground'}`}>
+                      <span
+                        className={`font-semibold ${
+                          shortage ? 'text-red-700 dark:text-red-300' : 'text-foreground'
+                        }`}
+                      >
                         {Number(it.stockCount ?? 0)}
                       </span>
                     </div>
@@ -290,14 +293,20 @@ export function OutboundPendingRow({ row, loading, onError }) {
   return (
     <tr
       className={`border-b last:border-0 transition-colors ${
-        shortage ? 'bg-red-50/60 hover:bg-red-50' : 'hover:bg-muted/30'
+        shortage
+          ? 'bg-red-100 hover:bg-red-50 dark:bg-red-950/35 dark:hover:bg-red-950/45'
+          : 'hover:bg-muted/30'
       }`}
     >
       {/* 상태 */}
       <td className="py-3 text-center">
         <Badge
           variant="secondary"
-          className={shortage ? 'bg-red-100 text-red-700' : 'text-amber-700'}
+          className={
+            shortage
+              ? 'bg-red-200 text-red-800 dark:bg-red-950 dark:text-red-100'
+              : 'text-amber-700'
+          }
         >
           {statusText}
         </Badge>
@@ -315,9 +324,7 @@ export function OutboundPendingRow({ row, loading, onError }) {
 
       {/* 판매처 */}
       <td className="py-3 text-center">
-        <div className="mx-auto max-w-[220px] truncate">
-          {row.sellerVendorName ?? '-'}
-        </div>
+        <div className="mx-auto max-w-[220px] truncate">{row.sellerVendorName ?? '-'}</div>
       </td>
 
       {/* 담당자 */}
@@ -359,9 +366,7 @@ export function OutboundPendingRow({ row, loading, onError }) {
       </td>
 
       {/* 단가총액 */}
-      <td className="py-3 text-right font-medium tabular-nums">
-        {fmt(row.totalAmount)}원
-      </td>
+      <td className="py-3 text-right font-medium tabular-nums">{fmt(row.totalAmount)}원</td>
 
       {/* 등록 */}
       <td className="py-3 text-center">

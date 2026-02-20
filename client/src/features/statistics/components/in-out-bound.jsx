@@ -1,4 +1,3 @@
-
 // @ts-check
 import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -21,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ChartLoading } from './chart-loading.jsx';
 
 function pad2(n) {
   return String(n).padStart(2, '0');
@@ -146,15 +146,15 @@ export const InOutBound = () => {
 
   return (
     <GraphContainer
-      title="입출고 수량 합계 통계"
-      description="기간/품목/주종/브랜드 기준 품목별 입출고 수량 합계"
-      width="wide"
-      height="lg"
+      title='입출고 수량 합계 통계'
+      description='기간/품목/주종/브랜드 기준 품목별 입출고 수량 합계'
+      width='wide'
+      height='lg'
     >
       {/* 필터 */}
-      <div className="flex flex-wrap items-end gap-3 mb-3">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">기간</label>
+      <div className='flex flex-wrap items-end gap-3 mb-3'>
+        <div className='flex flex-col gap-1'>
+          <label className='text-xs text-muted-foreground'>기간</label>
           <StatisticsDateRangePicker
             value={{ from, to }}
             onChange={({ from, to }) => {
@@ -165,34 +165,40 @@ export const InOutBound = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">품목 검색</label>
+        <div className='flex flex-col gap-1'>
+          <label className='text-xs text-muted-foreground'>품목 검색</label>
           <Input
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="품목명/코드"
-            className="h-9 w-44"
+            placeholder='품목명/코드'
+            className='h-9 w-44'
           />
         </div>
 
         {/*  주종 (shadcn Select) */}
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">주종</label>
+        <div className='flex flex-col gap-1'>
+          <label className='text-xs text-muted-foreground'>주종</label>
 
-          <Select value={type} onValueChange={(v) => setType(v)}>
-            <SelectTrigger className="h-9 w-28">
-              <SelectValue placeholder="전체" />
+          <Select
+            value={type}
+            onValueChange={(v) => setType(v)}
+          >
+            <SelectTrigger className='h-9 w-28'>
+              <SelectValue placeholder='전체' />
             </SelectTrigger>
 
-            <SelectContent className="max-h-72">
-              <SelectItem value="ALL">
-                <span className="text-muted-foreground">전체</span>
+            <SelectContent className='max-h-72'>
+              <SelectItem value='ALL'>
+                <span className='text-muted-foreground'>전체</span>
               </SelectItem>
 
               {(typesQ.data ?? []).map((t) => (
-                <SelectItem key={t} value={String(t)}>
-                  <div className="flex items-center justify-between gap-3 w-full">
-                    <span className="font-medium">{toKoreanTypeLabel(t)}</span>
+                <SelectItem
+                  key={t}
+                  value={String(t)}
+                >
+                  <div className='flex items-center justify-between gap-3 w-full'>
+                    <span className='font-medium'>{toKoreanTypeLabel(t)}</span>
                   </div>
                 </SelectItem>
               ))}
@@ -201,29 +207,34 @@ export const InOutBound = () => {
         </div>
 
         {/*  브랜드 (shadcn Select) */}
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">브랜드</label>
+        <div className='flex flex-col gap-1'>
+          <label className='text-xs text-muted-foreground'>브랜드</label>
 
           <Select
             value={brand}
             onValueChange={(v) => setBrand(v)}
             disabled={type === 'ALL'}
           >
-            <SelectTrigger className="h-9 w-44 disabled:opacity-60">
-              <SelectValue placeholder={type === 'ALL' ? '주종 선택 필수' : '전체'} />
+            <SelectTrigger className='h-9 w-44 disabled:opacity-60'>
+              <SelectValue
+                placeholder={type === 'ALL' ? '주종 선택 필수' : '전체'}
+              />
             </SelectTrigger>
 
-            <SelectContent className="max-h-72">
-              <SelectItem value="ALL">
-                <span className="text-muted-foreground">
+            <SelectContent className='max-h-72'>
+              <SelectItem value='ALL'>
+                <span className='text-muted-foreground'>
                   {type === 'ALL' ? '주종 선택 필수' : '전체'}
                 </span>
               </SelectItem>
 
               {(brandsQ.data ?? []).map((b) => (
-                <SelectItem key={b} value={String(b)}>
-                  <div className="flex items-center justify-between gap-3 w-full">
-                    <span className="truncate font-medium">{b}</span>
+                <SelectItem
+                  key={b}
+                  value={String(b)}
+                >
+                  <div className='flex items-center justify-between gap-3 w-full'>
+                    <span className='truncate font-medium'>{b}</span>
                   </div>
                 </SelectItem>
               ))}
@@ -233,13 +244,19 @@ export const InOutBound = () => {
       </div>
 
       {dateError ? (
-        <div className="mb-2 text-sm font-semibold text-red-600">{dateError}</div>
+        <div className='mb-2 text-sm font-semibold text-red-600'>
+          {dateError}
+        </div>
       ) : null}
 
       {statsQ.isFetching ? (
-        <div className="text-sm text-muted-foreground">데이터 불러오는 중...</div>
+        <div className='w-full h-full flex justify-center items-center'>
+          <ChartLoading />
+        </div>
       ) : statsQ.isError ? (
-        <div className="text-sm text-red-600">통계 조회 실패</div>
+        <div className='w-full h-full flex justify-center items-center text-sm text-destructive'>
+          통계 조회 실패
+        </div>
       ) : (
         <InOutboundChart data={chartData} />
       )}

@@ -56,7 +56,7 @@ export const getProductSearchResult = (search) =>
   api.get('order/get-products', { hooks, searchParams: { search } }).json();
 
 /**
- * @param {z.infer<typeof receiveOrderFormSchema>} value
+ * @param {{ receiveDate: string; products: { [x: string]: unknown; amount: number; }[]; userId?: number; sellerId?: number; }} value
  * @returns {Promise<ApiResponse>}
  */
 export const postOrder = (value) =>

@@ -16,6 +16,7 @@ import { HTTPError } from 'ky';
 import { ERROR } from '@/services/error.js';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { formatToIsoDate } from '../utils/format-date.js';
 
 /**
  * @typedef {z.infer<typeof receiveOrderFormSchema>} OrderSchema
@@ -41,13 +42,20 @@ export const useOrderPostForm = () => {
       onChange: receiveOrderFormSchema,
     },
     onSubmit: async ({ value }) => {
+      const { receiveDate, ...rest } = value;
+
+      const formattedForm = {
+        receiveDate: formatToIsoDate(receiveDate),
+        ...rest,
+      };
+
       try {
-        const response = await postOrder(value);
+        const response = await postOrder(formattedForm);
         if (!response.success) return;
         queryClient.invalidateQueries({
-          queryKey: ['receive-orders']
-        })
-        
+          queryKey: ['receive-orders'],
+        });
+
         toast.success(response.message);
         form.reset();
         navigate('/dashboard/receive-order');

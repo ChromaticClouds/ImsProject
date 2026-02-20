@@ -5,23 +5,11 @@
  */
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card.js';
 import { FieldSet } from '@/components/ui/field.js';
-import {
-  Table,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table.js';
-
-/**
- * Constants
- */
-import { PURCHASE_ORDER_TABLE_HEADER } from '../../constants/index.js';
 
 /**
  * @param {React.PropsWithChildren} props

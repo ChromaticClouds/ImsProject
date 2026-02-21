@@ -45,13 +45,6 @@ public class VendorController {
     // 거래처 등록
     @PostMapping
     public Long createVendor(@RequestBody VendorCreateRequest request) {
-        System.out.println("type=" + request.getType());
-        System.out.println("vendorName=" + request.getVendorName());
-        System.out.println("items=" + (request.getItems() == null ? "null" : request.getItems().size()));
-        if (request.getItems() != null && !request.getItems().isEmpty()) {
-            System.out.println("first.productId=" + request.getItems().get(0).getProductId());
-            System.out.println("first.purchasePrice=" + request.getItems().get(0).getPurchasePrice());
-        }
         return vendorService.createVendor(request);
     }
     

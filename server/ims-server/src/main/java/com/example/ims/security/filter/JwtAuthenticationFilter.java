@@ -35,8 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
-        System.out.println(token);
-
         try {
             // 토큰 검증
             if (jwtProvider.validate(token)) {

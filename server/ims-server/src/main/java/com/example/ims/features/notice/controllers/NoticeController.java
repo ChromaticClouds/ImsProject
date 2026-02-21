@@ -52,15 +52,12 @@ public class NoticeController {
         @RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(value = "search", required = false) String search
     ) {
-//    	System.out.println(search);
         return nList.execute(page, search);
     }
 
     @GetMapping("/{id}")
     NoticeResponse detail(@PathVariable("id") Long id) {
-        NoticeResponse notice = nDetail.execute(id);
-        System.out.println(notice);
-        return notice;
+        return nDetail.execute(id);
     }
 
     @PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

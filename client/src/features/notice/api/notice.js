@@ -1,5 +1,8 @@
 import { api } from '@/services/api';
+import { ERROR } from '@/services/error.js';
 import Filesaver from 'file-saver';
+import { HTTPError } from 'ky';
+import { toast } from 'sonner';
 
 // export const fetchNotice = () => {
 //   console.log("notice.js 진입")
@@ -23,6 +26,16 @@ export const downloadFile = async (fileName) => {
       .blob();
     Filesaver.saveAs(response, fileName);
   } catch (err) {
-    console.error(err);
+    if (err instanceof HTTPError) {
+      const errResposne = await err.response.json();
+
+      return toast.error(
+        typeof errResposne?.message === 'string'
+          ? errResposne?.message
+          : ERROR.UNEXPECTED_ERROR
+      );
+    }
+
+    toast.error(ERROR.SERVER_ERROR);
   }
 };

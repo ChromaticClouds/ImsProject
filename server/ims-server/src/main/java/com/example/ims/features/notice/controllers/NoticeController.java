@@ -88,8 +88,7 @@ public class NoticeController {
     
     @PostMapping("file/download")
     public ResponseEntity<Object> downloadFile(
-		@RequestBody DownloadRequest request,
-		HttpServletResponse response
+		@RequestBody DownloadRequest request
 	) throws IOException {
         FileDownloader loader = fileService.downloadFile(request.getFileName());
         return ResponseEntity.ok()

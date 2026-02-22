@@ -116,7 +116,7 @@ export function VendorDetailPage() {
             </Button>
 
             <AlertDialog>
-              <AlertDialogTrigger>
+              <AlertDialogTrigger asChild>
                 <Button
                   variant='outline'
                   className='text-destructive hover:text-destructive'

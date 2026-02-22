@@ -1,6 +1,5 @@
 import {
   HomeIcon,
-  CalendarIcon,
   MegaphoneIcon,
   PackageIcon,
   ArrowBigUpDashIcon,
@@ -10,6 +9,7 @@ import {
   FileOutputIcon,
   HandshakeIcon,
   ChartAreaIcon,
+  History
 } from 'lucide-react';
 
 export const SIDEBAR_MAIN_ITEMS = [
@@ -72,7 +72,7 @@ export const SIDEBAR_ADDITIONAL_ITEMS = [
   {
     title: '히스토리',
     url: '/dashboard/history',
-    Icon: ChartAreaIcon,
+    Icon: History,
   },
 ];
 

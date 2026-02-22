@@ -99,8 +99,6 @@ public class AuthService {
         Long userId = refreshTokenStore.findUserId(refreshToken)
             .orElseThrow(UnauthorizedException::new);
 
-        System.out.println(userId);
-
         refreshTokenStore.delete(refreshToken, userId);
 
         User user = repository.findById(userId)

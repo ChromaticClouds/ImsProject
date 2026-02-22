@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 
 import { useTodoTags } from '@/features/todo/hooks/use-todo-tags';
+import { toast } from 'sonner';
 
 /**
  * @param {{
@@ -51,11 +52,11 @@ export const TodoForm = ({
 
   const handleSubmit = () => {
     if (!title.trim() || !startDate || !endDate) {
-      alert('필수 항목을 입력하세요.');
+      toast.warning('필수 항목을 입력하세요.');
       return;
     }
     if (startDate > endDate) {
-      alert('종료 날짜는 시작 날짜보다 빠를 수 없습니다.');
+      toast.error('종료 날짜는 시작 날짜보다 빠를 수 없습니다.');
       return;
     }
 

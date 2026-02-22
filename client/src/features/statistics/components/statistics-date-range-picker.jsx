@@ -10,6 +10,7 @@ import {
 import { Calendar } from '@/components/ui/calendar.js';
 import { format, parseISO, isValid, differenceInCalendarDays } from 'date-fns';
 import { useIsMobile } from '@/hooks/use-mobile.js';
+import { toast } from 'sonner';
 
 /** @typedef {{ from: string, to: string }} DateRangeValue */
 
@@ -65,14 +66,14 @@ export function StatisticsDateRangePicker({
 
     // 미래 선택 불가
     if (next.to > today) {
-      alert('미래 날짜는 선택할 수 없습니다.');
+      toast.error('미래 날짜는 선택할 수 없습니다.');
       return;
     }
 
     // 기간 제한
     const diff = Math.abs(differenceInCalendarDays(next.to, next.from));
     if (diff > 365) {
-      alert('기간은 최대 1년까지만 선택할 수 있습니다.');
+      toast.warning('기간은 최대 1년까지만 선택할 수 있습니다.');
       return;
     }
 

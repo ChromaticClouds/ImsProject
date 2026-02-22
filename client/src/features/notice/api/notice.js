@@ -17,7 +17,12 @@ export const fetchNotices = async () => {
 };
 
 export const downloadFile = async (fileName) => {
-  const response = await api
-    .post('api/notice/file/download', { json: { fileName } }).blob();
-  Filesaver.saveAs(response, fileName);
+  try {
+    const response = await api
+      .post('api/notice/file/download', { json: { fileName } })
+      .blob();
+    Filesaver.saveAs(response, fileName);
+  } catch (err) {
+    console.error(err);
+  }
 };

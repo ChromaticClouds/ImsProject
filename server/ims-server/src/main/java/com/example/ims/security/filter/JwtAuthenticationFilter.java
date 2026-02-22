@@ -20,6 +20,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().startsWith("/auth/");
+    }
+
+    @Override
     protected void doFilterInternal(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -38,14 +43,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             // 토큰 검증
             if (jwtProvider.validate(token)) {
-                Authentication authentication =
-                    jwtProvider.getAuthentication(token);
-
-                // SecurityContext에 인증 정보 저장
-                SecurityContextHolder
-                    .getContext()
-                    .setAuthentication(authentication);
+                Authentication authentication = jwtProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+                return;
             }
+
+            // JWT expired error handling
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("""
+            {
+              "success": false,
+              "message": "토큰이 만료되었거나 유효하지 않습니다."
+            }
+            """);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
@@ -55,9 +67,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
               "message": "접근 권한이 없습니다."
             }
             """);
-            return;
         }
-
-        filterChain.doFilter(request, response);
     }
 }

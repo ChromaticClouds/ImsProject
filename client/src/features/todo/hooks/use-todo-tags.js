@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const MAX_TAGS = 3;
 const MAX_LENGTH = 10;
@@ -12,15 +13,15 @@ export const useTodoTags = () => {
 
     if (!value) return;
     if (value.length > MAX_LENGTH) {
-      alert('태그는 10자 이하만 가능합니다.');
+      toast.warning('태그는 10자 이하만 가능합니다.');
       return;
     }
     if (tags.length >= MAX_TAGS) {
-      alert('태그는 최대 3개까지 등록 가능합니다.');
+      toast.warning('태그는 최대 3개까지 등록 가능합니다.');
       return;
     }
     if (tags.includes(value)) {
-      alert('이미 등록된 태그입니다.');
+      toast.warning('이미 등록된 태그입니다.');
       return;
     }
 

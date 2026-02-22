@@ -44,6 +44,6 @@ resend:
 
 jwt:
   secret: ${JWT_SECRET}
-  access-exp-minutes: 120
+  access-exp-minutes: 60
   refresh-exp-days: 14
 

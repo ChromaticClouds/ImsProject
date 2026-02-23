@@ -42,7 +42,6 @@ public class GlobalExceptionHandler {
             .body(ApiResponse.fail(e.getMessage()));
     }
 
-
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ApiResponse<Void>> handle(ForbiddenException e) {
         ResponseCookie expired = ResponseCookie.from("refreshToken", "")

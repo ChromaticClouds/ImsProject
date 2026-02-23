@@ -58,9 +58,9 @@ const poPostSchema = z.object({
 /** @typedef {z.infer<typeof poPostSchema>} PoPostFormValues */
 
 export const usePoPostForm = () => {
-  const queryClient = useQueryClient();
-
   const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
 
   const form = useForm({
     /** @type {PoPostFormValues} */
@@ -72,14 +72,16 @@ export const usePoPostForm = () => {
       try {
         const formatForm = { ...value, date: formatToIsoDate(value.date) };
 
-        console.log(formatForm);
-
         const response = await api
           .post('purchase/order/post', { json: formatForm, hooks })
           .json();
 
         if (!response?.success) return;
-        queryClient.invalidateQueries({ queryKey: ['purchase-orders'] });
+
+        queryClient.invalidateQueries({
+          queryKey: ['purchase-orders'],
+        });
+
         toast.success(response?.message);
         form.reset();
         navigate('/dashboard/purchase-order');

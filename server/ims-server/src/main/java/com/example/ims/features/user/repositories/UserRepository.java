@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.ims.features.auth.entities.User;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,4 +38,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<UserRole> UserRole(UserRole userRole);
 
     Optional<User> findByEmail(String email);
+
+	List<User> findByUserRoleInAndStatus(
+		List<UserRole> userRoles,
+		UserStatus status
+	);
 }

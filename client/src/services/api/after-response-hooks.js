@@ -1,8 +1,10 @@
 // @ts-check
-import ky from 'ky';
+import ky, { HTTPError } from 'ky';
 
 import { refreshToken } from '@/features/auth/api/index.js';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
+import { toast } from 'sonner';
+import { ERROR } from '../error.js';
 
 /**
  * @type {import('ky').AfterResponseHook[]}
@@ -29,7 +31,17 @@ export const afterResponseHooks = [
 
       return ky(retryRequest, { ...options });
     } catch (err) {
-      console.error('refresh failed:', err);
+      if (err instanceof HTTPError) {
+        const errResponse = await err.response.json();
+
+        toast.error(
+          typeof errResponse?.message === 'string' 
+            ? errResponse?.message
+            : ERROR.UNEXPECTED_ERROR
+        );
+      }
+
+      console.log(err);
 
       if (err?.response) {
         console.error('status:', err.response.status);

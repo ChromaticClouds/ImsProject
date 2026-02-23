@@ -29,7 +29,7 @@ export const verifyToken = (token) =>
 /**
  * @returns {Promise<ApiResponse<RefreshResponse>>}
  */
-export const refreshToken = () => api.get('auth/refresh', { retry: 1, hooks }).json();
+export const refreshToken = () => api.get('auth/refresh', { retry: 1 }).json();
 
 /**
  * @returns {Promise<ApiResponse<void>>}

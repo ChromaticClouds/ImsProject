@@ -12,6 +12,7 @@ import {
 import { NoticeForm } from '@/features/notice/components/notice-form';
 import { createNotice } from '@/features/notice/api/noticeApi';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store';
+import { toast } from 'sonner';
 
 
 export const NoticeCreate = () => {
@@ -33,17 +34,17 @@ export const NoticeCreate = () => {
       if (!res?.ok) {
         console.error('createNotice failed response:', res);
         if(res.success) {
-          window.alert(res?.message);
+          toast.success(res?.message);
           navigate('/dashboard/notice');
         } else {
-          window.alert(res.message??'등록 실패');
+          toast.error(res.message??'등록 실패');
         }
 
         
         return;
       }
 
-      window.alert(res.message ?? '등록되었습니다');
+      toast.success(res.message ?? '등록되었습니다');
 
       await qc.invalidateQueries({ queryKey: ['notices'] });
 

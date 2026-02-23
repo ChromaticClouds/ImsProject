@@ -31,7 +31,6 @@ const fetchMainNotices = async () => {
 };
 
 const normalizeNotices = (data) => {
-  console.log('normalize notice data:', data);
   if (!data) return [];
 
   // 1. 이미 배열이면 그대로 반환

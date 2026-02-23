@@ -11,6 +11,7 @@ import { MailIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmailForm } from '../hooks/use-email-form.js';
 import { Field, FieldError, FieldGroup } from '@/components/ui/field.js';
+import { Spinner } from '@/components/ui/spinner.js';
 
 export const EmailValidateForm = () => {
   const form = useEmailForm();
@@ -53,7 +54,7 @@ export const EmailValidateForm = () => {
                         type='submit'
                         disabled={!canSubmit || !isTouched || isSubmitting}
                       >
-                        이메일 제출
+                        {isSubmitting ? <Spinner /> : '이메일 제출'}
                       </Button>
                     )}
                   </form.Subscribe>

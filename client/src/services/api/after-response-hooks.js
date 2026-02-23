@@ -1,4 +1,8 @@
+// @ts-check
+import ky from 'ky';
+
 import { refreshToken } from '@/features/auth/api/index.js';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
 
 /**
  * @type {import('ky').AfterResponseHook[]}
@@ -12,27 +16,30 @@ export const afterResponseHooks = [
 
     // refresh 요청 자체면 중단 (무한 루프 방지)
     if (request.url.includes('/auth/refresh')) {
-      useAuthStore.getState().logout();
+      useAuthStore.getState().clearAuth();
       return response;
     }
 
     try {
       const { data } = await refreshToken();
-      const { token } = data;
-      useAuthStore.getState().setAccessToken(token);
+      useAuthStore.getState().setAuth(data.user, data.token);
 
       const retryRequest = request.clone();
-      retryRequest.headers.set('Authorization', `Bearer ${token}`);
+      retryRequest.headers.set('Authorization', `Bearer ${data.token}`);
 
-      return ky(request, {
-        ...options,
-        headers: {
-          ...Object.fromEntries(request.headers),
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      return ky(retryRequest, { ...options });
     } catch (err) {
-      useAuthStore.getState().logout();
+      console.error('refresh failed:', err);
+
+      if (err?.response) {
+        console.error('status:', err.response.status);
+        try {
+          const bodyText = await err.response.text();
+          console.error('body:', bodyText);
+        } catch {}
+      }
+
+      useAuthStore.getState().clearAuth();
       return response;
     }
   },

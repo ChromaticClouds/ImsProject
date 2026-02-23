@@ -19,6 +19,7 @@ import com.example.ims.features.user.repositories.UserRepository;
 import com.example.ims.features.vendor.dto.Vendor;
 import com.example.ims.features.vendor.dto.VendorIdentifier;
 import com.example.ims.features.vendor.entities.VendorItem;
+import com.example.ims.features.vendor.enums.VendorStatus;
 import com.example.ims.features.vendor.enums.VendorType;
 import com.example.ims.features.vendor.exceptions.VendorNotFoundException;
 import com.example.ims.features.vendor.repositories.VendorItemRepository;
@@ -55,7 +56,7 @@ public class OrderService {
             .toList();
 
         List<VendorIdentifier> sellers = vendorRepository
-            .findByType(VendorType.Seller)
+            .findByTypeAndStatusNot(VendorType.Seller, VendorStatus.DELETED)
             .stream()
             .map(v -> new VendorIdentifier(v.getId(), v.getVendorName()))
             .toList();
@@ -82,8 +83,6 @@ public class OrderService {
     public void postOrder(Long userId, OrderPostRequest request) {
         User user = userRepository.findById(userId)
             .orElseThrow(UserNotFoundException::new);
-
-        System.out.println(user.getUserRole());
 
         if (!List.of(UserRole.ALL, UserRole.RECEIVE_ORDER).contains(user.getUserRole()))
             throw new NoPermissionException();

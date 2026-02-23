@@ -17,6 +17,7 @@ export const AdjustPicker = () => {
         <AppDatePicker
           date={new Date()}
           disabled
+          className='w-60'
         />
       </div>
       <div className='grid grid-cols-1 md:grid-cols-[120px_1fr] items-center'>

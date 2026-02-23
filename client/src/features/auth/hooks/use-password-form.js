@@ -39,7 +39,7 @@ export const usePasswordForm = () => {
           .json();
 
         if (!response.success) return { success: false };
-        console.log(value);
+        console.log(response);
         toast.success(response.message);
         form.reset();
         return { success: true };

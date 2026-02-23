@@ -43,8 +43,6 @@ public class AdjustService {
         User user = userRepository.findById(userId)
             .orElseThrow(UserNotFoundException::new);
 
-        System.out.println(request.products());
-
         HistoryLot historyLot = HistoryLot.builder()
             .user(user)
             .status(HistoryStatus.ADJUST)

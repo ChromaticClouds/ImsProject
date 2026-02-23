@@ -2,6 +2,7 @@ package com.example.ims.features.auth.services;
 
 import com.example.ims.features.auth.enums.UserRank;
 import com.example.ims.features.auth.enums.UserStatus;
+import com.example.ims.features.auth.exceptions.ForbiddenException;
 import com.example.ims.features.user.entities.UserSequence;
 import com.example.ims.features.user.repositories.UserSequenceRepository;
 import org.springframework.stereotype.Service;
@@ -91,7 +92,9 @@ public class AuthService {
     }
 
     public AuthResult refresh(String refreshToken) {
-        jwtProvider.validate(refreshToken);
+        boolean parsed = jwtProvider.validate(refreshToken);
+
+        if (!parsed) throw new UnauthorizedException();
 
         Long userId = refreshTokenStore.findUserId(refreshToken)
             .orElseThrow(UnauthorizedException::new);
@@ -101,8 +104,9 @@ public class AuthService {
         User user = repository.findById(userId)
             .orElseThrow(UserNotFoundException::new);
 
-        if (user.getStatus() != UserStatus.ACTIVE)
-            throw new UnauthorizedException();
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new ForbiddenException();
+        }
 
         String newRefresh =
             jwtProvider.createRefreshToken(userId);

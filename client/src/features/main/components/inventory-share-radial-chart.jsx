@@ -95,7 +95,7 @@ export const InventoryShareRadialChart = () => {
                         y={(viewBox.cy || 0) - 2}
                         className='fill-muted-foreground text-sm'
                       >
-                        {used.toLocaleString()} / {total.toLocaleString()}
+                        {used?.toLocaleString()} / {total?.toLocaleString()}
                       </tspan>
                     </text>
                   );

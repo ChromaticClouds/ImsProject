@@ -56,8 +56,10 @@ import { ForgotPassword } from '@/pages/forgot-password.jsx';
 import { PasswordReset } from '@/pages/password-reset.jsx';
 import { PurchaseOrderPost } from '@/pages/dashboard/purchase-order/purchase-order-post.jsx';
 import { UserGroup } from '@/pages/dashboard/user/user-group.jsx';
+import { ErrorBoundary } from '@/pages/error-boundary.jsx';
 
 export const router = createBrowserRouter([
+  { path: '*', element: <ErrorBoundary /> },
   {
     path: '/',
     element: <App />,

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.ims.features.vendor.entities.VendorItem;
+import com.example.ims.features.vendor.enums.VendorStatus;
 import com.example.ims.features.vendor.enums.VendorType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,6 +35,9 @@ public class Vendor {
     private String memo;
     private String imageUrl;
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    private VendorStatus status;
 
     public static Vendor from(VendorCreateRequest req) {
         Vendor dto = new Vendor();

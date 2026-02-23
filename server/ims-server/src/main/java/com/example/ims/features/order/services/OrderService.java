@@ -50,7 +50,10 @@ public class OrderService {
 
     public OrderBootstrap getOrderBootstrap() {
         List<UserIdentifier> users = userRepository
-            .findByUserRoleIn(List.of(UserRole.OUTBOUND))
+            .findByUserRoleInAndStatus(
+                List.of(UserRole.OUTBOUND),
+                UserStatus.ACTIVE
+            )
             .stream()
             .map(u -> new UserIdentifier(u.getId(), u.getName()))
             .toList();

@@ -57,7 +57,7 @@ export const useLeadTimeFilterStore = create((set) => ({
       },
     })),
 
-  // 🔹 30일 / 60일 / 180일 버튼용
+  // 🔹 30일 / 90일 / 180일 버튼용
   setLastDays: (days) => {
     const today = new Date()
     const start = new Date()

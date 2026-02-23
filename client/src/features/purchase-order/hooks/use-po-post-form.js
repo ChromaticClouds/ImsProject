@@ -4,6 +4,7 @@ import { formatToIsoDate } from '@/features/receive-order/utils/format-date.js';
 import { api, hooks } from '@/services/api.js';
 import { ERROR } from '@/services/error.js';
 import { useForm } from '@tanstack/react-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -59,6 +60,8 @@ const poPostSchema = z.object({
 export const usePoPostForm = () => {
   const navigate = useNavigate();
 
+  const queryClient = useQueryClient();
+
   const form = useForm({
     /** @type {PoPostFormValues} */
     defaultValues,
@@ -69,13 +72,16 @@ export const usePoPostForm = () => {
       try {
         const formatForm = { ...value, date: formatToIsoDate(value.date) };
 
-        console.log(formatForm);
-
         const response = await api
           .post('purchase/order/post', { json: formatForm, hooks })
           .json();
 
         if (!response?.success) return;
+
+        queryClient.invalidateQueries({
+          queryKey: ['purchase-orders'],
+        });
+
         toast.success(response?.message);
         form.reset();
         navigate('/dashboard/purchase-order');

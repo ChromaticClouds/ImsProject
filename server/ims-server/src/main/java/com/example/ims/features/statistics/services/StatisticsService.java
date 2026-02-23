@@ -151,47 +151,48 @@ public class StatisticsService {
 	
 	public List<StockRotationPoint> getStockRotationTrend(int year, Integer month, Long productId) {
 
-		  int thisYear = LocalDate.now().getYear();
-		  int lastYear = thisYear - 1;
-		  if (year != thisYear && year != lastYear) throw new IllegalArgumentException("년도 선택 불가");
+        int thisYear = LocalDate.now().getYear();
+        int lastYear = thisYear - 1;
+        if (year != thisYear && year != lastYear) throw new IllegalArgumentException("년도 선택 불가");
 
-		  if (productId == null || productId <= 0) throw new IllegalArgumentException("productId 필수");
+        if (productId == null || productId <= 0) throw new IllegalArgumentException("productId 필수");
 
-		  if (month == null) {
-		   
-		    int maxMonth = (year == thisYear) ? LocalDate.now().getMonthValue() : 12;
+        if (month == null) {
 
-		    List<StockRotationPoint> out = new ArrayList<>();
-		    for (int m = 1; m <= maxMonth; m++) {
-		      LocalDate start = LocalDate.of(year, m, 1);
-		      LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+            int maxMonth = (year == thisYear) ? LocalDate.now().getMonthValue() : 12;
 
-		      
-		      if (year == thisYear && m == LocalDate.now().getMonthValue()) {
-		        end = LocalDate.now();
-		      }
+            List<StockRotationPoint> out = new ArrayList<>();
 
-		      out.add(calcPoint(productId, start, end, String.format("%02d월", m)));
-		    }
-		    return out;
-		  }
+            for (int m = 1; m <= maxMonth; m++) {
+                LocalDate start = LocalDate.of(year, m, 1);
+                LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
 
-		  // ✅ 주별 (년도+월)
-		  if (month < 1 || month > 12) throw new IllegalArgumentException("month 범위 오류");
+                if (year == thisYear && m == LocalDate.now().getMonthValue()) {
+                    end = LocalDate.now();
+                }
 
-		  LocalDate monthStart = LocalDate.of(year, month, 1);
-		  LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
+                out.add(calcPoint(productId, start, end, String.format("%02d월", m)));
+            }
 
-		  // 올해+이번달이면 금일까지
-		  if (year == thisYear && month == LocalDate.now().getMonthValue()) {
-		    monthEnd = LocalDate.now();
-		  }
+            return out;
+        }
 
-		  // 주별 구간 만들기(월요일~일요일 기준)
-		  List<StockRotationPoint> out = new ArrayList<>();
-		  LocalDate cur = monthStart;
-		  int weekIndex = 1;
-		  while (!cur.isAfter(monthEnd)) {
+        // ✅ 주별 (년도+월)
+        if (month < 1 || month > 12) throw new IllegalArgumentException("month 범위 오류");
+
+        LocalDate monthStart = LocalDate.of(year, month, 1);
+        LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
+
+        // 올해+이번달이면 금일까지
+        if (year == thisYear && month == LocalDate.now().getMonthValue()) {
+            monthEnd = LocalDate.now();
+        }
+
+        // 주별 구간 만들기(월요일~일요일 기준)
+        List<StockRotationPoint> out = new ArrayList<>();
+        LocalDate cur = monthStart;
+        int weekIndex = 1;
+        while (!cur.isAfter(monthEnd)) {
 		    LocalDate start = cur;
 		    LocalDate end = cur.with(java.time.DayOfWeek.SUNDAY);
 		    if (end.isAfter(monthEnd)) end = monthEnd;
@@ -199,40 +200,41 @@ public class StatisticsService {
 		    out.add(calcPoint(productId, start, end, weekIndex + "주차"));
 		    weekIndex++;
 		    cur = end.plusDays(1);
-		  }
-		  return out;
-		}
+        }
 
-		private StockRotationPoint calcPoint(Long productId, LocalDate start, LocalDate end, String label) {
-		  LocalDateTime startAt = start.atStartOfDay();
-		  LocalDateTime endAt = end.atTime(23, 59, 59);
+        return out;
+    }
 
-		  Integer beginStock = mapper.selectStockAt(productId, startAt); // 기초 재고
-		  Integer endStock = mapper.selectStockAt(productId, endAt); // 기말 재고
-		  if (beginStock == null) beginStock = 0; 
-		  if (endStock == null) endStock = 0;
+    private StockRotationPoint calcPoint(Long productId, LocalDate start, LocalDate end, String label) {
+        LocalDateTime startAt = start.atStartOfDay();
+        LocalDateTime endAt = end.atTime(23, 59, 59);
 
-		  Long outbound = mapper.selectOutboundQty(productId, start, end);
-		  if (outbound == null) outbound = 0L;
+        Integer beginStock = mapper.selectStockAt(productId, startAt); // 기초 재고
+        Integer endStock = mapper.selectStockAt(productId, endAt); // 기말 재고
+        // if (beginStock == null) beginStock = 0;
+        if (endStock == null) endStock = 0;
 
-		  double avg = (beginStock + endStock) / 2.0; // 평균 재고량
-		  double turnover = (avg <= 0.0) ? 0.0 : (outbound / avg); // 재고 회전율
+        Long outbound = mapper.selectOutboundQty(productId, start, end);
+        if (outbound == null) outbound = 0L;
 
-		  return StockRotationPoint.builder()
-		      .period(label)
-		      .outboundQty(outbound)
-		      .beginStock(beginStock)
-		      .endStock(endStock)
-		      .avgStock(avg)
-		      .turnover(turnover)
-		      .build();
-		}
-		
-		public List<StockRotationPoint> searchrotationProducts(String keyword, Integer limit){
-			  if(!StringUtils.hasText(keyword)) return List.of();
-			  int safeLimit = (limit == null ? 20 : Math.min(Math.max(limit, 1), 50));
-			  return mapper.searchrotationProducts(keyword.trim(), safeLimit);
-			}
+        double avg = (beginStock + endStock) / 2.0; // 평균 재고량
+        double turnover = (avg <= 0.0) ? 0.0 : (outbound / avg); // 재고 회전율
+
+        return StockRotationPoint.builder()
+            .period(label)
+            .outboundQty(outbound)
+            .beginStock(beginStock)
+            .endStock(endStock)
+            .avgStock(avg)
+            .turnover(turnover)
+            .build();
+    }
+
+    public List<StockRotationPoint> searchrotationProducts(String keyword, Integer limit){
+        if(!StringUtils.hasText(keyword)) return List.of();
+        int safeLimit = (limit == null ? 20 : Math.min(Math.max(limit, 1), 50));
+        return mapper.searchrotationProducts(keyword.trim(), safeLimit);
+    }
 
 
 }

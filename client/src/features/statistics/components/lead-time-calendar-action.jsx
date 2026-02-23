@@ -63,12 +63,12 @@ export const LeadTimeCalendarAction = () => {
 
         <DropdownMenuItem
           onClick={() => {
-            setLastDays(60);
-            setChecked(60);
+            setLastDays(90);
+            setChecked(90);
           }}
         >
-          60일
-          {checked === 60 && <CheckIcon className='ml-auto h-4 w-4' />}
+          90일
+          {checked === 90 && <CheckIcon className='ml-auto h-4 w-4' />}
         </DropdownMenuItem>
 
         <DropdownMenuItem

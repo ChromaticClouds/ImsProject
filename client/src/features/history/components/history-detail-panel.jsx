@@ -24,7 +24,7 @@ export function HistoryDetailPanel({ lotId }) {
   const [prod, setProd] = useState(null);
 
   if (!lotId) {
-    return <div className="p-4 text-muted-foreground">항목 선택 시 뜹니다.</div>;
+    return <div className="p-4 text-muted-foreground">항목 선택 시 상세 내역 정보가 표시됩니다.</div>;
   }
   if (q.isFetching) return <div className="p-4 text-muted-foreground">불러오는 중...</div>;
   if (!data) return <div className="p-4 text-muted-foreground">상세 없음</div>;

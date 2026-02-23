@@ -143,7 +143,7 @@ export function VendorCreatePage() {
 
     if (!phone) e.전화번호 = '미입력되었습니다';
     else if (!phoneRegex.test(phone))
-      e.전화번호 = '전화번호 양식이 올바르지 않습니다 (예: 010-1234-5678)';
+      e.전화번호 = '전화번호 양식이 올바르지 않습니다';
 
     if (!email) e.이메일 = '미입력되었습니다';
     else if (!emailRegex.test(email))

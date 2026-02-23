@@ -37,8 +37,6 @@ public class InvitationService {
             .map(this::createInvitation)
             .toList();
 
-        System.out.println(invitedUsers);
-
         mailSender.sendBatch(invitedUsers);
     }
 

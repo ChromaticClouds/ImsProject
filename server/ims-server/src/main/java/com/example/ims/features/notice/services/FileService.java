@@ -1,6 +1,7 @@
 package com.example.ims.features.notice.services;
 
 import com.example.ims.features.notice.dto.FileDownloader;
+import com.example.ims.features.notice.exceptions.FileNotFoundException;
 import com.example.ims.global.properties.StorageProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -8,10 +9,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -63,9 +62,9 @@ public class FileService {
         if (dbPath == null || !dbPath.startsWith("/uploads"))
             throw new FileNotFoundException();
 
-        String savedName = dbPath.substring("/uploads/".length());
+        String downloadName = dbPath.substring("/uploads/".length());
         Path uploadDir = Path.of(props.getUploadDir()).toAbsolutePath().normalize();
-        Path filePath = uploadDir.resolve(savedName).normalize();
+        Path filePath = uploadDir.resolve(downloadName).normalize();
 
         if (!filePath.startsWith(uploadDir))
             throw new FileNotFoundException();
@@ -74,7 +73,6 @@ public class FileService {
         if (!resource.exists() || !resource.isReadable())
             throw new FileNotFoundException();
 
-        String downloadName = savedName;
         String encoded = URLEncoder.encode(downloadName, StandardCharsets.UTF_8)
             .replace("_", "%20");
 

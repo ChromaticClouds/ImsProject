@@ -31,8 +31,6 @@ public class RefreshTokenStore {
         String key = RF_PREFIX + refreshToken;
         String value = redis.opsForValue().get(key);
 
-        System.out.println(value);
-
         return Optional.ofNullable(value).map(Long::valueOf);
     }
 

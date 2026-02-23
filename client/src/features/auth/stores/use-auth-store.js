@@ -7,6 +7,7 @@ import { create } from 'zustand';
  * @property {User | null} user
  * @property {string | null} accessToken
  * @property {(user: User, token: string) => void} setAuth
+ * @property {(token: string) => void} setAccessToken
  * @property {() => void} clearAuth
  */
 
@@ -22,6 +23,11 @@ export const useAuthStore = create((set) => ({
       user,
       accessToken: token,
     }),
+
+  setAccessToken: (token) => set((prev) => ({
+    ...prev,
+    accessToken: token
+  })),
 
   clearAuth: () =>
     set({

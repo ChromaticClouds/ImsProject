@@ -84,8 +84,6 @@ public class OrderService {
         User user = userRepository.findById(userId)
             .orElseThrow(UserNotFoundException::new);
 
-        System.out.println(user.getUserRole());
-
         if (!List.of(UserRole.ALL, UserRole.RECEIVE_ORDER).contains(user.getUserRole()))
             throw new NoPermissionException();
 

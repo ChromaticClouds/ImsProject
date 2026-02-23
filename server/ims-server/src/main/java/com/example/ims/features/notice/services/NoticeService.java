@@ -77,8 +77,6 @@ public class NoticeService {
         List<Notice> pinned = noticeRepository
             .findTop3ByPinnedTrueOrderByCreatedAtDesc();
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> 핀 개수: " + pinned.size());
-
         String title = (req.getTitle() == null) ? "" : req.getTitle().trim();
         String content = (req.getContent() == null) ? "" : req.getContent().trim();
         if (title.isBlank() || content.isBlank()) {

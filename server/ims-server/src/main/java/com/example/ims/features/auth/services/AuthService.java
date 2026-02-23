@@ -92,7 +92,9 @@ public class AuthService {
     }
 
     public AuthResult refresh(String refreshToken) {
-        jwtProvider.validate(refreshToken);
+        boolean parsed = jwtProvider.validate(refreshToken);
+
+        if (!parsed) throw new UnauthorizedException();
 
         Long userId = refreshTokenStore.findUserId(refreshToken)
             .orElseThrow(UnauthorizedException::new);

@@ -4,6 +4,7 @@ import { formatToIsoDate } from '@/features/receive-order/utils/format-date.js';
 import { api, hooks } from '@/services/api.js';
 import { ERROR } from '@/services/error.js';
 import { useForm } from '@tanstack/react-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -57,6 +58,8 @@ const poPostSchema = z.object({
 /** @typedef {z.infer<typeof poPostSchema>} PoPostFormValues */
 
 export const usePoPostForm = () => {
+  const queryClient = useQueryClient();
+
   const navigate = useNavigate();
 
   const form = useForm({
@@ -76,6 +79,7 @@ export const usePoPostForm = () => {
           .json();
 
         if (!response?.success) return;
+        queryClient.invalidateQueries({ queryKey: ['purchase-orders'] });
         toast.success(response?.message);
         form.reset();
         navigate('/dashboard/purchase-order');

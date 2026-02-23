@@ -1,7 +1,7 @@
 // @ts-check
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
+import { useQueryClient } from '@tanstack/react-query';
 import { AppHeader } from '@/components/common/app-header.jsx';
 import { Card } from '@/components/ui/card.js';
 
@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 export const PurchaseOrderEdit = () => {
   const navigate = useNavigate();
   const { orderNumber } = useParams();
+  const queryClient = useQueryClient();
 
   const [loading, setLoading] = useState(true);
   const [detail, setDetail] = useState(null);
@@ -62,13 +63,30 @@ export const PurchaseOrderEdit = () => {
     };
   }, [detail]);
 
+  const handleSubmit = async (payload) => {
+    try {
+      await updatePurchaseOrder(orderNumber, payload);
+
+      // TODO: 여기 predicate는 임시. 목록 queryKey를 알면 그걸로 정확히 invalidate 하는게 베스트.
+      queryClient.invalidateQueries({
+        predicate: (q) => {
+          const key = q.queryKey;
+          return Array.isArray(key) && key.some((k) => String(k).includes('purchase'));
+        },
+      });
+
+      toast.success('발주서가 수정되었습니다');
+      navigate('..', { replace: true });
+    } catch (err) {
+      console.error(err);
+      toast.error('발주서 수정에 실패했습니다');
+    }
+  };
+
   if (!orderNumber) {
     return (
       <div className='w-full flex flex-col'>
-        <AppHeader
-          title='발주서 수정'
-          description='잘못된 접근입니다'
-        />
+        <AppHeader title='발주서 수정' description='잘못된 접근입니다' />
       </div>
     );
   }
@@ -76,10 +94,7 @@ export const PurchaseOrderEdit = () => {
   if (loading) {
     return (
       <div className='w-full flex flex-col'>
-        <AppHeader
-          title='발주서 수정'
-          description='불러오는 중...'
-        />
+        <AppHeader title='발주서 수정' description='불러오는 중...' />
       </div>
     );
   }
@@ -87,38 +102,18 @@ export const PurchaseOrderEdit = () => {
   if (!initialValue) {
     return (
       <div className='w-full flex flex-col'>
-        <AppHeader
-          title='발주서 수정'
-          description='존재하지 않는 발주서입니다'
-        />
+        <AppHeader title='발주서 수정' description='존재하지 않는 발주서입니다' />
       </div>
     );
   }
 
-  const handleSubmit = async (payload) => {
-    try {
-      await updatePurchaseOrder(orderNumber, payload);
-      toast.success('발주서가 수정되었습니다');
-      navigate('..'); // 목록으로
-    } catch (err) {
-      console.error(err);
-      toast.error('발주서 수정에 실패했습니다');
-    }
-  };
-
   return (
     <div className='w-full flex flex-col'>
-      <AppHeader
-        title='발주서 수정'
-        description='납기일/수량을 수정합니다'
-      />
+      <AppHeader title='발주서 수정' description='납기일/수량을 수정합니다' />
 
       <div className='mt-6'>
         <Card className='p-6'>
-          <PurchaseOrderForm
-            initialValue={initialValue}
-            onSubmit={handleSubmit}
-          />
+          <PurchaseOrderForm initialValue={initialValue} onSubmit={handleSubmit} />
         </Card>
       </div>
     </div>

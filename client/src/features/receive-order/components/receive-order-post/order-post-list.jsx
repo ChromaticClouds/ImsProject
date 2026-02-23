@@ -20,6 +20,7 @@ import { useOrderPostContext } from '../../providers/receive-order-post-provider
 import { AmountFieldCell } from './amount-field-cell.jsx';
 import { CircleXIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
+import { typeMap } from '@/constants/product-type.js';
 
 export const OrderPostList = () => {
   const { form } = useOrderPostContext();
@@ -66,7 +67,7 @@ export const OrderPostList = () => {
                             {product.name}
                           </span>
                           <span className='text-xs text-muted-foreground truncate'>
-                            {product.brand} · {product.type}
+                            {product.brand} · {typeMap[product.type]}
                           </span>
                         </div>
                       </div>
@@ -80,7 +81,7 @@ export const OrderPostList = () => {
 
                     {/* 단가 */}
                     <TableCell className='text-center w-60'>
-                      {product.salePrice * product.amount}원
+                      {product.salePrice?.toLocaleString()}원
                     </TableCell>
 
                     <TableCell className='w-20'>

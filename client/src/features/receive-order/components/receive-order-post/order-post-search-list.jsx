@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { useOrderPostContext } from '../../providers/receive-order-post-provider.jsx';
 import { OrderPostSearchSkeleton } from './order-post-search-skeleton.jsx';
+import { typeMap } from '@/constants/product-type.js';
 
 /**
  * @param {{ products: OrderPostProduct[], isFetching: boolean, onClick: () => void }} props
@@ -58,7 +59,7 @@ export const OrderPostSearchList = ({ products, isFetching, onClick }) => {
 
             {/* 브랜드 · 주종 */}
             <span className='text-xs text-muted-foreground truncate'>
-              {product.brand} · {product.type}
+              {product.brand} · {typeMap[product.type]}
             </span>
           </div>
         </button>

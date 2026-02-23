@@ -85,10 +85,10 @@ export const AdjustList = () => {
 
                     <TableCell className='text-center'>{row.name}</TableCell>
                     <TableCell className='text-center'>
-                      {row.purchasePrice}원
+                      {row.purchasePrice?.toLocaleString()}원
                     </TableCell>
                     <TableCell className='text-center'>
-                      {row.salePrice}원
+                      {row.salePrice?.toLocaleString()}원
                     </TableCell>
                     <TableCell className='text-center'>{row.brand}</TableCell>
                     <TableCell className='text-center'>{typeMap[row.type]}</TableCell>

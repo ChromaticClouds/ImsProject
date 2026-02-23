@@ -55,7 +55,7 @@ export const LeadTimeTypeAction = () => {
             onClick={() => setSearchType('vendor')}
           >
             <StoreIcon />
-            <span>거래처 별 리드타임</span>
+            <span>거래처별 리드타임</span>
 
             {searchType === 'vendor' && (
               <CheckIcon className='ml-auto h-4 w-4' />
@@ -66,7 +66,7 @@ export const LeadTimeTypeAction = () => {
             onClick={() => setSearchType('product')}
           >
             <BottleWineIcon />
-            <span>품목 별 리드타임</span>
+            <span>품목별 리드타임</span>
 
             {searchType === 'product' && (
               <CheckIcon className='ml-auto h-4 w-4' />

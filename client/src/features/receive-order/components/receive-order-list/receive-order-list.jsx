@@ -68,7 +68,7 @@ export const ReceiveOrderList = () => {
                 <TableCell>{o.bossName}</TableCell>
                 <TableCell>{o.userName}</TableCell>
                 <ReceiveOrderDetail order={o} />
-                <TableCell>{o.totalPrice}</TableCell>
+                <TableCell>{o.totalPrice?.toLocaleString()}</TableCell>
                 <TableCell>{formatDateWithDay(o.receiveDate)}</TableCell>
                 <TableCell>
                   <div className='w-full h-full flex justify-center items-center'>

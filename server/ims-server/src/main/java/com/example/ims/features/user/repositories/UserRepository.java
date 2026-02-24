@@ -33,8 +33,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	                     @Param("search") String search,
 	                     Pageable pageable);
 
-    List<User> findByUserRoleIn(List<UserRole> roles);
-
     List<UserRole> UserRole(UserRole userRole);
 
     Optional<User> findByEmail(String email);

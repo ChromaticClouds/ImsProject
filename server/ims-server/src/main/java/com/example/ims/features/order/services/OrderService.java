@@ -138,8 +138,11 @@ public class OrderService {
     }
 
     public List<UserIdentifier> getOutboundManagers() {
-        List<User> managers = userRepository
-            .findByUserRoleIn(List.of(UserRole.OUTBOUND));
+        List<User> managers = userRepository.findByUserRoleInAndStatus(
+            List.of(UserRole.OUTBOUND),
+            UserStatus.ACTIVE
+        );
+
         return managers.stream().map(UserIdentifier::from).toList();
     }
 

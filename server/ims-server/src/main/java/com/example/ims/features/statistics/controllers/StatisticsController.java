@@ -103,7 +103,7 @@ public class StatisticsController {
         @RequestParam(value="month", required=false) Integer month,
         @RequestParam("productId") Long productId
     ) {
-      return service.getStockRotationTrend(year, month, productId);
+        return service.getStockRotationTrend(year, month, productId);
     }
     
     @GetMapping("/stock-rotation/products/search")

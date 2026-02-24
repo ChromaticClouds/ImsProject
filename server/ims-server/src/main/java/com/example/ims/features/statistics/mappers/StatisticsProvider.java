@@ -361,14 +361,6 @@ public class StatisticsProvider {
 		    LIMIT #{limit}
 		  """;
 		}
-
-
-
-
-
-
-
-  
   
 }
 

@@ -34,7 +34,14 @@ public class PurchaseOrderPdfService {
         int total = lines.stream().mapToInt(PurchaseOrderPdfContent.Line::amount).sum();
 
         return new PurchaseOrderPdfContent(
-            ctx.orderNumber(), ctx.vendor(), lines, total
+            ctx.user().getName(),
+            ctx.user().getEmail(),
+            ctx.user().getUserRank().getLabel(),
+            ctx.receiveDate(),
+            ctx.orderNumber(),
+            ctx.vendor(),
+            lines,
+            total
         );
     }
 

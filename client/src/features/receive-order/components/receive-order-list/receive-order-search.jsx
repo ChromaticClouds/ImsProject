@@ -3,19 +3,8 @@
 /**
  * Components
  */
-import { AppDateRangePicker } from '@/components/common/app-date-range-picker.jsx';
 import { Button } from '@/components/ui/button.js';
 import { CardHeader } from '@/components/ui/card.js';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/ui/input-group.js';
-
-/**
- * Assets
- */
-import { SearchIcon } from 'lucide-react';
 
 /**
  * Hooks

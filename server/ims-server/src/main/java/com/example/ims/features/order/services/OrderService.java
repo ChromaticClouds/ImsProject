@@ -34,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -73,10 +75,9 @@ public class OrderService {
         Specification<VendorItem> spec = Specification
             .where(ProductSpecification.productsIn(search));
 
-        return vendorItemRepository
-            .findAll(spec)
-            .stream()
+        return vendorItemRepository.findAll(spec).stream()
             .map(VendorItem::getProduct)
+            .filter(Objects::nonNull)
             .map(OrderProduct::from)
             .distinct()
             .toList();

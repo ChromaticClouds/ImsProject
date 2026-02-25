@@ -244,6 +244,8 @@
  * @property {number} perCount
  * @property {number} salePrice
  * @property {string} imageUrl
+ * @property {number} stockCount
+ * @property {number} amount
  */
 
 /**

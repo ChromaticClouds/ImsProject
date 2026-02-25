@@ -65,6 +65,10 @@ public class PurchaseOrderHtmlTemplate {
             td.r { text-align:right; }
             .no-border td { border: 0; padding: 0; }
             .mt-12 { margin-top: 12px; }
+            .total-box { width: 100%%; border-collapse: collapse; border: 1.5px solid #ddd; }
+            .total-box td { border: 1px solid #ddd; padding: 12px 10px; font-size: 13px; }
+            .total-label { background: #f0f2f5; font-weight: 700; text-align: center; width: 110px; }
+            .total-value { text-align: right; font-weight: 700; font-size: 14px; }
           </style>
         </head>
         <body>
@@ -75,10 +79,13 @@ public class PurchaseOrderHtmlTemplate {
             <td style="vertical-align:top;">
               <div class="title">PURCHASE ORDER (발주서)</div>
               <div class="muted">발주번호: <b>%s</b></div>
+              <div class="muted">납기 희망일: <b>%s</b></div>
             </td>
             <td style="text-align:right; vertical-align:top;">
-              <div><b>IMS</b></div>
-              <div class="muted">발주 담당: (담당자명)</div>
+              <div><b>IMS PROJECT</b></div>
+              <div class="muted">발주 담당: %s</div>
+              <div class="muted">이메일: %s</div>
+              <div class="muted">직책: %s</div>
             </td>
           </tr>
         </table>
@@ -126,16 +133,15 @@ public class PurchaseOrderHtmlTemplate {
           <tr>
             <td style="width:60%%;"></td>
             <td style="width:40%%;">
-              <table>
+              <table class="total-box">
                 <tr>
-                  <td style="background:#f5f6f8; width:110px;">Total</td>
-                  <td class="r"><b>%s</b></td>
+                  <td class="total-label">Total</td>
+                  <td class="total-value">%s</td>
                 </tr>
               </table>
             </td>
           </tr>
         </table>
-
         <div class="muted" style="margin-top: 14px; font-size: 11px;">
           ※ 본 발주서는 전자문서입니다.
         </div>
@@ -144,6 +150,10 @@ public class PurchaseOrderHtmlTemplate {
         </html>
         """.formatted(
             esc(c.orderNumber()),
+            esc(c.receiveDate()),
+            esc(c.username()),
+            esc(c.email()),
+            esc(c.userRank()),
             vendorName,
             vendorEmail,
             rows,
@@ -161,6 +171,7 @@ public class PurchaseOrderHtmlTemplate {
                                 PurchaseOrderPdfContent content) {
 
         String orderNo = esc(ctx.orderNumber());
+        String receiveDate = esc(ctx.receiveDate());
         String vendorName = esc(ctx.vendor().getVendorName());
         String bossName = esc(ctx.vendor().getBossName());
         String email = esc(ctx.vendor().getEmail());
@@ -216,6 +227,10 @@ public class PurchaseOrderHtmlTemplate {
             <table style="width:100%%;">
               <tr>
                 <td style="width:120px;color:#666;">발주번호</td>
+                <td><b>%s</b></td>
+              </tr>
+              <tr>
+                <td style="color:#666;">납기 희망일</td>
                 <td><b>%s</b></td>
               </tr>
               <tr>
@@ -288,6 +303,7 @@ public class PurchaseOrderHtmlTemplate {
         """
         .formatted(
             orderNo,
+            receiveDate,
             vendorName,
             bossName,
             totalQty,

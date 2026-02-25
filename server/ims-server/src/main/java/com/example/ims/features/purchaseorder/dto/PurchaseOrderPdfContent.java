@@ -1,11 +1,14 @@
 package com.example.ims.features.purchaseorder.dto;
 
-import com.example.ims.features.product.enums.ProductType;
 import com.example.ims.features.vendor.dto.Vendor;
 
 import java.util.List;
 
 public record PurchaseOrderPdfContent(
+    String username,
+    String email,
+    String userRank,
+    String receiveDate,
     String orderNumber,
     Vendor vendor,
     List<Line> lines,

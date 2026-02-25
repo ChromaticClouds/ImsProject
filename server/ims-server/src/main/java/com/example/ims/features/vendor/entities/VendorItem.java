@@ -6,11 +6,13 @@ import com.example.ims.features.vendor.enums.VendorItemStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "vendor_item")
 @Getter
 @Setter
+@ToString
 public class VendorItem {
 
     @Id

@@ -12,7 +12,8 @@ export const RECEIVE_ORDER_TABLE_HEADER = [
 
 export const ORDER_POST_TABLE_HEADER = [
   { head: '제품', width: 'w-100' },
-  { head: '수량', width: 'w-20' },
+  { head: '현재고', width: 'w-20' },
+  { head: '수주 수량', width: 'w-40' },
   { head: '단가', width: 'w-60' },
   { head: '', width: 'w-20' },
 ];

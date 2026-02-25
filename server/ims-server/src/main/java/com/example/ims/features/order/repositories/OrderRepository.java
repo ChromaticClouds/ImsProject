@@ -38,7 +38,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     group by
         o.orderNumber, o.user.id, o.vendor.id, o.vendor.vendorName,
         o.vendor.bossName, o.orderDate, o.recieveDate, m.id, m.name
-    order by o.orderDate desc
+    order by o.orderDate desc, o.orderNumber desc
     """)
     Page<OrderSummary> findOrderSummaries(
         @Param("status") OrderStatus status,

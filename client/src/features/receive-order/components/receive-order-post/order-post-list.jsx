@@ -45,7 +45,7 @@ export const OrderPostList = () => {
           <TableBody>
             {field.state.value.length > 0 ? (
               field.state.value.map(
-                /** @param {OrderPostProduct & { amount: number }} product */
+                /** @param {OrderPostProduct} product */
                 (product, index) => (
                   <TableRow key={product.id}>
                     {/* 제품 */}
@@ -73,7 +73,12 @@ export const OrderPostList = () => {
                       </div>
                     </TableCell>
 
-                    {/* 수량 */}
+                    {/* 현재고 수량 */}
+                    <TableCell className='text-center w-40'>
+                      {product.stockCount}
+                    </TableCell>
+
+                    {/* 발주 수량 */}
                     <AmountFieldCell
                       product={product}
                       index={index}

@@ -19,15 +19,26 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findByStatusNotIn(List<UserStatus> statuses, Pageable pageable);
 
     @Query("""
-	SELECT u FROM User u
-	WHERE u.status NOT IN :excluded
-	AND (
-	   TRIM(:search) = ''
-	   OR (
-		 u.name IS NOT NULL
-		 AND LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%'))
+	select u from User u
+	where u.status not in :excluded
+	and (
+	   trim(:search) = ''
+	   or (
+		 u.name is not null
+		 and lower(u.name) like lower(concat('%', :search, '%'))
 	   )
 	)
+	order by
+		case u.status
+			when 'ACTIVE' then 1
+			when 'PENDING' then 2
+		end,
+		case u.userRank
+			when 'FIRST_ADMIN' then 1
+			when 'SECOND_ADMIN' then 2
+			when 'EMPLOYEE' then 3
+		end,
+		u.eid asc
 	""")
 	Page<User> findUsers(@Param("excluded") List<UserStatus> excluded,
 	                     @Param("search") String search,

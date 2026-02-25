@@ -6,6 +6,7 @@ import com.example.ims.features.vendor.entities.VendorItem;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @Table(name = "product")
 @Getter
 @Setter
+@ToString
 public class Product {
 
     @Id
@@ -51,6 +53,7 @@ public class Product {
     @OneToOne(mappedBy = "product")
     private Stock stock;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "product")
     private List<VendorItem> vendorItems;
 }

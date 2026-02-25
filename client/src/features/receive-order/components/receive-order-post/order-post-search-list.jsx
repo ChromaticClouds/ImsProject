@@ -27,7 +27,7 @@ export const OrderPostSearchList = ({ products, isFetching, onClick }) => {
         <button
           key={product.id}
           type='button'
-          className='w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors'
+          className='w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors justify-between'
           onClick={() => {
             form.setFieldValue('products', (prev) => {
               const existsIndex = prev.findIndex((p) => p.id === product.id);
@@ -44,23 +44,30 @@ export const OrderPostSearchList = ({ products, isFetching, onClick }) => {
             onClick();
           }}
         >
-          <Avatar className='w-10 h-10 rounded'>
-            <AvatarImage
-              src={product.imageUrl}
-              alt={product.name}
-              className='w-10 h-10 rounded object-cover shrink-0'
-            />
-            <AvatarFallback className='w-10 h-10 rounded' />
-          </Avatar>
+          <div className='flex gap-3 items-center'>
+            <Avatar className='w-10 h-10 rounded'>
+              <AvatarImage
+                src={product.imageUrl}
+                alt={product.name}
+                className='w-10 h-10 rounded object-cover shrink-0'
+              />
+              <AvatarFallback className='w-10 h-10 rounded' />
+            </Avatar>
 
-          <div className='flex flex-col min-w-0'>
-            {/* 제품명 */}
-            <span className='text-sm font-medium truncate'>{product.name}</span>
+            <div className='flex flex-col min-w-0'>
+              {/* 제품명 */}
+              <span className='text-sm font-medium truncate'>
+                {product.name}
+              </span>
 
-            {/* 브랜드 · 주종 */}
-            <span className='text-xs text-muted-foreground truncate'>
-              {product.brand} · {typeMap[product.type]}
-            </span>
+              {/* 브랜드 · 주종 */}
+              <span className='text-xs text-muted-foreground truncate'>
+                {product.brand} · {typeMap[product.type]}
+              </span>
+            </div>
+          </div>
+          <div className="text-sm">
+            {product.stockCount}
           </div>
         </button>
       ))}

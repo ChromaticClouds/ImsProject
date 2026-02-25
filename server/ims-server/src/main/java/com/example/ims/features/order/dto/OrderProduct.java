@@ -11,7 +11,8 @@ public record OrderProduct(
     String brand,
     Integer salePrice,
     Integer perCount,
-    Integer amount,
+    Integer amount,         // 발주 수량
+    Integer stockCount,     // 현재고 수량
     String imageUrl
 ) {
     public static OrderProduct from(Product product) {
@@ -24,6 +25,7 @@ public record OrderProduct(
             product.getSalePrice(),
             product.getPerCount(),
             0,
+            product.getStock().getCount(),
             product.getImageUrl()
         );
     }

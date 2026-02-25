@@ -84,23 +84,30 @@ export const NoticeDetail = () => {
         <CardContent className='space-y-4'>
           <div className='whitespace-pre-wrap text-sm'>{notice.content}</div>
 
-          {notice.fileName && (
-            <div className='text-sm flex gap-3'>
-              첨부파일:&nbsp;
-              <Button
-                variant='link'
-                className='p-0 h-auto'
-                onClick={async () => {
-                  await downloadFile(notice.fileName);
-                }}
-              >
-                {notice.fileName?.length >= 80
-                  ? notice.fileName?.slice(0, 80) + '...'
-                  : notice.fileName}
-              </Button>
-              <span>다운로드</span>
-            </div>
-          )}
+            {notice.fileName && (
+        <div className='space-y-1'>
+          <div className='text-sm flex gap-3 items-center'>
+            첨부파일:&nbsp;
+            <Button
+              variant='link'
+              className='p-0 h-auto'
+              onClick={async () => {
+                await downloadFile(notice.fileName);
+              }}
+            >
+              {notice.fileName?.length >= 80
+                ? notice.fileName?.slice(0, 80) + '...'
+                : notice.fileName}
+            </Button>
+            <span>다운로드</span>
+          </div>
+
+          <div className='mt-2 text-xs text-gray-600'>
+            ※ 첨부파일은 수정할 수 없습니다.
+          </div>
+        </div>
+      )}
+          
         </CardContent>
 
         <CardFooter className='flex justify-end gap-2'>

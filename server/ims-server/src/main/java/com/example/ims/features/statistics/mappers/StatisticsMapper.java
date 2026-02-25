@@ -130,6 +130,19 @@ public interface StatisticsMapper {
         @Param("to") LocalDate to
     );
     
+    @SelectProvider(type=StatisticsProvider.class, method="countInboundPartners")
+    Long countInboundPartners(
+        @Param("from") LocalDate from,
+        @Param("to") LocalDate to
+    );
+
+    @SelectProvider(type=StatisticsProvider.class, method="countOutboundPartners")
+    Long countOutboundPartners(
+        @Param("from") LocalDate from,
+        @Param("to") LocalDate to
+    );
+    
+    
     // ----------------------------------------------------------------
     // 품목별 수량 그래프
 

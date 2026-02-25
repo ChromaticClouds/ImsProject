@@ -99,22 +99,68 @@ public class StatisticsService {
 
     // 거래처별 입출고 순위 통계
 
+//    public List<ClientRankRow> getInboundPartnerRank(LocalDate from, LocalDate to, Integer limit) {
+//        validateRange(from, to);
+//
+//        int safeLimit = (limit == null ? 5 : Math.min(Math.max(limit, 1), 20));
+//
+//        List<ClientRankRow> top = mapper.selectInboundPartnerRankTop(from, to, safeLimit);
+//        Long total = mapper.sumInboundPartnerRankTotal(from, to);
+//        if (total == null)
+//            total = 0L;
+//
+//        long topSum = top.stream().mapToLong(r -> r.getQty() == null ? 0 : r.getQty()).sum();
+//        long other = total - topSum;
+//
+//        if (other > 0) {
+//            top.add(new ClientRankRow("기타", other));
+//        }
+//        return top;
+//    }
+//
+//    public List<ClientRankRow> getOutboundPartnerRank(LocalDate from, LocalDate to, Integer limit) {
+//        validateRange(from, to);
+//
+//        int safeLimit = (limit == null ? 5 : Math.min(Math.max(limit, 1), 20));
+//
+//        List<ClientRankRow> top = mapper.selectOutboundPartnerRankTop(from, to, safeLimit);
+//        Long total = mapper.sumOutboundPartnerRankTotal(from, to);
+//        if (total == null)
+//            total = 0L;
+//
+//        long topSum = top.stream().mapToLong(r -> r.getQty() == null ? 0 : r.getQty()).sum();
+//        long other = total - topSum;
+//
+//        if (other > 0) {
+//            top.add(new ClientRankRow("기타", other));
+//        }
+//        return top;
+//    }
+    
     public List<ClientRankRow> getInboundPartnerRank(LocalDate from, LocalDate to, Integer limit) {
         validateRange(from, to);
 
         int safeLimit = (limit == null ? 5 : Math.min(Math.max(limit, 1), 20));
 
         List<ClientRankRow> top = mapper.selectInboundPartnerRankTop(from, to, safeLimit);
-        Long total = mapper.sumInboundPartnerRankTotal(from, to);
-        if (total == null)
-            total = 0L;
+
+        Long totalQty = mapper.sumInboundPartnerRankTotal(from, to);
+        if (totalQty == null) totalQty = 0L;
+
+
+        Long partnerCnt = mapper.countInboundPartners(from, to);
+        long totalPartners = (partnerCnt == null) ? 0L : partnerCnt;
 
         long topSum = top.stream().mapToLong(r -> r.getQty() == null ? 0 : r.getQty()).sum();
-        long other = total - topSum;
+        long otherQty = totalQty - topSum;
 
-        if (other > 0) {
-            top.add(new ClientRankRow("기타", other));
+        long otherPartners = Math.max(0L, totalPartners - top.size());
+
+        if (otherPartners > 0) {
+            String label = "기타(" + otherPartners + ")";
+            top.add(new ClientRankRow(label, Math.max(0L, otherQty)));
         }
+
         return top;
     }
 
@@ -124,16 +170,23 @@ public class StatisticsService {
         int safeLimit = (limit == null ? 5 : Math.min(Math.max(limit, 1), 20));
 
         List<ClientRankRow> top = mapper.selectOutboundPartnerRankTop(from, to, safeLimit);
-        Long total = mapper.sumOutboundPartnerRankTotal(from, to);
-        if (total == null)
-            total = 0L;
+
+        Long totalQty = mapper.sumOutboundPartnerRankTotal(from, to);
+        if (totalQty == null) totalQty = 0L;
+
+        Long partnerCnt = mapper.countOutboundPartners(from, to);
+        long totalPartners = (partnerCnt == null) ? 0L : partnerCnt;
 
         long topSum = top.stream().mapToLong(r -> r.getQty() == null ? 0 : r.getQty()).sum();
-        long other = total - topSum;
+        long otherQty = totalQty - topSum;
 
-        if (other > 0) {
-            top.add(new ClientRankRow("기타", other));
+        long otherPartners = Math.max(0L, totalPartners - top.size());
+
+        if (otherPartners > 0) {
+            String label = "기타(" + otherPartners + ")";
+            top.add(new ClientRankRow(label, Math.max(0L, otherQty)));
         }
+
         return top;
     }
 	

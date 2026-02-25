@@ -205,30 +205,33 @@ public class StatisticsService {
         return out;
     }
 
-    private StockRotationPoint calcPoint(Long productId, LocalDate start, LocalDate end, String label) {
-        LocalDateTime startAt = start.atStartOfDay();
-        LocalDateTime endAt = end.atTime(23, 59, 59);
+	
+	private StockRotationPoint calcPoint(Long productId, LocalDate start, LocalDate end, String label) {
+	    LocalDateTime startAt = start.atStartOfDay();
+	    LocalDateTime endAt = end.atTime(23, 59, 59);
 
-        Integer beginStock = mapper.selectStockAt(productId, startAt); // 기초 재고
-        Integer endStock = mapper.selectStockAt(productId, endAt); // 기말 재고
-        // if (beginStock == null) beginStock = 0;
-        if (endStock == null) endStock = 0;
+	    Integer beginStockRaw = mapper.selectStockAt(productId, startAt); 
+	    Integer endStockRaw = mapper.selectStockAt(productId, endAt); 
+	    Long outboundRaw = mapper.selectOutboundQty(productId, start, end);
 
-        Long outbound = mapper.selectOutboundQty(productId, start, end);
-        if (outbound == null) outbound = 0L;
 
-        double avg = (beginStock + endStock) / 2.0; // 평균 재고량
-        double turnover = (avg <= 0.0) ? 0.0 : (outbound / avg); // 재고 회전율
+	    int beginStock = (beginStockRaw == null) ? 0 : beginStockRaw;
+	    int endStock = (endStockRaw == null) ? 0 : endStockRaw;
+	    long outbound = (outboundRaw == null) ? 0L : outboundRaw;
 
-        return StockRotationPoint.builder()
-            .period(label)
-            .outboundQty(outbound)
-            .beginStock(beginStock)
-            .endStock(endStock)
-            .avgStock(avg)
-            .turnover(turnover)
-            .build();
-    }
+	
+	    double avg = (beginStock + endStock) / 2.0; 
+	    double turnover = (avg <= 0.0) ? 0.0 : (outbound / avg);
+
+	    return StockRotationPoint.builder()
+	            .period(label)
+	            .outboundQty(outbound)
+	            .beginStock(beginStock)
+	            .endStock(endStock)
+	            .avgStock(avg)
+	            .turnover(turnover)
+	            .build();
+	}
 
     public List<StockRotationPoint> searchrotationProducts(String keyword, Integer limit){
         if(!StringUtils.hasText(keyword)) return List.of();

@@ -258,54 +258,122 @@ public class InboundQuerySqlProvider {
 
 
     // 금일 완료 내역
+//    public String selectCompletedTodaySummary(Map<String, Object> p) {
+//        String keyword = (String) p.get("keyword");
+//
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("""
+//            SELECT
+//              '입고 완료' AS statusText,
+//              o.order_number AS orderNumber,
+//              MIN(o.order_date) AS orderDate,
+//              MIN(o.recieve_date) AS receiveDate,
+//              MIN(vi.vendor_id) AS vendorId,
+//              MIN(v.vendor_name) AS vendorName,
+//              COUNT(*) AS itemCount,
+//              SUM(o.`count` * vi.purchase_price) AS totalAmount,
+//
+//              -- 🔥 핵심 수정: 변경된 row가 하나라도 있으면 1
+//              CASE
+//                WHEN SUM(CASE WHEN o.qty_changed = 1 THEN 1 ELSE 0 END) > 0
+//                THEN 1
+//                ELSE 0
+//              END AS qtyChanged
+//
+//            FROM `orders` o
+//            JOIN vendor_item vi ON vi.id = o.vendor_item_id
+//            JOIN vendor v ON v.id = vi.vendor_id
+//            JOIN product pr ON pr.id = vi.product_id
+//            WHERE o.status = 'INBOUND_COMPLETE'
+//              AND DATE(o.recieve_date) = CURDATE()
+//            """);
+//
+//        if (StringUtils.hasText(keyword)) {
+//            sb.append("""
+//                AND (
+//                  o.order_number LIKE CONCAT('%', #{keyword}, '%')
+//                  OR v.vendor_name LIKE CONCAT('%', #{keyword}, '%')
+//                  OR pr.name LIKE CONCAT('%', #{keyword}, '%')
+//                  OR pr.product_code LIKE CONCAT('%', #{keyword}, '%')
+//                )
+//            """);
+//        }
+//
+//        sb.append("""
+//            GROUP BY o.order_number
+//            ORDER BY MAX(o.recieve_date) DESC, o.order_number DESC
+//            LIMIT #{size} OFFSET #{offset}
+//        """);
+//
+//        return sb.toString();
+//    }
+    
+ // 금일 완료 내역
     public String selectCompletedTodaySummary(Map<String, Object> p) {
-        String keyword = (String) p.get("keyword");
+      String keyword = (String) p.get("keyword");
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("""
+      StringBuilder sb = new StringBuilder();
+      sb.append("""
+          SELECT
+            '입고 완료' AS statusText,
+            o.order_number AS orderNumber,
+            MIN(o.order_date) AS orderDate,
+            MIN(o.recieve_date) AS receiveDate,
+            MIN(vi.vendor_id) AS vendorId,
+            MIN(v.vendor_name) AS vendorName,
+            COUNT(*) AS itemCount,
+            SUM(o.`count` * vi.purchase_price) AS totalAmount,
+
+            CASE
+              WHEN SUM(CASE WHEN o.qty_changed = 1 THEN 1 ELSE 0 END) > 0
+              THEN 1
+              ELSE 0
+            END AS qtyChanged,
+
+            -- ✅ memo 추가 (order_number별 최신 lot의 memo)
+            hl.memo AS memo
+
+          FROM `orders` o
+          JOIN vendor_item vi ON vi.id = o.vendor_item_id
+          JOIN vendor v ON v.id = vi.vendor_id
+          JOIN product pr ON pr.id = vi.product_id
+
+          -- ✅ order_number -> lot_id 매핑
+          LEFT JOIN (
             SELECT
-              '입고 완료' AS statusText,
-              o.order_number AS orderNumber,
-              MIN(o.order_date) AS orderDate,
-              MIN(o.recieve_date) AS receiveDate,
-              MIN(vi.vendor_id) AS vendorId,
-              MIN(v.vendor_name) AS vendorName,
-              COUNT(*) AS itemCount,
-              SUM(o.`count` * vi.purchase_price) AS totalAmount,
+              o2.order_number,
+              MAX(h2.lot_id) AS lot_id
+            FROM `orders` o2
+            JOIN history h2 ON h2.vendor_item_id = o2.vendor_item_id
+            WHERE o2.status = 'INBOUND_COMPLETE'
+              AND DATE(o2.recieve_date) = CURDATE()
+            GROUP BY o2.order_number
+          ) lotmap ON lotmap.order_number = o.order_number
 
-              -- 🔥 핵심 수정: 변경된 row가 하나라도 있으면 1
-              CASE
-                WHEN SUM(CASE WHEN o.qty_changed = 1 THEN 1 ELSE 0 END) > 0
-                THEN 1
-                ELSE 0
-              END AS qtyChanged
+          LEFT JOIN history_lot hl ON hl.id = lotmap.lot_id
 
-            FROM `orders` o
-            JOIN vendor_item vi ON vi.id = o.vendor_item_id
-            JOIN vendor v ON v.id = vi.vendor_id
-            JOIN product pr ON pr.id = vi.product_id
-            WHERE o.status = 'INBOUND_COMPLETE'
-              AND DATE(o.recieve_date) = CURDATE()
-            """);
+          WHERE o.status = 'INBOUND_COMPLETE'
+            AND DATE(o.recieve_date) = CURDATE()
+          """);
 
-        if (StringUtils.hasText(keyword)) {
-            sb.append("""
-                AND (
-                  o.order_number LIKE CONCAT('%', #{keyword}, '%')
-                  OR v.vendor_name LIKE CONCAT('%', #{keyword}, '%')
-                  OR pr.name LIKE CONCAT('%', #{keyword}, '%')
-                  OR pr.product_code LIKE CONCAT('%', #{keyword}, '%')
-                )
-            """);
-        }
-
+      if (StringUtils.hasText(keyword)) {
         sb.append("""
-            GROUP BY o.order_number
-            ORDER BY MAX(o.recieve_date) DESC, o.order_number DESC
-            LIMIT #{size} OFFSET #{offset}
+            AND (
+              o.order_number LIKE CONCAT('%', #{keyword}, '%')
+              OR v.vendor_name LIKE CONCAT('%', #{keyword}, '%')
+              OR pr.name LIKE CONCAT('%', #{keyword}, '%')
+              OR pr.product_code LIKE CONCAT('%', #{keyword}, '%')
+            )
+          """);
+      }
+
+      sb.append("""
+          GROUP BY o.order_number, hl.memo
+          ORDER BY MAX(o.recieve_date) DESC, o.order_number DESC
+          LIMIT #{size} OFFSET #{offset}
         """);
 
-        return sb.toString();
+      return sb.toString();
     }
 
 

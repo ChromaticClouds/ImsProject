@@ -119,6 +119,7 @@ public class StatisticsProvider {
 	    JOIN vendor v ON v.id = vi.vendor_id
 	    WHERE o.status = 'INBOUND_COMPLETE'
 	      AND o.recieve_date BETWEEN #{from} AND #{to}
+	      AND v.type = 'Supplier'
 	    GROUP BY v.id, v.vendor_name
 	    ORDER BY qty DESC, v.vendor_name ASC
 	    LIMIT #{limit}
@@ -143,6 +144,7 @@ public class StatisticsProvider {
 	    JOIN vendor v ON v.id = o.seller_vendor_id
 	    WHERE o.status = 'OUTBOUND_COMPLETE'
 	      AND o.order_date BETWEEN #{from} AND #{to}
+	      AND v.type = 'Seller'
 	    GROUP BY v.id, v.vendor_name
 	    ORDER BY qty DESC, v.vendor_name ASC
 	    LIMIT #{limit}
@@ -157,6 +159,31 @@ public class StatisticsProvider {
 	      AND o.order_date BETWEEN #{from} AND #{to}
 	  """;
 	}
+  
+  public String countInboundPartners(Map<String, Object> p) {
+	  return """
+	    SELECT COUNT(DISTINCT v.id)
+	    FROM `orders` o
+	    JOIN vendor_item vi ON vi.id = o.vendor_item_id
+	    JOIN vendor v ON v.id = vi.vendor_id
+	    WHERE o.status = 'INBOUND_COMPLETE'
+	      AND o.recieve_date BETWEEN #{from} AND #{to}
+	      AND v.type = 'Supplier'
+	  """;
+	}
+
+	public String countOutboundPartners(Map<String, Object> p) {
+	  return """
+	    SELECT COUNT(DISTINCT v.id)
+	    FROM `orders` o
+	    JOIN vendor v ON v.id = o.seller_vendor_id
+	    WHERE o.status = 'OUTBOUND_COMPLETE'
+	      AND o.order_date BETWEEN #{from} AND #{to}
+	      AND v.type = 'Seller'
+	  """;
+	}
+  
+
   
   // --------------------------------------------------------------
   // 품목별 수량 그래프

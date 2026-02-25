@@ -1,5 +1,3 @@
-
-
 // @ts-check
 import { useHistoryCtx } from '../providers/history-provider.jsx';
 import { HistoryDateRangePicker } from './history-date-range-picker.jsx';
@@ -30,6 +28,16 @@ export function HistoryScreen() {
     error,
   } = useHistoryCtx();
 
+  const resetToDefault = () => {
+    
+    setQ('');
+    setPick({});
+
+    
+    const first = Array.isArray(rows) && rows.length ? Number(rows[0].lotId) : null;
+    setSelectedLotId(first);
+  };
+
   return (
     <div className="space-y-3">
       {/* 상단 필터 바 */}
@@ -41,7 +49,13 @@ export function HistoryScreen() {
           minDateYMD={minDateYMD}
         />
 
-        <HistorySearchBox q={q} setQ={setQ} pick={pick} setPick={setPick} />
+        <HistorySearchBox
+          q={q}
+          setQ={setQ}
+          pick={pick}
+          setPick={setPick}
+          onClear={resetToDefault}
+        />
 
         <HistoryFilters
           status={status}

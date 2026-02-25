@@ -3,7 +3,7 @@
 import { LoginField } from '@/features/auth/components/login-field.jsx';
 import { useAuthContext } from '@/features/auth/providers/auth-provider.jsx';
 import { RegisterField } from '@/features/auth/components/register-field.jsx';
-import { AUTH_FIELD_MAP } from '@/features/auth/constants/index.jsx';
+import { AUTH_FIELD_MAP } from '@/features/auth/constants/index.js';
 import { Label } from '@/components/ui/label.js';
 import { Link } from 'react-router-dom';
 

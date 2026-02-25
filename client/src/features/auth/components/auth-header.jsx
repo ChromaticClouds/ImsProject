@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card.js';
 import { useAuthContext } from '@/features/auth/providers/auth-provider.jsx';
-import { AUTH_HEADER_MAP } from '@/features/auth/constants/index.jsx';
+import { AUTH_HEADER_MAP } from '@/features/auth/constants/index.js';
 
 /**
  * Hooks
@@ -48,7 +48,7 @@ export const AuthHeader = ({ children }) => {
               <Button
                 variant='link'
                 className='cursor-pointer'
-                onClick={() => navigate('login')}
+                onClick={() => navigate('/login')}
               >
                 {buttonText}
               </Button>

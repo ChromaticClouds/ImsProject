@@ -543,7 +543,7 @@ export function VendorCreatePage() {
 
                 <div className='mt-3 grid gap-2'>
                   <Dialog>
-                    <DialogTrigger>
+                    <DialogTrigger asChild>
                       <Button
                         id='vendor-create-submit'
                         type='button'

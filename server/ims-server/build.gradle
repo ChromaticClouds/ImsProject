@@ -39,7 +39,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
-	implementation 'com.resend:resend-java:+'
+	implementation 'com.resend:resend-java:4.12.0'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
 	implementation 'org.apache.pdfbox:pdfbox:2.0.30'

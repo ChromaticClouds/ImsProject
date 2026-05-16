@@ -1,8 +1,8 @@
 {"properties": [
   {
     "name": "app.cors.allowed-origins",
-    "type": "java.lang.String",
-    "description": "A description for 'app.cors.allowed-origins'"
+    "type": "java.util.List<java.lang.String>",
+    "description": "Allowed frontend origins for CORS."
   },
   {
     "name": "resend.api-key",
@@ -27,7 +27,7 @@
   {
     "name": "resend.base-url",
     "type": "java.lang.String",
-    "description": "A description for 'resend.base-url'"
+    "description": "Base URL for the Resend API."
   },
   {
     "name": "jwt.secret",

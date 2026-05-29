@@ -4,6 +4,7 @@ import com.example.ims.features.auth.exceptions.ForbiddenException;
 import com.example.ims.features.auth.exceptions.UnauthorizedException;
 
 import com.example.ims.features.notice.exceptions.FileNotFoundException;
+import com.example.ims.features.purchaseorder.exception.BuildPoContextException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -67,6 +68,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handle(FileNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ApiResponse.fail(e.getMessage()));
+    }
+
+    @ExceptionHandler(BuildPoContextException.class)
+    public ResponseEntity<ApiResponse<Void>> handle(BuildPoContextException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ApiResponse.fail(e.getMessage()));
     }
 }

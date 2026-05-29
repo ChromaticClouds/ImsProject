@@ -10,12 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import z from 'zod';
 
-const defaultValues = {
-  date: new Date(),
-  supplierId: null,
-  products: [],
-};
-
 const productCountSchema = z
   .object({
     id: z.number(),
@@ -55,7 +49,16 @@ const poPostSchema = z.object({
     .min(1, '상품을 최소 1개 이상 추가해주세요'),
 });
 
-/** @typedef {z.infer<typeof poPostSchema>} PoPostFormValues */
+/**
+ * @typedef {z.input<typeof poPostSchema>} PoPostSchemaType
+ */
+
+/** @type {PoPostSchemaType} */
+const defaultValues = {
+  date: new Date(),
+  supplierId: null,
+  products: [],
+};
 
 export const usePoPostForm = () => {
   const navigate = useNavigate();
@@ -63,7 +66,6 @@ export const usePoPostForm = () => {
   const queryClient = useQueryClient();
 
   const form = useForm({
-    /** @type {PoPostFormValues} */
     defaultValues,
     validators: {
       onChange: poPostSchema,

@@ -26,7 +26,6 @@ public class PurchaseOrderService {
     private final PurchaseOrderPdfService pdfService;
     private final PurchaseOrderLoader loader;
     private final PurchaseOrderMailSender mailSender;
-    private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
     public PurchaseOrderListResponse list(String view, String keyword, LocalDate from, LocalDate to, Integer page, Integer size) {
@@ -165,15 +164,27 @@ public class PurchaseOrderService {
         );
 
         for (PurchaseOrderContext ctx : load.contexts()) {
+            PurchaseOrderPdfContent content;
+            byte[] pdf;
+
             try {
-                PurchaseOrderPdfContent content = pdfService.buildDto(ctx);
-                byte[] pdf = pdfService.generate(content);
+                content = pdfService.buildDto(ctx);
+                pdf = pdfService.generate(content);
+            } catch (Exception e) {
+                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), "PDF", e.getMessage()));
+                continue;
+            }
+
+            try {
                 String html = PurchaseOrderHtmlTemplate.render(ctx, content);
-
                 mailSender.sendPurchaseOrder(ctx, html, pdf);
+            } catch (Exception e) {
+                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), "MAIL", e.getMessage()));
+                continue;
+            }
 
+            try {
                 mapper.markSentByOrderNumber(ctx.orderNumber());
-
                 success.add(new SendGroupResult.Success(ctx.orderNumber()));
             } catch (Exception e) {
                 failed.add(new SendGroupResult.Fail(ctx.orderNumber(), "SEND", e.getMessage()));

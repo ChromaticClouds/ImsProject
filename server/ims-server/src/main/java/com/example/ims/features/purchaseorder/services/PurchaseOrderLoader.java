@@ -6,6 +6,7 @@ import com.example.ims.features.order.exceptions.OrderNotFoundException;
 import com.example.ims.features.order.repositories.OrderRepository;
 import com.example.ims.features.purchaseorder.dto.LoadGroupResult;
 import com.example.ims.features.purchaseorder.dto.PurchaseOrderContext;
+import com.example.ims.features.purchaseorder.exception.BuildPoContextException;
 import com.example.ims.features.vendor.dto.Vendor;
 import com.example.ims.features.vendor.entities.VendorItem;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class PurchaseOrderLoader {
         List<Order> orders = orderRepository.findAllByOrderNumber(orderNumber);
 
         if (orders.isEmpty())
-            throw new IllegalStateException("해당 주문번호의 발주 데이터가 없습니다.");
+            throw new BuildPoContextException("해당 주문번호의 발주 데이터가 없습니다.");
 
         return validateAndBuild(orderNumber, orders);
     }
@@ -100,7 +101,7 @@ public class PurchaseOrderLoader {
             .toList();
 
         if (items.isEmpty())
-            throw new IllegalStateException("발주 품목이 비어있습니다.");
+            throw new BuildPoContextException("발주 품목이 비어있습니다.");
 
         Set<Long> vendorIds = items.stream()
             .map(VendorItem::getVendor)
@@ -109,12 +110,12 @@ public class PurchaseOrderLoader {
             .collect(Collectors.toSet());
 
         if (vendorIds.size() != 1)
-            throw new IllegalStateException("하나의 발주서는 단일 공급처만 허용됩니다.");
+            throw new BuildPoContextException("하나의 발주서는 단일 공급처만 허용됩니다.");
 
         Vendor vendor = items.getFirst().getVendor();
 
-        if (vendor.getEmail() == null || vendor.getEmail().isEmpty())
-            throw new IllegalStateException("공급처 이메일이 없어 전송할 수 없습니다.");
+        if (vendor.getEmail() == null || vendor.getEmail().isBlank())
+            throw new BuildPoContextException("공급처 이메일이 없어 전송할 수 없습니다.");
 
         User user = orders.getFirst().getUser();
 
@@ -125,23 +126,23 @@ public class PurchaseOrderLoader {
             .collect(Collectors.toSet());
 
         if (userIds.size() != 1)
-            throw new IllegalStateException("하나의 발주서는 단일 담당자만 허용됩니다.");
+            throw new BuildPoContextException("하나의 발주서는 단일 담당자만 허용됩니다.");
 
         if (user == null)
-            throw new IllegalStateException("발주 담당자 정보가 없어 전송할 수 없습니다.");
+            throw new BuildPoContextException("발주 담당자 정보가 없어 전송할 수 없습니다.");
 
         if (user.getName() == null || user.getName().isBlank())
-            throw new IllegalStateException("담당자 이름이 없어 발주서를 전송할 수 없습니다.");
+            throw new BuildPoContextException("담당자 이름이 없어 발주서를 전송할 수 없습니다.");
 
         LocalDate receiveDate = orders.getFirst().getRecieveDate();
 
         if (receiveDate == null)
-            throw new IllegalStateException("납기 희망일이 지정되지 않았습니다.");
+            throw new BuildPoContextException("납기 희망일이 지정되지 않았습니다.");
 
         LocalDate today = LocalDate.now();
 
         if (receiveDate.isBefore(today))
-            throw new IllegalStateException("납기 희망일은 오늘 이후 날짜여야 합니다.");
+            throw new BuildPoContextException("납기 희망일은 오늘 이후 날짜여야 합니다.");
 
         String receiveDateStr =
             receiveDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));

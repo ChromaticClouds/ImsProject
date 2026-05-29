@@ -13,10 +13,12 @@ import { Button } from '@/components/ui/button.js';
 import { useNavigate } from 'react-router-dom';
 import { usePoFormContext } from '../../providers/po-post-form-provder.jsx';
 import { Spinner } from '@/components/ui/spinner.js';
+import { useState } from 'react';
 
 export const PoPostAction = () => {
   const form = usePoFormContext();
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   return (
     <form.Subscribe
@@ -30,7 +32,14 @@ export const PoPostAction = () => {
           >
             목록으로
           </Button>
-          <AlertDialog>
+          <AlertDialog
+            open={open}
+            onOpenChange={(nextOpen) => {
+              if (isSubmitting && !nextOpen) return;
+
+              setOpen(nextOpen);
+            }}
+          >
             <AlertDialogTrigger asChild>
               <Button
                 disabled={!canSubmit || !isTouched}
@@ -47,11 +56,16 @@ export const PoPostAction = () => {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>취소</AlertDialogCancel>
+                <AlertDialogCancel disabled={isSubmitting}>
+                  취소
+                </AlertDialogCancel>
                 <AlertDialogAction
                   disabled={isSubmitting}
                   type='submit'
-                  onClick={form.handleSubmit}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    form.handleSubmit();
+                  }}
                 >
                   {isSubmitting ? <Spinner /> : '등록'}
                 </AlertDialogAction>

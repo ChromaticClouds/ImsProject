@@ -10,9 +10,6 @@ spring:
     password: ${DB_PASS}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  mongodb:
-    uri: ${MONGO_URI}
-
   jpa:
     show-sql: false
     properties:
@@ -46,3 +43,5 @@ jwt:
   secret: ${JWT_SECRET}
   access-exp-minutes: 60
   refresh-exp-days: 14
+
+kind: Application

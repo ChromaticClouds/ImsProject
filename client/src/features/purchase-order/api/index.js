@@ -54,16 +54,14 @@ export async function updatePurchaseOrder(orderNumber, payload) {
       hooks,
       json: payload,
     })
-    .json()
-    .catch(() => null);
+    .json();
 }
 
 /** 삭제 @param {string} orderNumber */
 export async function deletePurchaseOrder(orderNumber) {
   return await api
     .delete(`purchase-orders/${encodeURIComponent(orderNumber)}`, { hooks })
-    .json()
-    .catch(() => null);
+    .json();
 }
 
 /**
@@ -84,16 +82,14 @@ export async function sendPurchaseOrder(orderNumber) {
 export async function bulkSendPurchaseOrders(orderNumbers) {
   return await api
     .post('purchase-orders/send', { hooks, json: { orderNumbers } })
-    .json()
-    .catch(() => null);
+    .json();
 }
 
 /** 일괄 삭제 @param {string[]} orderNumbers */
 export async function bulkDeletePurchaseOrders(orderNumbers) {
   return await api
     .post('purchase-orders/delete', { hooks, json: { orderNumbers } })
-    .json()
-    .catch(() => null);
+    .json();
 }
 
 /**

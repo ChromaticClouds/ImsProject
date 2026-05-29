@@ -134,7 +134,7 @@
  * @param {string} page
  * @param {string} search
  * @param {string} type
- * @param {string} brand 
+ * @param {string} brand
  */
 
 /**
@@ -272,6 +272,7 @@
 
 /**
  * @typedef {object} OrderSummary
+ * @property {number} vendorItemId
  * @property {number} id
  * @property {string} name
  * @property {string} brand

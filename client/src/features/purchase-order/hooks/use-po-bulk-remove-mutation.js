@@ -19,7 +19,10 @@ export const usePoBulkRemoveMutation = () => {
       bulkDeletePurchaseOrders(orderNumbers),
 
     onSuccess: (res, vars) => {
-      if (res?.success === false) return;
+      if (res?.success === false) {
+        toast.error(res?.message ?? ERROR.UNEXPECTED_ERROR);
+        return;
+      }
       toast.success(res?.message ?? '삭제되었습니다.');
       qc.invalidateQueries({ queryKey: ['purchase-orders'] });
     },

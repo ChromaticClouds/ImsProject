@@ -32,14 +32,22 @@ export const PoSendDialog = ({ content }) => {
   const onConfirm = async () => {
     if (!orderNumber) return;
 
-    const res = await send.mutateAsync(orderNumber).catch(() => null);
-    if (res?.success !== false) setOpen(false);
+    try {
+      const res = await send.mutateAsync(orderNumber);
+      if (res?.success) setOpen(false);
+    } catch {
+      // usePoSendMutation에서 사용자에게 에러를 표시한다.
+    }
   };
 
   return (
     <Dialog
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(nextOpen) => {
+        if (send.isPending && !nextOpen) return;
+
+        setOpen(nextOpen);
+      }}
     >
       <DialogTrigger asChild>
         <Button
@@ -105,7 +113,12 @@ export const PoSendDialog = ({ content }) => {
 
         <DialogFooter className='gap-2 sm:gap-2'>
           <DialogClose asChild>
-            <Button variant='outline'>취소</Button>
+            <Button
+              variant='outline'
+              disabled={send.isPending}
+            >
+              취소
+            </Button>
           </DialogClose>
 
           <Button

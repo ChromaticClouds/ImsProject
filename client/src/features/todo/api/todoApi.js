@@ -5,7 +5,7 @@
 // export const fetchTodos = async () => store;
 
 //  // 🔄 나중에 Spring으로 교체
-//   // const res = await fetch('http://localhost:8080/api/todos');
+//   // const res = await api.get('todo');
 //   // return res.json();
 
 // export const fetchTodoById = async (id) => {

@@ -11,6 +11,6 @@ export const useSearchQuery = () => {
 
   return useQuery({
     queryKey: ['search', 'notice', search],
-    queryFn: () => api.get(`api/notice/list?search=${search}`).json(),
+    queryFn: () => api.get('notice/list', { searchParams: { search } }).json(),
   })
 }

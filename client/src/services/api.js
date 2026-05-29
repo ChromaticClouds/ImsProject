@@ -15,26 +15,20 @@ export const hooks = {
       }
     },
   ],
-  afterResponse: afterResponseHooks
-}
+  afterResponse: afterResponseHooks,
+};
+
+const getApiPrefixUrl = () => {
+  const serverUrl = import.meta.env.VITE_SERVER_URL ?? '';
+  const normalizedUrl = serverUrl.replace(/\/+$/, '');
+
+  return normalizedUrl.endsWith('/api') ? normalizedUrl : `${normalizedUrl}/api`;
+};
 
 export const api = ky.create({
-  prefixUrl: import.meta.env.VITE_SERVER_URL,
+  prefixUrl: getApiPrefixUrl(),
   timeout: 30000,
   credentials: 'include',
   retry: 0,
-  hooks
-}); // 기본 API 클라이언트
-
-
-
-
-
-
-
-
-
-
-
-
-
+  hooks,
+});

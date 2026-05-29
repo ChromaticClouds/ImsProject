@@ -28,7 +28,7 @@ import { api, hooks } from '@/services/api.js';
  */
 export async function fetchPurchaseOrders(params) {
   return await api
-    .get('api/purchase-orders', { hooks, searchParams: params })
+    .get('purchase-orders', { hooks, searchParams: params })
     .json();
 }
 
@@ -39,7 +39,7 @@ export async function fetchPurchaseOrders(params) {
  */
 export async function fetchPurchaseOrder(orderNumber) {
   return await api
-    .get(`api/purchase-orders/${encodeURIComponent(orderNumber)}`, { hooks })
+    .get(`purchase-orders/${encodeURIComponent(orderNumber)}`, { hooks })
     .json();
 }
 
@@ -50,7 +50,7 @@ export async function fetchPurchaseOrder(orderNumber) {
  */
 export async function updatePurchaseOrder(orderNumber, payload) {
   return await api
-    .patch(`api/purchase-orders/${encodeURIComponent(orderNumber)}`, {
+    .patch(`purchase-orders/${encodeURIComponent(orderNumber)}`, {
       hooks,
       json: payload,
     })
@@ -61,30 +61,29 @@ export async function updatePurchaseOrder(orderNumber, payload) {
 /** 삭제 @param {string} orderNumber */
 export async function deletePurchaseOrder(orderNumber) {
   return await api
-    .delete(`api/purchase-orders/${encodeURIComponent(orderNumber)}`, { hooks })
+    .delete(`purchase-orders/${encodeURIComponent(orderNumber)}`, { hooks })
     .json()
     .catch(() => null);
 }
 
-/** 
+/**
  * 전송
- * @param {string} orderNumber 
+ * @param {string} orderNumber
  * @returns {Promise<ApiResponse<any>>}
  */
 export async function sendPurchaseOrder(orderNumber) {
   return await api
-    .post(`api/purchase-orders/${encodeURIComponent(orderNumber)}/send`, { hooks })
-    .json()
-    .catch(() => null);
+    .post(`purchase-orders/${encodeURIComponent(orderNumber)}/send`, { hooks })
+    .json();
 }
 
-/** 일괄 전송 
+/** 일괄 전송
  * @param {string[]} orderNumbers
- * @returns {Promise<ApiResponse>} 
+ * @returns {Promise<ApiResponse>}
  */
 export async function bulkSendPurchaseOrders(orderNumbers) {
   return await api
-    .post('api/purchase-orders/send', { hooks, json: { orderNumbers } })
+    .post('purchase-orders/send', { hooks, json: { orderNumbers } })
     .json()
     .catch(() => null);
 }
@@ -92,7 +91,7 @@ export async function bulkSendPurchaseOrders(orderNumbers) {
 /** 일괄 삭제 @param {string[]} orderNumbers */
 export async function bulkDeletePurchaseOrders(orderNumbers) {
   return await api
-    .post('api/purchase-orders/delete', { hooks, json: { orderNumbers } })
+    .post('purchase-orders/delete', { hooks, json: { orderNumbers } })
     .json()
     .catch(() => null);
 }

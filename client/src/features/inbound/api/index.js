@@ -6,7 +6,7 @@ import { api, hooks } from '@/services/api.js';
  */
 export async function fetchInboundPendingSummary(params) {
   return await api
-    .get('api/inbounds/pending/summary', { searchParams: params })
+    .get('inbounds/pending/summary', { searchParams: params })
     .json();
 }
 
@@ -16,7 +16,7 @@ export async function fetchInboundPendingSummary(params) {
  */
 export async function fetchInboundPendingItems(orderNumber) {
   return await api
-    .get(`api/inbounds/pending/${encodeURIComponent(orderNumber)}/items`)
+    .get(`inbounds/pending/${encodeURIComponent(orderNumber)}/items`)
     .json();
 }
 
@@ -26,7 +26,7 @@ export async function fetchInboundPendingItems(orderNumber) {
  */
 export async function fetchInboundPendingDetail(orderNumber) {
   return await api
-    .get(`api/inbounds/pending/${encodeURIComponent(orderNumber)}`)
+    .get(`inbounds/pending/${encodeURIComponent(orderNumber)}`)
     .json();
 }
 
@@ -37,7 +37,7 @@ export async function fetchInboundPendingDetail(orderNumber) {
  */
 export async function updateInboundPending(orderNumber, data) {
   return await api
-    .patch(`api/inbounds/pending/${encodeURIComponent(orderNumber)}`, { json: data })
+    .patch(`inbounds/pending/${encodeURIComponent(orderNumber)}`, { json: data })
     .json();
 }
 
@@ -47,7 +47,7 @@ export async function updateInboundPending(orderNumber, data) {
  */
 export async function completeInboundOrder(orderId) {
   return await api
-    .patch(`api/inbounds/orders/${encodeURIComponent(orderId)}/complete`)
+    .patch(`inbounds/orders/${encodeURIComponent(orderId)}/complete`)
     .json();
 }
 
@@ -58,7 +58,7 @@ export async function completeInboundOrder(orderId) {
  */
 export async function completeInboundByOrderNumber(orderNumber, body) {
   return await api
-    .patch(`api/inbounds/orders/by-number/${encodeURIComponent(orderNumber)}/complete`, {
+    .patch(`inbounds/orders/by-number/${encodeURIComponent(orderNumber)}/complete`, {
       json: body ?? {},
       hooks,
     })
@@ -71,7 +71,7 @@ export async function completeInboundByOrderNumber(orderNumber, body) {
  */
 export async function fetchInboundCompletedTodaySummary(params) {
   return await api
-    .get('api/inbounds/completed/today/summary', {
+    .get('inbounds/completed/today/summary', {
       searchParams: {
         keyword: params?.keyword ?? '',
         page: String(params?.page ?? 0),
@@ -87,7 +87,7 @@ export async function fetchInboundCompletedTodaySummary(params) {
  */
 export async function fetchInboundCompletedItems(orderNumber) {
   return await api
-    .get(`api/inbounds/completed/${encodeURIComponent(orderNumber)}/items`)
+    .get(`inbounds/completed/${encodeURIComponent(orderNumber)}/items`)
     .json();
 }
 
@@ -98,5 +98,5 @@ export async function fetchInboundCompletedItems(orderNumber) {
 export async function fetchInboundSafetyStocks(productIds) {
   const sp = new URLSearchParams();
   for (const id of productIds) sp.append('productIds', String(id));
-  return await api.get(`api/inbounds/safeStock?${sp.toString()}`).json();
+  return await api.get(`inbounds/safeStock?${sp.toString()}`).json();
 }

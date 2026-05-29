@@ -1,8 +1,26 @@
 // @ts-check
-import ky from 'ky';
+import ky, { HTTPError } from 'ky';
 
 import { refreshToken } from '@/features/auth/api/index.js';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
+
+/** @type {Promise<RefreshResponse> | null} */
+let refreshPromise = null;
+
+const getRefreshPromise = () => {
+  if (!refreshPromise) {
+    refreshPromise = refreshToken()
+      .then((res) => {
+        if (!res.data) throw new Error('Refresh response data is missing.');
+        return res.data;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+};
 
 /**
  * @type {import('ky').AfterResponseHook[]}
@@ -21,7 +39,7 @@ export const afterResponseHooks = [
     }
 
     try {
-      const { data } = await refreshToken();
+      const data = await getRefreshPromise();
       useAuthStore.getState().setAuth(data.user, data.token);
 
       const retryRequest = request.clone();
@@ -29,7 +47,7 @@ export const afterResponseHooks = [
 
       return ky(retryRequest, { ...options });
     } catch (err) {
-      if (err?.response) {
+      if (err instanceof HTTPError && err?.response) {
         console.error('status:', err.response.status);
         try {
           const bodyText = await err.response.text();

@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { api } from '@/services/api';
 
 /**
  * ✅ TODO: 백엔드 붙이면 여기만 실제 API로 변경
@@ -9,10 +10,7 @@ import { useQuery } from '@tanstack/react-query';
  * - 또는 GET /api/todos?from=YYYY-MM-DD&to=YYYY-MM-DD
  */
 const fetchTodayTodos = async () => {
-  const res = await fetch('http://localhost:8080/api/todos/today?size=8', {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const res = await api.get('todo', { searchParams: { size: 8 } });
 
   if (!res.ok) throw new Error('금일 투두 조회 실패');
   return res.json();

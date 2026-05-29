@@ -6,19 +6,14 @@ import { useQuery } from '@tanstack/react-query';
 // 모크
 import { notices } from '../../notice/mocks/notice-mock';
 import { ChevronRightIcon } from 'lucide-react';
+import { api } from '@/services/api';
 
 /**
  * ✅ TODO: 백엔드 붙이면 여기만 진짜 API로 바꾸면 됨
  * - 예: GET /api/notices?size=5&page=0
  */
 const fetchMainNotices = async () => {
-  const res = await fetch(
-    'http://localhost:8080/api/notice/list?size=5&page=1',
-    {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    },
-  );
+  const res = await api.get('notice/list', { searchParams: { size: 5, page: 1 } });
 
   //console.log("mainNotices",res)
 

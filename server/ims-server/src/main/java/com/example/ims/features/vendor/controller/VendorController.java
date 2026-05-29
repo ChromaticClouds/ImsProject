@@ -26,7 +26,7 @@ import com.example.ims.features.vendor.dto.VendorDetailResponse;
 
 
 @RestController
-@RequestMapping("/vendor")
+@RequestMapping("/api/vendor")
 @RequiredArgsConstructor
 public class VendorController {
     

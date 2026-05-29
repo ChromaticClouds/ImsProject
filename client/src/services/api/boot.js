@@ -3,7 +3,7 @@ import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
 import { api } from '@/services/api.js';
 import { toast } from 'sonner';
 
-export const fetchApiHealth = () => api.get('api/health').json();
+export const fetchApiHealth = () => api.get('health').json();
 
 export const bootStrapAuth = async () => {
   try {

@@ -2,7 +2,7 @@ import { api, hooks } from "@/services/api.js";
 
 /** @typedef {{ from: string, to: string, userId?: number, page?: number, size?: number }} OutboundPendingSummaryParams */
 export async function fetchOutboundPendingSummary(params) {
-  return await api.get('api/outbounds/pending/summary', { searchParams: params, hooks }).json();
+  return await api.get('outbounds/pending/summary', { searchParams: params, hooks }).json();
 }
 
 /** 
@@ -10,19 +10,19 @@ export async function fetchOutboundPendingSummary(params) {
  * @returns {Promise<Omit<OrderRegisterProduct, '_baseQty'>>}
  */
 export async function fetchOutboundPendingItems(orderNumber) {
-  return await api.get(`api/outbounds/pending/${encodeURIComponent(orderNumber)}/items`).json();
+  return await api.get(`outbounds/pending/${encodeURIComponent(orderNumber)}/items`).json();
 }
 
 /**
  * @typedef {{ page?: number, size?: number }} OutboundCompletedTodaySummaryParams
  */
 export async function fetchOutboundCompletedTodaySummary(params) {
-  return await api.get('api/outbounds/completed/today/summary', { searchParams: params }).json();
+  return await api.get('outbounds/completed/today/summary', { searchParams: params }).json();
 }
 
 /** @param {string} orderNumber */
 export async function fetchOutboundCompletedItems(orderNumber) {
-  return await api.get(`api/outbounds/completed/${encodeURIComponent(orderNumber)}/items`).json();
+  return await api.get(`outbounds/completed/${encodeURIComponent(orderNumber)}/items`).json();
 }
 
 /**
@@ -32,29 +32,29 @@ export async function fetchOutboundCompletedItems(orderNumber) {
  */
 export const completeOutboundByOrderNumber = async (orderNumber, body = {}) => {
   return await api
-    .patch(`api/outbounds/orders/by-number/${encodeURIComponent(orderNumber)}/complete`, {
+    .patch(`outbounds/orders/by-number/${encodeURIComponent(orderNumber)}/complete`, {
       json: body,
     })
     .json();
 };
 
 export async function fetchOutboundAssignees() {
-  return await api.get('api/outbounds/assignees').json();
+  return await api.get('outbounds/assignees').json();
 }
 
 export async function fetchOutboundStockTypes() {
-  const res = await api.get('api/outbounds/stock/types').json();
+  const res = await api.get('outbounds/stock/types').json();
   return res.data;
 }
 
 /** @param {{ type: string }} params */
 export async function fetchOutboundStockBrands(params) {
-  const res = await api.get('api/outbounds/stock/brands', { searchParams: params }).json();
+  const res = await api.get('outbounds/stock/brands', { searchParams: params }).json();
   return res.data;
 }
 
 /** @param {{ type: string, brand: string }} params */
 export async function fetchOutboundStockProducts(params) {
-  const res = await api.get('api/outbounds/stock/products', { searchParams: params }).json();
+  const res = await api.get('outbounds/stock/products', { searchParams: params }).json();
   return res.data;
 }

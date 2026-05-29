@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 
 @RestController
-@RequestMapping("/invitation")
+@RequestMapping("/api/invitation")
 @RequiredArgsConstructor
 public class InvitationController {
 

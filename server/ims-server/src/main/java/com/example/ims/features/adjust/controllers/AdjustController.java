@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/adjust")
+@RequestMapping("/api/adjust")
 @RequiredArgsConstructor
 public class AdjustController {
 

@@ -9,6 +9,7 @@ import com.example.ims.features.purchaseorder.dto.LoadGroupResult;
 import com.example.ims.features.purchaseorder.dto.PurchaseOrderContext;
 import com.example.ims.features.purchaseorder.dto.PurchaseOrderPdfContent;
 import com.example.ims.features.purchaseorder.dto.SendGroupResult;
+import com.example.ims.features.purchaseorder.enums.PurchaseOrderSendFailStage;
 import com.example.ims.features.purchaseorder.exception.BuildPoContextException;
 import com.example.ims.features.purchaseorder.mappers.PurchaseOrderMapper;
 import com.example.ims.features.vendor.dto.Vendor;
@@ -192,9 +193,9 @@ class PurchaseOrderServiceUnitTest {
 
         Map<String, SendGroupResult.Fail> failedByOrderNumber = result.failed().stream()
             .collect(Collectors.toMap(SendGroupResult.Fail::orderNumber, fail -> fail));
-        assertEquals("LOAD", failedByOrderNumber.get("PLA-MISSING").stage());
-        assertEquals("PDF", failedByOrderNumber.get("PLA-PDF-FAIL").stage());
-        assertEquals("MAIL", failedByOrderNumber.get("PLA-MAIL-FAIL").stage());
+        assertEquals(PurchaseOrderSendFailStage.LOAD, failedByOrderNumber.get("PLA-MISSING").stage());
+        assertEquals(PurchaseOrderSendFailStage.PDF, failedByOrderNumber.get("PLA-PDF-FAIL").stage());
+        assertEquals(PurchaseOrderSendFailStage.MAIL, failedByOrderNumber.get("PLA-MAIL-FAIL").stage());
 
         InOrder inOrder = inOrder(pdfService, mailSender, mapper);
         inOrder.verify(pdfService).buildDto(ok1);

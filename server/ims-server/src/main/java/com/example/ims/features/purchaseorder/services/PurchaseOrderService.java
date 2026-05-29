@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.ims.features.inbound.dto.InboundSafeStockRow;
 import com.example.ims.features.inbound.dto.PageMeta;
 import com.example.ims.features.purchaseorder.dto.*;
+import com.example.ims.features.purchaseorder.enums.PurchaseOrderSendFailStage;
 import com.example.ims.features.purchaseorder.mappers.PurchaseOrderMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -159,7 +160,7 @@ public class PurchaseOrderService {
         List<SendGroupResult.Success> success = new ArrayList<>();
         List<SendGroupResult.Fail> failed = new ArrayList<>(
             load.failed().stream()
-                .map(f -> new SendGroupResult.Fail(f.orderNumber(), "LOAD", f.reason()))
+                .map(f -> new SendGroupResult.Fail(f.orderNumber(), PurchaseOrderSendFailStage.LOAD, f.reason()))
                 .toList()
         );
 
@@ -171,7 +172,7 @@ public class PurchaseOrderService {
                 content = pdfService.buildDto(ctx);
                 pdf = pdfService.generate(content);
             } catch (Exception e) {
-                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), "PDF", e.getMessage()));
+                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.PDF, e.getMessage()));
                 continue;
             }
 
@@ -179,7 +180,7 @@ public class PurchaseOrderService {
                 String html = PurchaseOrderHtmlTemplate.render(ctx, content);
                 mailSender.sendPurchaseOrder(ctx, html, pdf);
             } catch (Exception e) {
-                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), "MAIL", e.getMessage()));
+                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.MAIL, e.getMessage()));
                 continue;
             }
 
@@ -187,7 +188,7 @@ public class PurchaseOrderService {
                 mapper.markSentByOrderNumber(ctx.orderNumber());
                 success.add(new SendGroupResult.Success(ctx.orderNumber()));
             } catch (Exception e) {
-                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), "SEND", e.getMessage()));
+                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.SEND, e.getMessage()));
             }
         }
 

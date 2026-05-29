@@ -1,5 +1,7 @@
 package com.example.ims.features.purchaseorder.dto;
 
+import com.example.ims.features.purchaseorder.enums.PurchaseOrderSendFailStage;
+
 import java.util.List;
 
 public record BulkSendResponse(
@@ -9,7 +11,7 @@ public record BulkSendResponse(
         List<String> success,
         List<Fail> failed
 ) {
-    public record Fail(String orderNumber, String stage, String reason) {}
+    public record Fail(String orderNumber, PurchaseOrderSendFailStage stage, String reason) {}
 
     public static BulkSendResponse from(
         SendGroupResult result,

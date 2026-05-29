@@ -11,6 +11,7 @@ import com.example.ims.features.user.stores.PasswordResetTokenStore;
 import com.resend.core.exception.ResendException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.ims.features.auth.entities.User;
@@ -34,6 +35,7 @@ public class UserService {
     private final RefreshTokenStore refreshTokenStore;
     private final PasswordResetTokenStore passwordResetTokenStore;
     private final PasswordMailSender mailSender;
+    private final PasswordEncoder passwordEncoder;
 
     private String normalize(String search) {
         return (search == null) ? "" : search.trim();
@@ -82,13 +84,13 @@ public class UserService {
         User user = repository.findById(userId)
             .orElseThrow(UserNotFoundException::new);
 
-        if (!user.getPassword().equals(request.currentPassword()))
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword()))
             throw new InvalidPasswordException();
 
         if (!request.newPassword().equals(request.confirmPassword()))
             throw new PasswordMismatchException();
 
-        user.changePassword(request.newPassword());
+        user.changePassword(passwordEncoder.encode(request.newPassword()));
         repository.save(user);
     }
 
@@ -136,6 +138,6 @@ public class UserService {
 
         passwordResetTokenStore.delete(request.token());
 
-        user.changePassword(request.newPassword());
+        user.changePassword(passwordEncoder.encode(request.newPassword()));
     }
 }

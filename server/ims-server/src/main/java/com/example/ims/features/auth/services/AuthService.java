@@ -5,6 +5,7 @@ import com.example.ims.features.auth.enums.UserStatus;
 import com.example.ims.features.auth.exceptions.ForbiddenException;
 import com.example.ims.features.user.entities.UserSequence;
 import com.example.ims.features.user.repositories.UserSequenceRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +34,13 @@ public class AuthService {
     private final UserSequenceRepository sequenceRepository;
     private final RefreshTokenStore refreshTokenStore;
     private final InvitationTokenStore invitationTokenStore;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthResult loginUser(LoginRequest request) throws UserNotFoundException {
         User user = repository.findByEid(request.getEid())
                 .orElseThrow(UserNotFoundException::new);
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new UserNotFoundException();
         }
 
@@ -70,7 +72,7 @@ public class AuthService {
 
         User user = repository.findByEmail(email)
             .orElseThrow(UserNotFoundException::new)
-            .register(employeeNumber, request.getName(), request.getPassword());
+            .register(employeeNumber, request.getName(), passwordEncoder.encode(request.getPassword()));
 
         user.setUserRank(UserRank.EMPLOYEE);
 

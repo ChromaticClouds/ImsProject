@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ChartEmpty } from './chart-empty.jsx';
 import { ChartLoading } from './chart-loading.jsx';
 
 function pad2(n) {
@@ -254,9 +255,19 @@ export const InOutBound = () => {
           <ChartLoading />
         </div>
       ) : statsQ.isError ? (
-        <div className='w-full h-full flex justify-center items-center text-sm text-destructive'>
-          통계 조회 실패
-        </div>
+        <ChartEmpty
+          title='입출고 합계 통계를 불러오지 못했습니다.'
+          description='잠시 후 다시 조회하거나 조건을 변경해 주세요.'
+          isRefreshing={statsQ.isFetching}
+          onRefresh={statsQ.refetch}
+        />
+      ) : chartData.length === 0 ? (
+        <ChartEmpty
+          title='입출고 합계 데이터가 없습니다.'
+          description='선택한 기간과 조건에 해당하는 입출고 합계 통계가 없습니다.'
+          isRefreshing={statsQ.isFetching}
+          onRefresh={statsQ.refetch}
+        />
       ) : (
         <InOutboundChart data={chartData} />
       )}

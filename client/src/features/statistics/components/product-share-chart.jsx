@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/chart';
 
 import { useProductShareQuery } from '../hooks/use-product-share-query.js';
+import { ChartEmpty } from './chart-empty.jsx';
 import { ChartLoading } from './chart-loading.jsx';
 
 export const stockShareConfig = {
@@ -57,10 +58,28 @@ const renderCustomizedLabel = ({
  * 각 품목 당 재고 점유율 차트
  */
 export const ProductShareChart = () => {
-  const { data, isLoading, isError } = useProductShareQuery();
+  const { data, isLoading, isFetching, isError, refetch } =
+    useProductShareQuery();
 
   if (isLoading) return <ChartLoading />;
-  if (isError || !data) return null;
+  if (isError || !data || data.length === 0) {
+    return (
+      <ChartEmpty
+        title={
+          isError
+            ? '품목 재고 점유율을 불러오지 못했습니다.'
+            : '품목 재고 데이터가 없습니다.'
+        }
+        description={
+          isError
+            ? '잠시 후 다시 조회해 주세요.'
+            : '현재 표시할 품목 재고 점유율 통계가 없습니다.'
+        }
+        isRefreshing={isFetching}
+        onRefresh={refetch}
+      />
+    );
+  }
 
   const COLORS = [
     'var(--chart-5)',
@@ -80,6 +99,17 @@ export const ProductShareChart = () => {
   }));
 
   const totalStock = chartData.reduce((sum, v) => sum + v.stock, 0);
+
+  if (totalStock === 0) {
+    return (
+      <ChartEmpty
+        title='품목 재고 데이터가 없습니다.'
+        description='현재 재고 수량이 있는 품목이 없습니다.'
+        isRefreshing={isFetching}
+        onRefresh={refetch}
+      />
+    );
+  }
 
   return (
     <ChartContainer

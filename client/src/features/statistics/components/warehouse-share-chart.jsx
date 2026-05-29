@@ -3,7 +3,7 @@
 import { ChartContainer } from '@/components/ui/chart.js';
 import { PieChart, Pie, Cell } from 'recharts';
 import { useWarehouseShareQuery } from '../hooks/use-warehouse-share-query.js';
-import { Spinner } from '@/components/ui/spinner.js';
+import { ChartEmpty } from './chart-empty.jsx';
 import { ChartLoading } from './chart-loading.jsx';
 
 export const stockShareConfig = {
@@ -13,10 +13,29 @@ export const stockShareConfig = {
 };
 
 export const WarehouseShareChart = () => {
-  const { data, isLoading, isError } = useWarehouseShareQuery();
+  const { data, isLoading, isFetching, isError, refetch } =
+    useWarehouseShareQuery();
 
   if (isLoading) return <ChartLoading />;
-  if (isError || !data) return <div>데이터 없음</div>;
+
+  if (isError || !data || !data.totalVolume) {
+    return (
+      <ChartEmpty
+        title={
+          isError
+            ? '창고 사용률을 불러오지 못했습니다.'
+            : '창고 사용률 데이터가 없습니다.'
+        }
+        description={
+          isError
+            ? '잠시 후 다시 조회해 주세요.'
+            : '창고 적재 가능 면적 정보가 없어 사용률을 계산할 수 없습니다.'
+        }
+        isRefreshing={isFetching}
+        onRefresh={refetch}
+      />
+    );
+  }
 
   const usedRate = Math.round((data.usedVolume / data.totalVolume) * 100);
 
@@ -50,7 +69,6 @@ export const WarehouseShareChart = () => {
             ))}
           </Pie>
 
-          {/* Center Label */}
           <text
             x='50%'
             y='48%'
@@ -61,7 +79,6 @@ export const WarehouseShareChart = () => {
             {usedRate}%
           </text>
 
-          {/* Center Label */}
           <text
             x='50%'
             y='58%'
@@ -69,13 +86,13 @@ export const WarehouseShareChart = () => {
             dominantBaseline='middle'
             className='text-sm fill-muted-foreground'
           >
-            창고사용률
+            창고 사용률
           </text>
         </PieChart>
       </ChartContainer>
       <div className='flex flex-col gap-1 absolute bottom-0 left-0 text-sm text-muted-foreground'>
-        <p>사용한 면적 {data.usedVolume}m³</p>
-        <p>창고 적재 가능 면적 {data.totalVolume}m³</p>
+        <p>사용 면적 {data.usedVolume}m²</p>
+        <p>창고 적재 가능 면적 {data.totalVolume}m²</p>
       </div>
     </div>
   );

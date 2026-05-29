@@ -1,6 +1,5 @@
 // @ts-check
 
-// LeadTimeChart.jsx
 import {
   BarChart,
   Bar,
@@ -18,7 +17,9 @@ import {
 
 import { useIsMobile } from '@/hooks/use-mobile.js';
 import { useLeadTimeQuery } from '../hooks/use-lead-time-query.js';
+import { ChartEmpty } from './chart-empty.jsx';
 import { ChartLoading } from './chart-loading.jsx';
+import { useDebounceFetch } from '@/features/statistics/hooks/use-debounce-fetch.js';
 
 export const leadTimeConfig = {
   name: {
@@ -29,14 +30,38 @@ export const leadTimeConfig = {
   },
 };
 
-/**
- * 평균 리드타임 차트
- */
 export const LeadTimeChart = () => {
-  const { data: chartData } = useLeadTimeQuery();
+  const {
+    data: chartData,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+  } = useLeadTimeQuery();
   const isMobile = useIsMobile();
 
-  if (!chartData || chartData.length === 0) return <ChartLoading />;
+  const { refreshPending, handleRefresh } = useDebounceFetch(refetch);
+
+  if (isLoading || (isFetching && !chartData)) return <ChartLoading />;
+
+  if (isError || !chartData || chartData.length === 0) {
+    return (
+      <ChartEmpty
+        title={
+          isError
+            ? '리드타임 데이터를 불러오지 못했습니다.'
+            : '리드타임 데이터가 없습니다.'
+        }
+        description={
+          isError
+            ? '잠시 후 다시 조회하거나 조건을 변경해 주세요.'
+            : '선택한 기간과 기준에 해당하는 리드타임 통계가 없습니다.'
+        }
+        isRefreshing={refreshPending || isFetching}
+        onRefresh={handleRefresh}
+      />
+    );
+  }
 
   const BAR_WIDTH = 32;
   const GAP = isMobile ? 16 : 32;
@@ -58,7 +83,6 @@ export const LeadTimeChart = () => {
         >
           <CartesianGrid strokeDasharray='3 3' />
 
-          {/* 거래처 및 품목 */}
           <XAxis
             dataKey='name'
             height={40}
@@ -66,11 +90,10 @@ export const LeadTimeChart = () => {
             textAnchor='middle'
             hide={isMobile}
             tickFormatter={(value) =>
-              value.length > 8 ? value.slice(0, 12) + '…' : value
+              value.length > 8 ? `${value.slice(0, 12)}...` : value
             }
           />
 
-          {/* 평균 리드타임 */}
           {!isMobile && <YAxis width={30} />}
 
           <ChartTooltip content={<ChartTooltipContent />} />
@@ -83,20 +106,24 @@ export const LeadTimeChart = () => {
             <LabelList
               dataKey='leadTime'
               position='top'
-              content={
-                /** @param {{ x: number, y: number, value: string }} props */
-                ({ x, y, value }) => (
+              content={(props) => {
+                const { x, y, value } = props || {};
+                const nx =
+                  typeof x === 'number' ? (isMobile ? x + 6 : x + 12) : 0;
+                const ny = typeof y === 'number' ? y - 10 : 0;
+
+                return (
                   <text
-                    x={isMobile ? x + 6 : x + 12}
-                    y={y - 10}
+                    x={nx}
+                    y={ny}
                     fill='var(--foreground)'
                     fontSize={12}
                     textAnchor='middle'
                   >
-                    {value}일
+                    {String(value ?? '')}일
                   </text>
-                )
-              }
+                );
+              }}
             />
           </Bar>
         </BarChart>

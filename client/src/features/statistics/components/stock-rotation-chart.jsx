@@ -29,6 +29,8 @@ import {
   fetchStatisticsStockRotationTrend,
 } from '@/features/statistics/api/index.js';
 import { XIcon } from 'lucide-react';
+import { ChartEmpty } from './chart-empty.jsx';
+import { ChartLoading } from './chart-loading.jsx';
 
 const turnoverTrendConfig =
   /** @type {import('@/components/ui/chart').ChartConfig} */ ({
@@ -39,7 +41,7 @@ function getYearOptions() {
   const y = new Date().getFullYear();
   return [y, y - 1];
 }
-function getMaxMonthForYear(year) {
+function getMaxMonthForYear(/** @type {number} */ year) {
   const now = new Date();
   return year === now.getFullYear() ? now.getMonth() + 1 : 12;
 }
@@ -381,9 +383,28 @@ export const StockRotationChart = () => {
 
       {/* 그래프 미표시 */}
       {!selectedProduct ? (
-        <div className='w-full h-full flex justify-center items-center text-sm text-muted-foreground border-dashed border-3 rounded-lg'>
-          조회할 제품을 검색해주세요.
+        <ChartEmpty
+          title='조회할 품목을 선택해 주세요.'
+          description='품목을 검색하고 선택하면 재고 회전율 추이를 확인할 수 있습니다.'
+        />
+      ) : trendQ.isFetching ? (
+        <div className='w-full h-full flex justify-center items-center'>
+          <ChartLoading />
         </div>
+      ) : trendQ.isError ? (
+        <ChartEmpty
+          title='재고 회전율을 불러오지 못했습니다.'
+          description='잠시 후 다시 조회하거나 조건을 변경해 주세요.'
+          isRefreshing={trendQ.isFetching}
+          onRefresh={trendQ.refetch}
+        />
+      ) : chartData.length === 0 ? (
+        <ChartEmpty
+          title='재고 회전율 데이터가 없습니다.'
+          description='선택한 품목과 기간에 해당하는 재고 회전율 추이가 없습니다.'
+          isRefreshing={trendQ.isFetching}
+          onRefresh={trendQ.refetch}
+        />
       ) : (
         <ChartContainer config={turnoverTrendConfig} className="flex-1 min-h-0 w-full">
           <div className="h-full w-full overflow-visible">

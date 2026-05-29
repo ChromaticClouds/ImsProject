@@ -31,20 +31,13 @@ export const NoticeCreate = () => {
     // createNotice(values),     //--> 로그인 정보 받아오면 이걸로 바꾸기
 
     onSuccess: async (res) => {
-      if (!res?.ok) {
+      if (res?.success === false) {
         console.error('createNotice failed response:', res);
-        if(res.success) {
-          toast.success(res?.message);
-          navigate('/dashboard/notice');
-        } else {
-          toast.error(res.message??'등록 실패');
-        }
-
-        
+        toast.error(res.message ?? '등록 실패', { id: 'notice-create-error' });
         return;
       }
 
-      toast.success(res.message ?? '등록되었습니다');
+      toast.success(res.message ?? '등록되었습니다', { id: 'notice-create-success' });
 
       await qc.invalidateQueries({ queryKey: ['notices'] });
 

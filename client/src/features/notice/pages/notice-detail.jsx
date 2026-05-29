@@ -48,14 +48,11 @@ export const NoticeDetail = () => {
   const del = useMutation({
     mutationFn: () => deleteNotice(id),
     onSuccess: async (res) => {
-      if (!res?.ok) {
-        toast.error(res?.message ?? '삭제 실패');
-        if (res?.success != false) {
-          navigate('/dashboard/notice');
-        }
+      if (res?.success === false) {
+        toast.error(res?.message ?? '삭제 실패', { id: 'notice-delete-error' });
         return;
       }
-      toast.success(res.message); // "삭제 완료 되었습니다."
+      toast.success(res.message, { id: 'notice-delete-success' }); // "삭제 완료 되었습니다."
       await qc.invalidateQueries({ queryKey: ['notices'] });
       await qc.invalidateQueries({ queryKey: ['notice', id] });
 

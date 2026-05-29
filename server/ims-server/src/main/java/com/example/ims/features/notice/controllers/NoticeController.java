@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,6 +62,7 @@ public class NoticeController {
     }
 
     @PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("principal.rank() == 'FIRST_ADMIN' and principal.role() == 'ALL'")
     public ApiResponse<Void> post(
          NoticeCreateRequest notice,
         @AuthenticationPrincipal UserPrincipal user
@@ -69,16 +71,19 @@ public class NoticeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("principal.rank() == 'FIRST_ADMIN' and principal.role() == 'ALL'")
     public ApiResponse<Void> delete(@PathVariable("id") Long id) {
         return nDelete.execute(id);
     }
 
     @PatchMapping("/{id}/pinned")
+    @PreAuthorize("principal.rank() == 'FIRST_ADMIN' and principal.role() == 'ALL'")
     public ApiResponse<Void> pinned(@PathVariable("id") Long id, @RequestParam boolean pinned) {
         return nPinned.execute(id, pinned);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("principal.rank() == 'FIRST_ADMIN' and principal.role() == 'ALL'")
     public ApiResponse<Void> patchNotice(
         @PathVariable("id") Long id,
         @RequestPart("notice") NoticeUpdateRequest notice

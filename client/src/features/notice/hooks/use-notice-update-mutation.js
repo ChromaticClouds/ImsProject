@@ -42,7 +42,7 @@ export const useNoticeUpdateMutation = () => {
       console.log('[update] onSuccess', res, variables);
       const { id } = variables;
 
-      toast.success(res?.message ?? '수정되었습니다');
+      toast.success(res?.message ?? '수정되었습니다', { id: 'notice-update-success' });
 
       await qc.invalidateQueries({ queryKey: ['notices'] });
       await qc.invalidateQueries({ queryKey: ['notice', id] });
@@ -55,7 +55,7 @@ export const useNoticeUpdateMutation = () => {
 
     onError: (err) => {
       console.error('[update] onError', err);
-      toast.error(`수정 실패: ${err?.message ?? err}`);
+      toast.error(`수정 실패: ${err?.message ?? err}`, { id: 'notice-update-error' });
     },
   });
 };

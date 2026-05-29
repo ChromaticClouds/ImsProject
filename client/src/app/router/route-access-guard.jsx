@@ -76,7 +76,7 @@ export const RouteAccessGuard = ({ authenticated, role, rank }) => {
   const denied = authenticated && !hasRouteAccess(matches, role, rank);
 
   useEffect(() => {
-    if (denied) toast.error(ERROR.INACCESSABLE);
+    if (denied) toast.error(ERROR.INACCESSABLE, { id: 'route-access-denied' });
   }, [denied]);
 
   if (!authenticated) return <Navigate to='/login' replace />

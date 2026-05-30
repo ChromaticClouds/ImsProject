@@ -3,19 +3,20 @@ import { Input } from '@/components/ui/input';
 
 const toMoney = (value) => Number(value || 0).toLocaleString();
 
-export function VendorItemsSection({
-  isSupplier,
-  itemKeyword,
-  setItemKeyword,
-  selectedItems,
-  filteredItems,
-  itemsLoading,
-  showSearchDropdown,
-  isValidItemsForSupplier,
-  onSelectItem,
-  onChangeUnitPrice,
-  onRemoveItem,
-}) {
+export function VendorItemsSection({ isSupplier, itemsState }) {
+  const {
+    itemKeyword,
+    setItemKeyword,
+    selectedItems,
+    filteredItems,
+    itemsLoading,
+    showSearchDropdown,
+    isValidItemsForSupplier,
+    onSelectItem,
+    onChangeUnitPrice,
+    onRemoveItem,
+  } = itemsState;
+
   return (
     <div className='rounded-2xl border bg-secondary p-4'>
       <div className='mb-2 flex items-center justify-between'>

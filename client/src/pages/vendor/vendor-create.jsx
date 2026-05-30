@@ -79,16 +79,7 @@ export const VendorCreate = () => {
             <div className='sticky top-5 space-y-4'>
               <VendorItemsSection
                 isSupplier={isSupplier}
-                itemKeyword={itemsState.itemKeyword}
-                setItemKeyword={itemsState.setItemKeyword}
-                selectedItems={itemsState.selectedItems}
-                filteredItems={itemsState.filteredItems}
-                itemsLoading={itemsState.itemsLoading}
-                showSearchDropdown={itemsState.showSearchDropdown}
-                isValidItemsForSupplier={itemsState.isValidItemsForSupplier}
-                onSelectItem={itemsState.onSelectItem}
-                onChangeUnitPrice={itemsState.onChangeUnitPrice}
-                onRemoveItem={itemsState.onRemoveItem}
+                itemsState={itemsState}
               />
 
               <VendorCreateActionsCard

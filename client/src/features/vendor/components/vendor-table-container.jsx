@@ -1,11 +1,13 @@
 // @ts-check
 import { VendorTable } from '@/features/vendor/components/vendor-table';
-import { useVendorContext } from '@/features/vendor/providers/vendor-provider.jsx';
+import { useVendorSearch } from '@/features/vendor/hooks/use-vendor-search';
+import { useVendors } from '@/features/vendor/hooks/use-vendors';
 import { useNavigate } from 'react-router-dom';
 
 export const VendorTableContainer = () => {
   const navigate = useNavigate();
-  const { query } = useVendorContext();
+  const { search } = useVendorSearch();
+  const query = useVendors(search);
 
   const vendors = query.data?.list ?? [];
 

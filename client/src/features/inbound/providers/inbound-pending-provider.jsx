@@ -21,8 +21,6 @@ import { createContext, useContext, useMemo, useState } from 'react';
  * @property {DateRangeValue} search
  * @property {(next: DateRangeValue) => void} setSearch
  *
- * @property {any[]} rows
- * @property {boolean} loading
  * @property {string} error
  * @property {(msg: string) => void} setError
  */
@@ -40,8 +38,6 @@ export function useInboundPendingCtx() {
  *  children: any,
  *  search: DateRangeValue,
  *  setSearch: (next: DateRangeValue) => void,
- *  rows: any[],
- *  loading: boolean,
  *  error: string,
  *  setError: (msg: string) => void,
  * }} props
@@ -50,8 +46,6 @@ export function InboundPendingProvider({
   children,
   search,
   setSearch,
-  rows,
-  loading,
   error,
   setError,
 }) {
@@ -66,12 +60,10 @@ export function InboundPendingProvider({
       setItemsMap,
       search,
       setSearch,
-      rows,
-      loading,
       error,
       setError,
     }),
-    [expanded, itemsMap, search, setSearch, rows, loading, error]
+    [expanded, itemsMap, search, setSearch, error]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

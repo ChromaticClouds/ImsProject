@@ -1,5 +1,5 @@
 import { CardFooter } from '@/components/ui/card.js';
-import { useUserList } from '../../providers/user-provider.jsx';
+import { useUserListQuery } from '../../hooks/use-user-list-query.js';
 
 import {
   Pagination,
@@ -9,12 +9,21 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination.js';
+import { useSearchParams } from 'react-router-dom';
 
 /**
  * @param {{ prefix: string }} props 
  */
 export const UserPagination = ({ prefix }) => {
-  const { page, totalPages, isFirst, isLast } = useUserList();
+  const [params] = useSearchParams();
+  const { page, totalPages, isFirst, isLast } = useUserListQuery();
+
+  /** @param {number} nextPage */
+  const toPage = (nextPage) => {
+    const p = new URLSearchParams(params);
+    p.set('page', String(nextPage));
+    return `${prefix}?${p.toString()}`;
+  };
 
   if (totalPages <= 1) return null;
 
@@ -24,7 +33,7 @@ export const UserPagination = ({ prefix }) => {
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              to={`${prefix}?page=${page - 1}`}
+              to={toPage(page - 1)}
               onClick={(e) => isFirst && e.preventDefault()}
               aria-disabled={isFirst}
               className={isFirst ? 'pointer-events-none opacity-50' : undefined}
@@ -38,7 +47,7 @@ export const UserPagination = ({ prefix }) => {
               <PaginationItem key={p}>
                 <PaginationLink
                   isActive={p === page}
-                  to={`${prefix}?page=${p}`}
+                  to={toPage(p)}
                 >
                   {p}
                 </PaginationLink>
@@ -48,7 +57,7 @@ export const UserPagination = ({ prefix }) => {
 
           <PaginationItem>
             <PaginationNext
-              to={`${prefix}?page=${page + 1}`}
+              to={toPage(page + 1)}
               onClick={(e) => isLast && e.preventDefault()}
               aria-disabled={isLast}
               className={isLast ? 'pointer-events-none opacity-50' : undefined}

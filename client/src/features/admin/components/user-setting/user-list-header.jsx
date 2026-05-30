@@ -21,10 +21,12 @@ import {
  */
 import { SearchIcon } from 'lucide-react';
 import { EmailDialog } from '@/features/admin/components/user-setting/email-dialog.jsx';
-import { useUserList } from '@/features/admin/providers/user-provider.jsx';
+import { useUserListQuery } from '@/features/admin/hooks/use-user-list-query.js';
+import { useUserSearch } from '@/features/admin/hooks/use-user-search.js';
 
 export const UserListHeader = () => {
-  const { count, search, setSearch } = useUserList();
+  const { count } = useUserListQuery();
+  const { search, setSearch } = useUserSearch();
 
   return (
     <React.Fragment>

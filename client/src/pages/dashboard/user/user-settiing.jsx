@@ -6,7 +6,6 @@ import { Card } from '@/components/ui/card.js';
 import { UserList } from '@/features/admin/components/user-setting/user-list.jsx';
 import { UserPagination } from '@/features/admin/components/user-setting/user-pagination.jsx';
 import { UserListHeader } from '@/features/admin/components/user-setting/user-list-header.jsx';
-import { UserProvider } from '@/features/admin/providers/user-provider.jsx';
 
 export const UserSetting = () => {
   return (
@@ -17,13 +16,11 @@ export const UserSetting = () => {
       />
       <div className='w-full flex flex-col'>
         <Card>
-          <UserProvider>
-            <UserListHeader />
-            <UserList />
-            <UserPagination 
-              prefix='/dashboard/user/setting'
-            />
-          </UserProvider>
+          <UserListHeader />
+          <UserList />
+          <UserPagination
+            prefix='/dashboard/user/setting'
+          />
         </Card>
       </div>
     </div>

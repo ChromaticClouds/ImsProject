@@ -1,10 +1,13 @@
 // @ts-check
 import { useInboundPendingCtx } from '../providers/inbound-pending-provider';
+import { useInboundPendingSummary } from '../hooks/use-inbound-pending-summary';
 import { InboundDateRangePicker } from './inbound-date-range-picker';
 import { InboundPendingTable } from './inbound-pending-table';
 
 export function InboundPendingScreen() {
-  const { search, setSearch, rows, loading, error, setError } = useInboundPendingCtx();
+  const { search, setSearch, error, setError } = useInboundPendingCtx();
+  const q = useInboundPendingSummary(search);
+  const rows = Array.isArray(q.data?.content) ? q.data.content : [];
 
   return (
     <div style={{ padding: 16 }}>
@@ -14,7 +17,7 @@ export function InboundPendingScreen() {
         <InboundDateRangePicker
           value={search}
           onChange={setSearch}
-          disabled={loading}
+          disabled={q.isFetching}
         />
       </div>
 
@@ -22,7 +25,7 @@ export function InboundPendingScreen() {
 
       <InboundPendingTable
         rows={rows}
-        loading={loading}
+        loading={q.isFetching}
         error={error}
         onError={setError}
       />

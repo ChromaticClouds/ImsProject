@@ -1,17 +1,20 @@
 // @ts-check
 import { VendorPagination } from '@/features/vendor/components/vendor-pagination';
-import { useVendorContext } from '@/features/vendor/providers/vendor-provider';
+import { useVendorSearch } from '@/features/vendor/hooks/use-vendor-search';
+import { useVendors } from '@/features/vendor/hooks/use-vendors';
 
 export const VendorPaginationContainer = () => {
-  const { query, size } = useVendorContext();
+  const { search } = useVendorSearch();
+  const query = useVendors(search);
   const pageInfo = query.data?.pageInfo;
+  const size = query.data?.size ?? 10;
 
   if (!pageInfo) return null;
 
   return (
     <VendorPagination
       pageInfo={pageInfo}
-      basePath="/dashboard/vendor"
+      basePath='/dashboard/vendor'
       extraQuery={{ size }}
     />
   );

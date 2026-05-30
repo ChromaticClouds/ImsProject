@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDeleteVendor } from '@/features/vendor/hooks/use-delete-vendor';
-import { useVendorDetail } from '@/features/vendor/hooks/use-vendor-detail';
+import { useVendorDetail } from '@/features/vendor/hooks/vendor-detail/use-vendor-detail';
 import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,

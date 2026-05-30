@@ -1,6 +1,6 @@
 // @ts-check
 import { useNavigate, useParams } from 'react-router-dom';
-import { useVendorDetail } from '@/features/vendor/hooks/use-vendor-detail';
+import { useVendorDetail } from '@/features/vendor/hooks/vendor-detail/use-vendor-detail';
 import { VendorDetailPage } from '@/features/vendor/components/vendor-detail-page';
 
 export function VendorDetail() {
@@ -10,7 +10,12 @@ export function VendorDetail() {
   const { data, isLoading, error } = useVendorDetail(id);
 
   if (isLoading) return <div>로딩중...</div>;
-  if (error) return <div style={{ color: 'crimson' }}>에러: {String(error?.message ?? error)}</div>;
+  if (error)
+    return (
+      <div style={{ color: 'crimson' }}>
+        에러: {String(error?.message ?? error)}
+      </div>
+    );
   if (!data) return <div>데이터 없음</div>;
 
   return (

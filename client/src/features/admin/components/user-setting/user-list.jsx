@@ -17,13 +17,13 @@ import { UserSkeletonRows } from '@/features/admin/components/user-setting/user-
 /**
  * Hooks
  */
-import { useUserList } from '../../providers/user-provider.jsx';
+import { useUserListQuery } from '../../hooks/use-user-list-query.js';
 import { usePatchUser } from '../../hooks/use-patch-user.js';
 import { useResendEmail } from '@/features/admin/hooks/use-resend-email.js';
 
 export const UserList = () => {
   const { mutate: resendEmailMutate } = useResendEmail();
-  const { users, isFetching } = useUserList();
+  const { users, isFetching } = useUserListQuery();
   const { mutate } = usePatchUser();
 
   /** @param {number} userId @param {string} rank */

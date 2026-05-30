@@ -1,5 +1,3 @@
-
-
 // @ts-check
 import { useMemo, useState } from 'react';
 import { useVendorSearch } from '@/features/vendor/hooks/use-vendor-search';
@@ -48,7 +46,6 @@ export function VendorSearch({
 
   /** @param {string} v */
   const onValueChangeType = (v) => {
-    
     const nextType = v === ALL_VALUE ? undefined : v;
     setSearch({ type: nextType, page: 1 });
   };
@@ -72,29 +69,32 @@ export function VendorSearch({
   };
 
   return (
-    <div className="flex flex-wrap items-end gap-3">
+    <div className='flex flex-wrap items-end gap-3'>
       {/* 타입 */}
-      <div className="grid gap-1">
-        <Label className="text-xs text-muted-foreground">구분</Label>
+      <div className='grid gap-1'>
+        <Label className='text-xs text-muted-foreground'>구분</Label>
 
-        <Select value={selectTypeValue} onValueChange={onValueChangeType}>
-          <SelectTrigger className="h-10 min-w-[150px] rounded-xl">
+        <Select
+          value={selectTypeValue}
+          onValueChange={onValueChangeType}
+        >
+          <SelectTrigger className='h-10 min-w-[150px] rounded-xl'>
             {/* 전체를 목록에도 넣을 거지만, placeholder도 동일하게 두면 자연스러움 */}
-            <SelectValue placeholder="전체" />
+            <SelectValue placeholder='전체' />
           </SelectTrigger>
 
-          <SelectContent className="rounded-xl p-1">
+          <SelectContent className='rounded-xl p-1'>
             {normalizedTypeOptions.map((opt) => (
               <SelectItem
                 key={opt.value}
-                value={opt.value} // 
-                className="
+                value={opt.value} //
+                className='
                   rounded-lg
                   text-sm
                   data-[highlighted]:bg-muted
                   data-[state=checked]:bg-primary/10
                   data-[state=checked]:font-semibold
-                "
+                '
               >
                 {opt.label}
               </SelectItem>
@@ -104,15 +104,15 @@ export function VendorSearch({
       </div>
 
       {/* 검색어 */}
-      <div className="grid gap-1 flex-1 min-w-[220px]">
-        <Label className="text-xs text-muted-foreground">검색</Label>
+      <div className='grid gap-1 flex-1 min-w-[220px]'>
+        <Label className='text-xs text-muted-foreground'>검색</Label>
         <Input
           value={inputValue}
           placeholder={keywordPlaceholder}
           onChange={onChangeKeyword}
           onCompositionStart={onCompositionStart}
           onCompositionEnd={onCompositionEnd}
-          className="h-10 rounded-xl"
+          className='h-10 rounded-xl'
         />
       </div>
     </div>

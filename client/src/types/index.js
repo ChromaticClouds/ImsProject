@@ -312,7 +312,7 @@
  * @property {number} count
  * @property {number} productPrice
  * @property {number} safetyStock
- * @property {string} imageUrl
+ * @property {string | undefined} imageUrl
  */
 
 /**

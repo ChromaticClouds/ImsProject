@@ -7,7 +7,7 @@ import org.apache.ibatis.jdbc.SQL;
 import org.springframework.data.repository.query.Param;
 
 public class VendorSqlProvider {
-    
+
 
 	// 거래처 리스트
     public String findVendorList(Map<String, Object> params) {
@@ -19,16 +19,16 @@ public class VendorSqlProvider {
             SELECT("id, type, vendor_name AS vendorName, telephone, email, address");
             FROM("vendor");
             WHERE("status = 'ACTIVE'");
-            
+
             if (type != null) WHERE("type = #{type}");
             if (keyword != null) WHERE("vendor_name LIKE CONCAT('%', #{keyword}, '%')");
-        
+
             ORDER_BY("id DESC");
         }}.toString()
-        
+
         + " LIMIT ${limit} OFFSET ${offset}";
     }
-    
+
     // 거래처 수량 
     public String countVendorList(Map<String, Object> params) {
 
@@ -44,7 +44,7 @@ public class VendorSqlProvider {
             if (keyword != null) WHERE("vendor_name LIKE CONCAT('%', #{keyword}, '%')");
         }}.toString();
     }
-    
+
     // 거래처 등록
     public String insertVendor() {
         return new SQL(){{
@@ -60,7 +60,7 @@ public class VendorSqlProvider {
             VALUES("created_at", "NOW()");
         }}.toString();
     }
-    
+
     // 거래처에 따른 수량 등록
     public String insertVendorItems(Map<String, Object> params) {
         return """
@@ -73,7 +73,7 @@ public class VendorSqlProvider {
         </script>
         """;
     }
-    
+
     // 제품 검색
     public String searchProducts(Map<String, Object> params) {
         String keyword = (String) params.get("keyword");
@@ -81,11 +81,37 @@ public class VendorSqlProvider {
         Long currentVendorId = (Long) params.get("currentVendorId");
 
         return new SQL() {{
-            SELECT("p.id, p.name");
+            SELECT("""
+                p.id AS productId,
+                p.name AS productName,
+                p.brand AS brand,
+                p.type AS type,
+                p.image_url AS imageUrl
+            """);
+            if (currentVendorId != null) {
+                SELECT("COALESCE(current_vi.purchase_price, 0) AS purchasePrice");
+            } else {
+                SELECT("0 AS purchasePrice");
+            }
             FROM("product p");
 
+            if (currentVendorId != null) {
+                LEFT_OUTER_JOIN("""
+                    vendor_item current_vi
+                      ON current_vi.product_id = p.id
+                     AND current_vi.vendor_id = #{currentVendorId}
+                     AND current_vi.status = 'ACTIVE'
+                """);
+            }
+
             if (keyword != null && !keyword.isEmpty()) {
-                WHERE("p.name LIKE CONCAT('%', #{keyword}, '%')");
+                WHERE("""
+                    (
+                        p.name LIKE CONCAT('%', #{keyword}, '%')
+                        OR p.brand LIKE CONCAT('%', #{keyword}, '%')
+                        OR p.type LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                """);
             }
 
             if (excludeAssigned != null && excludeAssigned) {
@@ -120,7 +146,7 @@ public class VendorSqlProvider {
             ORDER_BY("p.created_at DESC");
         }}.toString();
     }
-    
+
     public String findVendorById(Map<String, Object> params) {
         return new SQL(){{
             SELECT("id, type, vendor_name AS vendorName, telephone, email, boss_name AS bossName, address, memo, image_url AS imageUrl, created_at AS createdAt");
@@ -133,9 +159,9 @@ public class VendorSqlProvider {
     // 거래처 품목 찾기
     public String findVendorItems(Map<String, Object> params) {
         return new SQL(){{
-            SELECT("p.id AS productId, p.name AS productName, vi.purchase_price AS purchasePrice");
-            FROM("vendor_item vi");
-            INNER_JOIN("product p ON p.id = vi.product_id");
+            SELECT("p.id AS productId, p.name AS productName, vi.purchase_price AS purchasePrice, brand, type, image_url AS imageUrl");
+            FROM("product p");
+            INNER_JOIN("vendor_item vi ON p.id = vi.product_id");
             WHERE("vi.vendor_id = #{vendorId}");
             WHERE("vi.status = 'ACTIVE'");
             ORDER_BY("p.name ASC");

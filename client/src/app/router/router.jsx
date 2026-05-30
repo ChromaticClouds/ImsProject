@@ -10,14 +10,15 @@ import { Auth } from '@/pages/auth.jsx';
 import { Dashboard } from '@/pages/dashboard/dashboard.jsx';
 import { Main } from '@/pages/dashboard/main.jsx';
 import { UserSetting } from '@/pages/dashboard/user/user-settiing.jsx';
-import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
-import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
 
 import { AuthBootstrap } from '@/app/router/auth-bootstrap.jsx';
 import { Statistics } from '@/pages/dashboard/statistics.jsx';
+
+import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
+import { VendorList } from '@/pages/vendor/vendor-list.jsx';
 import { VendorDetail } from '@/pages/vendor/vendor-detail.jsx';
-import { VendorModify } from '@/pages/vendor/vendor-modify.jsx';
+import { VendorEdit } from '@/pages/vendor/vendor-edit.jsx';
 
 // product 품목
 import { Product } from '@/pages/dashboard/product';
@@ -96,8 +97,8 @@ export const router = createBrowserRouter([
                   },
                   {
                     path: 'group',
-                    element: <UserGroup />
-                  }
+                    element: <UserGroup />,
+                  },
                 ],
               },
               {
@@ -106,7 +107,7 @@ export const router = createBrowserRouter([
                   { index: true, element: <VendorList /> },
                   { path: 'create', element: <VendorCreate /> },
                   { path: ':id', element: <VendorDetail /> },
-                  { path: 'modify/:id', element: <VendorModify /> },
+                  { path: 'modify/:id', element: <VendorEdit /> },
                 ],
                 handle: {
                   permissions: ['ALL'],
@@ -221,8 +222,8 @@ export const router = createBrowserRouter([
                 ],
                 handle: {
                   permissions: ['RECEIVE_ORDER', 'ALL'],
-                  minRank: 1
-                }
+                  minRank: 1,
+                },
               },
             ],
           },

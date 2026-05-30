@@ -1,5 +1,6 @@
 package com.example.ims.features.vendor.dto;
 
+import com.example.ims.features.product.enums.ProductType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,5 +16,8 @@ public class VendorItemResponse {
     private Long productId;
     private String productName;
     private Integer purchasePrice;
+    private String brand;
+    private ProductType type;
+    private String imageUrl;
 }
 

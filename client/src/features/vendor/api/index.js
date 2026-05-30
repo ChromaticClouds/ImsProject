@@ -22,12 +22,30 @@ export const deleteVendor = async (id) => {
   return await api.delete(`vendor/${id}`).json();
 };
 
+const normalizeVendorProduct = (product) => {
+  const productId = product.productId ?? product.id;
+  const productName = product.productName ?? product.name;
+
+  return {
+    ...product,
+    id: productId,
+    name: productName,
+    productId,
+    productName,
+    brand: product.brand ?? '',
+    type: product.type ?? '',
+    purchasePrice: Number(product.purchasePrice ?? 0),
+    imageUrl: product.imageUrl,
+  };
+};
+
 export const fetchProducts = async ({ keyword, excludeAssigned = true, currentVendorId }) => {
   const qs = new URLSearchParams();
   if (keyword) qs.set('keyword', keyword);
   if (excludeAssigned) qs.set('excludeAssigned', 'true');
   if (currentVendorId != null) qs.set('currentVendorId', String(currentVendorId));
-  return await api.get(`vendor/products?${qs.toString()}`).json();
+  const products = await api.get(`vendor/products?${qs.toString()}`).json();
+  return Array.isArray(products) ? products.map(normalizeVendorProduct) : [];
 };
 
 export const softDeleteVendorItem = async ({ vendorId, productId }) => {

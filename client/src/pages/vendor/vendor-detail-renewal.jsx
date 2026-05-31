@@ -269,104 +269,65 @@ export function VendorDetailRenewal({
           />
         )}
 
-        {/* ── 본문 ── */}
-        {isSupplier ? (
-          /* 공급처: 기본정보+메모(7) / 공급품목(5) 2컬럼 */
-          <div className='mt-4 grid grid-cols-12 items-stretch gap-4'>
+        {/* ── 본문 — 공급처/판매처 공통 1열 세로 배치 ── */}
+        <div className='mt-4 flex flex-col gap-4'>
 
-            <section className='col-span-12 flex flex-col gap-4 lg:col-span-7'>
-              <div className='rounded-lg border bg-card'>
-                <div className='flex items-center justify-between border-b px-5 py-4'>
-                  <div>
-                    <h2 className='text-sm font-medium'>기본 정보</h2>
-                    <p className='mt-0.5 text-xs text-muted-foreground'>
-                      담당자 · 연락처 · 주소
-                    </p>
-                  </div>
-                  <Building2 className='size-4 text-muted-foreground' aria-hidden='true' />
-                </div>
-                <div className='px-5 py-3'>
-                  <InfoRow icon={Building2} label='거래처명' value={vendor.vendorName} />
-                  <InfoRow icon={UserRound} label='대표자명' value={vendor.bossName} />
-                  <InfoRow icon={Phone}     label='전화번호'  value={vendor.telephone} />
-                  <InfoRow icon={Mail}      label='이메일'    value={vendor.email} />
-                  <InfoRow icon={MapPin}    label='주소'      value={vendor.address} />
-                </div>
+          {/* 기본 정보 */}
+          <div className='rounded-lg border bg-card'>
+            <div className='flex items-center justify-between border-b px-5 py-4'>
+              <div>
+                <h2 className='text-sm font-medium'>기본 정보</h2>
+                <p className='mt-0.5 text-xs text-muted-foreground'>
+                  담당자 · 연락처 · 주소
+                </p>
               </div>
-
-              <div className='rounded-lg border bg-card'>
-                <div className='border-b px-5 py-4'>
-                  <h2 className='text-sm font-medium'>메모</h2>
-                </div>
-                <div className='min-h-28 whitespace-pre-wrap px-5 py-4 text-sm leading-6 text-muted-foreground'>
-                  {vendor.memo || '등록된 메모가 없습니다.'}
-                </div>
-              </div>
-            </section>
-
-            <aside className='col-span-12 flex h-full flex-col lg:col-span-5'>
-              <div className='flex h-full flex-col rounded-lg border bg-card'>
-                <div className='flex shrink-0 items-center justify-between border-b px-5 py-4'>
-                  <div>
-                    <h2 className='text-sm font-medium'>공급 품목</h2>
-                    <p className='mt-0.5 text-xs text-muted-foreground'>구매 단가 기준</p>
-                  </div>
-                  <Package className='size-4 text-muted-foreground' aria-hidden='true' />
-                </div>
-                <div className='min-h-0 flex-1 overflow-y-auto px-5 py-3'>
-                  {items.length === 0 ? (
-                    <EmptyState message='등록된 공급 품목이 없습니다.' />
-                  ) : (
-                    items.map((item) => (
-                      <ProductRow
-                        key={item.productId ?? item.productName}
-                        item={item}
-                      />
-                    ))
-                  )}
-                </div>
-              </div>
-            </aside>
-
+              <Building2 className='size-4 text-muted-foreground' aria-hidden='true' />
+            </div>
+            <div className='px-5 py-3'>
+              <InfoRow icon={Building2} label='거래처명' value={vendor.vendorName} />
+              <InfoRow icon={UserRound} label='대표자명' value={vendor.bossName} />
+              <InfoRow icon={Phone}     label='전화번호'  value={vendor.telephone} />
+              <InfoRow icon={Mail}      label='이메일'    value={vendor.email} />
+              <InfoRow icon={MapPin}    label='주소'      value={vendor.address} />
+            </div>
           </div>
-        ) : (
-          /* 판매처: 기본정보(좌) + 메모(우) 전체 너비 2컬럼 */
-          <div className='mt-4 grid grid-cols-12 gap-4'>
 
-            <section className='col-span-12 lg:col-span-7'>
-              <div className='rounded-lg border bg-card'>
-                <div className='flex items-center justify-between border-b px-5 py-4'>
-                  <div>
-                    <h2 className='text-sm font-medium'>기본 정보</h2>
-                    <p className='mt-0.5 text-xs text-muted-foreground'>
-                      담당자 · 연락처 · 주소
-                    </p>
-                  </div>
-                  <Building2 className='size-4 text-muted-foreground' aria-hidden='true' />
+          {/* 공급 품목 — 공급처일 때만 */}
+          {isSupplier && (
+            <div className='rounded-lg border bg-card'>
+              <div className='flex items-center justify-between border-b px-5 py-4'>
+                <div>
+                  <h2 className='text-sm font-medium'>공급 품목</h2>
+                  <p className='mt-0.5 text-xs text-muted-foreground'>구매 단가 기준</p>
                 </div>
-                <div className='px-5 py-3'>
-                  <InfoRow icon={Building2} label='거래처명' value={vendor.vendorName} />
-                  <InfoRow icon={UserRound} label='대표자명' value={vendor.bossName} />
-                  <InfoRow icon={Phone}     label='전화번호'  value={vendor.telephone} />
-                  <InfoRow icon={Mail}      label='이메일'    value={vendor.email} />
-                  <InfoRow icon={MapPin}    label='주소'      value={vendor.address} />
-                </div>
+                <Package className='size-4 text-muted-foreground' aria-hidden='true' />
               </div>
-            </section>
-
-            <aside className='col-span-12 lg:col-span-5'>
-              <div className='rounded-lg border bg-card'>
-                <div className='border-b px-5 py-4'>
-                  <h2 className='text-sm font-medium'>메모</h2>
-                </div>
-                <div className='min-h-28 whitespace-pre-wrap px-5 py-4 text-sm leading-6 text-muted-foreground'>
-                  {vendor.memo || '등록된 메모가 없습니다.'}
-                </div>
+              <div className='max-h-80 overflow-y-auto px-5 py-3'>
+                {items.length === 0 ? (
+                  <EmptyState message='등록된 공급 품목이 없습니다.' />
+                ) : (
+                  items.map((item) => (
+                    <ProductRow
+                      key={item.productId ?? item.productName}
+                      item={item}
+                    />
+                  ))
+                )}
               </div>
-            </aside>
+            </div>
+          )}
 
+          {/* 메모 */}
+          <div className='rounded-lg border bg-card'>
+            <div className='border-b px-5 py-4'>
+              <h2 className='text-sm font-medium'>메모</h2>
+            </div>
+            <div className='min-h-20 whitespace-pre-wrap px-5 py-4 text-sm leading-6 text-muted-foreground'>
+              {vendor.memo || '등록된 메모가 없습니다.'}
+            </div>
           </div>
-        )}
+
+        </div>
       </div>
     </div>
   );

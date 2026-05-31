@@ -17,8 +17,8 @@ import { Statistics } from '@/pages/dashboard/statistics.jsx';
 
 import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
 import { VendorList } from '@/pages/vendor/vendor-list.jsx';
-import { VendorDetail } from '@/pages/vendor/vendor-detail.jsx';
 import { VendorEdit } from '@/pages/vendor/vendor-edit.jsx';
+import { RenewedVendorDetail } from '@/pages/vendor/vendor-detail.jsx';
 
 // product 품목
 import { Product } from '@/pages/dashboard/product';
@@ -106,7 +106,7 @@ export const router = createBrowserRouter([
                 children: [
                   { index: true, element: <VendorList /> },
                   { path: 'create', element: <VendorCreate /> },
-                  { path: ':id', element: <VendorDetail /> },
+                  { path: ':id', element: <RenewedVendorDetail /> },
                   { path: 'modify/:id', element: <VendorEdit /> },
                 ],
                 handle: {

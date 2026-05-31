@@ -33,6 +33,7 @@ import {
 const VendorEditPageShell = ({ children }) => (
   <React.Fragment>
     <AppHeader
+      allowBackward
       title={VENDOR_EDIT_HEADER.title}
       description={VENDOR_EDIT_HEADER.description}
     />

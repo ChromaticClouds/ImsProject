@@ -10,7 +10,7 @@ import {
   FieldSeparator,
   FieldSet,
 } from '@/components/ui/field.js';
-import { VENDOR_TYPE_MAP } from '@/features/vendor/constants/index.js';
+import { VENDOR_TYPE_MAP, VENDOR_TYPE_STYLES } from '@/features/vendor/constants/index.js';
 
 /**
  * Hooks
@@ -18,22 +18,6 @@ import { VENDOR_TYPE_MAP } from '@/features/vendor/constants/index.js';
 import { useVendorEditForm } from '@/features/vendor/hooks/vendor-edit/use-vendor-edit-form.js';
 import { Store } from 'lucide-react';
 import { LockKeyhole } from 'lucide-react';
-
-const VENDOR_TYPE_STYLES = {
-  Supplier: {
-    wrapper: 'border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950',
-    icon: 'bg-blue-500 text-white',
-    title: 'text-blue-900 dark:text-blue-100',
-    description: 'text-blue-600 dark:text-blue-400',
-  },
-  Seller: {
-    wrapper:
-      'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950',
-    icon: 'bg-emerald-500 text-white',
-    title: 'text-emerald-900 dark:text-emerald-100',
-    description: 'text-emerald-600 dark:text-emerald-400',
-  },
-};
 
 /**
  * @typedef {object} LabelPropsType

@@ -41,9 +41,21 @@ public class NoticeCreate {
         if (title.isBlank() || content.isBlank())
             return ApiResponse.fail("미입력되었습니다");
 
-        String filePath = fileService.saveToUploads(req.getUpff());
+        List<String> filePaths = new java.util.ArrayList<>();
+        if (req.getAttachments() != null) {
+            for (MultipartFile attachment : req.getAttachments()) {
+                String filePath = fileService.saveToUploads(attachment);
+                if (filePath != null) filePaths.add(filePath);
+            }
+        }
 
-        mapper.insert(userId, title, content, req.isPinned(), filePath);
+        mapper.insert(userId, title, content, req.isPinned());
+
+        Long noticeId = mapper.lastInsertId();
+        for (int index = 0; index < filePaths.size(); index += 1) {
+            mapper.insertAttachment(noticeId, filePaths.get(index), index);
+        }
+
         return ApiResponse.success("작성완료");
     }
 }

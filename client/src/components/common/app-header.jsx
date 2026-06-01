@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
  * @property {React.ReactNode} title
  * @property {React.ReactNode} [description]
  * @property {boolean} [allowBackward]
+ * @property {() => void} [onBackward]
  * @property {React.ReactNode} [topDecoration]
  * @property {React.ReactNode} [asideDecoration]
  */
@@ -21,6 +22,7 @@ export const AppHeader = ({
   title,
   description,
   allowBackward = false,
+  onBackward,
   topDecoration,
   asideDecoration,
 }) => {
@@ -31,9 +33,10 @@ export const AppHeader = ({
       <div className='flex items-center gap-3'>
         {allowBackward && (
           <Button
+            type='button'
             variant='ghost'
             size='icon'
-            onClick={() => navigate(-1)}
+            onClick={onBackward ?? (() => navigate(-1))}
           >
             <ArrowLeftIcon />
           </Button>

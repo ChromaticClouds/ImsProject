@@ -1,5 +1,5 @@
 // @ts-check
-import { VendorPagination } from '@/features/vendor/components/vendor-pagination';
+import { VendorPagination } from '@/features/vendor/components/vendor-list/vendor-pagination';
 import { useVendorSearch } from '@/features/vendor/hooks/use-vendor-search';
 import { useVendors } from '@/features/vendor/hooks/use-vendors';
 

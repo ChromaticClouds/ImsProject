@@ -15,25 +15,25 @@ import { authBootstrapLoader } from '@/app/loaders/auth-bootstrap-loader.js';
 import { AuthBootstrap } from '@/app/router/auth-bootstrap.jsx';
 import { Statistics } from '@/pages/dashboard/statistics.jsx';
 
-import { VendorCreate } from '@/pages/vendor/vendor-create.jsx';
-import { VendorList } from '@/pages/vendor/vendor-list.jsx';
-import { VendorEdit } from '@/pages/vendor/vendor-edit.jsx';
-import { RenewedVendorDetail } from '@/pages/vendor/vendor-detail.jsx';
+import { VendorCreate } from '@/pages/dashboard/vendor/vendor-create.jsx';
+import { VendorList } from '@/pages/dashboard/vendor/vendor-list.jsx';
+import { VendorEdit } from '@/pages/dashboard/vendor/vendor-edit.jsx';
+import { VendorDetail } from '@/pages/dashboard/vendor/vendor-detail.jsx';
 
 // product 품목
 import { Product } from '@/pages/dashboard/product';
 
-import { InboundRegister } from '@/pages/inbound/inbound-register.jsx';
+import { InboundRegister } from '@/pages/dashboard/inbound/inbound-register.jsx';
 
 /*
  * Notice pages
  */
-import { Notice } from '@/pages/dashboard/notice';
-import { NoticeDetail } from '@/features/notice/pages/notice-detail';
-import { NoticeCreate } from '@/features/notice/pages/notice-create';
-import { NoticeEdit } from '@/features/notice/pages/notice-edit';
-import { InboundPendingEdit } from '@/pages/inbound/inbound-pending-edit.jsx';
-import { InboundOverview } from '@/pages/inbound/inbound-overview.jsx';
+import { Notice } from '@/pages/dashboard/notice/notice';
+import { NoticeDetail } from '@/pages/dashboard/notice/notice-detail';
+import { NoticeCreate } from '@/pages/dashboard/notice/notice-create';
+import { NoticeEdit } from '@/pages/dashboard/notice/notice-edit';
+import { InboundPendingEdit } from '@/pages/dashboard/inbound/inbound-pending-edit.jsx';
+import { InboundOverview } from '@/pages/dashboard/inbound/inbound-overview.jsx';
 import { Adjust } from '@/pages/dashboard/adjust';
 
 /*
@@ -48,8 +48,8 @@ import { TodoEdit } from '@/features/todo/pages/todo-edit';
 import { PurchaseOrder } from '@/pages/dashboard/purchase-order/purchase-order';
 import { PurchaseOrderEdit } from '@/features/purchase-order/pages/purchase-order-edit';
 
-import { OutboundPending } from '@/pages/outbound/outbound-pending.jsx';
-import { OutboundRegister } from '@/pages/outbound/outbound-regiester.jsx';
+import { OutboundPending } from '@/pages/dashboard/outbound/outbound-pending.jsx';
+import { OutboundRegister } from '@/pages/dashboard/outbound/outbound-regiester.jsx';
 import { HistoryPage } from '@/pages/dashboard/history.jsx';
 import { ReceiveOrder } from '@/pages/dashboard/receive-order/receive-order.jsx';
 import { ReceiveOrderPost } from '@/pages/dashboard/receive-order/receive-order-post.jsx';
@@ -106,7 +106,7 @@ export const router = createBrowserRouter([
                 children: [
                   { index: true, element: <VendorList /> },
                   { path: 'create', element: <VendorCreate /> },
-                  { path: ':id', element: <RenewedVendorDetail /> },
+                  { path: ':id', element: <VendorDetail /> },
                   { path: 'modify/:id', element: <VendorEdit /> },
                 ],
                 handle: {

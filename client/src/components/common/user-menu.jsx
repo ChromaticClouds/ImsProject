@@ -26,13 +26,18 @@ import { RANK_LABEL, ROLE_LABEL } from '@/constants/index.js';
  */
 import { LogOutDialog } from '@/features/auth/components/log-out-dialog.jsx';
 import { PasswordChangeDialog } from '@/features/auth/components/password-change-dialog.jsx';
-import { ChevronUpIcon } from 'lucide-react';
+import { ChevronUpIcon, UserRoundIcon } from 'lucide-react';
 
-export const UserMenu = () => {
+/**
+ * @param {{ isCollapsed?: boolean }} props
+ */
+export const UserMenu = ({ isCollapsed = false }) => {
   const [open, setOpen] = useState(false);
   const user = useAuthStore((s) => s.user);
 
   if (!user) return null;
+
+  const fallback = user.name?.slice(0, 1) || user.email?.slice(0, 1);
 
   return (
     <Popover
@@ -40,33 +45,54 @@ export const UserMenu = () => {
       onOpenChange={setOpen}
     >
       <PopoverTrigger className='text-inherit'>
-        <Card className='px-3 py-2 cursor-pointer'>
-          <div className='w-full flex justify-between items-center'>
-            <div className='flex flex-col text-left'>
-              <span className='text-xs text-muted-foreground'>
-                {user.email}
-              </span>
-
-              <span className='text-sm font-medium'>
-                {user.name}
-                <span className='ml-1 text-xs text-muted-foreground'>
-                  · {user.eid}
-                </span>
-              </span>
+        <Card
+          className={`cursor-pointer ${
+            isCollapsed
+              ? 'flex size-8 items-center justify-center p-0 rounded'
+              : 'px-3 py-2'
+          }`}
+        >
+          {isCollapsed ? (
+            <div className='flex size-6 items-center justify-center rounded bg-muted text-xs font-medium'>
+              {fallback ? (
+                fallback.toUpperCase()
+              ) : (
+                <UserRoundIcon
+                  className='size-4'
+                  aria-hidden='true'
+                />
+              )}
             </div>
-            <ChevronUpIcon
-              size={16}
-              className={`
-                transition-transform duration-200
-                ${open ? 'rotate-180' : 'rotate-0'}
-              `}
-            />
-          </div>
+          ) : (
+            <div className='w-full flex justify-between items-center'>
+              <div className='flex flex-col text-left'>
+                <span className='text-xs text-muted-foreground'>
+                  {user.email}
+                </span>
+
+                <span className='text-sm font-medium'>
+                  {user.name}
+                  <span className='ml-1 text-xs text-muted-foreground'>
+                    · {user.eid}
+                  </span>
+                </span>
+              </div>
+              <ChevronUpIcon
+                size={16}
+                className={`
+                  transition-transform duration-200
+                  ${open ? 'rotate-180' : 'rotate-0'}
+                `}
+              />
+            </div>
+          )}
         </Card>
       </PopoverTrigger>
       <PopoverContent
-        sideOffset={10}
-        className='w-60 rounded-xl p-0'
+        align={isCollapsed ? 'end' : 'center'}
+        side={isCollapsed ? 'right' : 'top'}
+        sideOffset={isCollapsed ? 16 : 10}
+        className={`${isCollapsed ? 'w-60' : 'w-(--radix-popover-trigger-width)'} rounded-xl p-0 shrink-0`}
       >
         {/* 유저 정보 */}
         <div className='space-y-1 p-4'>

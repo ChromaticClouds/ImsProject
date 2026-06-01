@@ -1,18 +1,17 @@
 // @ts-check
 import { useQuery } from '@tanstack/react-query';
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { AppHeader } from '@/components/common/app-header.jsx';
 
-import { getNotices } from '@/features/notice/api/noticeApi';
+import { getNotices } from '@/features/notice/api';
 import { NoticeTable } from '@/features/notice/components/notice-table';
 
-import { useSearchParams } from 'react-router-dom';
-import { NoticeHeader } from '@/features/notice/components/notice-header';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { NoticePagination } from '@/features/notice/components/notice-pagination';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store';
+import { PlusIcon } from 'lucide-react';
 // import { NoticeSearch } from '@/features/notice/components/notice-search'; 없애는 기능
 
 /**
@@ -22,6 +21,8 @@ import { NoticePagination } from '@/features/notice/components/notice-pagination
  */
 export const Notice = () => {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   const rawPage = Number(params.get('page'));
   const page = isNaN(rawPage) || rawPage < 1 ? 1 : rawPage;
@@ -32,21 +33,35 @@ export const Notice = () => {
   });
 
   return (
-    <div className='p-6 max-w-5xl mx-auto space-y-6'>
-      <Card>
-        <NoticeHeader />
+    <>
+      <AppHeader
+        title='공지사항'
+        description='시스템 운영 및 재고관리 관련 공지사항을 확인하세요.'
+        asideDecoration={
+          <Button
+            size='sm'
+            className='gap-2'
+            disabled={user?.userRank !== 'FIRST_ADMIN'}
+            onClick={() => navigate('/dashboard/notice/create')}
+          >
+            <PlusIcon className='w-4 h-4' />
+            작성
+          </Button>
+        }
+      />
 
+      <Card>
         <CardContent className='space-y-4 p-0'>
           <NoticeTable data={data} />
         </CardContent>
 
         <CardFooter>
-          <NoticePagination 
+          <NoticePagination
             currentPage={data?.page}
             totalPages={data?.totalPages}
           />
         </CardFooter>
       </Card>
-    </div>
+    </>
   );
 };

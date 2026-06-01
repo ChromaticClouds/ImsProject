@@ -1,20 +1,13 @@
 // @ts-check
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { updateNotice } from '../api/noticeApi';
+import { updateNotice } from '../api';
 import { toast } from 'sonner';
 
 /**
  * @typedef {object} NoticeUpdateVariables
  * @property {number} id
- * @property {{
- *   title: string;
- *   content: string;
- *   oldPinned: boolean;
- *   pinned: boolean;
- *   file?: File | null;
- *   fileName?: string | null;
- * }} formData
+ * @property {FormData} formData
  */
 
 export const useNoticeUpdateMutation = () => {
@@ -37,12 +30,11 @@ export const useNoticeUpdateMutation = () => {
     },
 
     onSuccess: async (res, variables) => {
-      console.log(res);
-
-      console.log('[update] onSuccess', res, variables);
       const { id } = variables;
 
-      toast.success(res?.message ?? '수정되었습니다', { id: 'notice-update-success' });
+      toast.success(res?.message ?? '수정되었습니다', {
+        id: 'notice-update-success',
+      });
 
       await qc.invalidateQueries({ queryKey: ['notices'] });
       await qc.invalidateQueries({ queryKey: ['notice', id] });
@@ -55,7 +47,9 @@ export const useNoticeUpdateMutation = () => {
 
     onError: (err) => {
       console.error('[update] onError', err);
-      toast.error(`수정 실패: ${err?.message ?? err}`, { id: 'notice-update-error' });
+      toast.error(`수정 실패: ${err?.message ?? err}`, {
+        id: 'notice-update-error',
+      });
     },
   });
 };

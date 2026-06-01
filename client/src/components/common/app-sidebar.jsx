@@ -30,12 +30,25 @@ import { Link } from 'react-router-dom';
 import { UserMenu } from '@/components/common/user-menu.jsx';
 
 export const AppSidebar = () => {
+  const { state } = useSidebar();
+  const isCollapsed = state === 'collapsed';
+
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader>
-        <Card className='p-2 flex h-max justify-center cursor-pointer hover:bg-muted/50'>
-          <Link to='/dashboard'>
-            <Logo variant='default' />
+        <Card
+          className={`flex cursor-pointer not-last:justify-center overflow-hidden hover:bg-muted/50 ${
+            isCollapsed ? 'size-8 p-0 rounded items-center justify-center' : 'h-max p-2'
+          }`}
+        >
+          <Link
+            to='/dashboard'
+            className='flex items-center shrink-0 text-nowrap'
+          >
+            <Logo
+              variant={isCollapsed ? 'icon' : 'default'}
+              size={isCollapsed ? 24 : 42}
+            />
           </Link>
         </Card>
       </SidebarHeader>
@@ -96,7 +109,7 @@ export const AppSidebar = () => {
       </SidebarContent>
 
       <SidebarFooter>
-        <UserMenu />
+        <UserMenu isCollapsed={isCollapsed} />
       </SidebarFooter>
     </Sidebar>
   );

@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.*;
 
 import com.example.ims.features.notice.dto.NoticeResponse;
+import com.example.ims.features.notice.dto.NoticeResponse.NoticeAuthor;
+import com.example.ims.features.notice.dto.NoticeResponse.NoticeSummary;
 
 @Mapper
 public interface NoticeMapper {
@@ -26,8 +28,7 @@ public interface NoticeMapper {
 		        n.title, 
 		        n.content, 
 		        n.pinned, 
-		        n.created_at AS createdAt, 
-		        n.file_name AS fileName
+		        n.created_at AS createdAt
 		    FROM notice n
 		    JOIN user u ON n.user_id = u.id 
 		    <where>
@@ -57,8 +58,7 @@ public interface NoticeMapper {
 	    n.title, 
 	    n.content, 
 	    n.pinned, 
-	    n.created_at AS createdAt, 
-	    n.file_name AS fileName
+	    n.created_at AS createdAt
 	FROM notice n
 	JOIN user u ON n.user_id = u.id  -- 작성자 정보를 가져오기 위한 조인
 	WHERE n.pinned = 1 
@@ -79,26 +79,79 @@ public interface NoticeMapper {
         n.title, 
         n.content, 
         n.pinned, 
-        n.created_at AS createdAt, 
-        n.file_name AS fileName 
+        n.created_at AS createdAt 
     FROM notice n
     JOIN user u ON n.user_id = u.id
     WHERE n.id = #{id}
     """)
     NoticeResponse findById(@Param("id") Long id);
 
+    @Select("""
+        SELECT
+            u.id,
+            u.name,
+            u.eid,
+            u.email
+        FROM notice n
+        JOIN user u ON n.user_id = u.id
+        WHERE n.id = #{id}
+    """)
+    NoticeAuthor findAuthorByNoticeId(@Param("id") Long id);
+
+    @Select("""
+        SELECT
+            id,
+            title
+        FROM notice
+        WHERE id < #{id}
+        ORDER BY id DESC
+        LIMIT 1
+    """)
+    NoticeSummary findPreviousNotice(@Param("id") Long id);
+
+    @Select("""
+        SELECT
+            id,
+            title
+        FROM notice
+        WHERE id > #{id}
+        ORDER BY id ASC
+        LIMIT 1
+    """)
+    NoticeSummary findNextNotice(@Param("id") Long id);
+
 
     @Insert("""
-        INSERT INTO notice (user_id, title, content, pinned, created_at, file_name)
-        VALUES (#{user_id}, #{title}, #{content}, #{pinned}, NOW(), #{file_name})
+        INSERT INTO notice (user_id, title, content, pinned, created_at)
+        VALUES (#{user_id}, #{title}, #{content}, #{pinned}, NOW())
     """)
     int insert(
             @Param("user_id") Long user_id,
             @Param("title") String title,
             @Param("content") String content,
-            @Param("pinned") boolean pinned,
-            @Param("file_name") String file_name
+            @Param("pinned") boolean pinned
     );
+
+    @Select("SELECT LAST_INSERT_ID()")
+    Long lastInsertId();
+
+    @Insert("""
+        INSERT INTO notice_attachment (notice_id, file_name, sort_order)
+        VALUES (#{notice_id}, #{file_name}, #{sort_order})
+    """)
+    int insertAttachment(
+            @Param("notice_id") Long notice_id,
+            @Param("file_name") String file_name,
+            @Param("sort_order") int sort_order
+    );
+
+    @Select("""
+        SELECT file_name
+        FROM notice_attachment
+        WHERE notice_id = #{notice_id}
+        ORDER BY sort_order ASC, id ASC
+    """)
+    List<String> findAttachmentFileNames(@Param("notice_id") Long notice_id);
 
     @Delete("""
         DELETE FROM notice

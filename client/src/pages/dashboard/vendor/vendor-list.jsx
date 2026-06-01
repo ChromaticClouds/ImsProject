@@ -1,9 +1,9 @@
 // @ts-check
 import { Button } from '@/components/ui/button';
 import { AppHeader } from '@/components/common/app-header.jsx';
-import { VendorSearch } from '@/features/vendor/components/vendor-search';
-import { VendorTableContainer } from '@/features/vendor/components/vendor-table-container.jsx';
-import { VendorPaginationContainer } from '@/features/vendor/components/vendor-pagination-container.jsx';
+import { VendorSearch } from '@/features/vendor/components/vendor-list/vendor-search';
+import { VendorTableContainer } from '@/features/vendor/components/vendor-list/vendor-table-container.jsx';
+import { VendorPaginationContainer } from '@/features/vendor/components/vendor-list/vendor-pagination-container.jsx';
 import { useNavigate } from 'react-router-dom';
 
 export const VendorList = () => {

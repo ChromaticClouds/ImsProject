@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
+    "allowJs": true,
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "bundler",
@@ -8,6 +9,8 @@
     "strict": true,
     "paths": {
       "@/*": ["./src/*"]
-    },
-  }
+    }
+  },
+  "include": ["src"],
+  "exclude": ["dist", "storybook-static", "node_modules"]
 }

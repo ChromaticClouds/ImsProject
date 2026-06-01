@@ -52,7 +52,7 @@ const VendorDetailPageShell = ({ children }) => (
   </div>
 );
 
-export const RenewedVendorDetail = () => {
+export const VendorDetail = () => {
   const { id } = useParams();
   const { data, isLoading, isFetching, error, refetch } = useVendorDetail(id);
   const { mutateAsync: deleteVendor, isPending } = useDeleteVendor();

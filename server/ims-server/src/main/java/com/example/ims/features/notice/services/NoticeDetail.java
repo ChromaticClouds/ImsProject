@@ -16,6 +16,12 @@ public class NoticeDetail {
 
         NoticeResponse notice = mapper.findById(id);
         if (notice == null) throw new IllegalArgumentException("공지 없음 id=" + id);
-        return notice;
+        return notice
+                .withAttachments(mapper.findAttachmentFileNames(id))
+                .withDetailMeta(
+                        mapper.findAuthorByNoticeId(id),
+                        mapper.findPreviousNotice(id),
+                        mapper.findNextNotice(id)
+                );
     }
 }

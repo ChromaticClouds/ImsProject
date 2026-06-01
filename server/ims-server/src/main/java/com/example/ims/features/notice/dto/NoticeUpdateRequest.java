@@ -5,7 +5,5 @@ import jakarta.validation.constraints.NotBlank;
 public record NoticeUpdateRequest(
     @NotBlank String title,
     @NotBlank String content,
-    boolean pinned,
-    boolean oldPinned,
-    String fileName
+    boolean pinned
 ) {}

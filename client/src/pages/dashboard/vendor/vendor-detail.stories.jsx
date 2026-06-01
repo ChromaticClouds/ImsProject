@@ -1,7 +1,7 @@
 // @ts-check
 
 import { fn } from 'storybook/test';
-import { VendorDetailRenewal } from '@/pages/vendor/vendor-detail-renewal.jsx';
+import { VendorDetailRenewal } from '@/pages/dashboard/vendor/vendor-detail-renewal.jsx';
 
 const supplierVendor = {
   type: 'Supplier',

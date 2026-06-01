@@ -95,8 +95,7 @@ public class NoticeService {
                 title,
                 content,
                 req.isPinned(),
-                LocalDate.now(),
-                storedFileName
+                LocalDate.now()
         );
 
         Notice saved = noticeRepository.save(notice);
@@ -129,8 +128,7 @@ public class NoticeService {
             }
         }
 
-        String nextFile = (storedFileNameOrNull != null) ? storedFileNameOrNull : notice.getFileName();
-        notice.update(title, content, willPinned, nextFile);
+        notice.update(title, content, willPinned);
 
         return new NoticeActionResponse(true, "수정되었습니다", NoticeResponse.from(notice));
     }

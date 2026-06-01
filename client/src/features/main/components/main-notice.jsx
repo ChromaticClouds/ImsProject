@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
 // 모크
-import { notices } from '../../notice/mocks/notice-mock';
 import { ChevronRightIcon } from 'lucide-react';
 import { api } from '@/services/api';
 

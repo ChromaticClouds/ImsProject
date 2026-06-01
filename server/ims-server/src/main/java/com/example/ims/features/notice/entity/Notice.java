@@ -30,26 +30,21 @@ public class Notice {
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt; // DB: DATE
 
-    @Column(name = "file_name")
-    private String fileName;
-
     protected Notice() {} // JPA 필수
 
     // 2. 등록용 생성자 수정: Long userId -> NoticeUser user
-    public Notice(NoticeUser user, String title, String content, boolean pinned, LocalDate createdAt, String fileName) {
+    public Notice(NoticeUser user, String title, String content, boolean pinned, LocalDate createdAt) {
         this.user = user;
         this.title = title;
         this.content = content;
         this.pinned = pinned;
         this.createdAt = createdAt;
-        this.fileName = fileName;
     }
 
     // 3. 수정용 메서드 (작성자 변경이 필요 없다면 user는 제외)
-    public void update(String title, String content, boolean pinned, String fileName) {
+    public void update(String title, String content, boolean pinned) {
         this.title = title;
         this.content = content;
         this.pinned = pinned;
-        this.fileName = fileName;
     }
 }

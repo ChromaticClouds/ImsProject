@@ -70,6 +70,8 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "eslint-plugin-storybook": "^10.4.1",
     "globals": "^16.5.0",
+    "msw": "^2.14.6",
+    "msw-storybook-addon": "^2.0.7",
     "playwright": "^1.60.0",
     "prop-types": "^15.8.1",
     "storybook": "^10.4.1",
@@ -77,5 +79,10 @@
     "vite": "^7.2.4",
     "vitest": "^4.1.7"
   },
-  "packageManager": "pnpm@10.24.0"
+  "packageManager": "pnpm@10.24.0",
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
 }

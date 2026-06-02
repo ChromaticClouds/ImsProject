@@ -3,8 +3,18 @@
 import { api } from '@/services/api.js';
 import { NoticeDetailType } from '@/features/notice/types';
 
-export const getNotices = (page = 1): Promise<NoticeListResponse> =>
-  api.get('notice/list', { searchParams: { page } }).json();
+export const getNotices = (
+  page = 1,
+  search = '',
+): Promise<NoticeListResponse> =>
+  api
+    .get('notice/list', {
+      searchParams: {
+        page,
+        ...(search.trim() ? { search: search.trim() } : {}),
+      },
+    })
+    .json();
 
 export const fetchNoticeById = async (id?: string) =>
   api.get(`notice/${id}`).json<NoticeDetailType>();

@@ -28,13 +28,21 @@ public interface NoticeMapper {
 		        n.title, 
 		        n.content, 
 		        n.pinned, 
-		        n.created_at AS createdAt
+		        n.created_at AS createdAt,
+                EXISTS (
+                    SELECT 1
+                    FROM notice_attachment na
+                    WHERE na.notice_id = n.id
+                ) AS hasAttachment
 		    FROM notice n
 		    JOIN user u ON n.user_id = u.id 
 		    <where>
 		         n.pinned != 1 
 			    <if test="search != null and search != ''">
-			        AND n.title LIKE CONCAT('%', #{search}, '%') 
+			        AND (
+			            n.title LIKE CONCAT('%', #{search}, '%')
+			            OR u.name LIKE CONCAT('%', #{search}, '%')
+			        )
 			    </if>
 			</where>
 		    ORDER BY n.pinned DESC, n.id DESC
@@ -50,26 +58,58 @@ public interface NoticeMapper {
     /**
      * 중요 태그가 붙은 게시글을 조회
      */
-    @Select("""
-	    SELECT 
-	    n.id, 
-	    n.user_id AS userId, 
-	    u.name AS userName,     -- 이 부분이 추가되어야 8개가 맞춰집니다.
-	    n.title, 
-	    n.content, 
-	    n.pinned, 
-	    n.created_at AS createdAt
-	FROM notice n
-	JOIN user u ON n.user_id = u.id  -- 작성자 정보를 가져오기 위한 조인
-	WHERE n.pinned = 1 
-	ORDER BY n.created_at DESC;
-    """)
-    List<NoticeResponse> findPinnedNotices();
+    default List<NoticeResponse> findPinnedNotices() {
+        return findPinnedNotices(null);
+    }
 
     @Select("""
-    SELECT COUNT(*) FROM notice
+	    <script>
+	    SELECT 
+	        n.id, 
+	        n.user_id AS userId, 
+	        u.name AS userName,
+	        n.title, 
+	        n.content, 
+	        n.pinned, 
+	        n.created_at AS createdAt,
+            EXISTS (
+                SELECT 1
+                FROM notice_attachment na
+                WHERE na.notice_id = n.id
+            ) AS hasAttachment
+	    FROM notice n
+	    JOIN user u ON n.user_id = u.id
+	    <where>
+	        n.pinned = 1
+	        <if test="search != null and search != ''">
+	            AND (
+	                n.title LIKE CONCAT('%', #{search}, '%')
+	                OR u.name LIKE CONCAT('%', #{search}, '%')
+	            )
+	        </if>
+	    </where>
+	    ORDER BY n.created_at DESC
+	    </script>
     """)
-    long countNormal();
+    List<NoticeResponse> findPinnedNotices(@Param("search") String search);
+
+    @Select("""
+    <script>
+    SELECT COUNT(*)
+    FROM notice n
+    JOIN user u ON n.user_id = u.id
+    <where>
+        n.pinned != 1
+        <if test="search != null and search != ''">
+            AND (
+                n.title LIKE CONCAT('%', #{search}, '%')
+                OR u.name LIKE CONCAT('%', #{search}, '%')
+            )
+        </if>
+    </where>
+    </script>
+    """)
+    long countNormal(@Param("search") String search);
 
     @Select("""
         SELECT 
@@ -79,7 +119,12 @@ public interface NoticeMapper {
         n.title, 
         n.content, 
         n.pinned, 
-        n.created_at AS createdAt 
+        n.created_at AS createdAt,
+        EXISTS (
+            SELECT 1
+            FROM notice_attachment na
+            WHERE na.notice_id = n.id
+        ) AS hasAttachment
     FROM notice n
     JOIN user u ON n.user_id = u.id
     WHERE n.id = #{id}

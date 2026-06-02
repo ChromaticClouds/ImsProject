@@ -285,6 +285,7 @@
  * @property {string} title
  * @property {string} content
  * @property {string | null} fileName
+ * @property {boolean} hasAttachment
  * @property {string} createdAt
  */
 

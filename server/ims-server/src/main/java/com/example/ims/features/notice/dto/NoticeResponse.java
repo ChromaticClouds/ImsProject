@@ -1,6 +1,7 @@
 package com.example.ims.features.notice.dto;
 
 import com.example.ims.features.notice.entity.Notice;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public record NoticeResponse(
         String content,
         boolean pinned,
         LocalDate createdAt,
+        boolean hasAttachment,
         List<String> attachments,
         NoticeAuthor author,
         NoticeSummary previousNotice,
@@ -46,6 +48,33 @@ public record NoticeResponse(
                 content,
                 pinned,
                 createdAt,
+                false,
+                List.of(),
+                new NoticeAuthor(userId, userName, null, null),
+                null,
+                null
+        );
+    }
+
+    public NoticeResponse(
+            Long id,
+            Long userId,
+            String userName,
+            String title,
+            String content,
+            Boolean pinned,
+            Date createdAt,
+            Long hasAttachment
+    ) {
+        this(
+                id,
+                userId,
+                userName,
+                title,
+                content,
+                Boolean.TRUE.equals(pinned),
+                createdAt == null ? null : createdAt.toLocalDate(),
+                hasAttachment != null && hasAttachment > 0,
                 List.of(),
                 new NoticeAuthor(userId, userName, null, null),
                 null,
@@ -74,6 +103,7 @@ public record NoticeResponse(
                 content,
                 pinned,
                 createdAt,
+                hasAttachment,
                 attachments == null ? List.of() : attachments,
                 author,
                 previousNotice,
@@ -94,6 +124,7 @@ public record NoticeResponse(
                 content,
                 pinned,
                 createdAt,
+                hasAttachment,
                 attachments,
                 author == null ? this.author : author,
                 previousNotice,

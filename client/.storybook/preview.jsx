@@ -1,7 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { initialize, mswLoader } from 'msw-storybook-addon';
+import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '../src/components/common/theme-provider';
 
 import '../src/index.css';
+
+initialize();
 
 const createQueryClient = () =>
   new QueryClient({
@@ -14,18 +18,22 @@ const createQueryClient = () =>
 
 /** @type { import('@storybook/react-vite').Preview } */
 const preview = {
+  loaders: [mswLoader],
+
   decorators: [
     (Story) => {
       const queryClient = createQueryClient();
 
       return (
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider
-            defaultTheme='system'
-            storageKey='vite-ui-theme'
-          >
-            <Story />
-          </ThemeProvider>
+          <MemoryRouter>
+            <ThemeProvider
+              defaultTheme='system'
+              storageKey='vite-ui-theme'
+            >
+              <Story />
+            </ThemeProvider>
+          </MemoryRouter>
         </QueryClientProvider>
       );
     },

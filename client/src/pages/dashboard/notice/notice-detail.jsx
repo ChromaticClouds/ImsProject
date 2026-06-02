@@ -29,7 +29,7 @@ export const NoticeDetail = () => {
     queryFn: () => fetchNoticeById(id),
   });
 
-  const del = useNoticeDeleteMutation();
+  const del = useNoticeDeleteMutation(id);
 
   if (isLoading) return <div className='p-6'>로딩중...</div>;
   if (!notice) return <div className='p-6'>게시글이 없습니다.</div>;

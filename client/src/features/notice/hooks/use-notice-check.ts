@@ -1,5 +1,4 @@
-import { getPinnedNotices, PinnedNoticeSummary } from '@/features/notice/api';
-import { useQuery } from '@tanstack/react-query';
+import { PinnedNoticeSummary } from '@/features/notice/api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const useNoticeCheck = (

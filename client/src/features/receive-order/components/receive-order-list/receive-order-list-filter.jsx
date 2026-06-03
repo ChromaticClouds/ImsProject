@@ -18,16 +18,16 @@ import { useReceiveOrderFilterStore } from '../../stores/use-receive-order-filte
 
 export const ReceiveOrderListFilter = () => {
   const { data, isLoading } = useSalersQuery();
-  
+
   const setSaler = useReceiveOrderFilterStore((s) => s.setSaler);
 
   return (
     <Select
       onValueChange={(value) => {
-        setSaler(value === 'all' ? undefined : Number(value));
+        setSaler(value === 'all' ? null : Number(value));
       }}
     >
-      <SelectTrigger className='w-54'>
+      <SelectTrigger className='w-full md:w-54'>
         <SelectValue placeholder='판매처 선택' />
       </SelectTrigger>
 

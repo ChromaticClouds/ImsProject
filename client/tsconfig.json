@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist",
     "jsx": "react-jsx",
     "allowJs": true,
     "module": "esnext",

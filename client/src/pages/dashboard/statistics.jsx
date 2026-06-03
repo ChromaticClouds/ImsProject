@@ -5,7 +5,7 @@ import * as React from 'react';
 /**
  * Components
  */
-import { InOutBound } from '@/features/statistics/components/in-out-bound.jsx';
+import { InOutBound } from '@/features/statistics/components/in-out-bound.js';
 import { AppHeader } from '@/components/common/app-header.jsx';
 import { StockShare } from '@/features/statistics/components/stock-share.jsx';
 import { ClientRank } from '@/features/statistics/components/client-rank.jsx';

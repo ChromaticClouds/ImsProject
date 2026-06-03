@@ -37,12 +37,13 @@ const typeMap = {
   TRADITIONAL: '전통주',
   LIQUOR: '양주',
   KAOLIANG_LIQUOR: '고량주',
+  ALL: '전체',
 };
 
 /**
  * @typedef {object} TypeDropdownProps
- * @property {string} type
- * @property {React.Dispatch<React.SetStateAction<string>>} setType
+ * @property {keyof typeof typeMap | 'ALL'} type
+ * @property {React.Dispatch<React.SetStateAction<ProductType | 'ALL'>>} setType
  */
 
 /**
@@ -68,7 +69,7 @@ export const TypeDropdown = ({ type, setType }) => {
             <BottleWineIcon />
           ) : (
             <>
-              {typeMap[type] || '전체'}
+              {typeMap[type]}
               <ChevronDownIcon />
             </>
           )}
@@ -79,12 +80,12 @@ export const TypeDropdown = ({ type, setType }) => {
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
-              setType('');
+              setType('ALL');
             }}
             className='flex items-center justify-between'
           >
             <span>전체</span>
-            {!type && <CheckIcon className='h-4 w-4 opacity-70' />}
+            {type === 'ALL' && <CheckIcon className='h-4 w-4 opacity-70' />}
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

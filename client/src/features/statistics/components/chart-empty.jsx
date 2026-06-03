@@ -1,3 +1,5 @@
+// @ts-check
+
 import {
   Empty,
   EmptyContent,
@@ -10,6 +12,11 @@ import { Button } from '@/components/ui/button';
 import { BarChart3Icon, RefreshCwIcon } from 'lucide-react';
 
 /**
+ * @import { RefetchOptions, QueryObserverResult } from '@tanstack/react-query';
+ * @import { WarehouseShareResponse } from '@/features/statistics/api/index.js'
+ */
+
+/**
  * @param {{
  *   title?: string,
  *   description?: string,
@@ -17,7 +24,7 @@ import { BarChart3Icon, RefreshCwIcon } from 'lucide-react';
  *   loadingLabel?: string,
  *   isRefreshing?: boolean,
  *   icon?: React.ReactNode,
- *   onRefresh?: () => void | Promise<void>,
+ *   onRefresh?: (options?: RefetchOptions) => Promise<QueryObserverResult<WarehouseShareResponse | undefined, Error>>,
  * }} props
  */
 export const ChartEmpty = ({
@@ -42,7 +49,7 @@ export const ChartEmpty = ({
           <Button
             variant='outline'
             size='sm'
-            onClick={onRefresh}
+            onClick={() => onRefresh()}
             disabled={isRefreshing}
           >
             <RefreshCwIcon className={isRefreshing ? 'animate-spin' : ''} />

@@ -6,6 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
 import { fetchStatisticsBrands } from '@/features/statistics/api/index.js';
@@ -17,13 +18,13 @@ import { CheckIcon } from 'lucide-react';
 
 /**
  * @typedef {object} BrandDropdownProps
- * @property {string} type
+ * @property {ProductType | 'ALL'} type
  * @property {string} brand
  * @property {React.Dispatch<React.SetStateAction<string>>} setBrand
  */
 
 /**
- * @param {BrandDropdownProps} props 
+ * @param {BrandDropdownProps} props
  */
 export const BrandDropdown = ({ type, brand, setBrand }) => {
   const isMobile = useIsMobile();
@@ -39,7 +40,7 @@ export const BrandDropdown = ({ type, brand, setBrand }) => {
     <DropdownMenu>
       <DropdownMenuTrigger
         asChild
-        disabled={!type}
+        disabled={type === 'ALL'}
       >
         <Button
           size={isMobile ? 'icon-lg' : 'default'}
@@ -49,7 +50,7 @@ export const BrandDropdown = ({ type, brand, setBrand }) => {
             <TagIcon />
           ) : (
             <>
-              {brand ? brand : (type ? '전체' : '주종 선택 필수')}
+              {brand !== 'ALL' ? brand : (type === 'ALL' ? '주종 선택 필수' : '전체')}
               <ChevronDownIcon />
             </>
           )}
@@ -60,15 +61,17 @@ export const BrandDropdown = ({ type, brand, setBrand }) => {
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
-              setBrand('');
+              setBrand('ALL');
             }}
             className='flex items-center justify-between'
           >
             <span>전체</span>
-            {!brand && <CheckIcon className='h-4 w-4 opacity-70' />}
+            {brand === 'ALL' && <CheckIcon className='h-4 w-4 opacity-70' />}
           </DropdownMenuItem>
 
-          {(data ?? []).map((b) => (
+          <DropdownMenuSeparator />
+
+          {/** @type {string[]} */ (data ?? []).map((b) => (
             <DropdownMenuItem
               key={b}
               onSelect={(e) => {

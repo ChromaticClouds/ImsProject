@@ -1,4 +1,5 @@
 // @ts-check
+
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, CartesianGrid, LabelList } from 'recharts';
 
@@ -66,7 +67,7 @@ export const InOutboundChart = ({ data }) => {
   const ValueLabel = useMemo(() => makeValueLabel(isMobile), [isMobile]);
 
   // LabelList formatter로 작은 값 숨기기
-  const labelFormatter = (v) => {
+  const labelFormatter = (/** @type {string} */ v) => {
     const n = Number(v ?? 0);
     if (!Number.isFinite(n) || n < MIN_LABEL_VALUE) return '';
     return n; // 실제 텍스트는 ValueLabel에서 toLocaleString 처리

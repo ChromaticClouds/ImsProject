@@ -58,6 +58,7 @@ import { PasswordReset } from '@/pages/password-reset.jsx';
 import { PurchaseOrderPost } from '@/pages/dashboard/purchase-order/purchase-order-post.jsx';
 import { UserGroup } from '@/pages/dashboard/user/user-group.jsx';
 import { ErrorBoundary } from '@/pages/error-boundary.jsx';
+import { LandingPage } from '@/pages/landing-page.js';
 
 export const router = createBrowserRouter([
   { path: '*', element: <ErrorBoundary /> },
@@ -65,7 +66,7 @@ export const router = createBrowserRouter([
     path: '/',
     element: <App />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <LandingPage /> },
       { path: 'login', element: <Auth /> },
       { path: 'register', element: <Auth /> },
       { path: 'forgot-password', element: <ForgotPassword /> },

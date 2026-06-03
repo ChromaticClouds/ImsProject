@@ -6,7 +6,7 @@ import { api, hooks } from "@/services/api.js";
  * 통계 - 주종 목록
  */
 export async function fetchStatisticsTypes() {
-  return await api.get('stats/types').json();
+  return await api.get('stats/types').json<[ProductType]>();
 }
 
 /**
@@ -36,7 +36,7 @@ export async function fetchInboundPartnerRank(params) {
 }
 
 /**
- * @returns {Promise<ClientRankData[]>} 
+ * @returns {Promise<ClientRankData[]>}
  */
 export async function fetchOutboundPartnerRank(params) {
   return await api.get('stats/rank/outbound', { searchParams: params }).json();

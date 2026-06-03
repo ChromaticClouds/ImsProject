@@ -3,14 +3,46 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { createNotice } from '@/features/notice/api/index.js';
+import { createNotice, updatePinned } from '@/features/notice/api/index.js';
+
+type NoticeCreateMutationVariables = {
+  formData: FormData;
+  unpinNoticeIds?: number[];
+};
+
+const assertSuccess = (response: ApiResponse | unknown) => {
+  if (
+    response &&
+    typeof response === 'object' &&
+    'success' in response &&
+    response.success === false
+  ) {
+    throw new Error(
+      'message' in response && typeof response.message === 'string'
+        ? response.message
+        : '요청 실패',
+    );
+  }
+};
 
 export const useNoticeCreateMutation = () => {
   const qc = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: createNotice,
+    mutationFn: async ({
+      formData,
+      unpinNoticeIds = [],
+    }: NoticeCreateMutationVariables) => {
+      await Promise.all(
+        unpinNoticeIds.map(async (id) => {
+          const response = await updatePinned(String(id), false);
+          assertSuccess(response);
+        }),
+      );
+
+      return createNotice(formData);
+    },
 
     onSuccess: async (res) => {
       if (res?.success === false) {
@@ -22,6 +54,7 @@ export const useNoticeCreateMutation = () => {
       });
 
       await qc.invalidateQueries({ queryKey: ['notices'] });
+      await qc.invalidateQueries({ queryKey: ['pinned', 'notice', 'summary'] });
       navigate('/dashboard/notice');
     },
 

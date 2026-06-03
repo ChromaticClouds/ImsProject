@@ -11,9 +11,9 @@ export type NoticeDetailType = {
   pinned: boolean;
   createdAt: string;
   attachments: string[];
-  author: { id: number; name: string; email: string };
+  author: { id: number; eid: string; name: string; email: string };
   previousNotice: { id: number; title: string } | null;
   nextNotice: { id: number; title: string } | null;
 };
 
-export { };
+export {};

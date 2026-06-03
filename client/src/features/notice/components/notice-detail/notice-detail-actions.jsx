@@ -18,6 +18,7 @@ import { PencilIcon, TrashIcon } from 'lucide-react';
  * @typedef {object} NoticeDetailActionsProps
  * @property {boolean} canManage
  * @property {boolean} isDeleting
+ * @property {boolean} isAuthorized
  * @property {() => void} onDelete
  * @property {() => void} onEdit
  */
@@ -28,9 +29,10 @@ import { PencilIcon, TrashIcon } from 'lucide-react';
 export const NoticeDetailActions = ({
   canManage,
   isDeleting,
+  isAuthorized,
   onDelete,
   onEdit,
-}) => (
+}) => isAuthorized && (
   <div className='flex shrink-0 flex-wrap items-center gap-2'>
     <Button
       variant='outline'

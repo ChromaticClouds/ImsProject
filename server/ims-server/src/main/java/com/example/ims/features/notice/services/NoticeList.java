@@ -3,6 +3,7 @@ package com.example.ims.features.notice.services;
 import java.util.List;
 
 import com.example.ims.features.notice.dto.NoticeListResponse;
+import com.example.ims.features.notice.dto.PinnedNoticeSummary;
 import org.springframework.stereotype.Service;
 
 import com.example.ims.features.notice.dto.NoticeResponse;
@@ -28,5 +29,10 @@ public class NoticeList {
         int totalPages = (int) Math.ceil((double) totalElements / SIZE);
 
         return new NoticeListResponse(pinned, items, page, totalPages, totalElements);
+    }
+
+    public List<PinnedNoticeSummary> findPinnedNotices() {
+        List<NoticeResponse> pinned = mapper.findPinnedNotices("");
+        return pinned.stream().map(PinnedNoticeSummary::from).toList();
     }
 }

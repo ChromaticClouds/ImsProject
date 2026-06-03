@@ -15,6 +15,7 @@ import { CalendarIcon, UserRoundIcon } from 'lucide-react';
  * @property {NoticeDetailType} notice
  * @property {boolean} canManage
  * @property {boolean} isDeleting
+ * @property {boolean} isAuthorized
  * @property {() => void} onBack
  * @property {() => void} onDelete
  * @property {() => void} onEdit
@@ -27,6 +28,7 @@ export const NoticeDetailHeader = ({
   notice,
   canManage,
   isDeleting,
+  isAuthorized,
   onBack,
   onDelete,
   onEdit,
@@ -54,6 +56,7 @@ export const NoticeDetailHeader = ({
       <NoticeDetailActions
         canManage={canManage}
         isDeleting={isDeleting}
+        isAuthorized={isAuthorized}
         onDelete={onDelete}
         onEdit={onEdit}
       />

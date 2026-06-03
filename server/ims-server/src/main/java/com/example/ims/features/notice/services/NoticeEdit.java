@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.ims.features.notice.dto.NoticeResponse;
 import com.example.ims.features.notice.dto.NoticeUpdateRequest;
+import com.example.ims.features.notice.exceptions.NoticeAuthException;
 import org.springframework.stereotype.Service;
 
 import com.example.ims.features.notice.mapper.NoticeMapper;
@@ -17,7 +18,11 @@ public class NoticeEdit {
     @Resource
     NoticeMapper mapper;
 
-    public ApiResponse<Void> execute(Long id, NoticeUpdateRequest req) {
+    public ApiResponse<Void> execute(Long id, NoticeUpdateRequest req, Long userId) {
+        NoticeResponse.NoticeAuthor author = mapper.findAuthorByNoticeId(id);
+        if (author == null || !author.id().equals(userId))
+            throw new NoticeAuthException();
+
         NoticeResponse currentNotice = mapper.findById(id);
         if (currentNotice == null) {
             return ApiResponse.fail("게시글을 찾을 수 없습니다.");

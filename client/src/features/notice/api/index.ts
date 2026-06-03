@@ -3,6 +3,17 @@
 import { api } from '@/services/api.js';
 import { NoticeDetailType } from '@/features/notice/types';
 
+export type PinnedNoticeSummary = {
+  id: number;
+  title: string;
+  author?: {
+    id?: number;
+    name?: string;
+    eid?: string;
+    email?: string;
+  } | null;
+};
+
 export const getNotices = (
   page = 1,
   search = '',
@@ -18,6 +29,9 @@ export const getNotices = (
 
 export const fetchNoticeById = async (id?: string) =>
   api.get(`notice/${id}`).json<NoticeDetailType>();
+
+export const getPinnedNotices = () =>
+  api.get('notice/pinned').json<PinnedNoticeSummary[]>();
 
 export const createNotice = async (formData: FormData) =>
   api.post('notice/post', { body: formData }).json<ApiResponse>();

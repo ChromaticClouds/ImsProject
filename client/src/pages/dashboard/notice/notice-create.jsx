@@ -9,16 +9,23 @@ import { NoticeContentSection } from '@/features/notice/components/notice-create
 import { NoticeCreateHeaderActions } from '@/features/notice/components/notice-create/notice-create-header-actions.jsx';
 import { NoticePinnedSection } from '@/features/notice/components/notice-create/notice-pinned-section.jsx';
 import { NoticeTitleSection } from '@/features/notice/components/notice-create/notice-title-section.jsx';
+import { PinnedNoticeSummaryList } from '@/features/notice/components/notice-create/pinned-notice-summary-list.jsx';
+import { Spinner } from '@/components/ui/spinner.js';
+
+/**
+ * Hooks
+ */
 import { useNoticeForm } from '@/features/notice/hooks/use-notice-form.js';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * Constants
  */
 import { CONTENT_MAX, TITLE_MAX } from '@/features/notice/constants';
-
-import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Spinner } from '@/components/ui/spinner.js';
+import { getPinnedNotices } from '@/features/notice/api';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNoticeCheck } from '@/features/notice/hooks/use-notice-check.js';
 
 // ─────────────────────────────────────────────
 // 메인 컴포넌트
@@ -36,7 +43,26 @@ import { Spinner } from '@/components/ui/spinner.js';
  */
 export const NoticeCreate = () => {
   const navigate = useNavigate();
-  const form = useNoticeForm();
+
+  const [checked, setChecked] = useState(false);
+
+  const {
+    data: pinnedNotices,
+    isError: isPinnedError,
+    isFetching: isPinnedFetching,
+  } = useQuery({
+    queryKey: ['pinned', 'notice', 'summary'],
+    queryFn: getPinnedNotices,
+    enabled: checked,
+  });
+
+  const {
+    checkedPinnedNoticeIds,
+    getUnpinNoticeIds,
+    handlePinnedNoticeCheckedChange,
+  } = useNoticeCheck(checked, pinnedNotices);
+
+  const form = useNoticeForm({ getUnpinNoticeIds });
 
   return (
     <form
@@ -81,7 +107,20 @@ export const NoticeCreate = () => {
           maxLength={CONTENT_MAX}
         />
 
-        <NoticePinnedSection form={form} />
+        <NoticePinnedSection
+          form={form}
+          onCheckedChange={setChecked}
+        />
+
+        {checked && (
+          <PinnedNoticeSummaryList
+            notices={pinnedNotices}
+            isLoading={isPinnedFetching}
+            isError={isPinnedError}
+            checkedIds={checkedPinnedNoticeIds}
+            onCheckedChange={handlePinnedNoticeCheckedChange}
+          />
+        )}
 
         <NoticeAttachmentsSection form={form} />
       </div>

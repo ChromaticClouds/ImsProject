@@ -2,6 +2,7 @@ package com.example.ims.features.notice.controllers;
 
 
 import java.io.IOException;
+import java.util.List;
 
 import com.example.ims.features.notice.dto.*;
 import com.example.ims.features.notice.services.*;
@@ -61,6 +62,11 @@ public class NoticeController {
         return nDetail.execute(id);
     }
 
+    @GetMapping("/pinned")
+    List<PinnedNoticeSummary> getPinnedNotices() {
+        return nList.findPinnedNotices();
+    }
+    
     @PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("principal.rank() == 'FIRST_ADMIN' and principal.role() == 'ALL'")
     public ApiResponse<Void> post(
@@ -72,13 +78,19 @@ public class NoticeController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("principal.rank() == 'FIRST_ADMIN' and principal.role() == 'ALL'")
-    public ApiResponse<Void> delete(@PathVariable("id") Long id) {
-        return nDelete.execute(id);
+    public ApiResponse<Void> delete(
+        @PathVariable("id") Long id,
+        @AuthenticationPrincipal UserPrincipal user
+    ) {
+        return nDelete.execute(id, user.userId());
     }
 
     @PatchMapping("/{id}/pinned")
     @PreAuthorize("principal.rank() == 'FIRST_ADMIN' and principal.role() == 'ALL'")
-    public ApiResponse<Void> pinned(@PathVariable("id") Long id, @RequestParam boolean pinned) {
+    public ApiResponse<Void> pinned(
+        @PathVariable("id") Long id,
+        @RequestParam boolean pinned
+    ) {
         return nPinned.execute(id, pinned);
     }
 
@@ -86,9 +98,10 @@ public class NoticeController {
     @PreAuthorize("principal.rank() == 'FIRST_ADMIN' and principal.role() == 'ALL'")
     public ApiResponse<Void> patchNotice(
         @PathVariable("id") Long id,
-        @RequestPart("notice") NoticeUpdateRequest notice
+        @RequestPart("notice") NoticeUpdateRequest notice,
+        @AuthenticationPrincipal UserPrincipal user
     ) {
-        return nEdit.execute(id, notice);
+        return nEdit.execute(id, notice, user.userId());
     }
     
     @PostMapping("file/download")

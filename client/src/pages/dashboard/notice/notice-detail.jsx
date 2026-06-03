@@ -34,6 +34,8 @@ export const NoticeDetail = () => {
   if (isLoading) return <div className='p-6'>로딩중...</div>;
   if (!notice) return <div className='p-6'>게시글이 없습니다.</div>;
 
+  const isAuthorized = user?.eid === notice?.author?.eid;
+
   const attachments = notice.attachments ?? [];
   const canManage = user?.userRank === 'FIRST_ADMIN';
   const goNoticeList = () => navigate('/dashboard/notice');
@@ -44,6 +46,7 @@ export const NoticeDetail = () => {
         notice={notice}
         canManage={canManage}
         isDeleting={del.isPending}
+        isAuthorized={isAuthorized}
         onBack={goNoticeList}
         onDelete={() => del.mutate()}
         onEdit={() => navigate(`/dashboard/notice/${id}/edit`)}

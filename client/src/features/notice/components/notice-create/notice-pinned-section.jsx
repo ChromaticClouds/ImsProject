@@ -1,10 +1,19 @@
+// @ts-check
+
 import { Switch } from '@/components/ui/switch.js';
 import { BellIcon } from 'lucide-react';
 
 /**
- * @param {{ form: ReturnType<import('@/features/notice/hooks/use-notice-form').useNoticeForm> }} props
+ * @import { useNoticeForm } from '@/features/notice/hooks/use-notice-form';
  */
-export const NoticePinnedSection = ({ form }) => {
+
+/**
+ * @param {{
+ *   form: ReturnType<typeof useNoticeForm>,
+ *   onCheckedChange?: (e: boolean) => void
+ * }} props
+ */
+export const NoticePinnedSection = ({ form, onCheckedChange }) => {
   return (
     <form.AppField name='isPinned'>
       {(field) => (
@@ -27,7 +36,10 @@ export const NoticePinnedSection = ({ form }) => {
           <Switch
             id={field.name}
             checked={field.state.value}
-            onCheckedChange={field.handleChange}
+            onCheckedChange={(e) => {
+              field.handleChange(e);
+              onCheckedChange?.(e);
+            }}
             aria-label='중요 공지 고정 여부'
           />
         </div>

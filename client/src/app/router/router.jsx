@@ -81,25 +81,16 @@ export const router = createBrowserRouter([
             element: <Dashboard />,
             children: [
               { index: true, element: <Main /> },
-              {
-                path: 'product',
-                element: <Product />,
-              },
+              { path: 'product', element: <Product /> },
               {
                 path: 'user',
                 children: [
                   {
                     path: 'setting',
                     element: <UserSetting />,
-                    handle: {
-                      permissions: ['ALL'],
-                      minRank: 3,
-                    },
+                    handle: { permissions: ['ALL'], minRank: 3 },
                   },
-                  {
-                    path: 'group',
-                    element: <UserGroup />,
-                  },
+                  { path: 'group', element: <UserGroup /> },
                 ],
               },
               {
@@ -115,7 +106,6 @@ export const router = createBrowserRouter([
                   minRank: 3,
                 },
               },
-              { path: 'statistics', element: <Statistics /> },
               {
                 path: 'inbounds',
                 children: [
@@ -146,10 +136,7 @@ export const router = createBrowserRouter([
                       minRank: 3,
                     },
                   },
-                  {
-                    path: ':id',
-                    element: <NoticeDetail />,
-                  },
+                  { path: ':id', element: <NoticeDetail /> },
                   {
                     path: ':id/edit',
                     element: <NoticeEdit />,
@@ -172,10 +159,7 @@ export const router = createBrowserRouter([
               {
                 path: 'outbounds',
                 children: [
-                  {
-                    path: 'pending',
-                    element: <OutboundPending />,
-                  },
+                  { path: 'pending', element: <OutboundPending /> },
                   {
                     path: 'register/:orderNumber',
                     element: <OutboundRegister />,
@@ -194,10 +178,7 @@ export const router = createBrowserRouter([
                   minRank: 2,
                 },
               },
-              {
-                path: 'statistics',
-                element: <Statistics />,
-              },
+              { path: 'statistics', element: <Statistics /> },
               {
                 path: 'purchase-order',
                 children: [

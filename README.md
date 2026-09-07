@@ -152,7 +152,7 @@ MS Project는 재고, 발주, 입고, 출고, 협력사, 사용자 권한 관리
 
 ### 사전 요구사항
 
-- Node.js 20 이상 권장
+- Node.js 24 LTS 이상 권장
 - pnpm 10 계열
 - Java 21
 - MySQL

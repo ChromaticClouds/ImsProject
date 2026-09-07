@@ -2,14 +2,6 @@
 import { api, hooks } from '@/services/api.js';
 
 /**
- * @typedef {import('ky').Options} KyOptions
- */
-
-/**
- * @typedef {import('@/services/api.js').api} Api
- */
-
-/**
  * @typedef {import('ky').Hooks} Hooks
  */
 

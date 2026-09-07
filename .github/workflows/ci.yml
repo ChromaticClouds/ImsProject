@@ -79,4 +79,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Compile server
-        run: ./gradlew compileJava
+        run: bash ./gradlew compileJava

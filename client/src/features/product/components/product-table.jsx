@@ -4,7 +4,7 @@
  * Components
  */
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MoreHorizontal } from 'lucide-react';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { ProductDetailDialog } from './product-detail-dialog.jsx';
 
@@ -36,7 +36,9 @@ export const ProductTable = () => {
 
   /** @param {string} type */
   const formatType = (type) =>
-    typeLabelMap[/** @type {keyof typeof typeLabelMap} */ (type)] ?? type ?? '-';
+    typeLabelMap[/** @type {keyof typeof typeLabelMap} */ (type)] ??
+    type ??
+    '-';
 
   return (
     <div className='rounded-md border'>

@@ -17,5 +17,5 @@ export const usePriceSummary = (items) => {
     }
 
     return { minPrice: min, maxPrice: max };
-  });
+  }, [items]);
 };

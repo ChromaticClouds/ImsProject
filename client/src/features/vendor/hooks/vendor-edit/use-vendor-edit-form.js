@@ -94,6 +94,6 @@ export const useVendorEditForm = () => {
       onMount: vendorFormSchema,
       onChange: vendorFormSchema,
     },
-    onSubmit: ({ value, formApi }) => console.log(value),
+    onSubmit: ({ value }) => console.log(value),
   });
 };

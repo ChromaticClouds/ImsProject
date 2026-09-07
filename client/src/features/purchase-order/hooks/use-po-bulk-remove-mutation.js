@@ -18,7 +18,7 @@ export const usePoBulkRemoveMutation = () => {
     mutationFn: /** @param {BulkRemoveVars} vars */ ({ orderNumbers }) =>
       bulkDeletePurchaseOrders(orderNumbers),
 
-    onSuccess: (res, vars) => {
+    onSuccess: (res) => {
       if (res?.success === false) {
         toast.error(res?.message ?? ERROR.UNEXPECTED_ERROR);
         return;

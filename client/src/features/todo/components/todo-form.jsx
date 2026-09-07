@@ -1,5 +1,5 @@
 // @ts-check
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -24,22 +24,16 @@ export const TodoForm = ({
   onCancel,
   isSubmitting = false,
 }) => {
-  const { tags, setTags, input, setInput, addTag, removeTag } = useTodoTags();
+  const { tags, input, setInput, addTag, removeTag } = useTodoTags(
+    Array.isArray(initialValues?.tags) ? initialValues.tags : [],
+  );
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-
-  // ✅ edit일 때 초기값 주입
-  useEffect(() => {
-    if (!initialValues) return;
-    setTitle(initialValues.title ?? '');
-    setDescription(initialValues.description ?? '');
-    setStartDate(initialValues.startDate ?? '');
-    setEndDate(initialValues.endDate ?? '');
-    setTags(Array.isArray(initialValues.tags) ? initialValues.tags : []);
-  }, [initialValues, setTags]);
+  const [title, setTitle] = useState(initialValues?.title ?? '');
+  const [description, setDescription] = useState(
+    initialValues?.description ?? '',
+  );
+  const [startDate, setStartDate] = useState(initialValues?.startDate ?? '');
+  const [endDate, setEndDate] = useState(initialValues?.endDate ?? '');
 
   const handleSubmit = () => {
     if (!title.trim() || !startDate || !endDate) {

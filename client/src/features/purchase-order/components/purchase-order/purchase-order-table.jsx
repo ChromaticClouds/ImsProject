@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
 import {
   Table,
   TableBody,
@@ -15,16 +15,15 @@ const STATUS_LABEL = new Map([
 ]);
 
 /**
- * 
- * @param {{ orders: PurchaseOrder[] }} props 
- * @returns 
+ *
+ * @param {{ orders: PurchaseOrder[] }} props
+ * @returns
  */
-export const PurchaseOrderTable = ({ orders, tab, onSend, onDelete }) => {
+export const PurchaseOrderTable = ({ orders }) => {
   return (
     <Table>
       <TableHeader>
         <TableRow>
-         
           <TableHead className='w-44'>발주번호</TableHead>
           <TableHead className='w-28'>상태</TableHead>
           <TableHead className='w-28'>발주일</TableHead>
@@ -32,14 +31,16 @@ export const PurchaseOrderTable = ({ orders, tab, onSend, onDelete }) => {
           <TableHead className='w-20 text-center'>수량</TableHead>
           <TableHead className='w-20 text-right'>단가총액</TableHead>
           <TableHead className='w-20 text-right'>납기일</TableHead>
-          
         </TableRow>
       </TableHeader>
 
       <TableBody>
         {orders.length === 0 && (
           <TableRow>
-            <TableCell colSpan={7} className='text-center py-6'>
+            <TableCell
+              colSpan={7}
+              className='text-center py-6'
+            >
               발주 내역이 없습니다.
             </TableCell>
           </TableRow>
@@ -50,7 +51,6 @@ export const PurchaseOrderTable = ({ orders, tab, onSend, onDelete }) => {
 
           return (
             <TableRow key={o.id}>
-              
               {/* 발주 번호 */}
               <TableCell className='font-medium'>{o.orderNumber}</TableCell>
               {/* 상태 */}
@@ -58,11 +58,10 @@ export const PurchaseOrderTable = ({ orders, tab, onSend, onDelete }) => {
                 {/* <Badge variant='secondary'>
                   {isBeforeSend ? STATUS_LABEL.null : STATUS_LABEL.INBOUND_PENDING}
                 </Badge> */}
-                
-                 <Badge variant={isBeforeSend ? 'outline' : 'secondary'}>
+
+                <Badge variant={isBeforeSend ? 'outline' : 'secondary'}>
                   {STATUS_LABEL.get(o.status)}
                 </Badge>
-                
               </TableCell>
               {/* 발주일 */}
               <TableCell>{o.orderDate}</TableCell>
@@ -74,7 +73,6 @@ export const PurchaseOrderTable = ({ orders, tab, onSend, onDelete }) => {
               <TableCell className='text-right'>단가data*{o.count}원</TableCell>
               {/* 납기일 */}
               <TableCell className='text-right'>{o.recieveDate}</TableCell>
-              
             </TableRow>
           );
         })}

@@ -1,6 +1,5 @@
 // @ts-check
 
-import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, CartesianGrid, LabelList } from 'recharts';
 
 import {
@@ -22,33 +21,27 @@ export const inboundOutboundConfig = {
  * - 0은 숨김
  * - 모바일에서는 글자 크기 줄임
  *
- * @param {boolean} isMobile
+ * @param {{ isMobile: boolean, x?: number, y?: number, width?: number, value?: number }} props
  */
-function makeValueLabel(isMobile) {
-  /**
-   * @param {any} props
-   */
-  return function ValueLabel(props) {
-    const { x, y, width, value } = props;
-    const n = Number(value ?? 0);
-    if (!Number.isFinite(n) || n === 0) return null;
+function ValueLabel({ isMobile, x, y, width, value }) {
+  const n = Number(value ?? 0);
+  if (!Number.isFinite(n) || n === 0) return null;
 
-    const cx = Number(x ?? 0) + Number(width ?? 0) / 2;
-    const cy = Number(y ?? 0) - (isMobile ? 6 : 8);
+  const cx = Number(x ?? 0) + Number(width ?? 0) / 2;
+  const cy = Number(y ?? 0) - (isMobile ? 6 : 8);
 
-    return (
-      <text
-        x={cx}
-        y={cy}
-        textAnchor='middle'
-        fontSize={isMobile ? 10 : 12}
-        fill='var(--foreground)'
-        opacity={0.9}
-      >
-        {n.toLocaleString()}
-      </text>
-    );
-  };
+  return (
+    <text
+      x={cx}
+      y={cy}
+      textAnchor='middle'
+      fontSize={isMobile ? 10 : 12}
+      fill='var(--foreground)'
+      opacity={0.9}
+    >
+      {n.toLocaleString()}
+    </text>
+  );
 }
 
 /**
@@ -63,8 +56,6 @@ export const InOutboundChart = ({ data }) => {
 
   // ✅ 라벨이 너무 빽빽하면 여기 기준값을 올려서 표시 개수 줄이기
   const MIN_LABEL_VALUE = isMobile ? 5 : 1;
-
-  const ValueLabel = useMemo(() => makeValueLabel(isMobile), [isMobile]);
 
   // LabelList formatter로 작은 값 숨기기
   const labelFormatter = (/** @type {string} */ v) => {
@@ -131,7 +122,7 @@ export const InOutboundChart = ({ data }) => {
               dataKey='inbound'
               position='top'
               formatter={labelFormatter}
-              content={<ValueLabel />}
+              content={<ValueLabel isMobile={isMobile} />}
             />
           </Bar>
 
@@ -145,7 +136,7 @@ export const InOutboundChart = ({ data }) => {
               dataKey='outbound'
               position='top'
               formatter={labelFormatter}
-              content={<ValueLabel />}
+              content={<ValueLabel isMobile={isMobile} />}
             />
           </Bar>
         </BarChart>

@@ -1,6 +1,6 @@
 // @ts-check
 
-import React from 'react';
+import 'react';
 
 /**
  * Components

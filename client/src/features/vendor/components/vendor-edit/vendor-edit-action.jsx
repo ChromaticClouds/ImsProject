@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/dialog.js';
 import { FieldSeparator } from '@/components/ui/field.js';
 import { Spinner } from '@/components/ui/spinner.js';
-import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import 'react';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * @import { useVendorEditForm } from '@/features/vendor/hooks/vendor-edit/use-vendor-edit-form.js';
@@ -36,9 +36,7 @@ export const VendorEditAction = ({ form }) => {
         >
           뒤로
         </Button>
-        <form.Subscribe
-          selector={(s) => [s.isSubmitting, s.canSubmit]}
-        >
+        <form.Subscribe selector={(s) => [s.isSubmitting, s.canSubmit]}>
           {([isSubmitting, canSubmit]) => {
             return (
               <Dialog>

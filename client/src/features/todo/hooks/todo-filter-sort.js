@@ -12,7 +12,7 @@ export const TODO_SORT_LABEL = {
 };
 
 export const useTodoFilterSort = (list = []) => {
-  const safeList = Array.isArray(list) ? list : [];
+  const safeList = useMemo(() => (Array.isArray(list) ? list : []), [list]);
   const [status, setStatus] = useState('ALL');
   const [sort, setSort] = useState('END_DATE');
 
@@ -28,7 +28,8 @@ export const useTodoFilterSort = (list = []) => {
     const toTime = (d) => (d ? new Date(d).getTime() : 0);
 
     result = [...result].sort((a, b) => {
-      if (sort === 'CREATED_AT') return toTime(b.createdAt) - toTime(a.createdAt);
+      if (sort === 'CREATED_AT')
+        return toTime(b.createdAt) - toTime(a.createdAt);
       return toTime(a.endDate) - toTime(b.endDate); // END_DATE
     });
 

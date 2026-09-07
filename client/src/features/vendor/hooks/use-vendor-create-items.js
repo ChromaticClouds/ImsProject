@@ -10,12 +10,11 @@ export function useVendorCreateItems({ enabled }) {
     excludeAssigned: true,
   });
 
-  const items = itemsData ?? [];
-
   const filteredItems = useMemo(() => {
+    const items = itemsData ?? [];
     const selectedSet = new Set(selectedItems.map((item) => item.itemId));
     return items.filter((item) => !selectedSet.has(item.id));
-  }, [items, selectedItems]);
+  }, [itemsData, selectedItems]);
 
   const resetItems = () => {
     setItemKeyword('');

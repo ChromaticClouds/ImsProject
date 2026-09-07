@@ -63,7 +63,7 @@ export function InboundPendingProvider({
       error,
       setError,
     }),
-    [expanded, itemsMap, search, setSearch, error]
+    [error, expanded, itemsMap, search, setError, setSearch],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

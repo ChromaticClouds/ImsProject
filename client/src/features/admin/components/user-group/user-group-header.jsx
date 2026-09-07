@@ -24,7 +24,7 @@ import { useState } from 'react';
  * Hooks
  */
 import { useSearchParams } from 'react-router-dom';
-import { useGetUserGroup } from '../../hooks/use-get-user-group.js';
+
 import { useDebounce } from '@/hooks/use-debounce.js';
 import { useEffect } from 'react';
 

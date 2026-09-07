@@ -1,5 +1,5 @@
 // @ts-check
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useOutboundOverviewCtx } from '../providers/outbound-overview-provider.jsx';
 import { OutboundDateRangePicker } from './outbound-date-range-picker.jsx';
 import { OutboundPendingTable } from './outbound-pending-table.jsx';
@@ -39,11 +39,16 @@ function applyQuickDay(setSearch, kind) {
 export function OutboundOverviewScreen() {
   const { search, setSearch, myId, error, setError } = useOutboundOverviewCtx();
   const [quickDay, setQuickDay] = useState('today');
-  const [assignee, setAssignee] = useState('all');
+  const [assignee, setAssignee] = useState(() =>
+    myId == null ? 'all' : String(myId),
+  );
   const [stockOpen, setStockOpen] = useState(false);
 
   const assigneesQ = useOutboundAssignees();
-  const assignees = Array.isArray(assigneesQ.data) ? assigneesQ.data : [];
+  const assignees = useMemo(
+    () => (Array.isArray(assigneesQ.data) ? assigneesQ.data : []),
+    [assigneesQ.data],
+  );
 
   const pendingQ = useOutboundPendingSummary({ ...search, page: 0, size: 50 });
   const completedQ = useOutboundCompletedTodaySummary({ page: 0, size: 50 });
@@ -53,7 +58,7 @@ export function OutboundOverviewScreen() {
     return { from: today, to: today, userId: myId, page: 0, size: 9999 };
   }, [myId, today]);
   const myTodayPendingQ = useOutboundPendingSummary(
-    myTodayParams ?? { from: today, to: today, page: 0, size: 0 }
+    myTodayParams ?? { from: today, to: today, page: 0, size: 0 },
   );
 
   const pendingRows = Array.isArray(pendingQ.data?.content)
@@ -62,28 +67,15 @@ export function OutboundOverviewScreen() {
   const completedRows = Array.isArray(completedQ.data?.content)
     ? completedQ.data.content
     : [];
-  const myTodayPendingRows = Array.isArray(myTodayPendingQ.data?.content)
-    ? myTodayPendingQ.data.content
-    : [];
+  const myTodayPendingRows = useMemo(
+    () =>
+      Array.isArray(myTodayPendingQ.data?.content)
+        ? myTodayPendingQ.data.content
+        : [],
+    [myTodayPendingQ.data],
+  );
   const loading =
     pendingQ.isFetching || completedQ.isFetching || myTodayPendingQ.isFetching;
-
-  useEffect(() => {
-    setQuickDay('today');
-    applyQuickDay(setSearch, 'today');
-
-    if (myId != null) {
-      setAssignee(String(myId));
-      setSearch((prev) => ({ ...prev, userId: Number(myId) }));
-    } else {
-      setAssignee('all');
-      setSearch((prev) => {
-        const next = { ...prev };
-        delete next.userId;
-        return next;
-      });
-    }
-  }, [myId, setSearch]);
 
   const assigneeLabel = useMemo(() => {
     if (assignee === 'all') return '담당자 전체';
@@ -114,7 +106,14 @@ export function OutboundOverviewScreen() {
           flexWrap: 'wrap',
         }}
       >
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: 8,
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
           <OutboundDateRangePicker
             value={search}
             onChange={(next) => {
@@ -169,19 +168,28 @@ export function OutboundOverviewScreen() {
             }}
           >
             <SelectTrigger className='w-40'>
-              <SelectValue placeholder='담당자 전체'>{assigneeLabel}</SelectValue>
+              <SelectValue placeholder='담당자 전체'>
+                {assigneeLabel}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='all'>담당자 전체</SelectItem>
               {assignees.map((u) => (
-                <SelectItem key={u.id} value={String(u.id)}>
+                <SelectItem
+                  key={u.id}
+                  value={String(u.id)}
+                >
                   {u.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <Button type='button' variant='outline' onClick={() => setStockOpen(true)}>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => setStockOpen(true)}
+          >
             재고 확인
           </Button>
         </div>
@@ -189,12 +197,17 @@ export function OutboundOverviewScreen() {
         <div className='flex items-center'>
           <span className='inline-flex items-center rounded-full border bg-muted/40 px-3 py-1.5 text-sm font-semibold shadow-sm'>
             금일 출고 대기
-            <span className='ml-1 text-primary tabular-nums'>{myTodayPendingCount}</span>건
+            <span className='ml-1 text-primary tabular-nums'>
+              {myTodayPendingCount}
+            </span>
+            건
           </span>
         </div>
       </div>
 
-      {error ? <div style={{ color: 'crimson', marginBottom: 10 }}>{error}</div> : null}
+      {error ? (
+        <div style={{ color: 'crimson', marginBottom: 10 }}>{error}</div>
+      ) : null}
 
       <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12 }}>
         <section className='bg-secondary shadow-xl rounded-xl'>
@@ -211,7 +224,14 @@ export function OutboundOverviewScreen() {
 
         <section className='bg-secondary shadow-xl rounded-xl'>
           <div className='p-4 font-bold'>출고 완료 이력 (오늘)</div>
-          <div style={{ height: 380, overflow: 'auto', paddingTop: 0, position: 'relative' }}>
+          <div
+            style={{
+              height: 380,
+              overflow: 'auto',
+              paddingTop: 0,
+              position: 'relative',
+            }}
+          >
             <OutboundCompletedTable
               rows={completedRows}
               loading={completedQ.isFetching}
@@ -220,7 +240,10 @@ export function OutboundOverviewScreen() {
         </section>
       </div>
 
-      <OutboundStockCheckDialog open={stockOpen} onOpenChange={setStockOpen} />
+      <OutboundStockCheckDialog
+        open={stockOpen}
+        onOpenChange={setStockOpen}
+      />
     </div>
   );
 }

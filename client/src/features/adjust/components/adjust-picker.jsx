@@ -2,8 +2,6 @@
 
 import { useAdjustContext } from '../providers/adjust-provider.jsx';
 import { AppDatePicker } from '@/components/common/app-date-picker.jsx';
-import React from 'react';
-import { FieldError } from '@/components/ui/field.js';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.js';
 import { Label } from '@/components/ui/label.js';
 

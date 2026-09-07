@@ -1,6 +1,4 @@
 // @ts-check
-import { useEffect, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon, Filter, Plus } from 'lucide-react';
 
 import {
@@ -23,34 +21,20 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 
-import { fetchTodos } from '@/features/todo/api/todoApi';
-import { TodoTable } from '@/features/todo/components/todo-table';
-import { TodoPagination } from '@/features/todo/components/todo-pagination';
 // import { TodoDetailDialog } from '@/features/todo/components/todo-dialog';
 
 import { useTodoSearch } from '@/features/todo/hooks/todo-search';
-import { useTodoPagination } from '@/features/todo/hooks/todo-pagination';
+
 import {
-  useTodoFilterSort,
   TODO_STATUS_LABEL,
   TODO_SORT_LABEL,
 } from '@/features/todo/hooks/todo-filter-sort';
 import { useNavigate } from 'react-router-dom';
 
 export const Todo = () => {
-  const { data = [] } = useQuery({
-    queryKey: ['todos'],
-    queryFn: fetchTodos,
-  });
-
   const search = useTodoSearch();
 
-  const [selectedTodo, setSelectedTodo] = useState(null);
-
   const navigate = useNavigate();
-
-
-
 
   // const handleComplete = (id) => {
   //   setLocalTodos((prev) =>
@@ -58,19 +42,8 @@ export const Todo = () => {
   //   );
   // };
 
-const today = new Date().toISOString().slice(0, 10);
-
-
-
-  /** @param {number} id */
-  const handleEdit = (id) => {
-    // ✅ 일단 “수정 페이지로 이동”만 연결할 자리
-    // 예) navigate(`/dashboard/todo/${id}/edit`)
-    alert(`(예정) 업무 수정 페이지 이동: id=${id}`);
-  };
-
   const handleCreate = () => {
-   navigate('/dashboard/todo/create');
+    navigate('/dashboard/todo/create');
   };
 
   return (
@@ -91,19 +64,22 @@ const today = new Date().toISOString().slice(0, 10);
             {/* 필터 */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant='outline' size='sm' className='gap-2'>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='gap-2'
+                >
                   <Filter className='w-4 h-4' />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='w-40'>
+              <DropdownMenuContent
+                align='end'
+                className='w-40'
+              >
                 <DropdownMenuLabel>상태 필터</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {Object.entries(TODO_STATUS_LABEL).map(([key, label]) => (
-                  <DropdownMenuItem
-                    key={key}
-                  >
-                    {label}
-                  </DropdownMenuItem>
+                  <DropdownMenuItem key={key}>{label}</DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
@@ -115,21 +91,24 @@ const today = new Date().toISOString().slice(0, 10);
                   {TODO_SORT_LABEL[filterSort.sort]}
                 </Button> */}
               </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='w-44'>
+              <DropdownMenuContent
+                align='end'
+                className='w-44'
+              >
                 <DropdownMenuLabel>정렬</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {Object.entries(TODO_SORT_LABEL).map(([key, label]) => (
-                  <DropdownMenuItem
-                    key={key}
-                  >
-                    {label}
-                  </DropdownMenuItem>
+                  <DropdownMenuItem key={key}>{label}</DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
 
             {/* 업무 등록 버튼 */}
-            <Button size='sm' className='gap-2' onClick={handleCreate}>
+            <Button
+              size='sm'
+              className='gap-2'
+              onClick={handleCreate}
+            >
               <Plus className='w-4 h-4' /> 업무 등록
             </Button>
           </div>
@@ -148,8 +127,7 @@ const today = new Date().toISOString().slice(0, 10);
             />
           </div>
 
-          <CardFooter>
-          </CardFooter>
+          <CardFooter></CardFooter>
         </CardContent>
       </Card>
 

@@ -4,8 +4,9 @@ import { toast } from 'sonner';
 const MAX_TAGS = 3;
 const MAX_LENGTH = 10;
 
-export const useTodoTags = () => {
-  const [tags, setTags] = useState(/** @type {string[]} */ ([]));
+/** @param {string[]} [initialTags] */
+export const useTodoTags = (initialTags = []) => {
+  const [tags, setTags] = useState(initialTags);
   const [input, setInput] = useState('');
 
   const addTag = () => {

@@ -13,9 +13,7 @@ import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
  * @property {React.Dispatch<React.SetStateAction<string>>} setError
  */
 
-const Ctx = createContext(
-  /** @type {OutboundOverviewContext | null} */ (null),
-);
+const Ctx = createContext(/** @type {OutboundOverviewContext | null} */ (null));
 
 export function useOutboundOverviewCtx() {
   const v = useContext(Ctx);
@@ -51,25 +49,24 @@ function getMyUserIdFromToken(token) {
   const p = decodeJwtPayload(token);
   if (!p) return null;
   if (p.id != null && !Number.isNaN(Number(p.id))) return Number(p.id);
-  if (p.userId != null && !Number.isNaN(Number(p.userId))) return Number(p.userId);
+  if (p.userId != null && !Number.isNaN(Number(p.userId)))
+    return Number(p.userId);
   if (p.sub != null && !Number.isNaN(Number(p.sub))) return Number(p.sub);
   return null;
 }
 
 export function OutboundOverviewProvider() {
   const t = todayYMD();
-
-  const toDate = new Date();
-  toDate.setFullYear(toDate.getFullYear() + 1);
-  const toYMD = todayYMDFrom(toDate);
-
-  const [search, setSearch] = useState(
-    /** @returns {OutboundSearch} */ () => ({ from: t, to: toYMD }),
-  );
-  const [error, setError] = useState('');
-
   const accessToken = useAuthStore((s) => s.accessToken);
   const myId = useMemo(() => getMyUserIdFromToken(accessToken), [accessToken]);
+  const [search, setSearch] = useState(
+    /** @returns {OutboundSearch} */ () => ({
+      from: t,
+      to: t,
+      ...(myId == null ? {} : { userId: myId }),
+    }),
+  );
+  const [error, setError] = useState('');
 
   const value = useMemo(
     () => ({
@@ -79,7 +76,7 @@ export function OutboundOverviewProvider() {
       error,
       setError,
     }),
-    [search, myId, error]
+    [search, myId, error],
   );
 
   return (
@@ -87,11 +84,4 @@ export function OutboundOverviewProvider() {
       <OutboundOverviewScreen />
     </Ctx.Provider>
   );
-}
-
-function todayYMDFrom(/** @type {Date} */ d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
 }

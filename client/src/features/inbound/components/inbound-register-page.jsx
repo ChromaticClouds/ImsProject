@@ -131,7 +131,7 @@ export function InboundRegisterPage() {
   const [error, setError] = useState('');
 
   const { data, isFetching } = useInboundPendingItems(orderNumber, true);
-  const items = Array.isArray(data) ? data : [];
+  const items = useMemo(() => (Array.isArray(data) ? data : []), [data]);
 
   const [editableItems, setEditableItems] = useState(
     /** @type {EditableInboundItem[]} */ ([]),

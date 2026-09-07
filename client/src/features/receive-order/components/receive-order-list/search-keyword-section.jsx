@@ -32,7 +32,7 @@ export const SearchKeywordSection = () => {
   useEffect(() => {
     setKeyword(debounced?.trim() || null);
     setParams((prev) => ({ ...prev, page: 1 }));
-  }, [debounced, setKeyword]);
+  }, [debounced, setKeyword, setParams]);
 
   return (
     <InputGroup className='w-full md:min-w-[320px] xl:w-100'>

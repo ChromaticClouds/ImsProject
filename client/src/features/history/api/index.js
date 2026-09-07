@@ -1,4 +1,4 @@
-import { api, hooks } from "@/services/api.js";
+import { api } from '@/services/api.js';
 
 /**
  * History
@@ -36,6 +36,5 @@ export async function fetchHistoryBrands(type) {
 // 기간 설정을 위함(최소)
 /** @returns {Promise<{minDate: string}>} */
 export async function fetchHistoryMinDate() {
-  return await api.get('history/min-date').json(); 
+  return await api.get('history/min-date').json();
 }
-

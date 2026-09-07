@@ -5,7 +5,7 @@ import { createBrowserRouter } from 'react-router-dom';
  * Pages
  */
 import { App } from '@/app/app.jsx';
-import { Home } from '@/pages/home.jsx';
+
 import { Auth } from '@/pages/auth.jsx';
 import { Dashboard } from '@/pages/dashboard/dashboard.jsx';
 import { Main } from '@/pages/dashboard/main.jsx';

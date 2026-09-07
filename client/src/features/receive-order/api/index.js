@@ -1,8 +1,8 @@
 // @ts-check
 
 import { api, hooks } from '@/services/api.js';
-import { receiveOrderFormSchema } from '@/features/receive-order/schemas/receive-order-form-schema.js';
-import z from 'zod';
+
+import 'zod';
 
 /**
  * @returns {Promise<ApiResponse<{ users: UserIdentifier[], vendors: VendorIdentifier[], sequence: string }>>}
@@ -105,7 +105,7 @@ export const getSalers = () => api.get('order/get-salers', { hooks }).json();
 
 /**
  * 수주 내역 상세 요청
- * @param {string} orderNumber 
+ * @param {string} orderNumber
  * @returns {Promise<ApiResponse<OrderDetail[]>>}
  */
 export const getItemsByOrderNumber = (orderNumber) =>

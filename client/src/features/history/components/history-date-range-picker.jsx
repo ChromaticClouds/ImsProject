@@ -1,10 +1,21 @@
 // @ts-check
-import { useMemo } from 'react';
+
 import { CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover.js';
 import { Calendar } from '@/components/ui/calendar.js';
-import { format, parseISO, isValid, differenceInCalendarDays, startOfMonth, endOfMonth } from 'date-fns';
+import {
+  format,
+  parseISO,
+  isValid,
+  differenceInCalendarDays,
+  startOfMonth,
+  endOfMonth,
+} from 'date-fns';
 import { toast } from 'sonner';
 
 /** @typedef {{ from: string, to: string }} DateRangeValue */
@@ -16,7 +27,9 @@ function toDate(s) {
   return isValid(d) ? d : undefined;
 }
 /** @param {Date | undefined} d */
-function toYMD(d) { return d ? format(d, 'yyyy-MM-dd') : ''; }
+function toYMD(d) {
+  return d ? format(d, 'yyyy-MM-dd') : '';
+}
 
 /**
  * @param {{
@@ -26,37 +39,50 @@ function toYMD(d) { return d ? format(d, 'yyyy-MM-dd') : ''; }
  *   minDateYMD?: string
  * }} props
  */
-export function HistoryDateRangePicker({ value, onChange, disabled, minDateYMD }) {
+export function HistoryDateRangePicker({
+  value,
+  onChange,
+  disabled,
+  minDateYMD,
+}) {
   const from = toDate(value?.from);
   const to = toDate(value?.to);
-  
 
-  const selected = from && to ? { from, to } : from ? { from, to: undefined } : undefined;
-  const label = value?.from && value?.to ? `${value.from} ~ ${value.to}` : '기간 설정';
+  const selected =
+    from && to ? { from, to } : from ? { from, to: undefined } : undefined;
+  const label =
+    value?.from && value?.to ? `${value.from} ~ ${value.to}` : '기간 설정';
 
   const today = new Date();
 
   /** @param {'all' | 'week' | 'month'} kind */
   function applyQuick(kind) {
-  if (kind === 'all') {
-    const f = toDate(minDateYMD) ?? new Date(2020, 0, 1);
-    onChange({ from: toYMD(f), to: toYMD(today) });
-    return;
+    if (kind === 'all') {
+      const f = toDate(minDateYMD) ?? new Date(2020, 0, 1);
+      onChange({ from: toYMD(f), to: toYMD(today) });
+      return;
+    }
+    if (kind === 'week') {
+      const f = new Date();
+      f.setDate(f.getDate() - 7);
+      onChange({ from: toYMD(f), to: toYMD(today) });
+      return;
+    }
+    if (kind === 'month') {
+      onChange({
+        from: toYMD(startOfMonth(today)),
+        to: toYMD(endOfMonth(today)),
+      });
+    }
   }
-  if (kind === 'week') {
-    const f = new Date(); f.setDate(f.getDate() - 7);
-    onChange({ from: toYMD(f), to: toYMD(today) });
-    return;
-  }
-  if (kind === 'month') {
-    onChange({ from: toYMD(startOfMonth(today)), to: toYMD(endOfMonth(today)) });
-  }
-}
 
   /** @param {import('react-day-picker').DateRange | undefined} next */
   function handleSelect(next) {
     if (!next?.from || !next?.to) {
-      onChange({ from: next?.from ? toYMD(next.from) : value.from, to: next?.to ? toYMD(next.to) : '' });
+      onChange({
+        from: next?.from ? toYMD(next.from) : value.from,
+        to: next?.to ? toYMD(next.to) : '',
+      });
       return;
     }
 
@@ -79,25 +105,49 @@ export function HistoryDateRangePicker({ value, onChange, disabled, minDateYMD }
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button type="button" variant="outline" disabled={!!disabled} className="w-40 justify-start text-left font-normal" style={{width: '250px'}}>
-          <CalendarIcon className="mr-2 h-4 w-4" />
+        <Button
+          type='button'
+          variant='outline'
+          disabled={!!disabled}
+          className='w-40 justify-start text-left font-normal'
+          style={{ width: '250px' }}
+        >
+          <CalendarIcon className='mr-2 h-4 w-4' />
           {label}
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-auto p-3">
+      <PopoverContent className='w-auto p-3'>
         <Calendar
-          mode="range"
+          mode='range'
           numberOfMonths={1}
           selected={selected}
           onSelect={handleSelect}
           disabled={(d) => d > today}
         />
 
-        <div className="mt-3 flex gap-2">
-          <Button type="button" variant="outline" onClick={() => applyQuick('all')}>전체 기간</Button>
-          <Button type="button" variant="outline" onClick={() => applyQuick('week')}>일주일</Button>
-          <Button type="button" variant="outline" onClick={() => applyQuick('month')}>이번달</Button>
+        <div className='mt-3 flex gap-2'>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => applyQuick('all')}
+          >
+            전체 기간
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => applyQuick('week')}
+          >
+            일주일
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => applyQuick('month')}
+          >
+            이번달
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

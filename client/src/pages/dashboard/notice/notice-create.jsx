@@ -24,7 +24,7 @@ import { useQuery } from '@tanstack/react-query';
  */
 import { CONTENT_MAX, TITLE_MAX } from '@/features/notice/constants';
 import { getPinnedNotices } from '@/features/notice/api';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNoticeCheck } from '@/features/notice/hooks/use-notice-check.js';
 
 // ─────────────────────────────────────────────

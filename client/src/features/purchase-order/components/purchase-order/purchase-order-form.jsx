@@ -75,12 +75,6 @@ export const PurchaseOrderForm = ({ initialValue, onSubmit }) => {
   };
 
   /** @param {unknown} v */
-  const formatSafetyStock = (v) => {
-    if (v == null) return '-';
-    const n = Number(v);
-    if (!Number.isFinite(n)) return String(v);
-    return n.toFixed(1);
-  };
 
   const submitDisabled =
     !form.recieveDate ||
@@ -90,7 +84,9 @@ export const PurchaseOrderForm = ({ initialValue, onSubmit }) => {
 
   /** @param {string} type */
   const formatType = (type) =>
-    typeLabelMap[/** @type {keyof typeof typeLabelMap} */ (type)] ?? type ?? '-';
+    typeLabelMap[/** @type {keyof typeof typeLabelMap} */ (type)] ??
+    type ??
+    '-';
 
   const totalPrice = useMemo(
     () =>

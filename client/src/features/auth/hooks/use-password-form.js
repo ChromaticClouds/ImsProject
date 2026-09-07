@@ -45,12 +45,8 @@ export const usePasswordForm = () => {
         return { success: true };
       } catch (err) {
         if (err instanceof HTTPError) {
-          const errResponse = await err.response.json()
-            .catch(e => null);
-          toast.error(
-            errResponse?.message
-              || ERROR.UNEXPECTED_ERROR
-          );
+          const errResponse = await err.response.json().catch(() => null);
+          toast.error(errResponse?.message || ERROR.UNEXPECTED_ERROR);
           return { success: false };
         }
 

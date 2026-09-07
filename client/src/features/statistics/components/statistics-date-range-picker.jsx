@@ -1,5 +1,5 @@
 // @ts-check
-import { useMemo } from 'react';
+
 import { CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
 import {
@@ -93,7 +93,7 @@ export function StatisticsDateRangePicker({
           size={variant === 'icon' || isMobile ? 'icon-lg' : 'default'}
         >
           <CalendarIcon />
-          {(variant === 'icon' || !isMobile && label)}
+          {variant === 'icon' || (!isMobile && label)}
         </Button>
       </PopoverTrigger>
 

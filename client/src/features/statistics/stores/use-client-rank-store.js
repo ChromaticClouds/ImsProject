@@ -25,7 +25,7 @@ const today = () => formatToIsoDate(new Date());
 
 /** @type {UseBoundStore<StoreApi<ClientStoreState>>} */
 export const useClientRankStore = create((set) => ({
-  range: { from: sixMonthAgo(), to: today() },
+  range: { from: sixMonthAgo() ?? '', to: today() ?? '' },
   mode: /** @type {'inbound'|'outbound'} */ ('inbound'),
 
   setRange: (range) => set({ range }),

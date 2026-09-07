@@ -19,8 +19,9 @@ const CHART_MAP = /** @type {const} */ {
  * 재고 점유율 차트
  */
 export const StockShare = () => {
-  /** @type {[ChartState, React.Dispatch<React.SetStateAction<ChartState>>]} */
-  const [chartState, setChartState] = useState('WAREHOUSE');
+  const [chartState, setChartState] = useState(
+    /** @type {ChartState} */ ('WAREHOUSE'),
+  );
 
   return (
     <GraphContainer

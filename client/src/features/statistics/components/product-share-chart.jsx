@@ -21,17 +21,29 @@ export const stockShareConfig = {
   },
 };
 
+/** @param {string} text @param {number} [max] */
 const truncate = (text, max = 8) =>
   text.length > max ? text.slice(0, max) + '…' : text;
 
+/**
+ * @param {{
+ *  cx?: number,
+ *  cy?: number,
+ *  midAngle?: number,
+ *  innerRadius?: number,
+ *  outerRadius?: number,
+ *  percent?: number,
+ *  name?: string,
+ * }} props
+ */
 const renderCustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-  name,
+  cx = 0,
+  cy = 0,
+  midAngle = 0,
+  innerRadius = 0,
+  outerRadius = 0,
+  percent = 0,
+  name = '',
 }) => {
   const RADIAN = Math.PI / 180;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;

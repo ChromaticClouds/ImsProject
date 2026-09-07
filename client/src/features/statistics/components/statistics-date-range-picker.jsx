@@ -14,12 +14,14 @@ import { toast } from 'sonner';
 
 /** @typedef {{ from: string, to: string }} DateRangeValue */
 
+/** @param {string | undefined} s */
 function toDate(s) {
   if (!s) return undefined;
   const d = parseISO(s);
   return isValid(d) ? d : undefined;
 }
 
+/** @param {Date | undefined} d */
 function toYMD(d) {
   return d ? format(d, 'yyyy-MM-dd') : '';
 }
@@ -55,6 +57,7 @@ export function StatisticsDateRangePicker({
 
   const today = new Date();
 
+  /** @param {import('react-day-picker').DateRange | undefined} next */
   function handleSelect(next) {
     if (!next?.from || !next?.to) {
       onChange({
@@ -100,7 +103,7 @@ export function StatisticsDateRangePicker({
           numberOfMonths={1}
           selected={selected}
           onSelect={handleSelect}
-          disabled={(d) => d > today}
+          disabled={(/** @type {Date} */ d) => d > today}
         />
       </PopoverContent>
     </Popover>

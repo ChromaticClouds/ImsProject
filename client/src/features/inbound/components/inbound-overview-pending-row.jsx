@@ -34,8 +34,8 @@ export function InboundOverviewPendingRow(props) {
   const items = Array.isArray(itemsQ.data) ? itemsQ.data : [];
   const itemsLoading = itemsQ.isFetching;
 
-  const wrapRef = useRef(null);
-  const btnRef = useRef(null);
+  const wrapRef = useRef(/** @type {HTMLDivElement | null} */ (null));
+  const btnRef = useRef(/** @type {HTMLButtonElement | null} */ (null));
   const [dropdownWidth, setDropdownWidth] = useState(240);
   const MIN_DROPDOWN_WIDTH = 360;
 
@@ -63,10 +63,11 @@ export function InboundOverviewPendingRow(props) {
 
   useEffect(() => {
     if (!isOpen) return;
+    /** @param {MouseEvent} e */
     const onDown = (e) => {
       const el = wrapRef.current;
       if (!el) return;
-      if (el.contains(e.target)) return;
+      if (e.target instanceof Node && el.contains(e.target)) return;
       close();
     };
     document.addEventListener('mousedown', onDown);

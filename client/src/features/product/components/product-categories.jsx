@@ -22,8 +22,8 @@ export const ProductCategories = () => {
     staleTime: 0,
   });
 
-  const productType = data?.data?.types;
-  const productBrand = data?.data?.brands;
+  const productType = data?.data?.types ?? [];
+  const productBrand = data?.data?.brands ?? [];
 
   return (
     <div className='flex gap-3'>
@@ -41,5 +41,4 @@ export const ProductCategories = () => {
     </div>
   );
 
-  return <></>;
 };

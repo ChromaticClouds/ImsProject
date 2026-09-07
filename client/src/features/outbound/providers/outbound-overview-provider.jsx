@@ -3,7 +3,19 @@ import { createContext, useContext, useMemo, useState } from 'react';
 import { OutboundOverviewScreen } from '../components/outbound-overview-screen.jsx';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
 
-const Ctx = createContext(null);
+/** @typedef {{ from: string, to: string, userId?: number }} OutboundSearch */
+/**
+ * @typedef {object} OutboundOverviewContext
+ * @property {OutboundSearch} search
+ * @property {React.Dispatch<React.SetStateAction<OutboundSearch>>} setSearch
+ * @property {number | null} myId
+ * @property {string} error
+ * @property {React.Dispatch<React.SetStateAction<string>>} setError
+ */
+
+const Ctx = createContext(
+  /** @type {OutboundOverviewContext | null} */ (null),
+);
 
 export function useOutboundOverviewCtx() {
   const v = useContext(Ctx);
@@ -19,6 +31,10 @@ function todayYMD() {
   return `${y}-${m}-${day}`;
 }
 
+/**
+ * @param {string | null | undefined} token
+ * @returns {Record<string, unknown> | null}
+ */
 function decodeJwtPayload(token) {
   try {
     const parts = String(token || '').split('.');
@@ -30,6 +46,7 @@ function decodeJwtPayload(token) {
   }
 }
 
+/** @param {string | null | undefined} token */
 function getMyUserIdFromToken(token) {
   const p = decodeJwtPayload(token);
   if (!p) return null;
@@ -46,7 +63,9 @@ export function OutboundOverviewProvider() {
   toDate.setFullYear(toDate.getFullYear() + 1);
   const toYMD = todayYMDFrom(toDate);
 
-  const [search, setSearch] = useState(() => ({ from: t, to: toYMD }));
+  const [search, setSearch] = useState(
+    /** @returns {OutboundSearch} */ () => ({ from: t, to: toYMD }),
+  );
   const [error, setError] = useState('');
 
   const accessToken = useAuthStore((s) => s.accessToken);

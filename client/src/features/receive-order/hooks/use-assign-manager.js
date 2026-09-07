@@ -57,7 +57,7 @@ export const useAssignManager = () => {
           queryKey,
           /** @param {ApiResponse<ReceivedOrder[]>} old */
           (old) => {
-            if (!old) return old;
+            if (!old?.data) return old;
 
             return {
               ...old,

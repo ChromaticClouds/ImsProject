@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
  * @typedef {{ from: string, to: string }} DateRangeValue
  */
 
+/** @param {Date} d */
 function ymd(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');

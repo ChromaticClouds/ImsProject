@@ -51,8 +51,8 @@ export const useFetchReceiveOrder = (page) => {
     queryFn: async () => {
       const response = await getReceiveOrders({
         page,
-        search,
-        salerId,
+        search: search ?? undefined,
+        salerId: salerId ?? undefined,
         fromDate,
         toDate,
       });
@@ -61,5 +61,14 @@ export const useFetchReceiveOrder = (page) => {
     staleTime: 0,
   });
 
-  return data;
+  return (
+    data ?? {
+      content: [],
+      page: page ?? 1,
+      totalPages: 0,
+      totalElements: 0,
+      isFirst: true,
+      isLast: true,
+    }
+  );
 };

@@ -18,7 +18,9 @@ export const PurchaseOrderEdit = () => {
   const queryClient = useQueryClient();
 
   const [loading, setLoading] = useState(true);
-  const [detail, setDetail] = useState(null);
+  const [detail, setDetail] = useState(
+    /** @type {OrderRequest | null} */ (null),
+  );
 
   useEffect(() => {
     let alive = true;
@@ -63,7 +65,12 @@ export const PurchaseOrderEdit = () => {
     };
   }, [detail]);
 
+  /**
+   * @param {{ recieveDate: string, items: { orderId: number, count: number }[] }} payload
+   */
   const handleSubmit = async (payload) => {
+    if (!orderNumber) return;
+
     try {
       await updatePurchaseOrder(orderNumber, payload);
 

@@ -25,6 +25,10 @@ function toYMD(/** @type {Date} */ d) {
   return `${y}-${m}-${day}`;
 }
 
+/**
+ * @param {React.Dispatch<React.SetStateAction<import('../providers/outbound-overview-provider.jsx').OutboundSearch>>} setSearch
+ * @param {'today' | 'tomorrow'} kind
+ */
 function applyQuickDay(setSearch, kind) {
   const base = new Date();
   if (kind === 'tomorrow') base.setDate(base.getDate() + 1);

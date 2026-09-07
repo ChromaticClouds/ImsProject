@@ -7,7 +7,7 @@ export const VendorPaginationContainer = () => {
   const { search } = useVendorSearch();
   const query = useVendors(search);
   const pageInfo = query.data?.pageInfo;
-  const size = query.data?.size ?? 10;
+  const size = pageInfo?.size ?? 10;
 
   if (!pageInfo) return null;
 

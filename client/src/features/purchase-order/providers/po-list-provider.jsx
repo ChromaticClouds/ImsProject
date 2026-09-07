@@ -8,8 +8,9 @@ import { createContext } from 'react';
  * @import { Context } from 'react'
  */
 
-/** @type {Context<OrderResponse & { isFetching: boolean }>} */
-const PoListContext = createContext(null);
+const PoListContext = createContext(
+  /** @type {(OrderResponse & { isFetching: boolean }) | null} */ (null),
+);
 
 export const usePoListContext = () => {
   const ctx = useContext(PoListContext);
@@ -17,11 +18,27 @@ export const usePoListContext = () => {
   return ctx;
 };
 
+/** @param {React.PropsWithChildren} props */
 export const PoListProvider = ({ children }) => {
   const { data, isFetching } = usePoListQuery();
 
+  const value = {
+    content: data?.content ?? [],
+    page:
+      data?.page ??
+      /** @type {PageMetaData} */ ({
+        number: 1,
+        size: 10,
+        totalElements: 0,
+        totalPages: 1,
+      }),
+    summary:
+      data?.summary ?? { orderKinds: 0, totalCount: 0, totalPrice: 0 },
+    isFetching,
+  };
+
   return (
-    <PoListContext.Provider value={{ ...data, isFetching }}>
+    <PoListContext.Provider value={value}>
       {children}
     </PoListContext.Provider>
   );

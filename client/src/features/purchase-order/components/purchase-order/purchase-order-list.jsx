@@ -31,22 +31,28 @@ import { PoProductDetail } from '@/features/purchase-order/components/purchase-o
 import { PoDeleteDialog } from '@/features/purchase-order/components/purchase-order/po-delete-dialog.jsx';
 import { Spinner } from '@/components/ui/spinner.js';
 
+/** @param {number | string | null | undefined} n */
 const formatNumber = (n) => Number(n || 0).toLocaleString();
 
+/** @param {OrderStatus} status */
 const isPending = (status) => status === 'INBOUND_PENDING';
+/** @param {OrderStatus} status */
 const isComplete = (status) => status === 'INBOUND_COMPLETE';
 
+/** @param {OrderStatus} status */
 const statusText = (status) => {
   if (isPending(status) || isComplete(status)) return '전송 완료';
   return '전송 전';
 };
 
+/** @param {OrderStatus} status */
 const statusClassName = (status) => {
   if (isComplete(status)) return 'text-emerald-600 font-medium';
   if (isPending(status)) return 'text-amber-600 font-medium';
   return 'text-amber-600 font-medium'; // 전송 전
 };
 
+/** @param {{ status: OrderStatus }} props */
 const StatusIcon = ({ status }) => {
   if (isComplete(status)) return <BadgeCheckIcon className='w-4 h-4' />;
   if (isPending(status)) return <BadgeMinusIcon className='w-4 h-4' />;

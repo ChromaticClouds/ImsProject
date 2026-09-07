@@ -311,7 +311,7 @@
  * @property {ProductType} type
  * @property {string} brand
  * @property {number} count
- * @property {number} productPrice
+ * @property {number} purchasePrice
  * @property {number} safetyStock
  * @property {string | undefined} imageUrl
  */

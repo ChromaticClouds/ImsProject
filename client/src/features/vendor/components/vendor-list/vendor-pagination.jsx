@@ -30,6 +30,7 @@ import {
 
 /**
  * shadcn/ui Pagination + react-router Link 기반 (1-base 전용)
+ * @param {VendorPaginationProps} props
  */
 export const VendorPagination = ({
   pageInfo,

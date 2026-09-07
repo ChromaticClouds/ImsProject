@@ -85,7 +85,7 @@ export function InboundPendingItemsDropdown({ items, qtyLabel = '발주수량' }
   const list = Array.isArray(items) ? items : [];
 
   const productIds = useMemo(() => {
-    const s = new Set();
+    const s = new Set(/** @type {number[]} */ ([]));
     for (const it of list) {
       const pid = Number(it.productId);
       if (Number.isFinite(pid) && pid > 0) s.add(pid);
@@ -93,7 +93,7 @@ export function InboundPendingItemsDropdown({ items, qtyLabel = '발주수량' }
     return Array.from(s);
   }, [list]);
 
-  /** @param {string} type */
+  /** @param {string | undefined} type */
   function toKoreanType(type) {
     switch (type) {
       case 'SOJU':
@@ -117,7 +117,7 @@ export function InboundPendingItemsDropdown({ items, qtyLabel = '발주수량' }
   });
 
   const safeMap =
-    safeQ.data && typeof safeQ.data === 'object' ? safeQ.data : {};
+    safeQ.data ?? /** @type {import('../types.js').InboundSafetyStockMap} */ ({});
 
   const merged = useMemo(() => {
     return list.map((it) => {
@@ -127,6 +127,7 @@ export function InboundPendingItemsDropdown({ items, qtyLabel = '발주수량' }
     });
   }, [list, safeMap]);
 
+  /** @param {unknown} v */
   const formatSafety = (v) => {
     if (v == null) return '-';
     const n = Number(v);

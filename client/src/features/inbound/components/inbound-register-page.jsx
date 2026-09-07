@@ -16,8 +16,10 @@ import { IbRegisterDialog } from './ib-register-dialog.jsx';
 
 const MEMO_MAX = 300;
 
+/** @param {number | string | null | undefined} n */
 const toMoney = (n) => Number(n || 0).toLocaleString();
 
+/** @param {Date | string | number | null | undefined} d */
 function formatKoreanDateTime(d) {
   if (!d) return '-';
   const dt = d instanceof Date ? d : new Date(d);
@@ -34,12 +36,13 @@ function formatKoreanDateTime(d) {
   return `${yyyy}-${mm}-${dd} (${day}) ${hh}:${mi}`;
 }
 
+/** @param {unknown} v */
 const isValidQty = (v) => {
   const n = Number(v);
   return Number.isInteger(n) && n > 0;
 };
 
-/** @param {string} type */
+/** @param {string | undefined} type */
 function toKoreanType(type) {
   switch (type) {
     case 'SOJU':
@@ -58,6 +61,7 @@ function toKoreanType(type) {
 }
 
 /** 썸네일 */
+/** @param {{ src?: string, alt?: string }} props */
 function Thumb({ src, alt }) {
   const safeSrc = typeof src === 'string' ? src.trim() : '';
   return (
@@ -106,7 +110,11 @@ function QtyInput({ value, invalid = false, onChange }) {
 }
 
 /**
- * @import { Dispatch, SetStateAction } from 'react';
+ * @typedef {import('../types.js').InboundPendingItem & {
+ *  qty: string,
+ *  _baseQty: number,
+ *  currentStock?: number,
+ * }} EditableInboundItem
  */
 
 export function InboundRegisterPage() {
@@ -125,8 +133,9 @@ export function InboundRegisterPage() {
   const { data, isFetching } = useInboundPendingItems(orderNumber, true);
   const items = Array.isArray(data) ? data : [];
 
-  /** @type {[OrderRegisterProduct[], Dispatch<SetStateAction<OrderRegisterProduct[]>>]} */
-  const [editableItems, setEditableItems] = useState([]);
+  const [editableItems, setEditableItems] = useState(
+    /** @type {EditableInboundItem[]} */ ([]),
+  );
 
   useEffect(() => {
     if (!orderNumber) return;
@@ -151,10 +160,12 @@ export function InboundRegisterPage() {
 
   const safetyQuery = useInboundSafetyStocks({ productIds, enabled: true });
 
-  const safetyMap = useMemo(() => {
-    const d = safetyQuery.data;
-    return d && typeof d === 'object' ? d : {};
-  }, [safetyQuery.data]);
+  const safetyMap = useMemo(
+    () =>
+      safetyQuery.data ??
+      /** @type {import('../types.js').InboundSafetyStockMap} */ ({}),
+    [safetyQuery.data],
+  );
 
   const totals = useMemo(() => {
     const n = editableItems.length;

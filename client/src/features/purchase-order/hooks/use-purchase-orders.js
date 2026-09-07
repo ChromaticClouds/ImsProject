@@ -18,8 +18,10 @@ import { ERROR } from '@/services/error.js';
 const EMPTY_SUMMARY = { orderKinds: 0, totalCount: 0, totalPrice: 0 };
 
 export const purchaseOrderStatus = {
+  /** @param {OrderStatus} status */
   isSent: (status) =>
     status === 'INBOUND_PENDING' || status === 'INBOUND_COMPLETE',
+  /** @param {OrderStatus} status */
   isDraft: (status) => status == null,
 };
 
@@ -31,7 +33,7 @@ const normalizeSummary = (s) => ({
 });
 
 export const usePurchaseOrders = () => {
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState(/** @type {OrderRequest[]} */ ([]));
   const [page, setPage] = useState({
     number: 1,
     size: 10,
@@ -43,7 +45,9 @@ export const usePurchaseOrders = () => {
   );
   const [loading, setLoading] = useState(false);
 
-  const load = useCallback(async (params) => {
+  const load = useCallback(
+    /** @param {{ view?: 'DRAFT' | 'SENT', keyword?: string, from?: string, to?: string, page?: number, size?: number }} params */
+    async (params) => {
     setLoading(true);
     try {
       const data = await fetchPurchaseOrders(params);
@@ -64,11 +68,17 @@ export const usePurchaseOrders = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+    },
+    [],
+  );
 
-  const remove = useCallback(async (orderNumber) => {
-    await deletePurchaseOrder(orderNumber);
-  }, []);
+  const remove = useCallback(
+    /** @param {string} orderNumber */
+    async (orderNumber) => {
+      await deletePurchaseOrder(orderNumber);
+    },
+    [],
+  );
 
   const markSent = useCallback(
     /** @param {string} orderNumber */
@@ -94,13 +104,21 @@ export const usePurchaseOrders = () => {
     [],
   );
 
-  const bulkMarkSent = useCallback(async (orderNumbers) => {
-    await bulkSendPurchaseOrders(orderNumbers);
-  }, []);
+  const bulkMarkSent = useCallback(
+    /** @param {string[]} orderNumbers */
+    async (orderNumbers) => {
+      await bulkSendPurchaseOrders(orderNumbers);
+    },
+    [],
+  );
 
-  const bulkRemove = useCallback(async (orderNumbers) => {
-    await bulkDeletePurchaseOrders(orderNumbers);
-  }, []);
+  const bulkRemove = useCallback(
+    /** @param {string[]} orderNumbers */
+    async (orderNumbers) => {
+      await bulkDeletePurchaseOrders(orderNumbers);
+    },
+    [],
+  );
 
   // ✅ purchase-order.jsx에서 기존에 쓰던 이름 유지(호환)
   const summaryDraft = useMemo(() => summary, [summary]);

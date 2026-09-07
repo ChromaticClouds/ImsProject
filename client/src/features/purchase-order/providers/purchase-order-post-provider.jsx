@@ -11,15 +11,14 @@ import { useSupplierInfoQuery } from '../hooks/use-supplier-info-query.js';
  * @typedef {object} PoContextState
  * @property {VendorIdentifier[]} vendors
  * @property {string} sequence
- * @property {number} selectedVendorId
- * @property {React.Dispatch<React.SetStateAction<number>>} setSelectedVendorId
- * @property {VendorDetail} supplier
+ * @property {number | null} selectedVendorId
+ * @property {React.Dispatch<React.SetStateAction<number | null>>} setSelectedVendorId
+ * @property {VendorDetail | undefined} supplier
  */
 
-/**
- * @type {React.Context<PoContextState>}
- */
-const PoPostContext = createContext(null);
+const PoPostContext = createContext(
+  /** @type {PoContextState | null} */ (null),
+);
 
 export const usePoContext = () => {
   const ctx = useContext(PoPostContext);
@@ -27,8 +26,11 @@ export const usePoContext = () => {
   return ctx;
 };
 
+/** @param {React.PropsWithChildren} props */
 export const PurchaseOrderPostProvider = ({ children }) => {
-  const [selectedVendorId, setSelectedVendorId] = useState(null);
+  const [selectedVendorId, setSelectedVendorId] = useState(
+    /** @type {number | null} */ (null),
+  );
   
   const { data: boots } = usePoBootstrapQuery();
   const { data: supplier } = useSupplierInfoQuery(selectedVendorId);

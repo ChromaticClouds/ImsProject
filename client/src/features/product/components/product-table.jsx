@@ -34,7 +34,9 @@ export const ProductTable = () => {
     WHISKEY: '위스키',
   };
 
-  const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
+  /** @param {string} type */
+  const formatType = (type) =>
+    typeLabelMap[/** @type {keyof typeof typeLabelMap} */ (type)] ?? type ?? '-';
 
   return (
     <div className='rounded-md border'>
@@ -78,7 +80,7 @@ export const ProductTable = () => {
                     <div className='flex items-center gap-2'>
                       <Avatar className='w-10 h-10 rounded'>
                         <AvatarImage
-                          src={product.imageUrl}
+                          src={product.imageUrl ?? undefined}
                           alt={product.name}
                         />
                         <AvatarFallback className='w-10 h-10 rounded' />
@@ -90,7 +92,7 @@ export const ProductTable = () => {
                     <div className='flex items-center gap-2'>
                       <Avatar className='w-10 h-10 rounded'>
                         <AvatarImage
-                          src={product.boxImageUrl}
+                          src={product.boxImageUrl ?? undefined}
                           alt={product.name}
                         />
                         <AvatarFallback className='w-10 h-10 rounded' />

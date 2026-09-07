@@ -103,6 +103,12 @@ function TurnoverLabel(props) {
   );
 }
 
+/**
+ * @template T
+ * @param {T} value
+ * @param {number} delayMs
+ * @returns {T}
+ */
 function useDebounced(value, delayMs) {
   const [v, setV] = useState(value);
   useEffect(() => {

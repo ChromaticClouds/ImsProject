@@ -12,9 +12,11 @@ import { toast } from 'sonner';
 import { ObRegisterDialog } from './ob-register-dialog.jsx';
 
 const MEMO_MAX = 300;
+/** @param {number | string | null | undefined} n */
 const toMoney = (n) => Number(n || 0).toLocaleString();
 
 /** 날짜 + 요일 + 시간 (예: 2026-02-18 (수) 13:05) */
+/** @param {Date | string | number | null | undefined} d */
 function formatKoreanDateTime(d) {
   if (!d) return '-';
   const dt = d instanceof Date ? d : new Date(d);
@@ -51,6 +53,7 @@ function toKoreanType(type) {
 }
 
 /** 썸네일 (출고 items에 imageUrl 없을 수도 있으니 안전하게) */
+/** @param {{ src?: string, alt?: string }} props */
 function Thumb({ src, alt }) {
   const safeSrc = typeof src === 'string' ? src.trim() : '';
   return (

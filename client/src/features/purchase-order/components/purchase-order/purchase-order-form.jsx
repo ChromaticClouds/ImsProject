@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { AppDatePicker } from '@/components/common/app-date-picker.jsx';
 import { formatToIsoDate } from '@/features/receive-order/utils/format-date.js';
 
+/** @param {number | string | null | undefined} n */
 const formatNumber = (n) => Number(n || 0).toLocaleString();
 
 /**
@@ -42,7 +43,11 @@ export const PurchaseOrderForm = ({ initialValue, onSubmit }) => {
     items: Array.isArray(initialValue?.items) ? initialValue.items : [],
   });
 
-  /** @param {keyof PurchaseOrderFormState} key @param {any} value */
+  /**
+   * @template {keyof PurchaseOrderFormState} K
+   * @param {K} key
+   * @param {PurchaseOrderFormState[K]} value
+   */
   const setField = (key, value) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -63,11 +68,13 @@ export const PurchaseOrderForm = ({ initialValue, onSubmit }) => {
     WHISKEY: '위스키',
   };
 
+  /** @param {unknown} value */
   const isValidCount = (value) => {
     const n = Number(value);
     return Number.isInteger(n) && n > 0;
   };
 
+  /** @param {unknown} v */
   const formatSafetyStock = (v) => {
     if (v == null) return '-';
     const n = Number(v);
@@ -81,7 +88,9 @@ export const PurchaseOrderForm = ({ initialValue, onSubmit }) => {
     form.items.length === 0 ||
     form.items.some((it) => !isValidCount(it.count));
 
-  const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
+  /** @param {string} type */
+  const formatType = (type) =>
+    typeLabelMap[/** @type {keyof typeof typeLabelMap} */ (type)] ?? type ?? '-';
 
   const totalPrice = useMemo(
     () =>
@@ -152,6 +161,7 @@ export const PurchaseOrderForm = ({ initialValue, onSubmit }) => {
             const today = new Date();
             const minDate = formatToIsoDate(today);
             const iso = formatToIsoDate(date);
+            if (!iso || !minDate) return;
 
             // 과거 날짜 방지
             if (iso < minDate) {

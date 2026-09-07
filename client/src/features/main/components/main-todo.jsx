@@ -16,11 +16,18 @@ const fetchTodayTodos = async () => {
   return res.json();
 };
 
+/**
+ * @param {unknown} data
+ * @returns {unknown[]}
+ */
 const normalizeTodos = (data) => {
   if (!data) return [];
   if (Array.isArray(data)) return data;
-  if (Array.isArray(data.items)) return data.items;
-  if (Array.isArray(data.content)) return data.content;
+  if (typeof data !== 'object') return [];
+
+  const value = /** @type {{items?: unknown, content?: unknown}} */ (data);
+  if (Array.isArray(value.items)) return value.items;
+  if (Array.isArray(value.content)) return value.content;
   return [];
 };
 

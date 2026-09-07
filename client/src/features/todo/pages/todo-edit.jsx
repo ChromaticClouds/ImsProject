@@ -13,6 +13,15 @@ import {
 import { TodoForm } from '@/features/todo/components/todo-form';
 import { fetchTodoById, updateTodo } from '@/features/todo/api/todoApi';
 
+/**
+ * @param {string | undefined} id
+ * @returns {string}
+ */
+const requireTodoId = (id) => {
+  if (!id) throw new Error('Todo ID가 필요합니다.');
+  return id;
+};
+
 export const TodoEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -20,11 +29,13 @@ export const TodoEdit = () => {
 
   const { data: todo, isLoading } = useQuery({
     queryKey: ['todo', id],
-    queryFn: () => fetchTodoById(id),
+    queryFn: () => fetchTodoById(requireTodoId(id)),
+    enabled: Boolean(id),
   });
 
   const save = useMutation({
-    mutationFn: (values) => updateTodo(id, values),
+    mutationFn: (/** @type {TodoUpdatePayload} */ values) =>
+      updateTodo(requireTodoId(id), values),
     onSuccess: async (res) => {
       if (!res?.ok) {
         window.alert(res?.message ?? '수정 실패');
@@ -53,10 +64,9 @@ export const TodoEdit = () => {
             initialValues={{
               title: todo.title,
               description: todo.description,
-              category: todo.category,
               startDate: todo.startDate,
               endDate: todo.endDate,
-              tages: todo.tages ?? [],
+              tags: todo.tags,
             }}
             onCancel={() => navigate(`/dashboard/todo/${id}`)}
             onSubmit={(values) => save.mutate(values)}

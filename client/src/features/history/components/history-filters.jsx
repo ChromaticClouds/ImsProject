@@ -3,6 +3,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { HISTORY_STATUS_OPTIONS, PRODUCT_TYPE_OPTIONS, toKoreanType } from '@/constants/index.js';
 import { useHistoryBrands } from '../hooks/use-history-brands.js';
 
+/**
+ * @param {{
+ *   status: string,
+ *   setStatus: (value: string) => void,
+ *   type: string,
+ *   setType: (value: string) => void,
+ *   brand: string,
+ *   setBrand: (value: string) => void
+ * }} props
+ */
 export function HistoryFilters({ status, setStatus, type, setType, brand, setBrand }) {
   const brandsQ = useHistoryBrands(type);
   const brands = Array.isArray(brandsQ.data) ? brandsQ.data : [];

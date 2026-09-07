@@ -11,15 +11,8 @@ import { toast } from 'sonner';
 /**
  * @param {{
  *  mode?: 'create'|'edit',
- *  initialValues?: {
- *    title?: string,
- *    description?: string,
- *    category?: string,
- *    startDate?: string,
- *    endDate?: string,
- *    tages?: string[],
- *  },
- *  onSubmit: (values: any) => void,
+ *  initialValues?: Partial<TodoUpdatePayload>,
+ *  onSubmit: (values: TodoUpdatePayload) => void,
  *  onCancel: () => void,
  *  isSubmitting?: boolean,
  * }} props
@@ -35,7 +28,6 @@ export const TodoForm = ({
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -44,10 +36,9 @@ export const TodoForm = ({
     if (!initialValues) return;
     setTitle(initialValues.title ?? '');
     setDescription(initialValues.description ?? '');
-    setCategory(initialValues.category ?? '');
     setStartDate(initialValues.startDate ?? '');
     setEndDate(initialValues.endDate ?? '');
-    setTags(Array.isArray(initialValues.tages) ? initialValues.tages : []);
+    setTags(Array.isArray(initialValues.tags) ? initialValues.tags : []);
   }, [initialValues, setTags]);
 
   const handleSubmit = () => {
@@ -63,10 +54,9 @@ export const TodoForm = ({
     onSubmit({
       title: title.trim(),
       description,
-      category: category.trim(),
       startDate,
       endDate,
-      tages: tags,
+      tags,
     });
   };
 

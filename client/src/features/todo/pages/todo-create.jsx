@@ -6,6 +6,7 @@ import { TodoForm } from '@/features/todo/components/todo-form';
 export const TodoCreate = () => {
   const navigate = useNavigate();
 
+  /** @param {TodoUpdatePayload} values */
   const handleSubmit = (values) => {
     console.log('등록 데이터', values);
     alert('업무가 등록되었습니다 (mock)');

@@ -9,13 +9,23 @@ import { toast } from 'sonner';
 
 /** @typedef {{ from: string, to: string }} DateRangeValue */
 
+/** @param {string | undefined} s */
 function toDate(s) {
   if (!s) return undefined;
   const d = parseISO(s);
   return isValid(d) ? d : undefined;
 }
+/** @param {Date | undefined} d */
 function toYMD(d) { return d ? format(d, 'yyyy-MM-dd') : ''; }
 
+/**
+ * @param {{
+ *   value: HistoryDateRange,
+ *   onChange: (value: HistoryDateRange) => void,
+ *   disabled?: boolean,
+ *   minDateYMD?: string
+ * }} props
+ */
 export function HistoryDateRangePicker({ value, onChange, disabled, minDateYMD }) {
   const from = toDate(value?.from);
   const to = toDate(value?.to);
@@ -26,6 +36,7 @@ export function HistoryDateRangePicker({ value, onChange, disabled, minDateYMD }
 
   const today = new Date();
 
+  /** @param {'all' | 'week' | 'month'} kind */
   function applyQuick(kind) {
   if (kind === 'all') {
     const f = toDate(minDateYMD) ?? new Date(2020, 0, 1);
@@ -42,6 +53,7 @@ export function HistoryDateRangePicker({ value, onChange, disabled, minDateYMD }
   }
 }
 
+  /** @param {import('react-day-picker').DateRange | undefined} next */
   function handleSelect(next) {
     if (!next?.from || !next?.to) {
       onChange({ from: next?.from ? toYMD(next.from) : value.from, to: next?.to ? toYMD(next.to) : '' });

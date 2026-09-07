@@ -34,7 +34,7 @@ const buildParams = (searchCond) =>
   Object.entries(searchCond).reduce((acc, [key, value]) => {
     if (value != null && value !== '') acc[key] = value;
     return acc;
-  }, {});
+  }, /** @type {Record<string, string | number>} */ ({}));
 
 /**
  * @param {{ page?: number, search?: string, fromDate?: string, toDate?: string, salerId?: number }} searchCond

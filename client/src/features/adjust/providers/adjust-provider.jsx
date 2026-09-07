@@ -6,9 +6,11 @@ import { useAdjustForm } from '../hooks/use-adjust-form.js';
 import { useAdjustProductList } from '../hooks/use-adjust-product-list.js';
 
 /**
- * @type {React.Context<{ form: ReturnType<typeof useAdjustForm>, products: ProductSuggest[] }>}
+ * @type {React.Context<{ form: ReturnType<typeof useAdjustForm>, products: ProductSuggest[] } | null>}
  */
-const AdjustContext = createContext(null);
+const AdjustContext = createContext(
+  /** @type {{ form: ReturnType<typeof useAdjustForm>, products: ProductSuggest[] } | null} */ (null),
+);
 
 export const useAdjustContext = () => {
   const ctx = useContext(AdjustContext);
@@ -23,7 +25,7 @@ export const AdjustProvider = ({ children }) => {
   const form = useAdjustForm();
   const { data } = useAdjustProductList();
 
-  const products = data?.data;
+  const products = data?.data ?? [];
 
   return (
     <AdjustContext.Provider value={{ form, products }}>

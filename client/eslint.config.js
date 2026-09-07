@@ -7,12 +7,13 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
-export default defineConfig([globalIgnores(['dist']), {
-  env: {
-    node: true,
-    browser: true,
-    es2020: true
-  },
+export default defineConfig([globalIgnores([
+  'dist',
+  'storybook-static',
+  'node_modules',
+  '**/*.ts',
+  '**/*.tsx',
+]), {
   files: ['**/*.{js,jsx}'],
   extends: [
     js.configs.recommended,
@@ -21,7 +22,11 @@ export default defineConfig([globalIgnores(['dist']), {
   ],
   languageOptions: {
     ecmaVersion: 2020,
-    globals: globals.browser,
+    globals: {
+      ...globals.browser,
+      ...globals.node,
+      ...globals.es2020,
+    },
     parserOptions: {
       ecmaVersion: 'latest',
       ecmaFeatures: { jsx: true },

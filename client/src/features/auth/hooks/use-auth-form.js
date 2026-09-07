@@ -49,6 +49,10 @@ export const useAuthForm = () => {
       defaultValues: registerDefaultValue,
       validators: { onChange: registerSchema },
       onSubmit: async ({ value }) => {
+        if (!token) {
+          toast.error('유효한 초대 토큰이 필요합니다.');
+          return;
+        }
         await register({ ...value, token });
       },
     }),

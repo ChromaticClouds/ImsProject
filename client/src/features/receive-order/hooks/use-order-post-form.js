@@ -26,8 +26,8 @@ import { formatToIsoDate } from '../utils/format-date.js';
  * @type {OrderSchema}
  */
 const defaultValues = {
-  userId: undefined,
-  sellerId: undefined,
+  userId: null,
+  sellerId: null,
   receiveDate: new Date(),
   products: [],
 };

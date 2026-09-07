@@ -13,7 +13,7 @@ import { create } from 'zustand';
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<AdjustFormState>>} */
 export const useAdjustFormStore = create((set) => ({
-  date: { from: null, to: null },
+  date: { from: undefined, to: undefined },
   setDate: (date) => set({ date }),
   type: 'PLUS',
   setType: (type) => set({ type }),

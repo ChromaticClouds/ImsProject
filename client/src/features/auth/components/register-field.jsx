@@ -8,7 +8,7 @@ import { useAuthForm } from '@/features/auth/hooks/use-auth-form.js';
 /**
  * @typedef {object} FormData
  * @property {ReturnType<typeof useAuthForm>['register']} form
- * @property {keyof RegisterFormSchema} name
+ * @property {Exclude<keyof RegisterFormSchema, 'token'>} name
  * @property {string} label
  */
 

@@ -51,8 +51,10 @@ export const AppDatePicker = ({
         <Calendar
           mode='single'
           selected={date}
-          onSelect={setDate}
-          disabled={{ before: min }}
+          onSelect={(nextDate) => {
+            if (nextDate) setDate(nextDate);
+          }}
+          disabled={min ? { before: min } : undefined}
         />
       </PopoverContent>
     </Popover>

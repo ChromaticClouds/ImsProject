@@ -5,7 +5,7 @@ const MAX_TAGS = 3;
 const MAX_LENGTH = 10;
 
 export const useTodoTags = () => {
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState(/** @type {string[]} */ ([]));
   const [input, setInput] = useState('');
 
   const addTag = () => {
@@ -29,6 +29,7 @@ export const useTodoTags = () => {
     setInput('');
   };
 
+  /** @param {string} tag */
   const removeTag = (tag) => {
     setTags((prev) => prev.filter((t) => t !== tag));
   };

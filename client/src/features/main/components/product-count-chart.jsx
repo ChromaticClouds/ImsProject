@@ -64,6 +64,12 @@ const TYPE_LABEL = {
   KAOLIANG_LIQUOR: '고량주',
 };
 
+/** @param {string} value */
+const getTypeLabel = (value) =>
+  value in TYPE_LABEL
+    ? TYPE_LABEL[/** @type {ProductType} */ (value)]
+    : value;
+
 export const ProductCountChart = () => {
   const isMobile = useIsMobile();
 
@@ -120,7 +126,7 @@ export const ProductCountChart = () => {
               variant='outline'
               className='w-40 flex justify-between items-center'
             >
-              {type ? TYPE_LABEL[type] : '전체'}
+              {type ? getTypeLabel(type) : '전체'}
               <ChevronDownIcon />
             </Button>
           </DropdownMenuTrigger>
@@ -143,7 +149,7 @@ export const ProductCountChart = () => {
                     setType(t);
                   }}
                 >
-                  <span className='truncate'>{TYPE_LABEL[t] ?? t}</span>
+                  <span className='truncate'>{getTypeLabel(t)}</span>
                   {type === t && (
                     <CheckIcon className='h-4 w-4 opacity-70 ml-auto' />
                   )}

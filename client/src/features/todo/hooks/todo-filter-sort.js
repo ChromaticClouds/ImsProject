@@ -2,9 +2,8 @@ import { useMemo, useState } from 'react';
 
 export const TODO_STATUS_LABEL = {
   ALL: '전체',
-  TODO: '미완료',
-  IN_PROGRESS: '진행중',
-  DONE: '완료',
+  IN_ACTIVE: '진행중',
+  COMPLETE: '완료',
 };
 
 export const TODO_SORT_LABEL = {

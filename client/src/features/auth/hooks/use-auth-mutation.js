@@ -25,7 +25,7 @@ export const useAuthMutation = (mutationFn, options = {}) => {
     ...options,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'me', 'users'] });
-      options.onSuccess(...args);
+      options.onSuccess?.(...args);
       navigate('/dashboard');
     },
     onError: async (e) => {

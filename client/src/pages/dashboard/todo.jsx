@@ -62,6 +62,7 @@ const today = new Date().toISOString().slice(0, 10);
 
 
 
+  /** @param {number} id */
   const handleEdit = (id) => {
     // ✅ 일단 “수정 페이지로 이동”만 연결할 자리
     // 예) navigate(`/dashboard/todo/${id}/edit`)
@@ -97,11 +98,11 @@ const today = new Date().toISOString().slice(0, 10);
               <DropdownMenuContent align='end' className='w-40'>
                 <DropdownMenuLabel>상태 필터</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.keys(TODO_STATUS_LABEL).map((key) => (
+                {Object.entries(TODO_STATUS_LABEL).map(([key, label]) => (
                   <DropdownMenuItem
                     key={key}
                   >
-                    {TODO_STATUS_LABEL[key]}
+                    {label}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -117,11 +118,11 @@ const today = new Date().toISOString().slice(0, 10);
               <DropdownMenuContent align='end' className='w-44'>
                 <DropdownMenuLabel>정렬</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.keys(TODO_SORT_LABEL).map((key) => (
+                {Object.entries(TODO_SORT_LABEL).map(([key, label]) => (
                   <DropdownMenuItem
                     key={key}
                   >
-                    {TODO_SORT_LABEL[key]}
+                    {label}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>

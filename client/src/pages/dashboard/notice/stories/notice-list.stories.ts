@@ -34,6 +34,7 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
+type ApiStory = StoryObj<typeof NoticeListApiContainer>;
 
 const getCanvas = (canvasElement: HTMLElement) => within(canvasElement);
 
@@ -294,7 +295,7 @@ export const ApiSuccess = {
       await canvas.findByText('API 두 번째 페이지 공지'),
     ).toBeInTheDocument();
   },
-} satisfies Story;
+} satisfies ApiStory;
 
 export const ApiError = {
   render: (args) => createElement(NoticeListApiContainer, args),
@@ -326,4 +327,4 @@ export const ApiError = {
       canvas.getByRole('button', { name: '다시 시도' }),
     ).toBeInTheDocument();
   },
-} satisfies Story;
+} satisfies ApiStory;

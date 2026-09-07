@@ -5,9 +5,12 @@ import { useHistoryLotDetail } from '../hooks/use-history-lot-detail.js';
 import { toKoreanType } from '@/constants/index.js';
 import { Button } from '@/components/ui/button.js';
 
+/** @param {number | null | undefined} n */
 function money(n) { return Number(n ?? 0).toLocaleString(); }
+/** @param {number | null | undefined} n */
 function num(n) { return Number(n ?? 0).toLocaleString(); }
 
+/** @param {{lotId: number | null}} props */
 export function HistoryDetailPanel({ lotId }) {
   const q = useHistoryLotDetail(lotId);
   const data = q.data;
@@ -21,7 +24,7 @@ export function HistoryDetailPanel({ lotId }) {
   }, [items]);
 
   const [prodOpen, setProdOpen] = useState(false);
-  const [prod, setProd] = useState(null);
+  const [prod, setProd] = useState(/** @type {HistoryLotRow | null} */ (null));
 
   if (!lotId) {
     return <div className="p-4 text-muted-foreground">항목 선택 시 상세 내역 정보가 표시됩니다.</div>;

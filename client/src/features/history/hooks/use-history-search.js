@@ -3,6 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchHistorySearch } from '../api/index';
 import { historyQueryKeys } from './historyQueryKeys.js';
 
+/**
+ * @param {string} q
+ * @param {boolean} enabled
+ */
 export function useHistorySearch(q, enabled) {
   return useQuery({
     queryKey: historyQueryKeys.search(q),

@@ -5,6 +5,11 @@
     "description": "Allowed frontend origins for CORS."
   },
   {
+    "name": "app.client.base-url",
+    "type": "java.lang.String",
+    "description": "Base URL used in client-facing email links."
+  },
+  {
     "name": "resend.api-key",
     "type": "java.lang.String",
     "description": "A description for 'resend.api-key'"
@@ -23,11 +28,6 @@
     "name": "resend.api-key",
     "type": "java.lang.String",
     "description": "A description for 'resend.api-key'"
-  },
-  {
-    "name": "resend.base-url",
-    "type": "java.lang.String",
-    "description": "Base URL for the Resend API."
   },
   {
     "name": "jwt.secret",

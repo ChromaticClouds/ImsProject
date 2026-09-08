@@ -1,6 +1,7 @@
 package com.example.ims.global.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotBlank;
@@ -9,11 +10,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "resend")
 @Validated
-public class ResendProperties {
+@Configuration
+@ConfigurationProperties(prefix = "app.client")
+public class ClientProperties {
 
-    @NotBlank(message = "RESEND_API_KEY가 설정되지 않았습니다.")
-    private String apiKey;
-    private String fromEmail;
+    @NotBlank(message = "CLIENT_BASE_URL이 설정되지 않았습니다.")
+    private String baseUrl;
 }

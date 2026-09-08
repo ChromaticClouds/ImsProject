@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: ims-project-api
+    runtime: docker
+    plan: free
+    rootDir: server/ims-server
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: CLIENT_BASE_URL
+        value: https://ims-project-pi.vercel.app
+      - key: FRONTEND_ORIGIN
+        value: https://ims-project-pi.vercel.app
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
+      - key: DB_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        sync: false
+      - key: REDIS_USER
+        sync: false
+      - key: REDIS_PASS
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false

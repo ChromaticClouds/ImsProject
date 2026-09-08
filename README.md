@@ -199,6 +199,16 @@ bash ./gradlew bootRun
 - `JWT_SECRET`
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL`
-- `RESEND_BASE_URL`
+- `CLIENT_BASE_URL`
 - `FRONTEND_ORIGIN`
 - `UPLOAD_DIR`
+
+## Render 백엔드 배포
+
+저장소 루트의 `render.yaml` Blueprint를 사용하면 Java 21 Docker Web Service로
+백엔드를 배포할 수 있다. Blueprint 생성 시 `sync: false`로 선언된 DB, Redis,
+JWT, Resend 환경 변수 값을 Render 대시보드에서 입력한다.
+
+무료 Web Service의 파일 시스템은 재시작 또는 재배포 시 초기화되므로
+`UPLOAD_DIR=/tmp/uploads`에 저장한 파일은 영구 보존되지 않는다. 운영 환경에서는
+외부 오브젝트 스토리지나 유료 Persistent Disk를 사용해야 한다.

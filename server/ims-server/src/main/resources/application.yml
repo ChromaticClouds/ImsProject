@@ -32,9 +32,15 @@ spring:
       username: ${REDIS_USER}
       password: ${REDIS_PASS}
 
+server:
+  port: ${PORT:8080}
+
 app:
+  client:
+    base-url: ${CLIENT_BASE_URL:http://localhost:5173}
+
   cors:
-    allowed-origins: ${FRONTEND_ORIGIN:${RESEND_URL:http://localhost:5173}}
+    allowed-origins: ${FRONTEND_ORIGIN:http://localhost:5173}
 
   storage:
     upload-dir: ${UPLOAD_DIR:./uploads}
@@ -42,7 +48,6 @@ app:
 resend:
   api-key: ${RESEND_API_KEY}
   from-email: ${RESEND_FROM_EMAIL}
-  base-url: ${RESEND_BASE_URL:https://api.resend.com}
 
 jwt:
   secret: ${JWT_SECRET}

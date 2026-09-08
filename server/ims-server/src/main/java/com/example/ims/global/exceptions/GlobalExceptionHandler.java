@@ -2,6 +2,7 @@ package com.example.ims.global.exceptions;
 
 import com.example.ims.features.auth.exceptions.ForbiddenException;
 import com.example.ims.features.auth.exceptions.UnauthorizedException;
+import com.example.ims.features.auth.stores.RefreshTokenCookieStore;
 
 import com.example.ims.features.notice.exceptions.FileNotFoundException;
 import com.example.ims.features.purchaseorder.exception.BuildPoContextException;
@@ -16,8 +17,13 @@ import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.invitation.exceptions.InvalidInvitationTokenException;
 import com.example.ims.global.response.ApiResponse;
 
+import lombok.RequiredArgsConstructor;
+
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final RefreshTokenCookieStore refreshTokenCookieStore;
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handle(Exception e) {
@@ -52,13 +58,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ApiResponse<Void>> handle(ForbiddenException e) {
-        ResponseCookie expired = ResponseCookie.from("refreshToken", "")
-            .path("/")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Lax")
-            .maxAge(0)
-            .build();
+        ResponseCookie expired = refreshTokenCookieStore.delete();
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
             .header(HttpHeaders.SET_COOKIE, expired.toString())

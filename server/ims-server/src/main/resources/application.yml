@@ -36,6 +36,11 @@ server:
   port: ${PORT:8080}
 
 app:
+  auth:
+    cookie:
+      secure: ${AUTH_COOKIE_SECURE:true}
+      same-site: ${AUTH_COOKIE_SAME_SITE:None}
+
   client:
     base-url: ${CLIENT_BASE_URL:http://localhost:5173}
 

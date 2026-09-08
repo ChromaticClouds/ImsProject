@@ -22,10 +22,8 @@
 
 /**
  * @typedef {object} AuthResponse
- * @property {string} eid
- * @property {string} name
- * @property {string} email
- * @property {string} role
+ * @property {User} user
+ * @property {string} token
  */
 
 /**
@@ -39,9 +37,7 @@
  */
 
 /**
- * @typedef {object} RefreshResponse
- * @property {User} user
- * @property {string} token
+ * @typedef {AuthResponse} RefreshResponse
  */
 
 /**

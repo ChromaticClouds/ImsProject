@@ -4,7 +4,7 @@
  * Components
  */
 import { CardFooter } from '@/components/ui/card.js';
-import { Button } from '@/components/ui/button.js';
+
 import {
   Pagination,
   PaginationContent,
@@ -63,7 +63,7 @@ export const PurchaseOrderFooter = () => {
                   <PaginationLink
                     to='#'
                     isActive={p === page}
-                    onClick={(e) => setPage(p)}
+                    onClick={() => setPage(p)}
                   >
                     {p}
                   </PaginationLink>

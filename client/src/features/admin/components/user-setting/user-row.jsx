@@ -12,6 +12,12 @@ import { NameChangeDialog } from './name-change-dialog.jsx';
 
 import { toUserRowModel } from '../../schemas/user-model.js';
 
+/**
+ * @param {{
+ *  user: ReturnType<typeof toUserRowModel>,
+ *  isPending: boolean,
+ * }} props
+ */
 const DescriptionCell = ({ user, isPending }) => (
   <TableCell className='w-sm'>
     {!isPending ? user.roleDescription : '-'}

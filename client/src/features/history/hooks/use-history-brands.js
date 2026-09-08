@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchHistoryBrands } from '../api/index';
 import { historyQueryKeys } from './historyQueryKeys.js';
 
+/** @param {string} type */
 export function useHistoryBrands(type) {
   return useQuery({
     queryKey: historyQueryKeys.brands(type),

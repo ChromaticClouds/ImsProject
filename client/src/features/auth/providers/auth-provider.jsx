@@ -32,8 +32,9 @@ import { useContext } from "react";
  */
 
 
-/** @type {React.Context<AuthContextValue | null>} */
-const AuthContext = createContext(null);
+const AuthContext = createContext(
+  /** @type {AuthContextValue | null} */ (null),
+);
 
 export const useAuthContext = () => {
   const ctx = useContext(AuthContext);

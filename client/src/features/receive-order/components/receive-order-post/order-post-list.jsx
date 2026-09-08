@@ -41,10 +41,15 @@ export const OrderPostList = () => {
       </TableHeader>
 
       <form.Field name='products'>
-        {(field) => (
-          <TableBody>
-            {field.state.value.length > 0 ? (
-              field.state.value.map(
+        {(field) => {
+          const products = /** @type {OrderPostProduct[]} */ (
+            field.state.value
+          );
+
+          return (
+            <TableBody>
+              {products.length > 0 ? (
+                products.map(
                 /** @param {OrderPostProduct} product */
                 (product, index) => (
                   <TableRow key={product.id}>
@@ -103,18 +108,19 @@ export const OrderPostList = () => {
                     </TableCell>
                   </TableRow>
                 ),
-              )
-            ) : (
-              <TableRow>
-                <TableCell colSpan={4}>
-                  <div className='w-full h-24 flex justify-center items-center'>
-                    <span className='text-muted-foreground'>등록한 품목이 없습니다.</span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        )}
+                )
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <div className='w-full h-24 flex justify-center items-center'>
+                      <span className='text-muted-foreground'>등록한 품목이 없습니다.</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          );
+        }}
       </form.Field>
     </Table>
   );

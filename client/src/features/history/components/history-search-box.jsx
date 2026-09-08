@@ -1,6 +1,5 @@
-
 // @ts-check
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useHistorySearch } from '../hooks/use-history-search.js';
 
 /**
@@ -20,11 +19,6 @@ export function HistorySearchBox({ q, setQ, pick, setPick, onClear }) {
 
   const hasPick = !!(pick && pick.kind && pick.targetId);
 
-  useEffect(() => {
-    if (!q) setOpen(false);
-    else setOpen(true);
-  }, [q]);
-
   const clearPick = () => {
     setQ('');
     setPick({});
@@ -38,10 +32,12 @@ export function HistorySearchBox({ q, setQ, pick, setPick, onClear }) {
         <input
           value={q}
           onChange={(e) => {
-            setQ(e.target.value);
+            const nextQ = e.target.value;
+            setQ(nextQ);
             setPick({});
+            setOpen(Boolean(nextQ));
           }}
-          placeholder="제품명/등록자/거래처 검색 입력"
+          placeholder='제품명/등록자/거래처 검색 입력'
           style={{
             width: '100%',
             borderRadius: 8,
@@ -50,18 +46,18 @@ export function HistorySearchBox({ q, setQ, pick, setPick, onClear }) {
             fontSize: '13px',
             lineHeight: '13px',
           }}
-          className="bg-secondary border border-border"
+          className='bg-secondary border border-border'
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 120)}
         />
 
         {hasPick ? (
           <button
-            type="button"
+            type='button'
             onMouseDown={(e) => e.preventDefault()}
             onClick={clearPick}
-            aria-label="선택 해제"
-            title="선택 해제"
+            aria-label='선택 해제'
+            title='선택 해제'
             style={{
               position: 'absolute',
               right: 8,
@@ -73,7 +69,7 @@ export function HistorySearchBox({ q, setQ, pick, setPick, onClear }) {
               border: 'none',
               cursor: 'pointer',
             }}
-            className="bg-muted text-muted-foreground hover:bg-muted/80"
+            className='bg-muted text-muted-foreground hover:bg-muted/80'
           >
             ×
           </button>
@@ -91,7 +87,7 @@ export function HistorySearchBox({ q, setQ, pick, setPick, onClear }) {
             borderRadius: 8,
             overflow: 'hidden',
           }}
-          className="bg-secondary border border-border"
+          className='bg-secondary border border-border'
         >
           {searchQ.isFetching ? (
             <div style={{ padding: 10, fontSize: 12, color: '#666' }}>
@@ -113,7 +109,7 @@ export function HistorySearchBox({ q, setQ, pick, setPick, onClear }) {
                   background: 'transparent',
                   cursor: 'pointer',
                 }}
-                className="hover:bg-muted/40"
+                className='hover:bg-muted/40'
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => {
                   setPick({
@@ -130,8 +126,8 @@ export function HistorySearchBox({ q, setQ, pick, setPick, onClear }) {
                   {it.kind === 'PRODUCT'
                     ? '제품'
                     : it.kind === 'USER'
-                    ? '담당자'
-                    : '거래처'}
+                      ? '담당자'
+                      : '거래처'}
                 </div>
               </button>
             ))

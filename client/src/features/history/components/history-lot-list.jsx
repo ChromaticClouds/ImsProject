@@ -6,7 +6,7 @@ import {
   ArrowDownUpIcon,
 } from 'lucide-react';
 
-/** @param {any} row */
+/** @param {HistoryLotRow} row */
 function getIcon(row) {
   if (row.status === 'INBOUND') {
     return <ArrowBigDownDashIcon size={18} className="text-blue-500" />;
@@ -21,6 +21,10 @@ function deltaStyle() {
   return { fontWeight: 800 };
 }
 
+/**
+ * @param {HistoryStatus} status
+ * @param {number | null | undefined} totalDelta
+ */
 function formatDelta(status, totalDelta) {
   const n = Number(totalDelta ?? 0);
   if (status === 'OUTBOUND') return `-${Math.abs(n)}`;
@@ -28,6 +32,13 @@ function formatDelta(status, totalDelta) {
   return `${n}`;
 }
 
+/**
+ * @param {{
+ *   rows: HistoryLotRow[],
+ *   selectedLotId: number | null,
+ *   onSelect: (lotId: number) => void
+ * }} props
+ */
 export function HistoryLotList({ rows, selectedLotId, onSelect }) {
   return (
     

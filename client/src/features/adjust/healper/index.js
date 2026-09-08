@@ -16,17 +16,18 @@ export const addOrIncreaseProduct = (form, product) => {
 
     if (map.has(key)) {
       const prevItem = map.get(key);
+      if (!prevItem) return prev;
       map.set(key, {
         ...prevItem,
         adjustCount: (prevItem.adjustCount ?? 0) + 1,
       });
     } else {
-      map.set(key, {
+      map.set(key, /** @type {AdjustItem} */ ({
         ...rest,
         id: productId,
         currentStock,
         adjustCount: 1,
-      });
+      }));
     }
 
     return Array.from(map.values());

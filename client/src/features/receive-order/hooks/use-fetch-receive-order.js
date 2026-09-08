@@ -1,8 +1,8 @@
 // @ts-check
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { assignOutboundManager, getReceiveOrders } from '../api/index.js';
-import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import { getReceiveOrders } from '../api/index.js';
+
 import { useReceiveOrderFilterStore } from '../stores/use-receive-order-filter-store.js';
 import { formatToIsoDate } from '../utils/format-date.js';
 import { useShallow } from 'zustand/shallow';
@@ -51,8 +51,8 @@ export const useFetchReceiveOrder = (page) => {
     queryFn: async () => {
       const response = await getReceiveOrders({
         page,
-        search,
-        salerId,
+        search: search ?? undefined,
+        salerId: salerId ?? undefined,
         fromDate,
         toDate,
       });
@@ -61,5 +61,14 @@ export const useFetchReceiveOrder = (page) => {
     staleTime: 0,
   });
 
-  return data;
+  return (
+    data ?? {
+      content: [],
+      page: page ?? 1,
+      totalPages: 0,
+      totalElements: 0,
+      isFirst: true,
+      isLast: true,
+    }
+  );
 };

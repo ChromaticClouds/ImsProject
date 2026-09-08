@@ -9,6 +9,7 @@ import { TableCell } from '@/components/ui/table.js';
 import { toUserRowModel } from '../../schemas/user-model.js';
 import { ConfirmButton } from './confirm-button.jsx';
 
+/** @param {React.PropsWithChildren} props */
 const ActionCell = ({ children }) => (
   <TableCell className='w-24 h-16'>
     <div className='flex justify-center'>{children}</div>

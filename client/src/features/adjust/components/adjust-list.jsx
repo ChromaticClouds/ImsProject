@@ -91,7 +91,9 @@ export const AdjustList = () => {
                       {row.salePrice?.toLocaleString()}원
                     </TableCell>
                     <TableCell className='text-center'>{row.brand}</TableCell>
-                    <TableCell className='text-center'>{typeMap[row.type]}</TableCell>
+                    <TableCell className='text-center'>
+                      {typeMap[/** @type {keyof typeof typeMap} */ (row.type)]}
+                    </TableCell>
                     <TableCell className='text-center'>
                       {row.currentStock}
                     </TableCell>

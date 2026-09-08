@@ -18,14 +18,16 @@ export function InboundPendingEditPage() {
   const items = useMemo(() => (Array.isArray(data?.items) ? data.items : []), [data]);
 
   const [receiveDate, setReceiveDate] = useState('');
-  const [qtyMap, setQtyMap] = useState(() => ({}));
+  const [qtyMap, setQtyMap] = useState(
+    /** @returns {Record<number, string>} */ () => ({}),
+  );
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (!data) return;
     if (!receiveDate) setReceiveDate(String(data.receiveDate ?? ''));
     if (Object.keys(qtyMap).length === 0 && items.length) {
-      const next = {};
+      const next = /** @type {Record<number, string>} */ ({});
       for (const it of items) next[it.orderId] = String(it.orderQty ?? '');
       setQtyMap(next);
     }
@@ -65,7 +67,7 @@ export function InboundPendingEditPage() {
 
         nav('/dashboard/inbounds/pending');
     } catch (e) {
-      setError(e?.message || '수정 실패');
+      setError(e instanceof Error ? e.message : '수정 실패');
     }
   }
 

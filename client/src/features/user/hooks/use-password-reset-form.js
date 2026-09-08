@@ -35,7 +35,13 @@ export const usePasswordResetForm = () => {
     },
     onSubmit: async ({ value }) => {
       try {
-        const values = { ...value, token: params.get('token') };
+        const token = params.get('token');
+        if (!token) {
+          toast.error('유효한 비밀번호 재설정 토큰이 필요합니다.');
+          return;
+        }
+
+        const values = { ...value, token };
 
         const response = await postPasswordRequest(values);
         if (!response.success) return;

@@ -43,8 +43,11 @@ export const PurchaseOrderBulkActions = ({ onReload }) => {
     try {
       await mutateAsync({ orderNumbers: selectedOrderNumbers });
       clear();
+      await onReload?.();
       setOpen(false);
-    } catch {}
+    } catch {
+      // The mutation hook displays the request error.
+    }
   };
 
   return (

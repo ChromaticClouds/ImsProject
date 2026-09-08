@@ -24,7 +24,11 @@ export const SupplierInfo = () => {
             label={field.label}
           >
             <Input
-              value={supplier?.[field.key] ?? ''}
+              value={
+                supplier?.[
+                  /** @type {keyof VendorDetail} */ (field.key)
+                ] ?? ''
+              }
               disabled
             />
           </FieldContainer>

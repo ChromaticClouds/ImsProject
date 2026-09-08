@@ -221,8 +221,8 @@ export function InboundCompletedRow(props) {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const wrapRef = useRef(null);
-  const btnRef = useRef(null);
+  const wrapRef = useRef(/** @type {HTMLDivElement | null} */ (null));
+  const btnRef = useRef(/** @type {HTMLButtonElement | null} */ (null));
 
   const [dropdownWidth, setDropdownWidth] = useState(360);
   const MIN_DROPDOWN_WIDTH = 360;
@@ -231,6 +231,7 @@ export function InboundCompletedRow(props) {
   const items = Array.isArray(itemsQuery.data) ? itemsQuery.data : [];
   const itemsLoading = !!itemsQuery.isFetching;
 
+  /** @param {number | string | null | undefined} n */
   const fmt = (n) => Number(n || 0).toLocaleString();
 
   /**
@@ -274,7 +275,7 @@ export function InboundCompletedRow(props) {
     const onDown = (e) => {
       const el = wrapRef.current;
       if (!el) return;
-      if (/** @type {any} */ (el).contains(e.target)) return;
+      if (e.target instanceof Node && el.contains(e.target)) return;
       close();
     };
     document.addEventListener('mousedown', onDown);

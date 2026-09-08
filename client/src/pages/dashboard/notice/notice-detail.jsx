@@ -1,14 +1,13 @@
 // @ts-check
 import { useNavigate, useParams } from 'react-router-dom';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import { Button } from '@/components/ui/button';
 import { NoticeAttachmentsSection } from '@/features/notice/components/notice-detail/notice-attachments-section.jsx';
 import { NoticeContentSection } from '@/features/notice/components/notice-detail/notice-content-section.jsx';
 import { NoticeDetailHeader } from '@/features/notice/components/notice-detail/notice-detail-header.jsx';
 import { NoticeNavigationPreview } from '@/features/notice/components/notice-detail/notice-navigation-preview.jsx';
 
-import { fetchNoticeById, deleteNotice } from '@/features/notice/api';
+import { fetchNoticeById } from '@/features/notice/api';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store';
 import { useNoticeDeleteMutation } from '@/features/notice/hooks/use-notice-delete-mutation.js';
 

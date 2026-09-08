@@ -12,11 +12,6 @@ import { Button } from '@/components/ui/button';
 import { BarChart3Icon, RefreshCwIcon } from 'lucide-react';
 
 /**
- * @import { RefetchOptions, QueryObserverResult } from '@tanstack/react-query';
- * @import { WarehouseShareResponse } from '@/features/statistics/api/index.js'
- */
-
-/**
  * @param {{
  *   title?: string,
  *   description?: string,
@@ -24,7 +19,7 @@ import { BarChart3Icon, RefreshCwIcon } from 'lucide-react';
  *   loadingLabel?: string,
  *   isRefreshing?: boolean,
  *   icon?: React.ReactNode,
- *   onRefresh?: (options?: RefetchOptions) => Promise<QueryObserverResult<WarehouseShareResponse | undefined, Error>>,
+ *   onRefresh?: () => void | Promise<unknown>,
  * }} props
  */
 export const ChartEmpty = ({

@@ -16,32 +16,35 @@ export const useEmailInput = () => {
   /**
    * @param {string} email
    */
-  const checkEmail = (email) => {
-    if (emails.length >= MAX_EMAIL_COUNT) {
-      toast.error(`이메일 개수는 최대 ${MAX_EMAIL_COUNT}개 이하여야 합니다.`);
-      return false;
-    }
+  const checkEmail = useCallback(
+    (/** @type {string} */ email) => {
+      if (emails.length >= MAX_EMAIL_COUNT) {
+        toast.error(`이메일 개수는 최대 ${MAX_EMAIL_COUNT}개 이하여야 합니다.`);
+        return false;
+      }
 
-    const parsed = emailSchema.safeParse(email);
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
-      return false;
-    }
+      const parsed = emailSchema.safeParse(email);
+      if (!parsed.success) {
+        toast.error(parsed.error.issues[0].message);
+        return false;
+      }
 
-    const result = addEmail(email);
-    if (result === 'DUPLICATE') {
-      toast.error(`${email}은 이미 추가되어 있습니다.`);
-      return false;
-    }
+      const result = addEmail(email);
+      if (result === 'DUPLICATE') {
+        toast.error(`${email}은 이미 추가되어 있습니다.`);
+        return false;
+      }
 
-    return true;
-  };
+      return true;
+    },
+    [addEmail, emails],
+  );
 
   const commit = useCallback(() => {
     const trimmed = value.trim();
     if (!trimmed) return;
     if (checkEmail(trimmed)) setValue('');
-  }, [value, addEmail, setValue]);
+  }, [checkEmail, setValue, value]);
 
   return {
     /**

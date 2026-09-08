@@ -1,30 +1,40 @@
-import { api, hooks } from "@/services/api.js";
+import { api } from '@/services/api.js';
 
 /**
  * History
- * @param {{ from:string, to:string, q?:string, kind?:string, targetId?:number, status?:string, type?:string, brand?:string, page?:number, size?:number }} params
+ * @param {HistoryParams} params
+ * @returns {Promise<PageResponse<HistoryLotRow>>}
  */
 export async function fetchHistoryLots(params) {
   return await api.get('history/lots', { searchParams: params }).json();
 }
 
-/** @param {number} lotId */
+/**
+ * @param {number} lotId
+ * @returns {Promise<HistoryLotRow>}
+ */
 export async function fetchHistoryLotDetail(lotId) {
   return await api.get(`history/lots/${encodeURIComponent(lotId)}`).json();
 }
 
-/** @param {string} q */
+/**
+ * @param {string} q
+ * @returns {Promise<HistorySearchSuggestion[]>}
+ */
 export async function fetchHistorySearch(q) {
   return await api.get('history/search', { searchParams: { q } }).json();
 }
 
-/** @param {string} type */
+/**
+ * @param {string} type
+ * @returns {Promise<string[]>}
+ */
 export async function fetchHistoryBrands(type) {
   return await api.get('history/brands', { searchParams: { type } }).json();
 }
 
 // 기간 설정을 위함(최소)
+/** @returns {Promise<{minDate: string}>} */
 export async function fetchHistoryMinDate() {
-  return await api.get('history/min-date').json(); 
+  return await api.get('history/min-date').json();
 }
-

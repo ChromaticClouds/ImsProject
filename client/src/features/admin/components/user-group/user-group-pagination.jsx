@@ -37,14 +37,14 @@ export const UserGroupPagination = () => {
     return `/dashboard/user/group?${p.toString()}`;
   };
 
-  if (data?.totalPages < 1) return null;
+  if (totalPages < 1) return null;
 
   return (
     <Pagination>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            to={toPage(Math.max(1, data?.page - 1))}
+            to={toPage(Math.max(1, page - 1))}
             onClick={(e) => isFirst && e.preventDefault()}
             aria-disabled={isFirst}
             className={isFirst ? 'pointer-events-none opacity-50' : ''}

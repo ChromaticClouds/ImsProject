@@ -16,6 +16,10 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog.js'
 // -----------------------------
 // JWT helpers
 // -----------------------------
+/**
+ * @param {string | null | undefined} token
+ * @returns {Record<string, unknown> | null}
+ */
 function decodeJwtPayload(token) {
   try {
     const parts = String(token || '').split('.');
@@ -27,6 +31,7 @@ function decodeJwtPayload(token) {
   }
 }
 
+/** @param {string | null | undefined} token */
 function getMyUserIdFromToken(token) {
   const p = decodeJwtPayload(token);
   if (!p) return null;
@@ -228,8 +233,8 @@ export function OutboundPendingRow({ row, loading, onError }) {
   const nav = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
-  const wrapRef = useRef(null);
-  const btnRef = useRef(null);
+  const wrapRef = useRef(/** @type {HTMLDivElement | null} */ (null));
+  const btnRef = useRef(/** @type {HTMLButtonElement | null} */ (null));
 
   const [dropdownWidth, setDropdownWidth] = useState(360);
   const MIN_DROPDOWN_WIDTH = 360;
@@ -249,6 +254,7 @@ export function OutboundPendingRow({ row, loading, onError }) {
   const shortage =
     Number(row?.hasShortage || 0) === 1 || items.some((it) => Number(it.shortage || 0) === 1);
 
+  /** @param {number | string | null | undefined} n */
   const fmt = (n) => Number(n || 0).toLocaleString();
 
   const toggle = () => setIsOpen((v) => !v);
@@ -278,10 +284,11 @@ export function OutboundPendingRow({ row, loading, onError }) {
 
   useEffect(() => {
     if (!isOpen) return;
+    /** @param {MouseEvent} e */
     const onDown = (e) => {
       const el = wrapRef.current;
       if (!el) return;
-      if (/** @type {any} */ (el).contains(e.target)) return;
+      if (e.target instanceof Node && el.contains(e.target)) return;
       close();
     };
     document.addEventListener('mousedown', onDown);

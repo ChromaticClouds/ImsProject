@@ -311,7 +311,7 @@
  * @property {ProductType} type
  * @property {string} brand
  * @property {number} count
- * @property {number} productPrice
+ * @property {number} purchasePrice
  * @property {number} safetyStock
  * @property {string | undefined} imageUrl
  */
@@ -370,4 +370,123 @@
  * @property {ProductType} type
  * @property {number} vendorItemId
  * @property {number} _baseQty
+ */
+
+/**
+ * @typedef {'IN_ACTIVE' | 'COMPLETE'} TodoStatus
+ */
+
+/**
+ * @typedef {object} TodoResponse
+ * @property {number} id
+ * @property {string} userName
+ * @property {string} title
+ * @property {string} description
+ * @property {string} createdAt
+ * @property {string} startDate
+ * @property {string} endDate
+ * @property {string[]} tags
+ * @property {TodoStatus} status
+ */
+
+/**
+ * @typedef {object} ActionResponse
+ * @property {boolean} ok
+ * @property {string} message
+ * @property {unknown} [data]
+ */
+
+/**
+ * @typedef {object} TodoUpdatePayload
+ * @property {string} title
+ * @property {string} description
+ * @property {string} startDate
+ * @property {string} endDate
+ * @property {string[]} tags
+ * @property {TodoStatus} [status]
+ */
+
+/** @typedef {'INBOUND' | 'OUTBOUND' | 'ADJUST'} HistoryStatus */
+
+/**
+ * @typedef {object} HistoryDateRange
+ * @property {string} from
+ * @property {string} to
+ */
+
+/**
+ * @typedef {object} HistoryPick
+ * @property {'PRODUCT' | 'USER' | 'VENDOR'} [kind]
+ * @property {number} [targetId]
+ * @property {string} [label]
+ */
+
+/**
+ * @typedef {object} HistoryParams
+ * @property {string} from
+ * @property {string} to
+ * @property {string} [q]
+ * @property {HistoryPick['kind']} [kind]
+ * @property {number} [targetId]
+ * @property {HistoryStatus} [status]
+ * @property {string} [type]
+ * @property {string} [brand]
+ * @property {number} [page]
+ * @property {number} [size]
+ */
+
+/**
+ * @typedef {object} HistoryLotRow
+ * @property {number} lotId
+ * @property {HistoryStatus} status
+ * @property {string} statusText
+ * @property {string | null} [createdAt]
+ * @property {number | null} [userId]
+ * @property {string | null} [userName]
+ * @property {string | null} [memo]
+ * @property {number | null} [itemCount]
+ * @property {number | null} [totalDelta]
+ * @property {number | null} [vendorId]
+ * @property {string | null} [vendorName]
+ * @property {number | null} [sellerVendorId]
+ * @property {string | null} [sellerVendorName]
+ * @property {number} [historyId]
+ * @property {number} [productId]
+ * @property {string | null} [productCode]
+ * @property {string | null} [productName]
+ * @property {ProductType} [type]
+ * @property {string | null} [brand]
+ * @property {string | null} [volume]
+ * @property {number | null} [vendorItemId]
+ * @property {number | null} [purchasePrice]
+ * @property {number | null} [salePrice]
+ * @property {number | null} [beforeCount]
+ * @property {number | null} [afterCount]
+ * @property {number | null} [delta]
+ * @property {HistoryLotRow[]} [items]
+ */
+
+/**
+ * @typedef {object} HistorySearchSuggestion
+ * @property {HistoryPick['kind']} kind
+ * @property {number} id
+ * @property {string} label
+ */
+
+/**
+ * @typedef {object} HistoryContextValue
+ * @property {HistoryDateRange} range
+ * @property {import('react').Dispatch<import('react').SetStateAction<HistoryDateRange>>} setRange
+ * @property {string} q
+ * @property {import('react').Dispatch<import('react').SetStateAction<string>>} setQ
+ * @property {HistoryPick} pick
+ * @property {import('react').Dispatch<import('react').SetStateAction<HistoryPick>>} setPick
+ * @property {string} status
+ * @property {import('react').Dispatch<import('react').SetStateAction<string>>} setStatus
+ * @property {string} type
+ * @property {import('react').Dispatch<import('react').SetStateAction<string>>} setType
+ * @property {string} brand
+ * @property {import('react').Dispatch<import('react').SetStateAction<string>>} setBrand
+ * @property {number | null} selectedLotId
+ * @property {import('react').Dispatch<import('react').SetStateAction<number | null>>} setSelectedLotId
  */

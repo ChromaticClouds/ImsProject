@@ -37,6 +37,11 @@ export function HistoryScreen() {
     return toYMD(from);
   }, []);
 
+  const historyStatus =
+    status === 'INBOUND' || status === 'OUTBOUND' || status === 'ADJUST'
+      ? status
+      : undefined;
+
   useEffect(() => {
     if (!minDateYMD) return;
 
@@ -55,7 +60,7 @@ export function HistoryScreen() {
     q: q || undefined,
     kind: pick.kind,
     targetId: pick.targetId,
-    status: status === 'ALL' ? undefined : status,
+    status: historyStatus,
     type: type || undefined,
     brand: brand || undefined,
     page: 0,

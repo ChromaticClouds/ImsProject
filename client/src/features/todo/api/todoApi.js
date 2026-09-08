@@ -88,17 +88,60 @@
 import { api, hooks } from '@/services/api.js';
 
 /**
+ * @typedef {Omit<TodoResponse, 'tags'> & {tags: string | null}} TodoApiResponse
+ */
+
+/**
+ * @param {TodoApiResponse} todo
+ * @returns {TodoResponse}
+ */
+const normalizeTodo = (todo) => {
+  /** @type {string[]} */
+  let tags = [];
+
+  if (todo.tags) {
+    try {
+      const parsed = JSON.parse(todo.tags);
+      if (Array.isArray(parsed)) {
+        tags = parsed.filter((tag) => typeof tag === 'string');
+      }
+    } catch {
+      // The backend currently persists List#toString(), e.g. "[urgent, review]".
+      // Keep this fallback for existing rows while also accepting JSON above.
+      const legacyTags = todo.tags.trim();
+      if (legacyTags.startsWith('[') && legacyTags.endsWith(']')) {
+        tags = legacyTags
+          .slice(1, -1)
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter(Boolean);
+      }
+    }
+  }
+
+  return { ...todo, tags };
+};
+
+/**
  * @returns {Promise<TodoResponse[]>}
  */
-export const fetchTodos = () => 
-    api.get('todo/list', { hooks }).json();
+export const fetchTodos = async () => {
+  const todos = /** @type {TodoApiResponse[]} */ (
+    await api.get('todo/list', { hooks }).json()
+  );
+  return todos.map(normalizeTodo);
+};
 
 /**
  * @param {number | string} id
  * @returns {Promise<TodoResponse>}
  */
-export const fetchTodoById = (id) => 
-    api.get(`todo/${id}`, { hooks }).json();
+export const fetchTodoById = async (id) => {
+  const todo = /** @type {TodoApiResponse} */ (
+    await api.get(`todo/${id}`, { hooks }).json()
+  );
+  return normalizeTodo(todo);
+};
 
 /**
  * @param {number | string} id

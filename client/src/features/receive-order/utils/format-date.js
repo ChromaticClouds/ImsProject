@@ -1,6 +1,7 @@
 /**
  * ISO 날짜로 변환
- * @param {Date} date 
+ * @param {Date | undefined} date
+ * @returns {string | undefined}
  */
 export const formatToIsoDate = (date) => {
   if (!date) return;

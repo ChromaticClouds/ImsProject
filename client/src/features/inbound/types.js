@@ -49,6 +49,20 @@
  */
 
 /**
+ * @typedef {object} InboundPendingDetail
+ * @property {string=} receiveDate
+ * @property {string=} vendorName
+ * @property {InboundPendingItem[]} items
+ */
+
+/**
+ * @typedef {object} InboundSafetyStock
+ * @property {number=} safetyStock
+ */
+
+/** @typedef {Record<string, InboundSafetyStock>} InboundSafetyStockMap */
+
+/**
  * @property {string=} imageUrl
  * @property {number=} salePrice
  */

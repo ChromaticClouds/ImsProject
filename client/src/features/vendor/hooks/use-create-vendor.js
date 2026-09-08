@@ -6,6 +6,7 @@ export function useCreateVendor() {
   const qc = useQueryClient();
 
   return useMutation({
+    /** @param {Record<string, unknown>} data */
     mutationFn: (data) => createVendor(data),
     onSuccess: async () => {
       

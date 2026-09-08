@@ -1,7 +1,5 @@
-
-
 // @ts-check
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   LineChart,
@@ -92,10 +90,10 @@ function TurnoverLabel(props) {
     <text
       x={dx}
       y={dy - 14} // 라인 위로 조금 더 띄워서 겹침 방지
-      textAnchor="middle"
+      textAnchor='middle'
       fontSize={12}
       fontWeight={500}
-      fill="currentColor"
+      fill='currentColor'
       opacity={0.9}
     >
       {t.toFixed(2)}
@@ -103,6 +101,12 @@ function TurnoverLabel(props) {
   );
 }
 
+/**
+ * @template T
+ * @param {T} value
+ * @param {number} delayMs
+ * @returns {T}
+ */
 function useDebounced(value, delayMs) {
   const [v, setV] = useState(value);
   useEffect(() => {
@@ -122,10 +126,6 @@ export const StockRotationChart = () => {
 
   const [yearOpen, setYearOpen] = useState(false);
   const [monthOpen, setMonthOpen] = useState(false);
-
-  useEffect(() => {
-    setMonth(null);
-  }, [year]);
 
   const maxMonth = useMemo(() => getMaxMonthForYear(year), [year]);
   const monthOptions = useMemo(
@@ -191,7 +191,7 @@ export const StockRotationChart = () => {
   }, [trendQ.data]);
 
   return (
-    <div className="h-full flex flex-col gap-3">
+    <div className='h-full flex flex-col gap-3'>
       {/* ✅ 필터 바 */}
       <div className='flex flex-wrap items-center gap-2 py-2'>
         {/* Year */}
@@ -219,6 +219,7 @@ export const StockRotationChart = () => {
                   className='h-9 justify-start'
                   onClick={() => {
                     setYear(y);
+                    setMonth(null);
                     setYearOpen(false);
                   }}
                 >
@@ -406,16 +407,22 @@ export const StockRotationChart = () => {
           onRefresh={trendQ.refetch}
         />
       ) : (
-        <ChartContainer config={turnoverTrendConfig} className="flex-1 min-h-0 w-full">
-          <div className="h-full w-full overflow-visible">
-            <ResponsiveContainer width="100%" height="100%">
+        <ChartContainer
+          config={turnoverTrendConfig}
+          className='flex-1 min-h-0 w-full'
+        >
+          <div className='h-full w-full overflow-visible'>
+            <ResponsiveContainer
+              width='100%'
+              height='100%'
+            >
               <LineChart
                 data={chartData}
                 margin={{ top: 24, right: 24, left: 4, bottom: 18 }} // ✅ 라벨 공간 확보
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray='3 3' />
                 <XAxis
-                  dataKey="period"
+                  dataKey='period'
                   tickLine={false}
                   axisLine={false}
                   interval={0}
@@ -432,17 +439,20 @@ export const StockRotationChart = () => {
                 <ChartTooltip content={<TurnoverTooltip />} />
 
                 <Line
-                  type="monotone"
-                  dataKey="turnover"
+                  type='monotone'
+                  dataKey='turnover'
                   strokeWidth={2}
-                  stroke="var(--chart-4)"
-                  fill="var(--chart-4)"
+                  stroke='var(--chart-4)'
+                  fill='var(--chart-4)'
                   dot={{ r: 4 }}
                   activeDot={{ r: 6 }}
                   isAnimationActive={false}
                 >
                   {/* ✅ 재고 회전율 라벨 표시 (핵심: dataKey + value 기반 TurnoverLabel) */}
-                  <LabelList dataKey="turnover" content={<TurnoverLabel />} />
+                  <LabelList
+                    dataKey='turnover'
+                    content={<TurnoverLabel />}
+                  />
                 </Line>
               </LineChart>
             </ResponsiveContainer>

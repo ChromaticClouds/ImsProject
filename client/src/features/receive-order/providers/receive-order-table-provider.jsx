@@ -8,8 +8,9 @@ import { createContext } from 'react';
 import { useFetchOutbound } from '../hooks/use-fetch-outbound.js';
 import { useContext } from 'react';
 
-/** @type {React.Context<{ managers: UserIdentifier[] }>} */
-const TableContext = createContext(null);
+const TableContext = createContext(
+  /** @type {{ managers: UserIdentifier[] } | null} */ (null),
+);
 
 export const useOutboundManagersContext = () => {
   const ctx = useContext(TableContext);
@@ -17,6 +18,7 @@ export const useOutboundManagersContext = () => {
   return ctx;
 };
 
+/** @param {React.PropsWithChildren} props */
 export const ReceiveOrderTableProvider = ({ children }) => {
   const { data } = useFetchOutbound();
 

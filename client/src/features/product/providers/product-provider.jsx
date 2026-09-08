@@ -4,14 +4,13 @@ import { createContext } from 'react';
 import { useProductQuery } from '../hooks/use-product-query.js';
 import { useContext } from 'react';
 
-/**
- * @type {React.Context<ReturnType<typeof useProductQuery>>}
- */
-const ProductContext = createContext(null);
+const ProductContext = createContext(
+  /** @type {ReturnType<typeof useProductQuery> | null} */ (null),
+);
 
 export const useProductContext = () => {
   const ctx = useContext(ProductContext);
-  if (!ctx) new Error('Product Context not provided');
+  if (!ctx) throw new Error('Product Context not provided');
   return ctx;
 };
 
@@ -21,10 +20,10 @@ export const useProductContext = () => {
  * @returns {React.JSX.Element}
  */
 export const ProductProvider = ({ children }) => {
-  const { content, pageResponse } = useProductQuery();
+  const { content, pageResponse, isFetching } = useProductQuery();
 
   return (
-    <ProductContext.Provider value={{ content, pageResponse }}>
+    <ProductContext.Provider value={{ content, pageResponse, isFetching }}>
       {children}
     </ProductContext.Provider>
   );

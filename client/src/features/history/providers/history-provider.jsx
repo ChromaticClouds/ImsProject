@@ -1,7 +1,7 @@
 // @ts-check
 import { createContext, useContext, useMemo, useState } from 'react';
 
-const Ctx = createContext(null);
+const Ctx = createContext(/** @type {HistoryContextValue | null} */ (null));
 
 export function useHistoryCtx() {
   const v = useContext(Ctx);
@@ -17,6 +17,7 @@ function toYMD(d) {
   return `${y}-${m}-${day}`;
 }
 
+/** @param {{children: import('react').ReactNode}} props */
 export function HistoryProvider({ children }) {
   const today = new Date();
   const todayYMD = toYMD(today);
@@ -28,9 +29,7 @@ export function HistoryProvider({ children }) {
     from: toYMD(from),
     to: todayYMD,
   }));
-  const [pick, setPick] = useState(() =>
-    /** @type {{ kind?: string, targetId?: number, label?: string }} */ ({})
-  );
+  const [pick, setPick] = useState(/** @type {HistoryPick} */ ({}));
   const [q, setQ] = useState('');
   const [status, setStatus] = useState('ALL');
   const [type, setType] = useState('');

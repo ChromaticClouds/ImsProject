@@ -13,6 +13,7 @@ export async function fetchInboundPendingSummary(params) {
 /**
  * 입고 - pending items
  * @param {string} orderNumber
+ * @returns {Promise<import('../types.js').InboundPendingItem[]>}
  */
 export async function fetchInboundPendingItems(orderNumber) {
   return await api
@@ -23,6 +24,7 @@ export async function fetchInboundPendingItems(orderNumber) {
 /**
  * 입고 - pending detail
  * @param {string} orderNumber
+ * @returns {Promise<import('../types.js').InboundPendingDetail>}
  */
 export async function fetchInboundPendingDetail(orderNumber) {
   return await api
@@ -84,6 +86,7 @@ export async function fetchInboundCompletedTodaySummary(params) {
 /**
  * 입고 - completed items
  * @param {string} orderNumber
+ * @returns {Promise<import('../types.js').InboundPendingItem[]>}
  */
 export async function fetchInboundCompletedItems(orderNumber) {
   return await api
@@ -94,6 +97,7 @@ export async function fetchInboundCompletedItems(orderNumber) {
 // 안전재고
 /**
  * @param {number[]} productIds
+ * @returns {Promise<import('../types.js').InboundSafetyStockMap>}
  */
 export async function fetchInboundSafetyStocks(productIds) {
   const sp = new URLSearchParams();

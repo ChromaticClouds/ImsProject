@@ -10,6 +10,7 @@ import { useMemo, useState } from 'react';
  * @property {number=} size
  */
 
+/** @param {Date} d */
 function ymd(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -21,14 +22,15 @@ export function useInboundPendingSearch() {
   const today = useMemo(() => new Date(), []);
   const todayYmd = useMemo(() => ymd(today), [today]);
 
-  /** @type {[InboundPendingSearch, any]} */
-  const [search, setSearch] = useState(() => ({
-    from: todayYmd,
-    to: todayYmd,
-    keyword: '',
-    page: 0,
-    size: 50,
-  }));
+  const [search, setSearch] = useState(
+    /** @returns {InboundPendingSearch} */ () => ({
+      from: todayYmd,
+      to: todayYmd,
+      keyword: '',
+      page: 0,
+      size: 50,
+    }),
+  );
 
   /**
    * @param {{from:string,to:string}} next

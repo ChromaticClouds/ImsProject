@@ -1,7 +1,7 @@
 // @ts-check
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Pencil, PlusCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, PlusCircle } from 'lucide-react';
 
 import { useInboundPendingRow } from '../hooks/use-inbound-pending-row';
 import { InboundPendingItemsDropdown } from './inbound-pending-items-dropdown';
@@ -35,11 +35,12 @@ export function InboundPendingRow(props) {
   const { isOpen, toggle, close, items, itemsLoading } =
     useInboundPendingRow(row.orderNumber);
 
-  const wrapRef = useRef(null);
-  const btnRef = useRef(null);
+  const wrapRef = useRef(/** @type {HTMLDivElement | null} */ (null));
+  const btnRef = useRef(/** @type {HTMLButtonElement | null} */ (null));
   const [dropdownWidth, setDropdownWidth] = useState(360);
   const MIN_DROPDOWN_WIDTH = 360;
 
+  /** @param {number | string | null | undefined} n */
   const fmt = (n) => Number(n || 0).toLocaleString();
 
   /**
@@ -86,10 +87,11 @@ export function InboundPendingRow(props) {
 
   useEffect(() => {
     if (!isOpen) return;
+    /** @param {MouseEvent} e */
     const onDown = (e) => {
       const el = wrapRef.current;
       if (!el) return;
-      if (el.contains(e.target)) return;
+      if (e.target instanceof Node && el.contains(e.target)) return;
       close();
     };
     document.addEventListener('mousedown', onDown);

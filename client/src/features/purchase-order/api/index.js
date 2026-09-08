@@ -2,14 +2,6 @@
 import { api, hooks } from '@/services/api.js';
 
 /**
- * @typedef {import('ky').Options} KyOptions
- */
-
-/**
- * @typedef {import('@/services/api.js').api} Api
- */
-
-/**
  * @typedef {import('ky').Hooks} Hooks
  */
 
@@ -35,7 +27,7 @@ export async function fetchPurchaseOrders(params) {
 /**
  * 수정
  * @param {string} orderNumber
- * @returns {Promise<OrderResponse>}
+ * @returns {Promise<OrderRequest>}
  */
 export async function fetchPurchaseOrder(orderNumber) {
   return await api
@@ -75,9 +67,21 @@ export async function sendPurchaseOrder(orderNumber) {
     .json();
 }
 
+/**
+ * @typedef {object} BulkSendFailure
+ * @property {string=} orderNumber
+ * @property {'LOAD' | 'PDF' | 'MAIL' | 'SEND'=} stage
+ *
+ * @typedef {object} BulkSendResult
+ * @property {number=} successCount
+ * @property {number=} failCount
+ * @property {number=} total
+ * @property {BulkSendFailure[]=} failed
+ */
+
 /** 일괄 전송
  * @param {string[]} orderNumbers
- * @returns {Promise<ApiResponse>}
+ * @returns {Promise<ApiResponse<BulkSendResult>>}
  */
 export async function bulkSendPurchaseOrders(orderNumbers) {
   return await api

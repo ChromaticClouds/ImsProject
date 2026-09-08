@@ -8,6 +8,7 @@ import React from 'react';
 import { Card } from '@/components/ui/card.js';
 import { AppHeader } from '@/components/common/app-header.jsx';
 
+/** @param {React.PropsWithChildren} props */
 export const ReceiveOrderListContainer = ({ children }) => {
   return (
     <React.Fragment>

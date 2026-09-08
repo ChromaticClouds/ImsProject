@@ -16,7 +16,7 @@ export const PurchaseOrder = () => {
   const { page, load } = usePurchaseOrders();
   const { view, keyword, range } = usePurchaseOrderFilterStore();
 
-  const params = useMemo(() => {
+  const filterParams = useMemo(() => {
     const from = range?.from ? String(range.from) : undefined;
     const to = range?.to ? String(range.to) : undefined;
     return {
@@ -24,14 +24,18 @@ export const PurchaseOrder = () => {
       keyword: keyword || undefined,
       from,
       to,
-      page: page?.number ?? 1,
       size: page?.size ?? 10,
     };
-  }, [view, keyword, range, page?.number, page?.size]);
+  }, [keyword, page?.size, range?.from, range?.to, view]);
+
+  const params = useMemo(
+    () => ({ ...filterParams, page: page?.number ?? 1 }),
+    [filterParams, page?.number],
+  );
 
   useEffect(() => {
-    load({ ...params, page: 1 });
-  }, [view, keyword, range]);
+    load({ ...filterParams, page: 1 });
+  }, [filterParams, load]);
 
   const onReload = async () => {
     await load(params);

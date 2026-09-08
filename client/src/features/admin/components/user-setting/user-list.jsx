@@ -77,6 +77,18 @@ export const UserList = () => {
 
 /* ---------- helpers ---------- */
 
+/**
+ * @param {{
+ *  users: ReturnType<typeof import('../../schemas/user-model.js').toUserRowModel>[],
+ *  isFetching: boolean,
+ *  onRankChange: (userId: number, rank: string) => void,
+ *  onRoleChange: (userId: number, role: string) => void,
+ *  onResend: (email: string) => void,
+ *  onLeave: (userId: number) => void,
+ *  onDelete: (userId: number) => void,
+ *  onNameChange: (userId: number, name: string) => void,
+ * }} props
+ */
 const renderTableBody = ({
   users,
   isFetching,

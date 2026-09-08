@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchInboundPendingDetail } from '../api/index';
 
+/** @param {string} orderNumber */
 export function useInboundPendingDetail(orderNumber) {
   return useQuery({
     queryKey: ['inbound-pending-detail', orderNumber],

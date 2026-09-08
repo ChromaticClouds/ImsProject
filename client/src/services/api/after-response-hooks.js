@@ -52,7 +52,9 @@ export const afterResponseHooks = [
         try {
           const bodyText = await err.response.text();
           console.error('body:', bodyText);
-        } catch {}
+        } catch {
+          // The response body is optional and may not be readable twice.
+        }
       }
 
       useAuthStore.getState().clearAuth();

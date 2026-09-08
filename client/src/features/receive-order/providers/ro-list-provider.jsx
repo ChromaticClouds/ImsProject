@@ -6,8 +6,9 @@ import { createContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 
-/** @type {React.Context<null | PageResponse<ReceiveOrder>>} */
-const RoListContext = createContext(null);
+const RoListContext = createContext(
+  /** @type {PageResponse<ReceiveOrder> | null} */ (null),
+);
 
 export const useRoListContext = () => {
   const ctx = useContext(RoListContext);

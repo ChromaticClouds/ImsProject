@@ -13,15 +13,24 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 
-import { fetchTodoById, deleteTodo } from '@/features/todo/api/todoApi';
-import { toggleTodoStatus } from '@/features/todo/api/todoApi';
-
-
+import {
+  deleteTodo,
+  fetchTodoById,
+  toggleTodoStatus,
+} from '@/features/todo/api/todoApi';
 
 const STATUS_LABEL = {
-  TODO: '대기',
-  IN_PROGRESS: '진행중',
-  DONE: '완료',
+  IN_ACTIVE: '진행중',
+  COMPLETE: '완료',
+};
+
+/**
+ * @param {string | undefined} id
+ * @returns {string}
+ */
+const requireTodoId = (id) => {
+  if (!id) throw new Error('Todo ID가 필요합니다.');
+  return id;
 };
 
 export const TodoDetail = () => {
@@ -31,11 +40,12 @@ export const TodoDetail = () => {
 
   const { data: todo, isLoading } = useQuery({
     queryKey: ['todo', id],
-    queryFn: () => fetchTodoById(id),
+    queryFn: () => fetchTodoById(requireTodoId(id)),
+    enabled: Boolean(id),
   });
 
   const del = useMutation({
-    mutationFn: () => deleteTodo(id),
+    mutationFn: () => deleteTodo(requireTodoId(id)),
     onSuccess: async (res) => {
       if (!res?.ok) {
         window.alert(res?.message ?? '삭제 실패');
@@ -49,7 +59,7 @@ export const TodoDetail = () => {
   });
 
   const done = useMutation({
-    mutationFn: () => completeTodo(id),
+    mutationFn: () => toggleTodoStatus(requireTodoId(id)),
     onSuccess: async (res) => {
       if (!res?.ok) {
         window.alert(res?.message ?? '처리 실패');
@@ -60,14 +70,6 @@ export const TodoDetail = () => {
       await qc.invalidateQueries({ queryKey: ['todo', id] });
     },
   });
-
-//   const done = useMutation({
-//   mutationFn: () => toggleTodoStatus(id),
-//   onSuccess: async () => {
-//     await qc.invalidateQueries({ queryKey: ['todos'] });
-//     await qc.invalidateQueries({ queryKey: ['todo', id] });
-//   },
-// });  // 지울거
 
   if (isLoading) return <div className='p-6'>로딩중...</div>;
   if (!todo) return <div className='p-6'>업무가 없습니다.</div>;
@@ -86,13 +88,6 @@ export const TodoDetail = () => {
         </CardHeader>
 
         <CardContent className='space-y-4'>
-          {/* 카테고리 */}
-          {todo.category && (
-            <div className='text-sm'>
-              <span className='font-medium'>카테고리:</span> {todo.category}
-            </div>
-          )}
-
           {/* 설명 */}
           <div className='text-sm whitespace-pre-wrap'>
             {todo.description || '(설명 없음)'}
@@ -100,22 +95,20 @@ export const TodoDetail = () => {
 
           {/* 태그 */}
           <div className='flex gap-2 flex-wrap'>
-            {(todo.tages ?? []).map((tag) => (
+            {todo.tags.map((tag) => (
               <Badge key={tag} variant='secondary'>
                 {tag}
               </Badge>
             ))}
-            {(todo.tages ?? []).length === 0 && (
+            {todo.tags.length === 0 && (
               <div className='text-sm text-muted-foreground'>태그 없음</div>
             )}
           </div>
 
           {/* 완료일 추가 */}
           <div>
-            {todo.status === 'DONE' && todo.completedAt && (
-            <div className="text-sm text-muted-foreground">
-                   완료일: {todo.completedAt}
-            </div>
+            {todo.status === 'COMPLETE' && (
+              <div className='text-sm text-muted-foreground'>완료됨</div>
             )}
           </div>
         </CardContent>
@@ -134,7 +127,7 @@ export const TodoDetail = () => {
 
           <Button
             variant='secondary'
-            disabled={todo.status === 'DONE' || done.isPending}
+            disabled={todo.status === 'COMPLETE' || done.isPending}
             onClick={() => done.mutate()}
           >
             완료

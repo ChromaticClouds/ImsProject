@@ -170,8 +170,8 @@ function OutboundCompletedItemsDropdown({ items }) {
 export function OutboundCompletedRow({ row, loading }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const wrapRef = useRef(null);
-  const btnRef = useRef(null);
+  const wrapRef = useRef(/** @type {HTMLDivElement | null} */ (null));
+  const btnRef = useRef(/** @type {HTMLButtonElement | null} */ (null));
 
   const [dropdownWidth, setDropdownWidth] = useState(360);
   const MIN_DROPDOWN_WIDTH = 360;
@@ -183,6 +183,7 @@ export function OutboundCompletedRow({ row, loading }) {
   );
   const itemsLoading = !!itemsQuery.isFetching;
 
+  /** @param {number | string | null | undefined} n */
   const fmt = (n) => Number(n || 0).toLocaleString();
 
   const toggle = () => setIsOpen((v) => !v);
@@ -205,10 +206,11 @@ export function OutboundCompletedRow({ row, loading }) {
 
   useEffect(() => {
     if (!isOpen) return;
+    /** @param {MouseEvent} e */
     const onDown = (e) => {
       const el = wrapRef.current;
       if (!el) return;
-      if (/** @type {any} */ (el).contains(e.target)) return;
+      if (e.target instanceof Node && el.contains(e.target)) return;
       close();
     };
     document.addEventListener('mousedown', onDown);

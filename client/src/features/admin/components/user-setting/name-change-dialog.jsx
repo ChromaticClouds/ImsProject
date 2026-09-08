@@ -34,7 +34,7 @@ import { cn } from '@/lib/utils.js';
  * }} props
  */
 export const NameChangeDialog = ({ user, onNameChange, className }) => {
-  const inputRef = React.useRef(null);
+  const inputRef = React.useRef(/** @type {HTMLInputElement | null} */ (null));
 
   const [open, setOpen] = useState(false);
 

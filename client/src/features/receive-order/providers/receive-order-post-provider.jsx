@@ -13,10 +13,9 @@ import { useOrderBootstrap } from '../hooks/use-order-bootstrap.js';
  * @typedef {ReturnType<typeof useOrderPostForm>} OrderPostForm
  */
 
-/**
- * @type {React.Context<{ categories: OrderCategories, form: OrderPostForm, sequence: string }>}
- */
-const ReceiveOrderPostContext = createContext(null);
+const ReceiveOrderPostContext = createContext(
+  /** @type {{ categories: OrderCategories, form: OrderPostForm, sequence: string } | null} */ (null),
+);
 
 export const  useOrderPostContext = () => {
   const ctx = useContext(ReceiveOrderPostContext);

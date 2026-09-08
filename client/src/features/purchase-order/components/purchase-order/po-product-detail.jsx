@@ -1,7 +1,11 @@
 // @ts-check
 
 import { Button } from '@/components/ui/button.js';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog.js';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from '@/components/ui/dialog.js';
 import {
   Popover,
   PopoverContent,
@@ -23,12 +27,6 @@ const typeLabelMap = {
 const formatType = (type) => typeLabelMap[type] ?? type ?? '-';
 
 /** @param {number} v */
-const formatSafetyStock = (v) => {
-  if (v == null) return '-';
-  const n = Number(v);
-  if (!Number.isFinite(n)) return String(v);
-  return n.toFixed(1);
-};
 
 /** @param {{ src?: string, alt?: string, size?: number }} props */
 export function ZoomImage({ src, alt, size = 48 }) {

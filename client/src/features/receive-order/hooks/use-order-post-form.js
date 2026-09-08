@@ -19,15 +19,15 @@ import { useNavigate } from 'react-router-dom';
 import { formatToIsoDate } from '../utils/format-date.js';
 
 /**
- * @typedef {z.infer<typeof receiveOrderFormSchema>} OrderSchema
+ * @typedef {z.input<typeof receiveOrderFormSchema>} OrderSchema
  */
 
 /**
  * @type {OrderSchema}
  */
 const defaultValues = {
-  userId: undefined,
-  sellerId: undefined,
+  userId: null,
+  sellerId: null,
   receiveDate: new Date(),
   products: [],
 };
@@ -42,11 +42,16 @@ export const useOrderPostForm = () => {
       onChange: receiveOrderFormSchema,
     },
     onSubmit: async ({ value }) => {
-      const { receiveDate, ...rest } = value;
+      if (value.userId == null || value.sellerId == null) return;
+
+      const formattedReceiveDate = formatToIsoDate(value.receiveDate);
+      if (!formattedReceiveDate) return;
 
       const formattedForm = {
-        receiveDate: formatToIsoDate(receiveDate),
-        ...rest,
+        receiveDate: formattedReceiveDate,
+        userId: value.userId,
+        sellerId: value.sellerId,
+        products: value.products,
       };
 
       try {

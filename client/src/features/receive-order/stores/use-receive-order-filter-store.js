@@ -28,7 +28,7 @@ import { create } from 'zustand';
 
 /** @type {ReceiveOrderFilterState} */
 const defaultValues = {
-  dateRange: { from: null, to: null },
+  dateRange: { from: undefined, to: undefined },
   search: null,
   salerId: null,
 };

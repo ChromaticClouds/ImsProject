@@ -74,7 +74,11 @@ export const ProductCategoryCheckbox = ({ categories = [], queryKey }) => {
             checked={selected.includes(type)}
             onCheckedChange={(checked) => toggleType(type, checked)}
           >
-            {queryKey === 'type' ? categoryTypeMap[type] : type}
+            {queryKey === 'type'
+              ? categoryTypeMap[
+                  /** @type {keyof typeof categoryTypeMap} */ (type)
+                ] ?? type
+              : type}
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>

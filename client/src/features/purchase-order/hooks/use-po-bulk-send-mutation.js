@@ -16,6 +16,7 @@ const FAIL_STAGE_MESSAGES = {
   SEND: '전송 상태 변경 실패',
 };
 
+/** @param {import('../api/index.js').BulkSendFailure[]} failed */
 const getFailedOrderLabel = (failed) => {
   const orderNumbers = failed
     .map((fail) => fail?.orderNumber)
@@ -28,6 +29,7 @@ const getFailedOrderLabel = (failed) => {
   return `${orderNumbers.slice(0, 3).join(', ')} 외 ${orderNumbers.length - 3}건`;
 };
 
+/** @param {import('../api/index.js').BulkSendResult | undefined} data */
 const showBulkSendResultToast = (data) => {
   const successCount = Number(data?.successCount ?? 0);
   const failCount = Number(data?.failCount ?? 0);

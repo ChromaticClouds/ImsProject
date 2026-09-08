@@ -55,11 +55,17 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Test Storybook
+        run: pnpm test
+
       - name: Production build
         run: pnpm run build
 
   server:
-    name: Server compile
+    name: Server test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -78,5 +84,5 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Compile server
-        run: bash ./gradlew compileJava
+      - name: Test server
+        run: bash ./gradlew test

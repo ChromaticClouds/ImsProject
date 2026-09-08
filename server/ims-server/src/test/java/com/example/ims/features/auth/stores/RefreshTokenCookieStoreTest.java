@@ -1,6 +1,7 @@
 package com.example.ims.features.auth.stores;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import com.example.ims.global.properties.AuthCookieProperties;
 class RefreshTokenCookieStoreTest {
 
     @Test
-    void storesCrossSiteRefreshCookieWithConfiguredSecurityAttributes() {
+    void storesSameSiteRefreshCookieWithConfiguredSecurityAttributes() {
         AuthCookieProperties properties = new AuthCookieProperties();
         RefreshTokenCookieStore store = new RefreshTokenCookieStore(properties);
 
@@ -21,7 +22,7 @@ class RefreshTokenCookieStoreTest {
         assertEquals("refresh-token", cookie.getValue());
         assertTrue(cookie.isHttpOnly());
         assertTrue(cookie.isSecure());
-        assertEquals("None", cookie.getSameSite());
+        assertEquals("Lax", cookie.getSameSite());
         assertEquals("/", cookie.getPath());
     }
 
@@ -35,6 +36,19 @@ class RefreshTokenCookieStoreTest {
         assertEquals("", cookie.getValue());
         assertEquals(0, cookie.getMaxAge().getSeconds());
         assertTrue(cookie.isSecure());
-        assertEquals("None", cookie.getSameSite());
+        assertEquals("Lax", cookie.getSameSite());
+    }
+
+    @Test
+    void rejectsInsecureCrossSiteCookieConfiguration() {
+        AuthCookieProperties properties = new AuthCookieProperties();
+        properties.setSecure(false);
+        properties.setSameSite("None");
+
+        assertFalse(properties.isSameSiteConfigurationValid());
+
+        properties.setSameSite("Lax");
+
+        assertTrue(properties.isSameSiteConfigurationValid());
     }
 }

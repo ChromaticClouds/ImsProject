@@ -7,7 +7,7 @@
   {
     "name": "app.auth.cookie.same-site",
     "type": "java.lang.String",
-    "description": "SameSite policy used by the refresh-token cookie."
+    "description": "SameSite policy used by the refresh-token cookie. None requires a secure cookie."
   },
   {
     "name": "app.cors.allowed-origins",

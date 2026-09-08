@@ -48,7 +48,14 @@ app:
     allowed-origins: ${FRONTEND_ORIGIN:http://localhost:5173}
 
   storage:
+    provider: ${STORAGE_PROVIDER:local}
     upload-dir: ${UPLOAD_DIR:./uploads}
+    supabase:
+      url: ${SUPABASE_URL:}
+      secret-key: ${SUPABASE_SECRET_KEY:}
+      product-image-bucket: ${SUPABASE_PRODUCT_IMAGE_BUCKET:ims-product-images}
+      notice-attachment-bucket: ${SUPABASE_NOTICE_ATTACHMENT_BUCKET:ims-notice-attachments}
+      signed-url-ttl-seconds: ${SUPABASE_SIGNED_URL_TTL_SECONDS:600}
 
 resend:
   api-key: ${RESEND_API_KEY}

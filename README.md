@@ -203,7 +203,13 @@ bash ./gradlew bootRun
 - `FRONTEND_ORIGIN`
 - `AUTH_COOKIE_SECURE` (기본값: `true`)
 - `AUTH_COOKIE_SAME_SITE` (기본값: `Lax`)
+- `STORAGE_PROVIDER` (`local` 또는 `supabase`, 기본값: `local`)
 - `UPLOAD_DIR`
+- `SUPABASE_URL`
+- `SUPABASE_SECRET_KEY`
+- `SUPABASE_PRODUCT_IMAGE_BUCKET` (기본값: `ims-product-images`)
+- `SUPABASE_NOTICE_ATTACHMENT_BUCKET` (기본값: `ims-notice-attachments`)
+- `SUPABASE_SIGNED_URL_TTL_SECONDS` (기본값: `600`)
 
 클라이언트 개발 서버는 `VITE_SERVER_URL`을 `/api` 프록시 대상으로 사용하며,
 값을 생략하면 `http://localhost:8080`으로 전달한다. 프로덕션 클라이언트는
@@ -222,6 +228,12 @@ Vercel 프로젝트의 Root Directory는 `client`로 지정한다. `client/verce
 백엔드를 배포할 수 있다. Blueprint 생성 시 `sync: false`로 선언된 DB, Redis,
 JWT, Resend 환경 변수 값을 Render 대시보드에서 입력한다.
 
-무료 Web Service의 파일 시스템은 재시작 또는 재배포 시 초기화되므로
-`UPLOAD_DIR=/tmp/uploads`에 저장한 파일은 영구 보존되지 않는다. 운영 환경에서는
-외부 오브젝트 스토리지나 유료 Persistent Disk를 사용해야 한다.
+무료 Web Service의 파일 시스템은 재시작 또는 재배포 시 초기화된다. 운영 환경에서는
+`STORAGE_PROVIDER=supabase`로 설정해 공지 첨부파일을
+`SUPABASE_NOTICE_ATTACHMENT_BUCKET` 비공개 버킷에 저장한다. 백엔드는 자체 JWT 인증을
+마친 뒤 제한 시간 signed URL을 발급하며, `SUPABASE_SECRET_KEY`는 Render에만 보관한다.
+`UPLOAD_DIR`는 `STORAGE_PROVIDER=local`인 로컬 개발 환경에서만 사용한다.
+
+상품 및 박스 이미지는 `SUPABASE_PRODUCT_IMAGE_BUCKET` 공개 버킷의 `products/`,
+`boxes/` 경로에 저장하고 MySQL의 `product.image_url`, `product.box_image_url`에는
+Supabase 공개 URL을 기록한다. 프론트엔드에는 Supabase 키를 설정하지 않는다.

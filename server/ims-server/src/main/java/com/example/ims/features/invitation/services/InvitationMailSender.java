@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.example.ims.features.invitation.Invitation;
 import com.example.ims.features.invitation.dto.InvitationMailPayload;
 import com.example.ims.global.external.resend.ResendClient;
+import com.example.ims.global.properties.ClientProperties;
 import com.example.ims.global.properties.ResendProperties;
 import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
@@ -19,6 +20,7 @@ public class InvitationMailSender {
 
     private final ResendClient resendClient;
     private final ResendProperties props;
+    private final ClientProperties clientProperties;
 
     public void sendOne(InvitationMailPayload payload) throws ResendException {
         resendClient.send(buildEmailOptions(payload));
@@ -37,7 +39,7 @@ public class InvitationMailSender {
             .from(props.getFromEmail())
             .to(payload.getUser().getEmail())
             .subject("IMS PROJECT 초대장이 도착했습니다.")
-            .html(new Invitation(payload.getToken(), props.getBaseUrl()).getMailContents())
+            .html(new Invitation(payload.getToken(), clientProperties.getBaseUrl()).getMailContents())
             .build();
     }
 }

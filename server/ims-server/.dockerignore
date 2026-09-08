@@ -1,0 +1,9 @@
+.gradle
+.gradle-codex
+build
+bin
+uploads
+.env
+.env.*
+.idea
+*.log

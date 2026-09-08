@@ -5,6 +5,7 @@ on:
     paths:
       - 'client/**'
       - 'server/**'
+      - 'render.yaml'
       - '.github/workflows/ci.yml'
   push:
     branches:
@@ -13,6 +14,7 @@ on:
     paths:
       - 'client/**'
       - 'server/**'
+      - 'render.yaml'
       - '.github/workflows/ci.yml'
 
 permissions:
@@ -86,3 +88,6 @@ jobs:
 
       - name: Test server
         run: bash ./gradlew test
+
+      - name: Build server container
+        run: docker build --tag ims-server:ci .

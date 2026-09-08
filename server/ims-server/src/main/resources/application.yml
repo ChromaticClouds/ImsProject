@@ -32,6 +32,9 @@ spring:
       username: ${REDIS_USER}
       password: ${REDIS_PASS}
 
+server:
+  port: ${PORT:8080}
+
 app:
   client:
     base-url: ${CLIENT_BASE_URL:http://localhost:5173}

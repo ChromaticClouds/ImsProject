@@ -11,6 +11,7 @@ import { useItemsSearch } from '@/features/vendor/hooks/vendor-detail/use-items-
 import { SearchIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { VendorProductSearchItem } from './vendor-product-search-item.jsx';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /**
  * @typedef {import('@/features/vendor/types/index.js').VendorProductType} VendorProductType
@@ -78,7 +79,7 @@ export const VendorProductSearch = ({ currentVendorId, selectedIds, onToggle }) 
             검색 결과
           </span>
           <span className='text-xs text-muted-foreground'>
-            {isFetching ? '검색 중' : `${results.length}개`}
+            {results.length}개
           </span>
         </div>
 
@@ -88,9 +89,10 @@ export const VendorProductSearch = ({ currentVendorId, selectedIds, onToggle }) 
           className='flex flex-col gap-2'
         >
           {isFetching ? (
-            <div className='px-2 py-6 text-center text-sm text-muted-foreground'>
-              검색 중...
-            </div>
+            <LoadingState
+              label='품목을 검색하는 중입니다.'
+              className='py-6'
+            />
           ) : results.length > 0 ? (
             results.map((/** @type {VendorProductType} */ result) => (
               <VendorProductSearchItem

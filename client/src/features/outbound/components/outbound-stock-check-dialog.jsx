@@ -2,6 +2,7 @@
 import { useMemo, useState } from 'react';
 import { X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /** @typedef {{ id: number|string, name?: string, productCode?: string, type?: string, brand?: string, volume?: string, stockCount?: number }} StockProduct */
 
@@ -93,9 +94,11 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
 
             <div className='grid gap-1'>
               {typesQ.isLoading ? (
-                <div className='rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground'>
-                  로딩 중...
-                </div>
+                <LoadingState
+                  variant='inline'
+                  label='주종을 불러오는 중입니다.'
+                  className='rounded-xl border bg-background px-3 py-2'
+                />
               ) : typesQ.isError ? (
                 <div className='rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600'>
                   오류 발생
@@ -146,9 +149,11 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                 주종을 선택하세요
               </div>
             ) : brandsQ.isLoading ? (
-              <div className='rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground'>
-                로딩 중...
-              </div>
+              <LoadingState
+                variant='inline'
+                label='브랜드를 불러오는 중입니다.'
+                className='rounded-xl border bg-background px-3 py-2'
+              />
             ) : brandsQ.isError ? (
               <div className='rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600'>
                 오류 발생
@@ -200,9 +205,11 @@ export function OutboundStockCheckDialog({ open, onOpenChange }) {
                 주종/브랜드를 선택하세요
               </div>
             ) : productsQ.isLoading ? (
-              <div className='rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground'>
-                로딩 중...
-              </div>
+              <LoadingState
+                variant='inline'
+                label='품목을 불러오는 중입니다.'
+                className='rounded-xl border bg-background px-3 py-2'
+              />
             ) : productsQ.isError ? (
               <div className='rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600'>
                 오류 발생

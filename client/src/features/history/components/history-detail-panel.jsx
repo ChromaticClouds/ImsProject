@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { useHistoryLotDetail } from '../hooks/use-history-lot-detail.js';
 import { toKoreanType } from '@/constants/index.js';
 import { Button } from '@/components/ui/button.js';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /** @param {number | null | undefined} n */
 function money(n) {
@@ -43,7 +44,7 @@ export function HistoryDetailPanel({ lotId }) {
     );
   }
   if (q.isFetching)
-    return <div className='p-4 text-muted-foreground'>불러오는 중...</div>;
+    return <LoadingState label='이력 상세를 불러오는 중입니다.' />;
   if (!data) return <div className='p-4 text-muted-foreground'>상세 없음</div>;
 
   const vendorText =

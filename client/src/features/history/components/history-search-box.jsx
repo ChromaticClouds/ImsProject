@@ -1,6 +1,7 @@
 // @ts-check
 import { useState } from 'react';
 import { useHistorySearch } from '../hooks/use-history-search.js';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /**
  * @param {{
@@ -90,9 +91,11 @@ export function HistorySearchBox({ q, setQ, pick, setPick, onClear }) {
           className='bg-secondary border border-border'
         >
           {searchQ.isFetching ? (
-            <div style={{ padding: 10, fontSize: 12, color: '#666' }}>
-              검색 중...
-            </div>
+            <LoadingState
+              variant='inline'
+              label='이력을 검색하는 중입니다.'
+              className='p-2.5'
+            />
           ) : items.length === 0 ? (
             <div style={{ padding: 10, fontSize: 12, color: '#666' }}>
               결과 없음

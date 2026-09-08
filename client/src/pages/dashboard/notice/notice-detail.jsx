@@ -10,6 +10,7 @@ import { NoticeNavigationPreview } from '@/features/notice/components/notice-det
 import { fetchNoticeById } from '@/features/notice/api';
 import { useAuthStore } from '@/features/auth/stores/use-auth-store';
 import { useNoticeDeleteMutation } from '@/features/notice/hooks/use-notice-delete-mutation.js';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /**
  * @returns {import('react').ReactElement}
@@ -30,7 +31,8 @@ export const NoticeDetail = () => {
 
   const del = useNoticeDeleteMutation(id);
 
-  if (isLoading) return <div className='p-6'>로딩중...</div>;
+  if (isLoading)
+    return <LoadingState variant='page' label='공지사항을 불러오는 중입니다.' />;
   if (!notice) return <div className='p-6'>게시글이 없습니다.</div>;
 
   const isAuthorized = user?.eid === notice?.author?.eid;

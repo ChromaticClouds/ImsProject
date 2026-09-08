@@ -1,5 +1,6 @@
 // @ts-check
 import { InboundPendingRow } from './inbound-pending-row';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /**
  * @param {{
@@ -57,7 +58,7 @@ export function InboundPendingTable({ rows, loading = false, error = '', onError
         </tbody>
       </table>
 
-      {loading ? <div className="text-sm text-muted-foreground">불러오는 중...</div> : null}
+      {loading ? <LoadingState label='입고 대기 목록을 불러오는 중입니다.' /> : null}
     </div>
   );
 }

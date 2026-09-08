@@ -5,7 +5,7 @@
  */
 import { Badge } from '@/components/ui/badge.js';
 import { CardContent } from '@/components/ui/card.js';
-import { Spinner } from '@/components/ui/spinner.js';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 import {
   Table,
   TableBody,
@@ -53,12 +53,7 @@ export const UserGroupList = () => {
           {isFetching ? (
             <TableRow>
               <TableCell colSpan={6}>
-                <div className="flex w-full h-24 justify-center items-center gap-2">
-                  <Spinner />
-                  <span className="text-muted-foreground text-sm">
-                    불러오는 중...
-                  </span>
-                </div>
+                <LoadingState label='사용자 그룹을 불러오는 중입니다.' />
               </TableCell>
             </TableRow>
           ) : users.length > 0 ? (

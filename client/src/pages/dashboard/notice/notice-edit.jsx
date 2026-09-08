@@ -11,6 +11,7 @@ import { useNoticeEditForm } from '@/features/notice/hooks/use-notice-edit-form'
  * Components
  */
 import { AppHeader } from '@/components/common/app-header.jsx';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 import { NoticeContentSection } from '@/features/notice/components/notice-create/notice-content-section.jsx';
 import { NoticeCreateHeaderActions } from '@/features/notice/components/notice-create/notice-create-header-actions.jsx';
 import { NoticePinnedSection } from '@/features/notice/components/notice-create/notice-pinned-section.jsx';
@@ -93,7 +94,8 @@ export const NoticeEdit = () => {
     queryFn: () => fetchNoticeById(id),
   });
 
-  if (isLoading) return <div className='p-6'>로딩중...</div>;
+  if (isLoading)
+    return <LoadingState variant='page' label='공지사항을 불러오는 중입니다.' />;
   if (!notice || !Number.isFinite(noticeId))
     return <div className='p-6'>게시글이 없습니다.</div>;
 

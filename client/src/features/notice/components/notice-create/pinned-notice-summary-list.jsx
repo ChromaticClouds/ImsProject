@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Spinner } from '@/components/ui/spinner';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 import { AlertCircleIcon, ExternalLinkIcon, PinIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -52,13 +52,11 @@ export const PinnedNoticeSummaryList = ({
 
       <div className='mt-3'>
         {isLoading ? (
-          <div className='flex items-center gap-2 py-3 text-sm text-muted-foreground'>
-            <Spinner
-              className='size-4'
-              aria-label='중요 공지 조회 중'
-            />
-            중요 공지를 확인하는 중입니다.
-          </div>
+          <LoadingState
+            variant='inline'
+            label='중요 공지를 불러오는 중입니다.'
+            className='py-3'
+          />
         ) : isError ? (
           <div className='flex items-center gap-2 py-3 text-sm text-destructive'>
             <AlertCircleIcon

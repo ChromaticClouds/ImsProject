@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useOutboundCompletedItems } from '../hooks/use-outbound-completed-items';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog.js';
 
 /** @param {string} type */
@@ -273,9 +274,11 @@ export function OutboundCompletedRow({ row, loading }) {
           {isOpen && (
             <div className="absolute left-0 z-50 mt-2" style={{ width: dropdownWidth }}>
               {itemsLoading ? (
-                <div className="w-full rounded-lg border bg-background p-3 text-sm text-muted-foreground shadow-lg">
-                  품목 조회 중...
-                </div>
+                <LoadingState
+                  variant='inline'
+                  label='품목을 불러오는 중입니다.'
+                  className='w-full rounded-lg border bg-background p-3 shadow-lg'
+                />
               ) : (
                 <OutboundCompletedItemsDropdown items={items} />
               )}

@@ -1,5 +1,6 @@
 // @ts-check
 import { InboundCompletedRow } from './inbound-completed-row';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /**
  * @param {{
@@ -56,7 +57,7 @@ export function InboundCompletedTable({ rows, loading = false, error = '' }) {
       </table>
 
       {loading ? (
-        <div className="text-sm text-muted-foreground">불러오는 중...</div>
+        <LoadingState label='입고 완료 목록을 불러오는 중입니다.' />
       ) : null}
     </div>
   );

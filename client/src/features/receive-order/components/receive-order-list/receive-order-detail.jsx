@@ -9,7 +9,7 @@ import { TableCell } from '@/components/ui/table.js';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useState } from 'react';
 import { useOrderDetailQuery } from '../../hooks/use-order-detail-query.js';
-import { Spinner } from '@/components/ui/spinner.js';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { Badge } from '@/components/ui/badge.js';
 
@@ -56,9 +56,7 @@ export const ReceiveOrderDetail = ({ order }) => {
           <ScrollArea className='max-h-80 overflow-y-auto'>
             <div className='p-3 space-y-2'>
               {isPending && !hasData && (
-                <div className='h-32 flex items-center justify-center'>
-                  <Spinner />
-                </div>
+                <LoadingState label='주문 상세를 불러오는 중입니다.' className='h-32' />
               )}
 
               {!isPending && !hasData && (
@@ -109,9 +107,12 @@ export const ReceiveOrderDetail = ({ order }) => {
 
                   {/* 4️⃣ 조용한 백그라운드 리패치 표시 (선택) */}
                   {isFetching && (
-                    <div className='text-[10px] text-muted-foreground text-center pt-1'>
-                      업데이트 중...
-                    </div>
+                    <LoadingState
+                      variant='inline'
+                      label='주문 상세를 업데이트하는 중입니다.'
+                      className='justify-center pt-1'
+                      spinnerClassName='size-3'
+                    />
                   )}
                 </>
               )}

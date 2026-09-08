@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea.js';
 import { Badge } from '@/components/ui/badge.js';
 import { toast } from 'sonner';
 import { IbRegisterDialog } from './ib-register-dialog.jsx';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 const MEMO_MAX = 300;
 
@@ -252,9 +253,9 @@ export function InboundRegisterPage() {
             <div className='flex items-center gap-2'>
               <h1 className='text-xl font-semibold'>입고 등록</h1>
               <Badge variant='secondary'>INBOUND</Badge>
-              {isFetching ? <Badge>조회중</Badge> : null}
+              {isFetching ? <Badge>조회 중</Badge> : null}
               {safetyQuery.isFetching ? (
-                <Badge variant='secondary'>안전재고 조회중</Badge>
+                <Badge variant='secondary'>안전재고 조회 중</Badge>
               ) : null}
               {totals.changed > 0 ? (
                 <Badge className='bg-amber-500 text-white'>
@@ -414,9 +415,14 @@ export function InboundRegisterPage() {
                       </div>
                     );
                   })
+                ) : isFetching ? (
+                  <LoadingState
+                    label='품목을 불러오는 중입니다.'
+                    className='min-h-40 py-20'
+                  />
                 ) : (
                   <div className='px-4 py-20 text-center text-sm text-muted-foreground'>
-                    {isFetching ? '품목 조회 중...' : '품목이 없습니다.'}
+                    품목이 없습니다.
                   </div>
                 )}
               </div>

@@ -168,9 +168,6 @@ export const ProductCountChart = () => {
           안전재고 미만
         </label>
 
-        {stockQ.isFetching ? (
-          <span className='text-sm text-muted-foreground'>불러오는 중...</span>
-        ) : null}
       </div>
 
       {stockQ.isFetching ? (

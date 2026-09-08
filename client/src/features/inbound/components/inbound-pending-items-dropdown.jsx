@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from '@/components/ui/dialog.js';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /** @param {{ src?: string, alt?: string, size?: number }} props */
 export function ZoomImage({ src, alt, size = 40 }) {
@@ -193,9 +194,12 @@ export function InboundPendingItemsDropdown({ items, qtyLabel = '발주수량' }
               {/* 안전재고 */}
               <div className='col-span-3 text-right'>
                 {safeQ.isFetching ? (
-                  <span className='text-xs text-muted-foreground'>
-                    불러오는 중...
-                  </span>
+                  <LoadingState
+                    variant='inline'
+                    label='안전재고 조회 중'
+                    className='justify-end'
+                    spinnerClassName='size-3.5'
+                  />
                 ) : (
                   <span className='font-semibold tabular-nums'>
                     {formatSafety(i.safetyStock)}

@@ -3,6 +3,7 @@ import { VendorTable } from '@/features/vendor/components/vendor-list/vendor-tab
 import { useVendorSearch } from '@/features/vendor/hooks/use-vendor-search';
 import { useVendors } from '@/features/vendor/hooks/use-vendors';
 import { useNavigate } from 'react-router-dom';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 export const VendorTableContainer = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export const VendorTableContainer = () => {
   }
 
   return query.isFetching ? (
-    <div className='text-sm text-muted-foreground'>불러오는 중...</div>
+    <LoadingState label='거래처 목록을 불러오는 중입니다.' />
   ) : (
     <div className='relative'>
       <VendorTable

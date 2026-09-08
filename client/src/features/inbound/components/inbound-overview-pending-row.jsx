@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InboundPendingItemsDropdown } from './inbound-pending-items-dropdown';
 import { useInboundItems } from '../hooks/use-inbound-items';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /**
  * @typedef {Object} InboundRow
@@ -90,20 +91,11 @@ export function InboundOverviewPendingRow(props) {
           {isOpen ? (
             <div style={{ position: 'absolute', zIndex: 50, marginTop: 8, width: dropdownWidth }}>
               {itemsLoading ? (
-                <div
-                  style={{
-                    width: '100%',
-                    padding: 10,
-                    border: '1px solid #ddd',
-                    borderRadius: 10,
-                    background: '#fff',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
-                    fontSize: 13,
-                    color: '#666',
-                  }}
-                >
-                  품목 조회 중...
-                </div>
+                <LoadingState
+                  variant='inline'
+                  label='품목을 불러오는 중입니다.'
+                  className='w-full rounded-lg border bg-background p-3 shadow-lg'
+                />
               ) : (
                 <InboundPendingItemsDropdown items={items} />
               )}

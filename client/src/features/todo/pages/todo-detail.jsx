@@ -1,6 +1,7 @@
 // @ts-check
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -71,7 +72,8 @@ export const TodoDetail = () => {
     },
   });
 
-  if (isLoading) return <div className='p-6'>로딩중...</div>;
+  if (isLoading)
+    return <LoadingState variant='page' label='업무를 불러오는 중입니다.' />;
   if (!todo) return <div className='p-6'>업무가 없습니다.</div>;
 
   return (

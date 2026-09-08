@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { AppHeader } from '@/components/common/app-header.jsx';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 import { Card } from '@/components/ui/card.js';
 
 import { PurchaseOrderForm } from '@/features/purchase-order/components/purchase-order/purchase-order-form.jsx';
@@ -101,7 +102,8 @@ export const PurchaseOrderEdit = () => {
   if (loading) {
     return (
       <div className='w-full flex flex-col'>
-        <AppHeader title='발주서 수정' description='불러오는 중...' />
+        <AppHeader title='발주서 수정' description='발주서 정보를 수정합니다.' />
+        <LoadingState variant='page' label='발주서를 불러오는 중입니다.' />
       </div>
     );
   }

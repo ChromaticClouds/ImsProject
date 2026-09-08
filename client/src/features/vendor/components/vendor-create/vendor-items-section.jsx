@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 const toMoney = (value) => Number(value || 0).toLocaleString();
 
@@ -71,7 +72,11 @@ function ItemSearchDropdown({ itemsLoading, filteredItems, onSelectItem }) {
   return (
     <div className='absolute left-0 right-0 top-[calc(100%+8px)] z-20 overflow-hidden rounded-xl border bg-secondary shadow-xl'>
       {itemsLoading ? (
-        <div className='px-3 py-3 text-sm text-muted-foreground'>검색 중...</div>
+        <LoadingState
+          variant='inline'
+          label='품목을 검색하는 중입니다.'
+          className='px-3 py-3'
+        />
       ) : filteredItems.length === 0 ? (
         <div className='px-3 py-3 text-sm text-muted-foreground'>
           검색 결과가 없습니다.

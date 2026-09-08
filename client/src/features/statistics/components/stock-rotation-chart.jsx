@@ -29,6 +29,7 @@ import {
 import { XIcon } from 'lucide-react';
 import { ChartEmpty } from './chart-empty.jsx';
 import { ChartLoading } from './chart-loading.jsx';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 const turnoverTrendConfig =
   /** @type {import('@/components/ui/chart').ChartConfig} */ ({
@@ -338,9 +339,11 @@ export const StockRotationChart = () => {
                 검색어를 입력하세요.
               </div>
             ) : productsQ.isFetching ? (
-              <div className='px-2 py-2 text-sm text-muted-foreground'>
-                검색 중...
-              </div>
+              <LoadingState
+                variant='inline'
+                label='품목을 검색하는 중입니다.'
+                className='px-2 py-2'
+              />
             ) : productOptions.length === 0 ? (
               <div className='px-2 py-2 text-sm text-muted-foreground'>
                 검색 결과가 없습니다.

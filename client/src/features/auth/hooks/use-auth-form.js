@@ -19,6 +19,7 @@ import {
  * Api
  */
 import { loginUser, registerUser } from '@/features/auth/api/index.js';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
 import { toast } from 'sonner';
 
 const registerDefaultValue = {
@@ -32,16 +33,29 @@ const loginDefaultValue = {
   password: '',
 };
 
+/**
+ * @param {ApiResponse<AuthResponse>} response
+ */
+const handleAuthSuccess = (response) => {
+  if (!response.data) {
+    throw new Error('Authentication response data is missing.');
+  }
+
+  const { user, token } = response.data;
+  useAuthStore.getState().setAuth(user, token);
+  toast.success(response.message);
+};
+
 export const useAuthForm = () => {
   const [params] = useSearchParams();
   const token = params.get('token');
 
   const { mutateAsync: login } = useAuthMutation(loginUser, {
-    onSuccess: (...args) => toast.success(args[0].message),
+    onSuccess: handleAuthSuccess,
   });
 
   const { mutateAsync: register } = useAuthMutation(registerUser, {
-    onSuccess: (...args) => toast.success(args[0].message),
+    onSuccess: handleAuthSuccess,
   });
 
   return {

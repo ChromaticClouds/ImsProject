@@ -18,15 +18,8 @@ export const hooks = {
   afterResponse: afterResponseHooks,
 };
 
-const getApiPrefixUrl = () => {
-  const serverUrl = import.meta.env.VITE_SERVER_URL ?? '';
-  const normalizedUrl = serverUrl.replace(/\/+$/, '');
-
-  return normalizedUrl.endsWith('/api') ? normalizedUrl : `${normalizedUrl}/api`;
-};
-
 export const api = ky.create({
-  prefixUrl: getApiPrefixUrl(),
+  prefixUrl: '/api',
   timeout: 30000,
   credentials: 'include',
   retry: 0,

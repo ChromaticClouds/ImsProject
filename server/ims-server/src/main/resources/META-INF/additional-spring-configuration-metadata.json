@@ -1,5 +1,15 @@
 {"properties": [
   {
+    "name": "app.auth.cookie.secure",
+    "type": "java.lang.Boolean",
+    "description": "Whether the refresh-token cookie is restricted to HTTPS."
+  },
+  {
+    "name": "app.auth.cookie.same-site",
+    "type": "java.lang.String",
+    "description": "SameSite policy used by the refresh-token cookie. None requires a secure cookie."
+  },
+  {
     "name": "app.cors.allowed-origins",
     "type": "java.util.List<java.lang.String>",
     "description": "Allowed frontend origins for CORS."

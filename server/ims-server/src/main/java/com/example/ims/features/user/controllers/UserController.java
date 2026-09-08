@@ -28,6 +28,7 @@ public class UserController {
     private static final int PAGE_SIZE = 10;
 
     private final UserService service;
+    private final RefreshTokenCookieStore refreshTokenCookieStore;
 
     @GetMapping("permission")
     public ResponseEntity<ApiResponse<UserRole>> getUserRole(
@@ -85,7 +86,7 @@ public class UserController {
         service.logoutUser(user.userId());
 
         ResponseCookie deleteCookie =
-            RefreshTokenCookieStore.delete(false);
+            refreshTokenCookieStore.delete();
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())

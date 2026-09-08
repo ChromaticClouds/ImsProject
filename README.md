@@ -201,7 +201,20 @@ bash ./gradlew bootRun
 - `RESEND_FROM_EMAIL`
 - `CLIENT_BASE_URL`
 - `FRONTEND_ORIGIN`
+- `AUTH_COOKIE_SECURE` (기본값: `true`)
+- `AUTH_COOKIE_SAME_SITE` (기본값: `Lax`)
 - `UPLOAD_DIR`
+
+클라이언트 개발 서버는 `VITE_SERVER_URL`을 `/api` 프록시 대상으로 사용하며,
+값을 생략하면 `http://localhost:8080`으로 전달한다. 프로덕션 클라이언트는
+백엔드 주소를 번들에 포함하지 않고 동일 출처의 `/api`만 호출한다.
+
+## Vercel 프런트엔드 배포
+
+Vercel 프로젝트의 Root Directory는 `client`로 지정한다. `client/vercel.json`은
+`/api/*` 요청을 Render 백엔드로 전달하므로 브라우저의 refresh 쿠키가
+서드파티 쿠키로 취급되지 않는다. Vercel의 `VITE_SERVER_URL` 환경 변수는
+프로덕션 빌드에 필요하지 않다.
 
 ## Render 백엔드 배포
 

@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final AuthService service;
+    private final RefreshTokenCookieStore refreshTokenCookieStore;
 
     @PostMapping("login")
     public ResponseEntity<ApiResponse<AuthResponse>> loginUser(
@@ -39,7 +40,7 @@ public class AuthController {
         AuthResult result = service.loginUser(request);
 
         ResponseCookie refreshCookie = 
-            RefreshTokenCookieStore.store(result.refreshToken(), true);
+            refreshTokenCookieStore.store(result.refreshToken());
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
@@ -56,7 +57,7 @@ public class AuthController {
         AuthResult result = service.registerUser(request);
 
         ResponseCookie refreshCookie = 
-            RefreshTokenCookieStore.store(result.refreshToken(), true);
+            refreshTokenCookieStore.store(result.refreshToken());
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
@@ -75,7 +76,7 @@ public class AuthController {
     	AuthResult result = service.refresh(refreshToken);
     	
     	ResponseCookie refreshCookie = 
-            RefreshTokenCookieStore.store(result.refreshToken(), true);
+            refreshTokenCookieStore.store(result.refreshToken());
     	
     	return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())

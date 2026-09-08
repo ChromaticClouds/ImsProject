@@ -5,6 +5,7 @@ import {
   ArrowBigUpDashIcon,
   ArrowDownUpIcon,
 } from 'lucide-react';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /** @param {HistoryLotRow} row */
 function getIcon(row) {
@@ -35,11 +36,12 @@ function formatDelta(status, totalDelta) {
 /**
  * @param {{
  *   rows: HistoryLotRow[],
+ *   loading?: boolean,
  *   selectedLotId: number | null,
  *   onSelect: (lotId: number) => void
  * }} props
  */
-export function HistoryLotList({ rows, selectedLotId, onSelect }) {
+export function HistoryLotList({ rows, loading = false, selectedLotId, onSelect }) {
   return (
     
     <div className="h-full overflow-auto border-r border-border/40">
@@ -48,7 +50,9 @@ export function HistoryLotList({ rows, selectedLotId, onSelect }) {
         거래일순
       </div>
 
-      {rows.length === 0 ? (
+      {loading && rows.length === 0 ? (
+        <LoadingState label='이력 목록을 불러오는 중입니다.' />
+      ) : rows.length === 0 ? (
         <div className="bg-secondary text-muted-foreground p-4 text-sm">
           데이터 없음
         </div>

@@ -39,21 +39,25 @@ export function OutboundCompletedTable({ rows, loading = false, error = '' }) {
         </thead>
 
         <tbody>
-          {list.length ? (
+          {loading && list.length === 0 ? (
+            <tr>
+              <td colSpan={8}>
+                <LoadingState label='출고 완료 목록을 불러오는 중입니다.' />
+              </td>
+            </tr>
+          ) : list.length ? (
             list.map((row) => (
               <OutboundCompletedRow key={row.orderNumber} row={row} loading={loading} />
             ))
           ) : (
             <tr>
-              <td colSpan={7} className="h-24 text-center text-muted-foreground">
+              <td colSpan={8} className="h-24 text-center text-muted-foreground">
                 데이터가 없습니다
               </td>
             </tr>
           )}
         </tbody>
       </table>
-
-      {loading ? <LoadingState label='출고 완료 목록을 불러오는 중입니다.' /> : null}
     </div>
   );
 }

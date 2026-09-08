@@ -39,7 +39,13 @@ export function InboundPendingTable({ rows, loading = false, error = '', onError
         </thead>
 
         <tbody>
-          {list.length ? (
+          {loading && list.length === 0 ? (
+            <tr>
+              <td colSpan={7}>
+                <LoadingState label='입고 대기 목록을 불러오는 중입니다.' />
+              </td>
+            </tr>
+          ) : list.length ? (
             list.map((row) => (
               <InboundPendingRow
                 key={row.orderNumber}
@@ -57,8 +63,6 @@ export function InboundPendingTable({ rows, loading = false, error = '', onError
           )}
         </tbody>
       </table>
-
-      {loading ? <LoadingState label='입고 대기 목록을 불러오는 중입니다.' /> : null}
     </div>
   );
 }

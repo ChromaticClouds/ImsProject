@@ -106,7 +106,16 @@ const normalizeTodo = (todo) => {
         tags = parsed.filter((tag) => typeof tag === 'string');
       }
     } catch {
-      tags = [];
+      // The backend currently persists List#toString(), e.g. "[urgent, review]".
+      // Keep this fallback for existing rows while also accepting JSON above.
+      const legacyTags = todo.tags.trim();
+      if (legacyTags.startsWith('[') && legacyTags.endsWith(']')) {
+        tags = legacyTags
+          .slice(1, -1)
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter(Boolean);
+      }
     }
   }
 

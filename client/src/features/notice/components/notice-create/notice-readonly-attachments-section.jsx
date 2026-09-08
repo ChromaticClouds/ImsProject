@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button.js';
 import { downloadFile } from '@/features/notice/api/notice.js';
 import { PaperclipIcon } from 'lucide-react';
 
+const getFileName = (path) => path?.split('/').pop() ?? path;
+
 /**
  * @param {{ attachments?: string[] }} props
  */
@@ -21,19 +23,24 @@ export const NoticeReadonlyAttachmentsSection = ({ attachments = [] }) => {
 
       <div className='rounded-md border bg-muted/30 px-3 py-2'>
         <div className='flex flex-col items-start gap-1'>
-          {attachments.map((fileName) => (
-            <Button
-              key={fileName}
-              type='button'
-              variant='link'
-              className='h-auto p-0 text-sm'
-              onClick={async () => {
-                await downloadFile(fileName);
-              }}
-            >
-              {fileName.length >= 80 ? `${fileName.slice(0, 80)}...` : fileName}
-            </Button>
-          ))}
+          {attachments.map((fileName) => {
+            const displayName = getFileName(fileName);
+            return (
+              <Button
+                key={fileName}
+                type='button'
+                variant='link'
+                className='h-auto p-0 text-sm'
+                onClick={async () => {
+                  await downloadFile(fileName);
+                }}
+              >
+                {displayName.length >= 80
+                  ? `${displayName.slice(0, 80)}...`
+                  : displayName}
+              </Button>
+            );
+          })}
         </div>
       </div>
     </div>

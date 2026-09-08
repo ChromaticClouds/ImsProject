@@ -3,3 +3,5 @@
 server/.metadata/
 docs/*
 docs
+notice-attachment-migration.sql
+product-image-migration.sql

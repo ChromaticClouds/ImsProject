@@ -1,22 +1,17 @@
 package com.example.ims.features.notice.services;
 
 import java.io.IOException;
-import java.nio.file.*;
 import java.util.List;
-import java.util.UUID;
 
 import com.example.ims.features.notice.dto.NoticeResponse;
-import com.example.ims.features.notice.exceptions.ExceedPostingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.ims.features.notice.dto.NoticeCreateRequest;
 import com.example.ims.features.notice.mapper.NoticeMapper;
 import com.example.ims.global.response.ApiResponse;
-
-import jakarta.annotation.Resource;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +20,7 @@ public class NoticeCreate {
     private final FileService fileService;
     private final NoticeMapper mapper;
 
-    @Value("${ims.upload.notice-dir:uploads/notice}")
-    String uploadDir;
-
+    @Transactional
     public ApiResponse<Void> execute(Long userId, NoticeCreateRequest req)
             throws IOException {
         List<NoticeResponse> pinned = mapper.findPinnedNotices();
@@ -42,20 +35,33 @@ public class NoticeCreate {
             return ApiResponse.fail("미입력되었습니다");
 
         List<String> filePaths = new java.util.ArrayList<>();
-        if (req.getAttachments() != null) {
-            for (MultipartFile attachment : req.getAttachments()) {
-                String filePath = fileService.saveToUploads(attachment);
-                if (filePath != null) filePaths.add(filePath);
+        try {
+            if (req.getAttachments() != null) {
+                for (MultipartFile attachment : req.getAttachments()) {
+                    String filePath = fileService.saveAttachment(attachment);
+                    if (filePath != null) filePaths.add(filePath);
+                }
             }
+
+            mapper.insert(userId, title, content, req.isPinned());
+
+            Long noticeId = mapper.lastInsertId();
+            for (int index = 0; index < filePaths.size(); index += 1) {
+                mapper.insertAttachment(noticeId, filePaths.get(index), index);
+            }
+
+            return ApiResponse.success("작성완료");
+        } catch (IOException | RuntimeException exception) {
+            cleanUpUploadedFiles(filePaths, exception);
+            throw exception;
         }
+    }
 
-        mapper.insert(userId, title, content, req.isPinned());
-
-        Long noticeId = mapper.lastInsertId();
-        for (int index = 0; index < filePaths.size(); index += 1) {
-            mapper.insertAttachment(noticeId, filePaths.get(index), index);
+    private void cleanUpUploadedFiles(List<String> filePaths, Exception originalException) {
+        try {
+            fileService.deleteAttachments(filePaths);
+        } catch (IOException cleanupException) {
+            originalException.addSuppressed(cleanupException);
         }
-
-        return ApiResponse.success("작성완료");
     }
 }

@@ -7,10 +7,10 @@ import java.util.List;
 import com.example.ims.features.notice.dto.*;
 import com.example.ims.features.notice.services.*;
 import com.example.ims.features.user.dto.UserPrincipal;
-import com.example.ims.global.properties.StorageProperties;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.ims.global.response.ApiResponse;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/notice")
@@ -45,7 +43,6 @@ public class NoticeController {
     @Resource
     NoticePinnedUpdate nPinned;
 
-    private final StorageProperties props;
     private final FileService fileService;
 
     // GetMapping 부분
@@ -105,20 +102,28 @@ public class NoticeController {
     }
     
     @PostMapping("file/download")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> downloadFile(
 		@RequestBody DownloadRequest request
 	) throws IOException {
         FileDownloader loader = fileService.downloadFile(request.getFileName());
+
+        if (loader.getRedirectUri() != null) {
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(java.util.Map.of(
+                    "url", loader.getRedirectUri().toString(),
+                    "fileName", loader.getDownloadName()
+                ));
+        }
+
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .header(HttpHeaders.CONTENT_DISPOSITION,
-    "attachment; filename=\"" + sanitizeAscii(loader.getDownloadName()
-                + "\"; filename*=UTF-8''" + loader.getEncoded()))
+                ContentDisposition.attachment()
+                    .filename(loader.getDownloadName(), java.nio.charset.StandardCharsets.UTF_8)
+                    .build()
+                    .toString())
             .body(loader.getResource());
-    }
-
-    private String sanitizeAscii(String filename) {
-        // header에 들어갈 기본 filename은 ASCII 위주로 간단 정리(브라우저 호환)
-        return filename.replaceAll("[\\\\\\r\\n\"]", "_");
     }
 }

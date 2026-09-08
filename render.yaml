@@ -15,8 +15,18 @@ services:
         value: https://ims-project-pi.vercel.app
       - key: FRONTEND_ORIGIN
         value: https://ims-project-pi.vercel.app
-      - key: UPLOAD_DIR
-        value: /tmp/uploads
+      - key: STORAGE_PROVIDER
+        value: supabase
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: SUPABASE_PRODUCT_IMAGE_BUCKET
+        value: ims-product-images
+      - key: SUPABASE_NOTICE_ATTACHMENT_BUCKET
+        value: ims-notice-attachments
+      - key: SUPABASE_SIGNED_URL_TTL_SECONDS
+        value: 600
       - key: DB_URL
         sync: false
       - key: DB_USER

@@ -40,7 +40,13 @@ export function OutboundPendingTable({ rows, loading, error, onError }) {
         </thead>
 
         <tbody>
-          {list.length ? (
+          {loading && list.length === 0 ? (
+            <tr>
+              <td colSpan={8}>
+                <LoadingState label='출고 대기 목록을 불러오는 중입니다.' />
+              </td>
+            </tr>
+          ) : list.length ? (
             list.map((row) => (
               <OutboundPendingRow
                 key={row.orderNumber}
@@ -58,8 +64,6 @@ export function OutboundPendingTable({ rows, loading, error, onError }) {
           )}
         </tbody>
       </table>
-
-      {loading ? <LoadingState label='출고 대기 목록을 불러오는 중입니다.' /> : null}
     </div>
   );
 }

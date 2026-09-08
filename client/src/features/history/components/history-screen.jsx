@@ -130,6 +130,7 @@ export function HistoryScreen() {
       >
         <HistoryLotList
           rows={rows}
+          loading={loading}
           selectedLotId={selectedLotId}
           onSelect={setSelectedLotId}
         />

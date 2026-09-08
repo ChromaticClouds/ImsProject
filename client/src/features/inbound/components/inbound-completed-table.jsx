@@ -38,7 +38,13 @@ export function InboundCompletedTable({ rows, loading = false, error = '' }) {
         </thead>
 
         <tbody>
-          {list.length ? (
+          {loading && list.length === 0 ? (
+            <tr>
+              <td colSpan={7}>
+                <LoadingState label='입고 완료 목록을 불러오는 중입니다.' />
+              </td>
+            </tr>
+          ) : list.length ? (
             list.map((row) => (
               <InboundCompletedRow
                 key={row.orderNumber}
@@ -48,17 +54,13 @@ export function InboundCompletedTable({ rows, loading = false, error = '' }) {
             ))
           ) : (
             <tr>
-              <td colSpan={6} className="h-24 text-center text-muted-foreground">
+              <td colSpan={7} className="h-24 text-center text-muted-foreground">
                 데이터가 없습니다
               </td>
             </tr>
           )}
         </tbody>
       </table>
-
-      {loading ? (
-        <LoadingState label='입고 완료 목록을 불러오는 중입니다.' />
-      ) : null}
     </div>
   );
 }

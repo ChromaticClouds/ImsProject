@@ -4,6 +4,7 @@
 // import { Alert, AlertDescription } from '@/components/ui/alert.js';
 
 import { InboundOverviewPendingRow } from './inbound-overview-pending-row';
+import { LoadingState } from '@/components/common/loading-state.jsx';
 
 /**
  * @param {{
@@ -44,7 +45,13 @@ export function InboundOverviewPendingTable({
         </thead>
 
         <tbody>
-          {safeRows.length ? (
+          {loading && safeRows.length === 0 ? (
+            <tr>
+              <td colSpan={7}>
+                <LoadingState label='입고 대기 목록을 불러오는 중입니다.' />
+              </td>
+            </tr>
+          ) : safeRows.length ? (
             safeRows.map((row) => (
               <InboundOverviewPendingRow
                 key={row.orderNumber}
@@ -56,7 +63,7 @@ export function InboundOverviewPendingTable({
           ) : (
             <tr>
               <td
-                colSpan={8}
+                colSpan={7}
                 className='text-center py-10 text-muted-foreground'
               >
                 데이터가 없습니다.

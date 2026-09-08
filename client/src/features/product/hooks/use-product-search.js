@@ -16,6 +16,10 @@ export const useProductSearch = () => {
   const keyword = useDebounce(input, 500);
 
   useEffect(() => {
+    const currentKeyword = params.get('search') ?? '';
+
+    if (keyword === currentKeyword) return;
+
     setParams((current) => {
       const next = new URLSearchParams(current);
 
@@ -25,8 +29,8 @@ export const useProductSearch = () => {
       next.set('page', '1');
 
       return next;
-    });
-  }, [keyword, setParams]);
+    }, { replace: true });
+  }, [keyword, params, setParams]);
 
   return { input, setInput };
 };

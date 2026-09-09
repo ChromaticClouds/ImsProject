@@ -151,7 +151,7 @@ public class PurchaseOrderService {
 
         mailSender.sendPurchaseOrder(ctx, html, pdf);
 
-        mapper.markSentByOrderNumber(orderNumber);
+        markSentExactly(ctx);
     }
 
     public SendGroupResult bulkSend(List<String> orderNumbers) {
@@ -185,7 +185,7 @@ public class PurchaseOrderService {
             }
 
             try {
-                mapper.markSentByOrderNumber(ctx.orderNumber());
+                markSentExactly(ctx);
                 success.add(new SendGroupResult.Success(ctx.orderNumber()));
             } catch (Exception e) {
                 failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.SEND, e.getMessage()));
@@ -193,6 +193,17 @@ public class PurchaseOrderService {
         }
 
         return new SendGroupResult(success, failed);
+    }
+
+    private void markSentExactly(PurchaseOrderContext context) {
+        int expected = context.orders().size();
+        int updated = mapper.markSentByOrderNumber(context.orderNumber());
+        if (updated != expected) {
+            throw new IllegalStateException(
+                "발주 상태 변경 행 수가 일치하지 않습니다. orderNumber=" + context.orderNumber()
+                    + ", expected=" + expected + ", actual=" + updated
+            );
+        }
     }
 
     @Transactional

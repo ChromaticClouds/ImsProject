@@ -122,7 +122,13 @@ public class OutboundQueryService {
     }
 
     int updated = mapper.markOutboundCompleteByOrderNumber(on);
-    if (updated <= 0) throw new IllegalArgumentException("출고 완료 처리 실패: " + on);
+    int expected = orders.size();
+    if (updated != expected) {
+      throw new IllegalStateException(
+          "출고 완료 상태 변경 행 수가 일치하지 않습니다. orderNumber=" + on
+              + ", expected=" + expected + ", actual=" + updated
+      );
+    }
   }
   
   

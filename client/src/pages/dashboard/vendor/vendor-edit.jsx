@@ -43,8 +43,6 @@ const VendorEditPageShell = ({ children }) => (
 
 export const VendorEdit = () => {
   const { id } = useParams();
-  const form = useVendorEditForm();
-
   const { data, isLoading, isFetching, error, refetch } = useVendorDetail(id);
 
   if (isLoading) return <VendorEditSkeleton />;
@@ -76,6 +74,20 @@ export const VendorEdit = () => {
       </VendorEditPageShell>
     );
   }
+
+  return (
+    <VendorEditForm
+      id={Number(id)}
+      data={data}
+    />
+  );
+};
+
+/**
+ * @param {{ id: number, data: import('@/features/vendor/types/index.js').VendorDetailResponse }} props
+ */
+const VendorEditForm = ({ id, data }) => {
+  const form = useVendorEditForm(id, data);
 
   return (
     <VendorEditPageShell>

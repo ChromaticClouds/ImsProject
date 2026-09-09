@@ -15,10 +15,13 @@ export function useUpdateVendor() {
      */
     mutationFn: ({ id, payload }) => updateVendor(id, payload),
 
-    onSuccess: (_data, vars) => {
-      queryClient.invalidateQueries({ queryKey: ['vendors'] });
-      queryClient.invalidateQueries({ queryKey: ['vendor-detail', vars.id] });
-      queryClient.refetchQueries({ queryKey: ['vendor-detail', vars.id]});
+    onSuccess: async (_data, vars) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['vendors'] }),
+        queryClient.invalidateQueries({
+          queryKey: ['vendor-detail', vars.id],
+        }),
+      ]);
     },
   });
 }

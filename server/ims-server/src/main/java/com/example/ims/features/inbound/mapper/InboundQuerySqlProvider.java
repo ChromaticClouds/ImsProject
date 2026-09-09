@@ -422,17 +422,28 @@ public class InboundQuerySqlProvider {
         JOIN product p ON p.id = vi.product_id
         LEFT JOIN stock s ON s.product_id = vi.product_id
 
-        -- ✅ "이번 입고" lot 하나만 선택
+        -- order_number가 기록된 입고 lot을 우선 사용한다.
+        -- 기존 NULL lot 데이터는 과거 추정 로직으로 읽기 호환성을 유지한다.
         LEFT JOIN history h
           ON h.vendor_item_id = o.vendor_item_id
          AND h.lot_id = (
-            SELECT MAX(h2.lot_id)
-            FROM `orders` o2
-            JOIN history h2 ON h2.vendor_item_id = o2.vendor_item_id
-            JOIN history_lot hl2 ON hl2.id = h2.lot_id
-            WHERE o2.order_number = #{orderNumber}
-              AND o2.status = 'INBOUND_COMPLETE'
-              AND hl2.status = 'INBOUND'
+            SELECT COALESCE(
+              (
+                SELECT MAX(hl.id)
+                FROM history_lot hl
+                WHERE hl.order_number = #{orderNumber}
+                  AND hl.status = 'INBOUND'
+              ),
+              (
+                SELECT MAX(h2.lot_id)
+                FROM `orders` o2
+                JOIN history h2 ON h2.vendor_item_id = o2.vendor_item_id
+                JOIN history_lot hl2 ON hl2.id = h2.lot_id
+                WHERE o2.order_number = #{orderNumber}
+                  AND o2.status = 'INBOUND_COMPLETE'
+                  AND hl2.status = 'INBOUND'
+              )
+            )
          )
 
         WHERE o.status = 'INBOUND_COMPLETE'

@@ -44,8 +44,9 @@ class InboundQuerySqlProviderTest {
         String sql = provider.selectCompletedItemsByOrderNumber(params);
 
         // 1. 핵심 서브쿼리 로직 확
-        assertThat(sql).contains("MAX(id) AS lot_id");
+        assertThat(sql).contains("SELECT MAX(hl.id)");
         assertThat(sql).contains("FROM history_lot");
+        assertThat(sql).contains("hl.order_number = #{orderNumber}");
         // 2. 수량 계산 
         assertThat(sql).contains("COALESCE(SUM(h.after_count - h.before_count), o.`count`) AS orderQty");
         // 3. 조건절 확인

@@ -101,6 +101,7 @@ public class InboundQueryController {
     }
 
     @PatchMapping("/pending/{orderNumber}")
+    @PreAuthorize("hasAnyAuthority('PERM_INBOUND', 'PERM_ALL')")
     public PendingDetailResponse updatePending(
         @PathVariable("orderNumber") String orderNumber,
         @RequestBody PendingUpdateRequest req

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.example.ims.global.response.ApiResponse;
 import com.resend.core.exception.ResendException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.ims.features.purchaseorder.dto.*;
@@ -43,6 +44,7 @@ public class PurchaseOrderController {
 
     // 수정 (납기일 + 라인 count)
     @PatchMapping("/{orderNumber}")
+    @PreAuthorize("hasAnyAuthority('PERM_PLACE_ORDER', 'PERM_ALL')")
     public ResponseEntity<Void> update(
         @PathVariable(name = "orderNumber") String orderNumber,
         @Valid @RequestBody PurchaseOrderUpdateRequest req
@@ -53,6 +55,7 @@ public class PurchaseOrderController {
 
     // 삭제 (orderNumber 전체)
     @DeleteMapping("/{orderNumber}")
+    @PreAuthorize("hasAnyAuthority('PERM_PLACE_ORDER', 'PERM_ALL')")
     public ResponseEntity<Void> delete(
         @PathVariable(name = "orderNumber") String orderNumber
     ) {
@@ -62,6 +65,7 @@ public class PurchaseOrderController {
 
     // 전송 (단건)
     @PostMapping("/{orderNumber}/send")
+    @PreAuthorize("hasAnyAuthority('PERM_PLACE_ORDER', 'PERM_ALL')")
     public ResponseEntity<ApiResponse<Void>> sendOne(
         @PathVariable(name = "orderNumber") String orderNumber
     ) throws ResendException {
@@ -71,6 +75,7 @@ public class PurchaseOrderController {
 
     // 전송 (bulk)
     @PostMapping("/send")
+    @PreAuthorize("hasAnyAuthority('PERM_PLACE_ORDER', 'PERM_ALL')")
     public ResponseEntity<ApiResponse<BulkSendResponse>> bulkSend(
         @Valid @RequestBody OrderNumbersRequest request
     ) {
@@ -84,6 +89,7 @@ public class PurchaseOrderController {
 
     // 삭제 (bulk)
     @PostMapping("/delete")
+    @PreAuthorize("hasAnyAuthority('PERM_PLACE_ORDER', 'PERM_ALL')")
     public ResponseEntity<ApiResponse<Void>> bulkDelete(@Valid @RequestBody OrderNumbersRequest req) {
         service.bulkDelete(req.getOrderNumbers());
         return ResponseEntity.ok(ApiResponse.success("삭제 완료되었습니다."));

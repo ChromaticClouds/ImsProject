@@ -47,18 +47,21 @@ public class TodoController {
 
     // 3. 상태 토글 (toggleTodoStatus)
     @PatchMapping("/{id}/toggle")
+    @PreAuthorize("hasAuthority('PERM_ALL')")
     public ResponseEntity<TodoActionResponse> toggleStatus(@PathVariable Long id) {
         return ResponseEntity.ok(todoService.toggleStatus(id));
     }
 
     // 4. 업무 수정 (updateTodo)
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('PERM_ALL')")
     public ResponseEntity<TodoActionResponse> update(@PathVariable Long id, @RequestBody TodoRequest req) {
         return ResponseEntity.ok(todoService.updateTodo(id, req));
     }
 
     // 5. 업무 삭제 (deleteTodo)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('PERM_ALL')")
     public ResponseEntity<TodoActionResponse> delete(@PathVariable Long id) {
         return ResponseEntity.ok(todoService.deleteTodo(id));
     }

@@ -61,6 +61,7 @@ public class UserController {
     }
 
     @PatchMapping("permission/{id}")
+    @PreAuthorize("principal.rank() == 'FIRST_ADMIN' and principal.role() == 'ALL'")
     public ResponseEntity<ApiResponse<Void>> patchUserPermission(
         @PathVariable("id") Long id,
         @RequestBody UpdateUserRequest request

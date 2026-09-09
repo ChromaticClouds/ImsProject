@@ -58,6 +58,7 @@ public class OrderController {
     }
 
     @PostMapping("post")
+    @PreAuthorize("hasAnyAuthority('PERM_RECEIVE_ORDER', 'PERM_ALL')")
     public ResponseEntity<ApiResponse<Void>> postOrder(
         @RequestBody OrderPostRequest request,
         @AuthenticationPrincipal UserPrincipal user

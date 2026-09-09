@@ -26,12 +26,20 @@ import { AppSidebarCollapsible } from '@/components/common/app-sidebar-collapsib
 import { UsersIcon } from 'lucide-react';
 import { Logo } from '@/assets/logo.jsx';
 import { Card } from '@/components/ui/card.js';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { UserMenu } from '@/components/common/user-menu.jsx';
+import { useEffect } from 'react';
 
 export const AppSidebar = () => {
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
+  const { pathname } = useLocation();
   const isCollapsed = state === 'collapsed';
+
+  useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [isMobile, pathname, setOpenMobile]);
 
   return (
     <Sidebar collapsible='icon'>

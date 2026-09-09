@@ -38,7 +38,7 @@ public class OutboundSqlProvider {
 
 	  
 	      MIN(o.manager_id) AS managerId,
-	      MIN(um.name) AS managerName,
+	      COALESCE(MIN(um.name), '미배정') AS managerName,
 
 	      MAX(CASE WHEN o.`count` > IFNULL(s.`count`, 0) THEN 1 ELSE 0 END) AS hasShortage
 	    FROM `orders` o
@@ -47,7 +47,6 @@ public class OutboundSqlProvider {
 	    LEFT JOIN stock s ON s.product_id = o.product_id
 	    LEFT JOIN `user` um ON um.id = o.manager_id  
 	    WHERE o.status = 'OUTBOUND_PENDING'
-	    AND o.manager_id IS NOT NULL
 	    AND o.recieve_date BETWEEN #{from} AND #{to}
 	  """);
 

@@ -61,22 +61,24 @@ public interface OutboundQueryMapper {
   @SelectProvider(type = OutboundSqlProvider.class, method = "selectStockCountForUpdate")
   Integer selectStockCountForUpdate(@Param("productId") Long productId);
 
-  @UpdateProvider(type = OutboundSqlProvider.class, method = "upsertStockByDelta")
-  int upsertStockByDelta(@Param("productId") Long productId, @Param("delta") Integer delta);
+  @InsertProvider(type = OutboundSqlProvider.class, method = "ensureStockRow")
+  int ensureStockRow(@Param("productId") Long productId);
+
+  @UpdateProvider(type = OutboundSqlProvider.class, method = "updateStockCount")
+  int updateStockCount(
+      @Param("productId") Long productId,
+      @Param("count") Integer count
+  );
 
   @InsertProvider(type = OutboundSqlProvider.class, method = "insertHistoryOutbound")
   int insertHistoryOutbound(
       @Param("lotId") Long lotId,
 	  @Param("sellerVendorId") Long sellerVendorId,
-      @Param("userId") Long userId,
       @Param("productId") Long productId,
       @Param("beforeCount") Integer beforeCount,
       @Param("afterCount") Integer afterCount
   );
   
-  @SelectProvider(type = OutboundSqlProvider.class, method = "selectLastHistoryLotId")
-  Long selectLastHistoryLotId();
-
   @UpdateProvider(type = OutboundSqlProvider.class, method = "markOutboundCompleteByOrderNumber")
   int markOutboundCompleteByOrderNumber(@Param("orderNumber") String orderNumber);
 

@@ -8,6 +8,7 @@ import lombok.Setter;
 public class HistoryLot {
     private Long id;
     private Long userId;
+    private String orderNumber;
     private String status; // 'INBOUND'
     private String memo;
 }

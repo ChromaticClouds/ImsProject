@@ -63,51 +63,72 @@ public class OutboundQueryService {
   }
 
   @Transactional
-  public void completeByOrderNumberAndWriteHistory(String orderNumber, String memo) {
+  public void completeByOrderNumberAndWriteHistory(String orderNumber, String memo, Long actorUserId) {
     if (!StringUtils.hasText(orderNumber)) throw new IllegalArgumentException("orderNumber 필수");
     String on = orderNumber.trim();
+    if (actorUserId == null || actorUserId <= 0) {
+      throw new IllegalArgumentException("출고 완료 작업자 인증 정보가 없습니다");
+    }
 
     List<OutboundCompleteOrderRow> orders = mapper.selectOrdersForOutboundComplete(on);
     if (orders == null || orders.isEmpty()) throw new IllegalArgumentException("출고 대기 주문이 없습니다: " + on);
 
-    Long userId = orders.get(0).getUserId();
-    if (userId == null) throw new IllegalArgumentException("userId가 없습니다: " + on);
-
-    
     HistoryLot lot = new HistoryLot();
-    lot.setUserId(userId);
+    lot.setUserId(actorUserId);
+    lot.setOrderNumber(on);
     lot.setMemo(StringUtils.hasText(memo) ? memo.trim() : null);
-    
-    mapper.insertHistoryLot(lot);
-    
-    Long lotId = mapper.selectLastHistoryLotId();
-    if (lotId == null || lotId <= 0) throw new IllegalStateException("history_lot id 실패");
-    
+
+    int lotInserted = mapper.insertHistoryLot(lot);
+    if (lotInserted != 1 || lot.getId() == null || lot.getId() <= 0) {
+      throw new IllegalStateException("history_lot 생성 실패");
+    }
+    Long lotId = lot.getId();
 
     for (OutboundCompleteOrderRow r : orders) {
+      if (r == null) throw new IllegalStateException("출고 완료 대상 행이 비어 있습니다. orderNumber=" + on);
+
       Long productId = r.getProductId();
       Long sellerVendorId = r.getSellerVendorId();
       int qty = r.getOrderQty() == null ? 0 : r.getOrderQty();
 
-      if (productId == null || productId <= 0) continue;
-      if (qty <= 0) continue;
+      if (productId == null || productId <= 0) {
+        throw new IllegalArgumentException("productId가 유효하지 않습니다. orderNumber=" + on);
+      }
+      if (sellerVendorId == null || sellerVendorId <= 0) {
+        throw new IllegalArgumentException("sellerVendorId가 유효하지 않습니다. productId=" + productId);
+      }
+      if (qty <= 0) {
+        throw new IllegalArgumentException("출고 수량은 1 이상이어야 합니다. productId=" + productId);
+      }
 
+      mapper.ensureStockRow(productId);
       Integer before = mapper.selectStockCountForUpdate(productId);
-      int beforeCount = before == null ? 0 : before.intValue();
+      if (before == null) throw new IllegalStateException("재고 행을 조회할 수 없습니다. productId=" + productId);
+      int beforeCount = before;
       
 
-      int afterCount = beforeCount - qty;
+      int afterCount = Math.subtractExact(beforeCount, qty);
       if (afterCount < 0) throw new IllegalArgumentException("재고 부족: productId=" + productId);
 
       
       
-      mapper.insertHistoryOutbound(lotId, r.getSellerVendorId(), userId, productId, beforeCount, afterCount);
+      int historyInserted = mapper.insertHistoryOutbound(
+          lotId, r.getSellerVendorId(), productId, beforeCount, afterCount
+      );
+      if (historyInserted != 1) throw new IllegalStateException("재고 이력 생성 실패. productId=" + productId);
 
-      mapper.upsertStockByDelta(productId, -qty);
+      int stockUpdated = mapper.updateStockCount(productId, afterCount);
+      if (stockUpdated != 1) throw new IllegalStateException("재고 갱신 실패. productId=" + productId);
     }
 
     int updated = mapper.markOutboundCompleteByOrderNumber(on);
-    if (updated <= 0) throw new IllegalArgumentException("출고 완료 처리 실패: " + on);
+    int expected = orders.size();
+    if (updated != expected) {
+      throw new IllegalStateException(
+          "출고 완료 상태 변경 행 수가 일치하지 않습니다. orderNumber=" + on
+              + ", expected=" + expected + ", actual=" + updated
+      );
+    }
   }
   
   

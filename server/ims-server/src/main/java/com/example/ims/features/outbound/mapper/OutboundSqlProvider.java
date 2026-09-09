@@ -38,7 +38,7 @@ public class OutboundSqlProvider {
 
 	  
 	      MIN(o.manager_id) AS managerId,
-	      MIN(um.name) AS managerName,
+	      COALESCE(MIN(um.name), '미배정') AS managerName,
 
 	      MAX(CASE WHEN o.`count` > IFNULL(s.`count`, 0) THEN 1 ELSE 0 END) AS hasShortage
 	    FROM `orders` o
@@ -47,7 +47,6 @@ public class OutboundSqlProvider {
 	    LEFT JOIN stock s ON s.product_id = o.product_id
 	    LEFT JOIN `user` um ON um.id = o.manager_id  
 	    WHERE o.status = 'OUTBOUND_PENDING'
-	    AND o.manager_id IS NOT NULL
 	    AND o.recieve_date BETWEEN #{from} AND #{to}
 	  """);
 
@@ -210,13 +209,21 @@ public class OutboundSqlProvider {
     FOR UPDATE
   """; }
 
-  public String upsertStockByDelta() { 
-	  return """
+  public String ensureStockRow() {
+    return """
     INSERT INTO stock (product_id, `count`)
-    VALUES (#{productId}, #{delta})
-    ON DUPLICATE KEY UPDATE
-      `count` = `count` + #{delta}
-  """; }
+    VALUES (#{productId}, 0)
+    ON DUPLICATE KEY UPDATE product_id = VALUES(product_id)
+    """;
+  }
+
+  public String updateStockCount() {
+    return """
+    UPDATE stock
+    SET `count` = #{count}
+    WHERE product_id = #{productId}
+    """;
+  }
 
   public String insertHistoryOutbound() { 
 	  return """
@@ -237,8 +244,8 @@ public class OutboundSqlProvider {
 
   public String insertHistoryLot() { 
 	  return """
-	INSERT INTO history_lot (user_id, status, memo)
-    VALUES (#{userId}, 'OUTBOUND', #{memo})
+    INSERT INTO history_lot (user_id, order_number, status, memo, created_at)
+      VALUES (#{userId}, #{orderNumber}, 'OUTBOUND', #{memo}, NOW())
   """; }
   
   
@@ -250,10 +257,6 @@ public class OutboundSqlProvider {
 	  		ORDER BY p.type ASC
 	  		""";
   }
-  
-  public String selectLastHistoryLotId() {
-	  return "SELECT LAST_INSERT_ID()";
-	}
   
   public String selectStockBrandsByType(Map<String, Object> p) {
 	  return """

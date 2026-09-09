@@ -69,19 +69,6 @@ public class InboundQueryService {
         return detail;
     }
 
-    // 입고 완료 처리
-    public InboundStatusUpdateResponse markComplete(Long orderId) {
-        if (orderId == null || orderId <= 0) throw new IllegalArgumentException("ID 확인 부탁");
-
-        int updated = mapper.markInboundComplete(orderId); // status INBOUND_PENDING --> INBOUND_COMPLETE
-        if (updated != 1) throw new IllegalArgumentException("이미 완료됐거나 없는 ID임: " + orderId); // 보통 1 생기는데 아니면 문제
-
-        InboundStatusUpdateResponse snapshot = mapper.selectStatusSnapshot(orderId);
-        if (snapshot == null) throw new IllegalArgumentException("주문 조회 불가: " + orderId);
-
-        return snapshot;
-    }
-
     // -----------------------------------------------------------------------------------------
     // 3) pending summary/items/detail/update
     
@@ -212,16 +199,16 @@ public class InboundQueryService {
             throw new IllegalArgumentException("입고 완료 대상이 없습니다(이미 완료됐거나 발주번호 없음): " + on);
         }
 
-        // 3) history_lot userId 결정
-        Long fallbackUserId = rows.get(0).getUserId();
-        Long actorUserId = (loginUserId != null && loginUserId > 0) ? loginUserId : fallbackUserId;
+        // 3) history_lot userId는 인증된 완료 작업자만 사용한다.
+        Long actorUserId = loginUserId;
         if (actorUserId == null || actorUserId <= 0) {
-            throw new IllegalArgumentException("history_lot userId를 결정할 수 없습니다. orderNumber=" + on);
+            throw new IllegalArgumentException("입고 완료 작업자 인증 정보가 없습니다. orderNumber=" + on);
         }
 
         // 4) history_lot 생성
         HistoryLot lot = new HistoryLot();
         lot.setUserId(actorUserId);
+        lot.setOrderNumber(on);
         lot.setStatus("INBOUND");
         lot.setMemo(req != null && StringUtils.hasText(req.getMemo()) ? req.getMemo().trim() : null);
 
@@ -233,11 +220,15 @@ public class InboundQueryService {
 
         // 5) history + stock + (중요) qty_changed 판정/세팅
         for (InboundCompleteOrderRow r : rows) {
-            if (r == null) continue;
+            if (r == null) {
+                throw new IllegalStateException("입고 완료 대상 행이 비어 있습니다. orderNumber=" + on);
+            }
 
             Long orderId = r.getOrderId();
             Long vendorItemId = r.getVendorItemId();
-            if (vendorItemId == null || vendorItemId <= 0) continue;
+            if (vendorItemId == null || vendorItemId <= 0) {
+                throw new IllegalArgumentException("vendorItemId가 유효하지 않습니다. orderId=" + orderId);
+            }
 
             // DB 발주수량 (orders.count)
             int orderCount = 0;
@@ -257,7 +248,9 @@ public class InboundQueryService {
                 receivedQty = orderCount;
             }
 
-            if (receivedQty <= 0) continue;
+            if (receivedQty <= 0) {
+                throw new IllegalArgumentException("입고 수량은 1 이상이어야 합니다. orderId=" + orderId);
+            }
 
             // ✅ 배지용: 입고수량 != 발주수량이면 qty_changed=1
             if (orderId != null && orderId > 0 && receivedQty != orderCount) {
@@ -270,22 +263,37 @@ public class InboundQueryService {
                 throw new IllegalArgumentException("productId 없음. vendorItemId=" + vendorItemId);
             }
 
-            // before/after (vendorItem 기준 최신 after_count)
-            Integer latestAfter = mapper.selectLatestAfterCountForUpdate(vendorItemId);
-            int beforeCount = (latestAfter == null ? 0 : latestAfter.intValue());
-            int afterCount = beforeCount + receivedQty;
+            // 현재 재고를 product_id 기준으로 잠그고 모든 입출고/조정의 단일 기준으로 사용한다.
+            mapper.ensureStockRow(productId);
+            Integer currentStock = mapper.selectStockCountForUpdate(productId);
+            if (currentStock == null) {
+                throw new IllegalStateException("재고 행을 조회할 수 없습니다. productId=" + productId);
+            }
 
-            // history insert
-            mapper.insertHistoryRow(lotId, vendorItemId, productId, beforeCount, afterCount);
+            int beforeCount = currentStock;
+            int afterCount = Math.addExact(beforeCount, receivedQty);
 
-            // stock upsert
-            mapper.upsertStockByProductId(productId, receivedQty);
+            int stockUpdated = mapper.updateStockCount(productId, afterCount);
+            if (stockUpdated != 1) {
+                throw new IllegalStateException("재고 갱신 실패. productId=" + productId);
+            }
+
+            int historyInserted = mapper.insertHistoryRow(
+                lotId, vendorItemId, productId, beforeCount, afterCount
+            );
+            if (historyInserted != 1) {
+                throw new IllegalStateException("재고 이력 생성 실패. productId=" + productId);
+            }
         }
 
         // 6) orders 상태를 완료로 변경
         int updated = mapper.markInboundCompleteByOrderNumber(on, actorUserId);
-        if (updated <= 0) {
-            throw new IllegalArgumentException("입고 완료 처리 실패: " + on);
+        int expected = rows.size();
+        if (updated != expected) {
+            throw new IllegalStateException(
+                "입고 완료 상태 변경 행 수가 일치하지 않습니다. orderNumber=" + on
+                    + ", expected=" + expected + ", actual=" + updated
+            );
         }
 
         return updated;

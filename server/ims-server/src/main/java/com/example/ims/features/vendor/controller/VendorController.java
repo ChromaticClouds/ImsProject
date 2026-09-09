@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.example.ims.features.vendor.dto.VendorCreateRequest;
 import com.example.ims.features.vendor.dto.VendorDetailResponse;
@@ -44,6 +45,7 @@ public class VendorController {
     
     // 거래처 등록
     @PostMapping
+    @PreAuthorize("hasAuthority('PERM_ALL')")
     public Long createVendor(@RequestBody VendorCreateRequest request) {
         return vendorService.createVendor(request);
     }
@@ -67,6 +69,7 @@ public class VendorController {
     
     // 거래처 수정
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('PERM_ALL')")
     public void updateVendor(@PathVariable("id") Long id, @RequestBody VendorCreateRequest request) {
         vendorService.updateVendor(id, request);
     }
@@ -74,12 +77,14 @@ public class VendorController {
     // 거래처 삭제
     
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('PERM_ALL')")
     public void deleteVendor(@PathVariable("id") Long id) {
         vendorService.deleteVendor(id);
     }
     
     
     @PatchMapping("/{vendorId}/items/{productId}")
+    @PreAuthorize("hasAuthority('PERM_ALL')")
     public void softDeleteVendorItem(
       @PathVariable("vendorId") Long vendorId,
       @PathVariable("productId") Long productId

@@ -64,6 +64,7 @@ class PurchaseOrderServiceUnitTest {
         when(loader.load("PLA-001")).thenReturn(ctx);
         when(pdfService.buildDto(ctx)).thenReturn(content);
         when(pdfService.generate(content)).thenReturn(pdf);
+        when(mapper.markSentByOrderNumber("PLA-001")).thenReturn(1);
 
         service.sendOne("PLA-001");
 
@@ -74,6 +75,25 @@ class PurchaseOrderServiceUnitTest {
         inOrder.verify(mailSender).sendPurchaseOrder(eq(ctx), anyString(), same(pdf));
         inOrder.verify(mapper).markSentByOrderNumber("PLA-001");
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    @DisplayName("Given 메일 전송 성공 When 상태 변경 행 수 불일치 Then 실패로 처리한다")
+    void sendOne_GivenStatusRowCountMismatch_WhenSend_ThenFails() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext ctx = context("PLA-ROW-MISMATCH", "vendor@test.com");
+        PurchaseOrderPdfContent content = content(ctx);
+        byte[] pdf = new byte[] {1};
+
+        when(loader.load("PLA-ROW-MISMATCH")).thenReturn(ctx);
+        when(pdfService.buildDto(ctx)).thenReturn(content);
+        when(pdfService.generate(content)).thenReturn(pdf);
+        when(mapper.markSentByOrderNumber("PLA-ROW-MISMATCH")).thenReturn(0);
+
+        assertThrows(
+            IllegalStateException.class,
+            () -> service.sendOne("PLA-ROW-MISMATCH")
+        );
     }
 
     @ParameterizedTest(name = "vendor email missing case [{index}]: ''{0}''")
@@ -175,6 +195,8 @@ class PurchaseOrderServiceUnitTest {
         when(pdfService.generate(mailFailContent)).thenReturn(mailFailPdf);
         when(pdfService.buildDto(ok2)).thenReturn(ok2Content);
         when(pdfService.generate(ok2Content)).thenReturn(ok2Pdf);
+        when(mapper.markSentByOrderNumber("PLA-OK-1")).thenReturn(1);
+        when(mapper.markSentByOrderNumber("PLA-OK-2")).thenReturn(1);
         doAnswer(invocation -> {
             PurchaseOrderContext ctx = invocation.getArgument(0);
             if ("PLA-MAIL-FAIL".equals(ctx.orderNumber())) {

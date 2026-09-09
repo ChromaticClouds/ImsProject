@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.example.ims.features.inbound.dto.*;
@@ -48,11 +49,6 @@ public class InboundQueryController {
         return service.getOrderDetail(orderId);
     }
 
-    @PatchMapping("/orders/{orderId}/complete")
-    public InboundStatusUpdateResponse markComplete(@PathVariable("orderId") Long orderId) {
-        return service.markComplete(orderId);
-    }
-
     // -------------------------
     // Pending summary/items/detail/update
     // -------------------------
@@ -81,6 +77,7 @@ public class InboundQueryController {
 
     
     @PatchMapping("/orders/by-number/{orderNumber}/complete")
+    @PreAuthorize("hasAnyAuthority('PERM_INBOUND', 'PERM_ALL')")
     public InboundStatusUpdateResponse markCompleteByOrderNumber(
         @PathVariable("orderNumber") String orderNumber,
         @RequestBody(required = false) PendingUpdateRequest req, // ← 이것만 변경
@@ -104,6 +101,7 @@ public class InboundQueryController {
     }
 
     @PatchMapping("/pending/{orderNumber}")
+    @PreAuthorize("hasAnyAuthority('PERM_INBOUND', 'PERM_ALL')")
     public PendingDetailResponse updatePending(
         @PathVariable("orderNumber") String orderNumber,
         @RequestBody PendingUpdateRequest req

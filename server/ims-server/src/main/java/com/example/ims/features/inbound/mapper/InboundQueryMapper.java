@@ -63,12 +63,6 @@ public interface InboundQueryMapper {
   @UpdateProvider(type = InboundQuerySqlProvider.class, method = "markInboundPending")
   int markInboundPending(@Param("orderId") Long orderId);
 
-  @UpdateProvider(type = InboundQuerySqlProvider.class, method = "markInboundComplete")
-  int markInboundComplete(@Param("orderId") Long orderId);
-
-  @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectStatusSnapshot")
-  InboundStatusUpdateResponse selectStatusSnapshot(@Param("orderId") Long orderId);
-
   // -------------------------
   // pending summary/items/detail
   // -------------------------
@@ -129,8 +123,11 @@ public interface InboundQueryMapper {
       @Param("orderNumber") String orderNumber
   );
 
-  @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectLatestAfterCountForUpdate")
-  Integer selectLatestAfterCountForUpdate(@Param("vendorItemId") Long vendorItemId);
+  @InsertProvider(type = InboundQuerySqlProvider.class, method = "ensureStockRow")
+  int ensureStockRow(@Param("productId") Long productId);
+
+  @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectStockCountForUpdate")
+  Integer selectStockCountForUpdate(@Param("productId") Long productId);
 
   @SelectProvider(type = InboundQuerySqlProvider.class, method = "selectProductIdByVendorItemId")
   Long selectProductIdByVendorItemId(@Param("vendorItemId") Long vendorItemId);
@@ -150,15 +147,15 @@ public interface InboundQueryMapper {
       @Param("loginUserId") Long loginUserId
   );
 
-  @InsertProvider(type = InboundQuerySqlProvider.class, method = "upsertStockByProductId")
-  int upsertStockByProductId(
+  @UpdateProvider(type = InboundQuerySqlProvider.class, method = "updateStockCount")
+  int updateStockCount(
       @Param("productId") Long productId,
-      @Param("delta") Integer delta
+      @Param("count") Integer count
   );
 
   @Insert("""
-      INSERT INTO history_lot (user_id, status, memo)
-      VALUES (#{userId}, #{status}, #{memo})
+      INSERT INTO history_lot (user_id, order_number, status, memo, created_at)
+      VALUES (#{userId}, #{orderNumber}, #{status}, #{memo}, NOW())
   """)
   @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
   int insertHistoryLot(HistoryLot lot);

@@ -44,16 +44,6 @@ export async function updateInboundPending(orderNumber, data) {
 }
 
 /**
- * 입고 - complete by order id
- * @param {number} orderId
- */
-export async function completeInboundOrder(orderId) {
-  return await api
-    .patch(`inbounds/orders/${encodeURIComponent(orderId)}/complete`)
-    .json();
-}
-
-/**
  * 입고 - complete by order number
  * @param {string} orderNumber
  * @param {{ memo?: string, items?: { orderId: number, orderQty: number }[] }=} body

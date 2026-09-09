@@ -3,6 +3,7 @@ package com.example.ims.features.invitation.controllers;
 import com.example.ims.features.invitation.dto.SoloEmailRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ public class InvitationController {
     private final InvitationService service;
     
     @PostMapping
+    @PreAuthorize("hasAuthority('PERM_ALL')")
     public ResponseEntity<ApiResponse<Void>> invite(@RequestBody @Valid EmailRequest request) 
             throws ResendException {
         service.invite(request);
@@ -37,6 +39,7 @@ public class InvitationController {
     }
 
     @PostMapping("single")
+    @PreAuthorize("hasAuthority('PERM_ALL')")
     public ResponseEntity<ApiResponse<Void>> inviteSingle(
         @RequestBody SoloEmailRequest request
     ) throws ResendException {

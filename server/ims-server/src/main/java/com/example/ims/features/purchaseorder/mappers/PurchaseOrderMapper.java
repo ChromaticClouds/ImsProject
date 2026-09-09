@@ -77,12 +77,12 @@ public interface PurchaseOrderMapper {
     @Delete("DELETE FROM orders WHERE order_number = #{orderNumber}")
     int deleteByOrderNumber(@Param("orderNumber") String orderNumber);
 
-    @Update("UPDATE orders SET status='INBOUND_PENDING' WHERE order_number = #{orderNumber}")
+    @Update("UPDATE orders SET status='INBOUND_PENDING' WHERE order_number = #{orderNumber} AND status IS NULL")
     int markSentByOrderNumber(@Param("orderNumber") String orderNumber);
 
     @Update({
         "<script>",
-        "UPDATE orders SET status='INBOUND_PENDING' WHERE order_number IN",
+        "UPDATE orders SET status='INBOUND_PENDING' WHERE status IS NULL AND order_number IN",
         "<foreach collection='orderNumbers' item='n' open='(' separator=',' close=')'>",
         "  #{n}",
         "</foreach>",

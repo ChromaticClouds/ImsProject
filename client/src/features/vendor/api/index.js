@@ -16,7 +16,7 @@ export const createVendor = async (data) => {
 
 /** @param {number} id @param {Record<string, unknown>} data */
 export const updateVendor = async (id, data) => {
-  return await api.put(`vendor/${id}`, { json: data }).json();
+  return await api.put(`vendor/${id}`, { json: data });
 };
 
 /** @param {number} id */

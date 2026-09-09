@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Map;
 
-import org.springframework.cglib.core.CollectionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +64,8 @@ public class VendorService {
     // 거래처 등록
     @Transactional
     public Long createVendor(VendorCreateRequest request) {
+      validateSupplierItems(request);
+
       Vendor dto = Vendor.from(request);
       mapper.insertVendor(dto);
 
@@ -73,8 +74,7 @@ public class VendorService {
         throw new IllegalStateException("vendor insert 후 id 생성 실패");
       }
 
-      // Supplier이고 제품 null 아니고, 제품 수량 0 이상인 것만 가능
-      if (request.getType() == VendorType.Supplier && request.getItems() != null && request.getItems().size() > 0 ) {
+      if (request.getType() == VendorType.Supplier) {
         mapper.insertVendorItems(vendorId, request.getItems());
       }
 
@@ -118,6 +118,7 @@ public class VendorService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found: " + id);
       }
 
+      validateSupplierItems(request);
       mapper.updateVendor(id, request);
 
       // enum 판별
@@ -128,10 +129,6 @@ public class VendorService {
 
       mapper.softDeleteVendorItemsByVendorId(id);
 
-      if (request.getItems() == null || request.getItems().size() == 0) {
-    	    return;
-    	  }
-
       for (VendorCreateRequest.VendorItemCreate it : request.getItems()) {
         Long vendorItemId = mapper.findVendorItemId(id, it.getProductId());
 
@@ -139,6 +136,29 @@ public class VendorService {
           mapper.updateVendorItemPrice(vendorItemId, it.getPurchasePrice());
         } else {
           mapper.insertVendorItems(id, List.of(it));
+        }
+      }
+    }
+
+    private void validateSupplierItems(VendorCreateRequest request) {
+      if (request.getType() != VendorType.Supplier) {
+        return;
+      }
+
+      if (request.getItems() == null || request.getItems().isEmpty()) {
+        throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "공급처는 품목을 최소 1개 이상 등록해야 합니다."
+        );
+      }
+
+      for (VendorCreateRequest.VendorItemCreate item : request.getItems()) {
+        if (item == null || item.getProductId() == null || item.getPurchasePrice() == null
+            || item.getPurchasePrice() <= 0) {
+          throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "공급 품목과 구매 단가는 필수이며 단가는 1원 이상이어야 합니다."
+          );
         }
       }
     }

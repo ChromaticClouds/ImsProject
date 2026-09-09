@@ -112,6 +112,11 @@ export const VendorBaseEditForm = ({ form, vendor }) => {
             <field.TextField label={<LabelComponent label='이메일' />} />
           )}
         </form.AppField>
+        <form.AppField name='bossName'>
+          {(field) => (
+            <field.TextField label={<LabelComponent label='대표자명' />} />
+          )}
+        </form.AppField>
         <form.AppField name='address'>
           {(field) => (
             <field.TextField label={<LabelComponent label='주소' />} />

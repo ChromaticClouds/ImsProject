@@ -1,8 +1,9 @@
 // @ts-check
 
 import { useAppForm } from '@/components/form/index.js';
-import { useVendorDetail } from '@/features/vendor/hooks/vendor-detail/use-vendor-detail.js';
-import { useParams } from 'react-router-dom';
+import { useUpdateVendor } from '@/features/vendor/hooks/use-update-vendor.js';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import z from 'zod';
 
 const requiredSchema = z.string().trim().min(1, '필수 입력값입니다.');
@@ -29,6 +30,7 @@ const vendorFormSchema = z
         ),
     ),
     email: z.email('이메일 형식이 올바르지 않습니다'),
+    bossName: requiredSchema,
     address: requiredSchema,
     memo: z.string().optional(),
     items: z.array(vendorProductSchema),
@@ -70,8 +72,9 @@ const toInitValues = (
         vendorName: data.vendor.vendorName,
         telephone: data.vendor.telephone,
         email: data.vendor.email,
+        bossName: data.vendor.bossName ?? '',
         address: data.vendor.address,
-        memo: data.vendor.memo,
+        memo: data.vendor.memo ?? '',
         items: data.items ?? [],
       }
     : {
@@ -79,14 +82,36 @@ const toInitValues = (
         vendorName: '',
         telephone: '',
         email: '',
+        bossName: '',
         address: '',
         memo: '',
         items: [],
       };
 
-export const useVendorEditForm = () => {
-  const { id } = useParams();
-  const { data } = useVendorDetail(id);
+const toPayload = (/** @type {z.infer<typeof vendorFormSchema>} */ value) => ({
+  type: value.type,
+  vendorName: value.vendorName.trim(),
+  telephone: value.telephone.trim(),
+  email: value.email.trim(),
+  bossName: value.bossName.trim(),
+  address: value.address.trim(),
+  memo: value.memo?.trim() || null,
+  items:
+    value.type === 'Supplier'
+      ? value.items.map(({ productId, purchasePrice }) => ({
+          productId,
+          purchasePrice,
+        }))
+      : [],
+});
+
+/**
+ * @param {number} id
+ * @param {import('@/features/vendor/types/index.js').VendorDetailResponse} data
+ */
+export const useVendorEditForm = (id, data) => {
+  const navigate = useNavigate();
+  const { mutateAsync } = useUpdateVendor();
 
   return useAppForm({
     defaultValues: toInitValues(data),
@@ -94,6 +119,18 @@ export const useVendorEditForm = () => {
       onMount: vendorFormSchema,
       onChange: vendorFormSchema,
     },
-    onSubmit: ({ value }) => console.log(value),
+    onSubmit: async ({ value }) => {
+      try {
+        await mutateAsync({ id, payload: toPayload(value) });
+        toast.success('거래처가 수정되었습니다.');
+        navigate(`/dashboard/vendor/${id}`);
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : '수정 중 오류가 발생했습니다.',
+        );
+      }
+    },
   });
 };

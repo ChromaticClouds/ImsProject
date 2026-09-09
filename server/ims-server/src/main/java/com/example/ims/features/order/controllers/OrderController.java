@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,6 +73,7 @@ public class OrderController {
     }
 
     @PatchMapping("/{orderNumber}/manager")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> patchOutboundManager(
         @PathVariable("orderNumber") String orderNumber,
         @RequestBody AssignOutboundManagerRequest request

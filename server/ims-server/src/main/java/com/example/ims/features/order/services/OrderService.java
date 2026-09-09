@@ -140,7 +140,7 @@ public class OrderService {
 
     public List<UserIdentifier> getOutboundManagers() {
         List<User> managers = userRepository.findByUserRoleInAndStatus(
-            List.of(UserRole.OUTBOUND),
+            List.of(UserRole.OUTBOUND, UserRole.ALL),
             UserStatus.ACTIVE
         );
 
@@ -168,6 +168,11 @@ public class OrderService {
 
         User manager = userRepository.findById(managerId)
             .orElseThrow(UserNotFoundException::new);
+
+        if (manager.getStatus() != UserStatus.ACTIVE
+            || (manager.getUserRole() != UserRole.OUTBOUND && manager.getUserRole() != UserRole.ALL)) {
+            throw new IllegalArgumentException("활성 출고 담당자만 지정할 수 있습니다");
+        }
 
         orders.forEach(o -> o.assignManager(manager));
     }

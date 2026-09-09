@@ -44,7 +44,8 @@ class InboundQuerySqlProviderTest {
         String sql = provider.selectCompletedItemsByOrderNumber(params);
 
         // 1. 핵심 서브쿼리 로직 확
-        assertThat(sql).contains("SELECT MAX(h2.lot_id)");
+        assertThat(sql).contains("MAX(id) AS lot_id");
+        assertThat(sql).contains("FROM history_lot");
         // 2. 수량 계산 
         assertThat(sql).contains("COALESCE(SUM(h.after_count - h.before_count), o.`count`) AS orderQty");
         // 3. 조건절 확인
@@ -74,6 +75,25 @@ class InboundQuerySqlProviderTest {
         assertThat(sql).contains("WHERE");
         assertThat(sql).contains("id = #{orderId}");
         assertThat(sql).contains("status = 'INBOUND_PENDING'");
+    }
+
+    @Test
+    @DisplayName("입고 재고 기준 SQL: product_id 재고 행을 보장하고 잠금 조회한다")
+    void stockConsistencySql_Test() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("productId", 100L);
+
+        String ensureSql = provider.ensureStockRow(params);
+        String selectSql = provider.selectStockCountForUpdate(params);
+        String updateSql = provider.updateStockCount(params);
+
+        assertThat(ensureSql).contains("INSERT INTO stock");
+        assertThat(ensureSql).contains("ON DUPLICATE KEY UPDATE");
+        assertThat(selectSql).contains("WHERE s.product_id = #{productId}");
+        assertThat(selectSql).contains("FOR UPDATE");
+        assertThat(selectSql).doesNotContain("vendor_item_id");
+        assertThat(updateSql).contains("SET `count` = #{count}");
+        assertThat(updateSql).contains("WHERE product_id = #{productId}");
     }
 }
 

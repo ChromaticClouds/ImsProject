@@ -130,26 +130,6 @@ public class InboundQuerySqlProvider {
         }}.toString();
     }
 
-    // 입고 완료
-    public String markInboundComplete() {
-        return new SQL(){{
-            UPDATE("`orders`");
-            SET("status = 'INBOUND_COMPLETE'");
-            SET("order_date = CURDATE()");
-            WHERE("id = #{orderId}");
-            WHERE("status = 'INBOUND_PENDING'");
-        }}.toString();
-    }
-
-    // 입고 상태 
-    public String selectStatusSnapshot() {
-        return new SQL(){{
-            SELECT("o.id AS orderId", "o.status AS status", "o.order_date AS orderDate");
-            FROM("`orders` o");
-            WHERE("o.id = #{orderId}");
-        }}.toString();
-    }
-
     // 입고 대기 내역
     public String selectPendingSummary(InboundSummaryParam p) {
         String keyword = p.getKeyword();
@@ -338,16 +318,15 @@ public class InboundQuerySqlProvider {
           JOIN vendor v ON v.id = vi.vendor_id
           JOIN product pr ON pr.id = vi.product_id
 
-          -- ✅ order_number -> lot_id 매핑
+          -- order_number -> latest inbound history lot
           LEFT JOIN (
             SELECT
-              o2.order_number,
-              MAX(h2.lot_id) AS lot_id
-            FROM `orders` o2
-            JOIN history h2 ON h2.vendor_item_id = o2.vendor_item_id
-            WHERE o2.status = 'INBOUND_COMPLETE'
-              AND DATE(o2.recieve_date) = CURDATE()
-            GROUP BY o2.order_number
+              order_number,
+              MAX(id) AS lot_id
+            FROM history_lot
+            WHERE status = 'INBOUND'
+              AND order_number IS NOT NULL
+            GROUP BY order_number
           ) lotmap ON lotmap.order_number = o.order_number
 
           LEFT JOIN history_lot hl ON hl.id = lotmap.lot_id
@@ -538,14 +517,21 @@ public class InboundQuerySqlProvider {
         """;
     }
 
-    // 입고 수정 후에 내역
-    public String selectLatestAfterCountForUpdate(Map<String, Object> p) {
+    // 품목별 재고 행을 보장한다. 중복 키 갱신도 해당 행에 쓰기 잠금을 획득한다.
+    public String ensureStockRow(Map<String, Object> p) {
         return """
-            SELECT h.after_count
-            FROM history h
-            WHERE h.vendor_item_id = #{vendorItemId}
-            ORDER BY h.created_at DESC, h.id DESC
-            LIMIT 1
+            INSERT INTO stock (product_id, `count`)
+            VALUES (#{productId}, 0)
+            ON DUPLICATE KEY UPDATE product_id = VALUES(product_id)
+        """;
+    }
+
+    // 이력이 아닌 현재 재고를 단일 기준으로 사용한다.
+    public String selectStockCountForUpdate(Map<String, Object> p) {
+        return """
+            SELECT s.`count`
+            FROM stock s
+            WHERE s.product_id = #{productId}
             FOR UPDATE
         """;
     }
@@ -576,12 +562,12 @@ public class InboundQuerySqlProvider {
 
 
 
-    // product_id 별로 stock upsert
-    public String upsertStockByProductId(Map<String, Object> p) {
+    // 잠근 재고 행을 계산된 절대 수량으로 갱신한다.
+    public String updateStockCount(Map<String, Object> p) {
         return """
-            INSERT INTO stock (product_id, `count`)
-            VALUES (#{productId}, #{delta})
-            ON DUPLICATE KEY UPDATE `count` = `count` + VALUES(`count`)
+            UPDATE stock
+            SET `count` = #{count}
+            WHERE product_id = #{productId}
         """;
     }
 

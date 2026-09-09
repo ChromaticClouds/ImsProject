@@ -237,8 +237,8 @@ public class OutboundSqlProvider {
 
   public String insertHistoryLot() { 
 	  return """
-	INSERT INTO history_lot (user_id, status, memo)
-    VALUES (#{userId}, 'OUTBOUND', #{memo})
+    INSERT INTO history_lot (user_id, order_number, status, memo, created_at)
+      VALUES (#{userId}, #{orderNumber}, 'OUTBOUND', #{memo}, NOW())
   """; }
   
   
@@ -250,10 +250,6 @@ public class OutboundSqlProvider {
 	  		ORDER BY p.type ASC
 	  		""";
   }
-  
-  public String selectLastHistoryLotId() {
-	  return "SELECT LAST_INSERT_ID()";
-	}
   
   public String selectStockBrandsByType(Map<String, Object> p) {
 	  return """

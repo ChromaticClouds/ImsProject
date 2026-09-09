@@ -68,15 +68,11 @@ public interface OutboundQueryMapper {
   int insertHistoryOutbound(
       @Param("lotId") Long lotId,
 	  @Param("sellerVendorId") Long sellerVendorId,
-      @Param("userId") Long userId,
       @Param("productId") Long productId,
       @Param("beforeCount") Integer beforeCount,
       @Param("afterCount") Integer afterCount
   );
   
-  @SelectProvider(type = OutboundSqlProvider.class, method = "selectLastHistoryLotId")
-  Long selectLastHistoryLotId();
-
   @UpdateProvider(type = OutboundSqlProvider.class, method = "markOutboundCompleteByOrderNumber")
   int markOutboundCompleteByOrderNumber(@Param("orderNumber") String orderNumber);
 

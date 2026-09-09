@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,11 +63,17 @@ public class OutboundQueryController {
   }
 
   @PatchMapping("/orders/by-number/{orderNumber}/complete")
+  @PreAuthorize("isAuthenticated()")
   public void complete(
       @PathVariable("orderNumber") String orderNumber,
-      @RequestBody(required = false) HistoryLot req
+      @RequestBody(required = false) HistoryLot req,
+      @AuthenticationPrincipal UserPrincipal user
   ) {
-    service.completeByOrderNumberAndWriteHistory(orderNumber, req == null ? null : req.getMemo());
+    service.completeByOrderNumberAndWriteHistory(
+        orderNumber,
+        req == null ? null : req.getMemo(),
+        user == null ? null : user.userId()
+    );
   }
   
   @GetMapping("/stock/types")

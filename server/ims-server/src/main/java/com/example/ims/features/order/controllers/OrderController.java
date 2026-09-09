@@ -73,7 +73,7 @@ public class OrderController {
     }
 
     @PatchMapping("/{orderNumber}/manager")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('PERM_OUTBOUND', 'PERM_ALL')")
     public ResponseEntity<ApiResponse<Void>> patchOutboundManager(
         @PathVariable("orderNumber") String orderNumber,
         @RequestBody AssignOutboundManagerRequest request

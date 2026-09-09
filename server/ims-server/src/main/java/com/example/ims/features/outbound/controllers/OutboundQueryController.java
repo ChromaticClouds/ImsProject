@@ -63,7 +63,7 @@ public class OutboundQueryController {
   }
 
   @PatchMapping("/orders/by-number/{orderNumber}/complete")
-  @PreAuthorize("isAuthenticated()")
+  @PreAuthorize("hasAnyAuthority('PERM_OUTBOUND', 'PERM_ALL')")
   public void complete(
       @PathVariable("orderNumber") String orderNumber,
       @RequestBody(required = false) HistoryLot req,

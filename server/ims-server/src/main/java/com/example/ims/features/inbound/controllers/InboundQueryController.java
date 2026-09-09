@@ -77,7 +77,7 @@ public class InboundQueryController {
 
     
     @PatchMapping("/orders/by-number/{orderNumber}/complete")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('PERM_INBOUND', 'PERM_ALL')")
     public InboundStatusUpdateResponse markCompleteByOrderNumber(
         @PathVariable("orderNumber") String orderNumber,
         @RequestBody(required = false) PendingUpdateRequest req, // ← 이것만 변경

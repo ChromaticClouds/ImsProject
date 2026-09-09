@@ -35,4 +35,14 @@ class OutboundQuerySqlProviderTest {
         assertThat(countSql).contains("o.status = 'OUTBOUND_PENDING'");
         assertThat(countSql).doesNotContain("o.manager_id IS NOT NULL");
     }
+
+    @Test
+    @DisplayName("출고 재고 갱신은 product_id 행을 보장한 뒤 절대값을 갱신한다")
+    void stockUpdateUsesLockedAbsoluteCount() {
+        Map<String, Object> params = new HashMap<>();
+
+        assertThat(provider.ensureStockRow(params)).contains("ON DUPLICATE KEY UPDATE");
+        assertThat(provider.selectStockCountForUpdate(params)).contains("FOR UPDATE");
+        assertThat(provider.updateStockCount(params)).contains("SET `count` = #{count}");
+    }
 }

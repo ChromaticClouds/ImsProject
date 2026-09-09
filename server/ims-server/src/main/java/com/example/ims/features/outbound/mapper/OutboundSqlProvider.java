@@ -209,13 +209,21 @@ public class OutboundSqlProvider {
     FOR UPDATE
   """; }
 
-  public String upsertStockByDelta() { 
-	  return """
+  public String ensureStockRow() {
+    return """
     INSERT INTO stock (product_id, `count`)
-    VALUES (#{productId}, #{delta})
-    ON DUPLICATE KEY UPDATE
-      `count` = `count` + #{delta}
-  """; }
+    VALUES (#{productId}, 0)
+    ON DUPLICATE KEY UPDATE product_id = VALUES(product_id)
+    """;
+  }
+
+  public String updateStockCount() {
+    return """
+    UPDATE stock
+    SET `count` = #{count}
+    WHERE product_id = #{productId}
+    """;
+  }
 
   public String insertHistoryOutbound() { 
 	  return """

@@ -101,18 +101,24 @@ public class OutboundQueryService {
         throw new IllegalArgumentException("출고 수량은 1 이상이어야 합니다. productId=" + productId);
       }
 
+      mapper.ensureStockRow(productId);
       Integer before = mapper.selectStockCountForUpdate(productId);
-      int beforeCount = before == null ? 0 : before.intValue();
+      if (before == null) throw new IllegalStateException("재고 행을 조회할 수 없습니다. productId=" + productId);
+      int beforeCount = before;
       
 
-      int afterCount = beforeCount - qty;
+      int afterCount = Math.subtractExact(beforeCount, qty);
       if (afterCount < 0) throw new IllegalArgumentException("재고 부족: productId=" + productId);
 
       
       
-      mapper.insertHistoryOutbound(lotId, r.getSellerVendorId(), productId, beforeCount, afterCount);
+      int historyInserted = mapper.insertHistoryOutbound(
+          lotId, r.getSellerVendorId(), productId, beforeCount, afterCount
+      );
+      if (historyInserted != 1) throw new IllegalStateException("재고 이력 생성 실패. productId=" + productId);
 
-      mapper.upsertStockByDelta(productId, -qty);
+      int stockUpdated = mapper.updateStockCount(productId, afterCount);
+      if (stockUpdated != 1) throw new IllegalStateException("재고 갱신 실패. productId=" + productId);
     }
 
     int updated = mapper.markOutboundCompleteByOrderNumber(on);

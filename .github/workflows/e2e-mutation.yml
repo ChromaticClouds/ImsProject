@@ -90,6 +90,8 @@ jobs:
         env:
           E2E_BASE_URL: http://127.0.0.1:4173
           E2E_SECOND_ADMIN_EID: E2E-SECOND-ADMIN
+          E2E_SECOND_ADMIN_EID: E2E-SECOND-ADMIN
+          E2E_DEMO_EID: E2E-DEMO
           E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
         run: pnpm run e2e:mutation
 

@@ -29,8 +29,8 @@ const lines = [
   "### Scope",
   "- Environment: disposable MySQL + Redis + Spring API",
   "- Seeded identities: FIRST_ADMIN, SECOND_ADMIN, EMPLOYEE",
-  "- Business mutation scenario: not implemented yet",
-  "- Database invariant verification: not implemented yet",
+  "- Business mutation scenario: create one purchase order against seeded supplier/product",
+  "- Database invariant verification: orders row, draft status, count, receive date, supplier/product, purchase price, and actor",
   "- Real email delivery: disabled",
 ];
 

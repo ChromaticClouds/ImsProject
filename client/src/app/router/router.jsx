@@ -88,7 +88,7 @@ export const router = createBrowserRouter([
                   {
                     path: 'setting',
                     element: <UserSetting />,
-                    handle: { permissions: ['ALL'], minRank: 3 },
+                    handle: { permissions: ['DEMO', 'ALL'] minRank: 3 },
                   },
                   { path: 'group', element: <UserGroup /> },
                 ],
@@ -97,9 +97,9 @@ export const router = createBrowserRouter([
                 path: 'vendor',
                 children: [
                   { index: true, element: <VendorList /> },
-                  { path: 'create', element: <VendorCreate /> },
+                  { path: 'create', element: <VendorCreate />, handle: { permissions: ['ALL'], minRank: 3 } },
                   { path: ':id', element: <VendorDetail /> },
-                  { path: 'modify/:id', element: <VendorEdit /> },
+                  { path: 'modify/:id', element: <VendorEdit />, handle: { permissions: ['ALL'], minRank: 3 } },
                 ],
                 handle: {
                   permissions: ['ALL'],
@@ -113,10 +113,12 @@ export const router = createBrowserRouter([
                   {
                     path: 'pending/edit/:orderNumber',
                     element: <InboundPendingEdit />,
+                    handle: { permissions: ['DEMO', 'INBOUND', 'ALL'] minRank: 1 },
                   },
                   {
                     path: 'register/:orderNumber',
                     element: <InboundRegister />,
+                    handle: { permissions: ['INBOUND', 'ALL'], minRank: 1 },
                   },
                 ],
                 handle: {
@@ -163,6 +165,7 @@ export const router = createBrowserRouter([
                   {
                     path: 'register/:orderNumber',
                     element: <OutboundRegister />,
+                    handle: { permissions: ['DEMO', 'OUTBOUND', 'ALL'] minRank: 1 },
                   },
                 ],
                 handle: {
@@ -183,9 +186,9 @@ export const router = createBrowserRouter([
                 path: 'purchase-order',
                 children: [
                   { index: true, element: <PurchaseOrder /> },
-                  { path: ':orderNumber/edit', element: <PurchaseOrderEdit /> },
-                  { path: 'create', element: <PurchaseOrderPost /> },
-                  { path: ':id/edit', element: <PurchaseOrderEdit /> },
+                  { path: ':orderNumber/edit', element: <PurchaseOrderEdit />, handle: { permissions: ['DEMO', 'PLACE_ORDER', 'ALL'] minRank: 1 } },
+                  { path: 'create', element: <PurchaseOrderPost />, handle: { permissions: ['PLACE_ORDER', 'ALL'], minRank: 1 } },
+                  { path: ':id/edit', element: <PurchaseOrderEdit />, handle: { permissions: ['PLACE_ORDER', 'ALL'], minRank: 1 } },
                 ],
                 handle: {
                   permissions: ['PLACE_ORDER', 'ALL'],
@@ -200,7 +203,7 @@ export const router = createBrowserRouter([
                 path: 'receive-order',
                 children: [
                   { index: true, element: <ReceiveOrder /> },
-                  { path: 'post', element: <ReceiveOrderPost /> },
+                  { path: 'post', element: <ReceiveOrderPost />, handle: { permissions: ['DEMO', 'RECEIVE_ORDER', 'ALL'] minRank: 1 } },
                 ],
                 handle: {
                   permissions: ['RECEIVE_ORDER', 'ALL'],

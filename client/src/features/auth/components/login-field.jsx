@@ -24,7 +24,7 @@ export const LoginField = ({ form, name, label, children, ...inputProps }) => {
 
         return (
           <Field>
-            {children || <Label htmlFor={field.name}>{label}</Label>}
+            {children ?? <Label htmlFor={field.name}>{label}</Label>}
 
             <Input
               {...inputProps}

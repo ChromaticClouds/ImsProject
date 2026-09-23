@@ -87,10 +87,10 @@ jobs:
             '| Duration | ' + durationSeconds + 's |',
             '',
             '### Scope',
-            '- Test identity: public DEMO account',
+            '- Test identity: SECOND_ADMIN + ALL',
             '- Unauthenticated redirects: covered',
             '- EMPLOYEE runtime matrix: not configured',
-            '- Business mutations: not run against production',
+            '- Business mutations: not run',
             '- Database verification: not run',
           ];
 

@@ -5,9 +5,9 @@ import { expect, test as setup } from 'playwright/test';
 
 const EID = process.env.E2E_EID;
 const PASSWORD = process.env.E2E_PASSWORD;
-const AUTH_FILE = path.resolve('playwright/.auth/second-admin.json');
+const AUTH_FILE = path.resolve('playwright/.auth/demo.json');
 
-setup('authenticate the production demo account', async ({ page }) => {
+setup('authenticate the production DEMO account', async ({ page }) => {
   expect(EID, 'E2E_EID GitHub Actions secret is required').toBeTruthy();
   expect(PASSWORD, 'E2E_PASSWORD GitHub Actions secret is required').toBeTruthy();
 

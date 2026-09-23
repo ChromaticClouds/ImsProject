@@ -38,7 +38,7 @@ export const NoticeDetail = () => {
   const isAuthorized = user?.eid === notice?.author?.eid;
 
   const attachments = notice.attachments ?? [];
-  const canManage = user?.userRank === 'FIRST_ADMIN';
+  const canManage = user?.userRank === 'FIRST_ADMIN' && user?.userRole !== 'DEMO';
   const goNoticeList = () => navigate('/dashboard/notice');
 
   return (

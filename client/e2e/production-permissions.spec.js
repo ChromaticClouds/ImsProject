@@ -118,7 +118,12 @@ test.describe('production DEMO permission matrix', () => {
       'patch',
       '/api/purchase-orders/PLA-PRODUCTION-DEMO-DENY',
       accessToken,
-      { data: {} },
+      {
+        data: {
+          recieveDate: '2026-12-31',
+          items: [],
+        },
+      },
     );
     await expectStatus(
       context.request,

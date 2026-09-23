@@ -76,8 +76,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handle(IllegalArgumentException e) {
+        log.error("Illegal argument while processing request", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ApiResponse.fail(GlobalError.UNEXPECTED_ERROR));
+            .body(ApiResponse.fail(GlobalError.REQUEST_PROCESSING_ERROR));
     }
 
     @ExceptionHandler(InvalidInvitationTokenException.class)
@@ -113,6 +114,3 @@ public class GlobalExceptionHandler {
             .body(ApiResponse.fail(e.getMessage()));
     }
 }
-
-
-

@@ -5,9 +5,13 @@ import { VendorSearch } from '@/features/vendor/components/vendor-list/vendor-se
 import { VendorTableContainer } from '@/features/vendor/components/vendor-list/vendor-table-container.jsx';
 import { VendorPaginationContainer } from '@/features/vendor/components/vendor-list/vendor-pagination-container.jsx';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
+import { isDemoUser } from '@/features/auth/utils/is-demo-user.js';
 
 export const VendorList = () => {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const isDemo = isDemoUser(user);
 
   return (
     <div className='p-4 space-y-4'>
@@ -18,9 +22,11 @@ export const VendorList = () => {
       <VendorSearch />
       <VendorTableContainer />
       <VendorPaginationContainer />
-      <Button onClick={() => navigate('/dashboard/vendor/create')}>
-        거래처 등록
-      </Button>
+      {!isDemo ? (
+        <Button onClick={() => navigate('/dashboard/vendor/create')}>
+          거래처 등록
+        </Button>
+      ) : null}
     </div>
   );
 };

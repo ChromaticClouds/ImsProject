@@ -43,10 +43,10 @@ jobs:
           e2e_db_root_password="$(openssl rand -hex 16)"
           e2e_jwt_secret="$(openssl rand -hex 32)"
 
-          printf '::add-mask::%s\\n' "$E2E_TEST_PASSWORD"
-          printf '::add-mask::%s\\n' "$e2e_db_password"
-          printf '::add-mask::%s\\n' "$e2e_db_root_password"
-          printf '::add-mask::%s\\n' "$e2e_jwt_secret"
+          printf '::add-mask::%s\n' "$E2E_TEST_PASSWORD"
+          printf '::add-mask::%s\n' "$e2e_db_password"
+          printf '::add-mask::%s\n' "$e2e_db_root_password"
+          printf '::add-mask::%s\n' "$e2e_jwt_secret"
 
           {
             echo "E2E_TEST_PASSWORD=$E2E_TEST_PASSWORD"

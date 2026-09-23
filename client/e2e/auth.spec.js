@@ -15,7 +15,7 @@ test.beforeEach(() => {
   expect(PASSWORD, 'E2E_PASSWORD GitHub Actions secret is required').toBeTruthy();
 });
 
-test('logs in with the production demo account', async ({ page }) => {
+test('logs in with the production DEMO account', async ({ page }) => {
   await page.goto('/login');
 
   await page.locator('input[name="eid"]').fill(EID);
@@ -28,7 +28,7 @@ test('logs in with the production demo account', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('keeps the authenticated session after a reload', async ({ page }) => {
+test('keeps the production DEMO session after a reload', async ({ page }) => {
   await page.goto('/login');
 
   await page.locator('input[name="eid"]').fill(EID);

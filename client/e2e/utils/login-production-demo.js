@@ -1,27 +1,32 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
-
-import { expect, test as setup } from 'playwright/test';
+import { expect } from 'playwright/test';
 
 const EID = process.env.E2E_EID;
 const PASSWORD = process.env.E2E_PASSWORD;
-const AUTH_FILE = path.resolve('playwright/.auth/demo.json');
 
-setup('authenticate the production DEMO account', async ({ page }) => {
+export const loginAsProductionDemo = async (page) => {
   expect(EID, 'E2E_EID GitHub Actions secret is required').toBeTruthy();
   expect(PASSWORD, 'E2E_PASSWORD GitHub Actions secret is required').toBeTruthy();
 
-  await fs.mkdir(path.dirname(AUTH_FILE), { recursive: true });
-
   await page.goto('/login');
+
+  const loginResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/api/auth/login') &&
+      response.request().method() === 'POST',
+  );
+
   await page.locator('input[name="eid"]').fill(EID);
   await page.locator('input[name="password"]').fill(PASSWORD);
   await page.getByRole('button', { name: '로그인' }).click();
+
+  const loginResponse = await loginResponsePromise;
+  expect(
+    loginResponse.ok(),
+    'Production DEMO login API must return 2xx',
+  ).toBeTruthy();
 
   await expect(page).toHaveURL(/\/dashboard(?:\/)?$/);
   await expect(
     page.getByRole('main').getByText('메인 페이지', { exact: true }),
   ).toBeVisible();
-
-  await page.context().storageState({ path: AUTH_FILE });
-});
+};

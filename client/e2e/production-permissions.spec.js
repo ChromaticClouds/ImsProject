@@ -1,5 +1,7 @@
 import { expect, test } from 'playwright/test';
 
+import { loginAsProductionDemo } from './utils/login-production-demo.js';
+
 const expectStatus = async (request, method, url, options = {}) => {
   const response = await request[method](url, options);
   expect(response.status(), method.toUpperCase() + ' ' + url).toBe(403);
@@ -52,6 +54,7 @@ test.describe('production DEMO permission matrix', () => {
   test.describe('DEMO: read-only routes', () => {
     for (const path of readOnlyRoutes) {
       test(path, async ({ page }) => {
+        await loginAsProductionDemo(page);
         await page.goto(path);
         const escaped = path.replaceAll('/', '\\/');
         await expect(page).toHaveURL(
@@ -64,6 +67,7 @@ test.describe('production DEMO permission matrix', () => {
   test.describe('DEMO: mutation routes denied', () => {
     for (const path of mutationRoutes) {
       test(path, async ({ page }) => {
+        await loginAsProductionDemo(page);
         await page.goto(path);
         await expect(page).toHaveURL(/\/dashboard(?:\/)?$/);
         await expect(
@@ -74,8 +78,11 @@ test.describe('production DEMO permission matrix', () => {
   });
 
   test('DEMO: read APIs remain accessible while mutations return 403', async ({
+    page,
     context,
   }) => {
+    await loginAsProductionDemo(page);
+
     for (const url of readApis) {
       const response = await context.request.get(url);
       expect(response.ok(), 'GET ' + url).toBeTruthy();

@@ -2,19 +2,16 @@ name: Production E2E
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'client/e2e/**'
-      - 'client/playwright.config.js'
-      - 'client/package.json'
-      - '.github/workflows/e2e.yml'
+  schedule:
+    - cron: '0 0 * * *'
 
 permissions:
   contents: read
 
 concurrency:
-  group: production-e2e-${{ github.event.pull_request.number || github.ref }}
+  group: production-e2e-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   production-e2e:
     name: Production Playwright smoke tests
@@ -51,6 +48,54 @@ jobs:
           E2E_EID: ${{ secrets.E2E_EID }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
         run: pnpm run e2e
+
+      - name: Publish GitHub Actions summary
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const resultPath = 'test-results/results.json';
+          const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+
+          if (!summaryPath) process.exit(0);
+
+          if (!fs.existsSync(resultPath)) {
+            fs.appendFileSync(
+              summaryPath,
+              '## Production E2E\\n\\nPlaywright result JSON was not generated.\\n',
+            );
+            process.exit(0);
+          }
+
+          const report = JSON.parse(fs.readFileSync(resultPath, 'utf8'));
+          const stats = report.stats ?? {};
+          const durationSeconds =
+            typeof stats.duration === 'number'
+              ? (stats.duration / 1000).toFixed(1)
+              : 'n/a';
+
+          const lines = [
+            '## Production E2E',
+            '',
+            '| Item | Result |',
+            '| --- | ---: |',
+            '| Expected / passed | ' + (stats.expected ?? 0) + ' |',
+            '| Unexpected / failed | ' + (stats.unexpected ?? 0) + ' |',
+            '| Skipped | ' + (stats.skipped ?? 0) + ' |',
+            '| Flaky | ' + (stats.flaky ?? 0) + ' |',
+            '| Duration | ' + durationSeconds + 's |',
+            '',
+            '### Scope',
+            '- Test identity: SECOND_ADMIN + ALL',
+            '- Unauthenticated redirects: covered',
+            '- EMPLOYEE runtime matrix: not configured',
+            '- Business mutations: not run',
+            '- Database verification: not run',
+          ];
+
+          fs.appendFileSync(summaryPath, lines.join('\\n') + '\\n');
+          NODE
 
       - name: Upload Playwright report
         if: always()

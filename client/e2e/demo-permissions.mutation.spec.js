@@ -27,6 +27,83 @@ test('DEMO account is read-only in the disposable environment', async ({ page, c
   await page.getByRole('button', { name: '로그인' }).click();
   await expect(page).toHaveURL(/\\/dashboard(?:\\/)?$/);
 
+  const allowedRoutes = [
+    '/dashboard',
+    '/dashboard/product',
+    '/dashboard/purchase-order',
+    '/dashboard/inbounds/pending',
+    '/dashboard/receive-order',
+    '/dashboard/outbounds/pending',
+    '/dashboard/vendor',
+    '/dashboard/statistics',
+    '/dashboard/history',
+    '/dashboard/notice',
+    '/dashboard/todo',
+  ];
+
+  for (const route of allowedRoutes) {
+    await page.goto(route);
+    await expect(page).toHaveURL(new RegExp(route.replaceAll('/', '\\/') + '(?:\\\\?.*)?    ['/api/product?page=1', undefined],
+    ['/api/purchase-orders', undefined],
+    ['/api/inbounds/pending?from=2026-01-01&to=2026-12-31&page=0&size=20', undefined],
+    ['/api/outbounds/pending/summary?from=2026-01-01&to=2026-12-31&page=0&size=20', undefined],
+    ['/api/order/receive', undefined],
+    ['/api/vendor', undefined],
+    ['/api/notice/list?page=1', undefined],
+    ['/api/history/brands?type=SOJU', undefined],
+    ['/api/stats/types', undefined],
+  ];
+
+  for (const [url, options] of reads) {
+    const response = await context.request.get(url, options);
+    expect(response.ok(), 'GET ' + url).toBeTruthy();
+  }
+
+  await expectStatus(context.request, 'post', '/api/purchase/order/post', { data: {} });
+  await expectStatus(context.request, 'patch', '/api/purchase-orders/PLA-DEMO-DENY', { data: {} });
+  await expectStatus(context.request, 'delete', '/api/purchase-orders/PLA-DEMO-DENY');
+  await expectStatus(context.request, 'post', '/api/purchase-orders/PLA-DEMO-DENY/send');
+  await expectStatus(context.request, 'post', '/api/purchase-orders/send', { data: { orderNumbers: [] } });
+  await expectStatus(context.request, 'patch', '/api/inbounds/orders/by-number/PLA-DEMO-DENY/complete', { data: {} });
+  await expectStatus(context.request, 'patch', '/api/outbounds/orders/by-number/REC-DEMO-DENY/complete', { data: {} });
+  await expectStatus(context.request, 'post', '/api/adjust', { data: {} });
+  await expectStatus(context.request, 'post', '/api/vendor', { data: {} });
+  await expectStatus(context.request, 'put', '/api/vendor/999999', { data: {} });
+  await expectStatus(context.request, 'delete', '/api/vendor/999999');
+  await expectStatus(context.request, 'patch', '/api/user/permission/999999', { data: {} });
+  await expectStatus(context.request, 'patch', '/api/user/change-password', { data: {} });
+  await expectStatus(context.request, 'patch', '/api/todo/999999/toggle');
+  await expectStatus(context.request, 'put', '/api/todo/999999', { data: {} });
+  await expectStatus(context.request, 'delete', '/api/todo/999999');
+  await expectStatus(context.request, 'post', '/api/invitation', { data: {} });
+  await expectStatus(context.request, 'post', '/api/order/post', { data: {} });
+  await expectStatus(context.request, 'patch', '/api/order/PLA-DEMO-DENY/manager', { data: {} });
+});
+));
+  }
+
+  const deniedRoutes = [
+    '/dashboard/adjust',
+    '/dashboard/purchase-order/create',
+    '/dashboard/purchase-order/PLA-DEMO-DENY/edit',
+    '/dashboard/inbounds/register/PLA-DEMO-DENY',
+    '/dashboard/inbounds/pending/edit/PLA-DEMO-DENY',
+    '/dashboard/outbounds/register/REC-DEMO-DENY',
+    '/dashboard/receive-order/post',
+    '/dashboard/vendor/create',
+    '/dashboard/vendor/modify/999999',
+    '/dashboard/notice/create',
+    '/dashboard/notice/999999/edit',
+    '/dashboard/user/setting',
+    '/dashboard/todo/create',
+    '/dashboard/todo/999999/edit',
+  ];
+
+  for (const route of deniedRoutes) {
+    await page.goto(route);
+    await expect(page).toHaveURL(/\\/dashboard(?:\\/)?$/);
+  }
+
   const reads = [
     ['/api/product?page=1', undefined],
     ['/api/purchase-orders', undefined],

@@ -1,6 +1,9 @@
 name: Production E2E
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
@@ -14,7 +17,7 @@ concurrency:
 
 jobs:
   production-e2e:
-    name: Production Playwright smoke tests
+    name: Production DEMO Playwright smoke tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:

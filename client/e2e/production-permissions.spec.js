@@ -23,7 +23,7 @@ test.describe('production permission matrix', () => {
       test(path, async ({ page }) => {
         await page.goto(path);
         await expect(page).toHaveURL(
-          new RegExp(path + '(?:/)?(?:\\?.*)?
+          new RegExp(path + '(?:/)?(?:\\?.*)?$'),
         );
       });
     }
@@ -40,24 +40,4 @@ test.describe('production permission matrix', () => {
       });
     }
   });
-
-});
-),
-        );
-      });
-    }
-  });
-
-  test.describe('SECOND_ADMIN + ALL: FIRST_ADMIN-only boundaries', () => {
-    for (const path of secondAdminDeniedRoutes) {
-      test(path, async ({ page }) => {
-        await page.goto(path);
-        await expect(page).toHaveURL(/\/dashboard(?:\/)?$/);
-        await expect(
-          page.getByRole('main').getByText('메인 페이지', { exact: true }),
-        ).toBeVisible();
-      });
-    }
-  });
-
 });

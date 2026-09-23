@@ -30,12 +30,16 @@ import {
 import { toast } from 'sonner';
 import { usePoBulkRemoveMutation } from '../../hooks/use-po-bulk-remove-mutation.js';
 import { Spinner } from '@/components/ui/spinner.js';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
+import { isDemoUser } from '@/features/auth/utils/is-demo-user.js';
 
 /**
  * @param {{ onReload?: () => Promise<any> }} props
  */
 export const PurchaseOrderHeader = ({ onReload }) => {
   const view = usePoParamStore((s) => s.view);
+  const user = useAuthStore((s) => s.user);
+  const isDemo = isDemoUser(user);
 
   const { selectedOrderNumbers, clear } = usePurchaseOrderSelectionStore();
   const { mutate: bulkRemove, isPending } = usePoBulkRemoveMutation();
@@ -64,7 +68,7 @@ export const PurchaseOrderHeader = ({ onReload }) => {
                 {selectedCount > 1 && `${selectedCount}건 선택됨 · 일괄 전송`}
               </span>
 
-              <div className='flex items-center gap-2 py-1 rounded-md'>
+              {!isDemo ? <div className='flex items-center gap-2 py-1 rounded-md'>
                 {/* 선택 전송 */}
                 <PurchaseOrderBulkActions onReload={onReload} />
 
@@ -106,7 +110,7 @@ export const PurchaseOrderHeader = ({ onReload }) => {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-              </div>
+              </div> : null}
             </div>
           </div>
         )}

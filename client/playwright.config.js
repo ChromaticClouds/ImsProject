@@ -1,9 +1,7 @@
-import path from 'node:path';
 import { defineConfig } from 'playwright/test';
 
 const baseURL =
   process.env.E2E_BASE_URL ?? 'https://ims-project-pi.vercel.app';
-const authFile = path.resolve('playwright/.auth/demo.json');
 
 export default defineConfig({
   testDir: './e2e',
@@ -29,15 +27,9 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'setup',
-      testMatch: '**/*.setup.js',
-    },
-    {
       name: 'chromium',
-      dependencies: ['setup'],
       use: {
         browserName: 'chromium',
-        storageState: authFile,
       },
     },
   ],

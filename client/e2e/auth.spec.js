@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from 'playwright/test';
 
 const EID = process.env.E2E_EID;
 const PASSWORD = process.env.E2E_PASSWORD;

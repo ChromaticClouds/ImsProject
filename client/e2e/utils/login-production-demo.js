@@ -25,8 +25,21 @@ export const loginAsProductionDemo = async (page) => {
     'Production DEMO login API must return 2xx',
   ).toBeTruthy();
 
+  const loginBody = await loginResponse.json();
+  const accessToken = loginBody?.data?.token;
+  expect(accessToken, 'Production DEMO access token is required').toBeTruthy();
+
   await expect(page).toHaveURL(/\/dashboard(?:\/)?$/);
   await expect(
     page.getByRole('main').getByText('메인 페이지', { exact: true }),
   ).toBeVisible();
+
+  return accessToken;
+};
+
+export const navigateAsSpa = async (page, path) => {
+  await page.evaluate((nextPath) => {
+    window.history.pushState({}, '', nextPath);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }, path);
 };

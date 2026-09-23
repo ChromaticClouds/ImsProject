@@ -20,4 +20,18 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("Access Denied", response.getBody().getMessage());
     }
+
+    @Test
+    void wrappedAccessDeniedExceptionReturnsForbidden() {
+        RefreshTokenCookieStore refreshTokenCookieStore = mock(RefreshTokenCookieStore.class);
+        GlobalExceptionHandler handler = new GlobalExceptionHandler(refreshTokenCookieStore);
+
+        var response = handler.handle(
+            new RuntimeException("Servlet dispatch failed",
+                new AccessDeniedException("Access Denied"))
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals("Servlet dispatch failed", response.getBody().getMessage());
+    }
 }

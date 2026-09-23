@@ -34,9 +34,24 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handle(Exception e) {
+        if (containsAccessDenied(e)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.fail(e.getMessage()));
+        }
+
         System.out.println(e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ApiResponse.fail(e.getMessage()));
+    }
+
+    private boolean containsAccessDenied(Throwable throwable) {
+        while (throwable != null) {
+            if (throwable instanceof AccessDeniedException) {
+                return true;
+            }
+            throwable = throwable.getCause();
+        }
+        return false;
     }
 
     @ExceptionHandler(UserNotFoundException.class)

@@ -18,7 +18,8 @@
     "typecheck:tsgo": "tsgo --noEmit",
     "check": "npm run lint && npm run typecheck",
     "check:tsgo": "npm run lint && npm run typecheck:tsgo",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:mutation": "playwright test --config=playwright.mutation.config.js"
   },
   "dependencies": {
     "@radix-ui/react-collapsible": "^1.1.12",

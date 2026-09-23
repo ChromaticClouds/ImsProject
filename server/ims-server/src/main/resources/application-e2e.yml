@@ -1,0 +1,17 @@
+spring:
+  config:
+    activate:
+      on-profile: e2e
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+e2e:
+  seed:
+    enabled: ${E2E_SEED_ENABLED:false}
+    password: ${E2E_SEED_PASSWORD:}
+    first-admin-eid: ${E2E_FIRST_ADMIN_EID:E2E-FIRST-ADMIN}
+    second-admin-eid: ${E2E_SECOND_ADMIN_EID:E2E-SECOND-ADMIN}
+    employee-eid: ${E2E_EMPLOYEE_EID:E2E-EMPLOYEE}
+    password-reset-email-domain: ${E2E_EMAIL_DOMAIN:e2e.invalid}

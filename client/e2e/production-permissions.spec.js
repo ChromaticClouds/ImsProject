@@ -3,37 +3,23 @@ import { expect, test } from 'playwright/test';
 // Runtime EMPLOYEE coverage intentionally remains out of scope until a dedicated
 // non-production EMPLOYEE account is available; this suite uses SECOND_ADMIN + ALL.
 
-const demoAllowedRoutes = [
-  '/dashboard',
-  '/dashboard/product',
-  '/dashboard/purchase-order',
+const secondAdminAllowedRoutes = [
   '/dashboard/inbounds/pending',
-  '/dashboard/receive-order',
   '/dashboard/outbounds/pending',
-  '/dashboard/vendor',
-  '/dashboard/statistics',
-  '/dashboard/history',
-  '/dashboard/notice',
+  '/dashboard/adjust',
+  '/dashboard/purchase-order',
+  '/dashboard/receive-order',
 ];
 
-const demoDeniedRoutes = [
-  '/dashboard/adjust',
-  '/dashboard/purchase-order/create',
-  '/dashboard/purchase-order/PLA-DEMO-DENY/edit',
-  '/dashboard/inbounds/register/PLA-DEMO-DENY',
-  '/dashboard/inbounds/pending/edit/PLA-DEMO-DENY',
-  '/dashboard/outbounds/register/REC-DEMO-DENY',
-  '/dashboard/receive-order/post',
-  '/dashboard/vendor/create',
-  '/dashboard/vendor/modify/999999',
-  '/dashboard/notice/create',
-  '/dashboard/notice/999999/edit',
+const secondAdminDeniedRoutes = [
   '/dashboard/user/setting',
+  '/dashboard/vendor',
+  '/dashboard/notice/create',
 ];
 
 test.describe('production permission matrix', () => {
-  test.describe('DEMO: read-only routes', () => {
-    for (const path of demoAllowedRoutes) {
+  test.describe('SECOND_ADMIN + ALL: role-authorized routes', () => {
+    for (const path of secondAdminAllowedRoutes) {
       test(path, async ({ page }) => {
         await page.goto(path);
         await expect(page).toHaveURL(
@@ -43,8 +29,8 @@ test.describe('production permission matrix', () => {
     }
   });
 
-  test.describe('DEMO: mutation route boundaries', () => {
-    for (const path of demoDeniedRoutes) {
+  test.describe('SECOND_ADMIN + ALL: FIRST_ADMIN-only boundaries', () => {
+    for (const path of secondAdminDeniedRoutes) {
       test(path, async ({ page }) => {
         await page.goto(path);
         await expect(page).toHaveURL(/\/dashboard(?:\/)?$/);

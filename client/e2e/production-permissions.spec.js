@@ -223,7 +223,7 @@ test.describe('production DEMO permission matrix', () => {
       'post',
       '/api/invitation',
       accessToken,
-      { data: {} },
+      { data: { emails: ['demo-permission-test@example.com'] } },
     );
     await expectStatus(
       context.request,

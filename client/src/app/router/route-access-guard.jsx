@@ -40,6 +40,12 @@ const hasRouteAccess = (matches, role, rank) => {
     const minRank = match.handle?.minRank ?? 1;  // 최소 rank
     const maxRank = match.handle?.maxRank ?? 3;
 
+    // Demo 계정은 dedicated read-only role로 별도 취급한다.
+    // Route handle에 DEMO가 포함된 경우 rank 조건을 적용하지 않는다.
+    if (role === 'DEMO') {
+      return !permissions || permissions.includes('DEMO');
+    }
+
     // role 검사
     if (permissions && !permissions.includes(role)) return false;
 

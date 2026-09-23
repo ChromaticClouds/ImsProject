@@ -97,12 +97,12 @@ export const router = createBrowserRouter([
                 path: 'vendor',
                 children: [
                   { index: true, element: <VendorList /> },
-                  { path: 'create', element: <VendorCreate /> },
+                  { path: 'create', element: <VendorCreate />, handle: { permissions: ['ALL'], minRank: 3 } },
                   { path: ':id', element: <VendorDetail /> },
-                  { path: 'modify/:id', element: <VendorEdit /> },
+                  { path: 'modify/:id', element: <VendorEdit />, handle: { permissions: ['ALL'], minRank: 3 } },
                 ],
                 handle: {
-                  permissions: ['ALL'],
+                  permissions: ['DEMO', 'ALL'],
                   minRank: 3,
                 },
               },
@@ -113,14 +113,16 @@ export const router = createBrowserRouter([
                   {
                     path: 'pending/edit/:orderNumber',
                     element: <InboundPendingEdit />,
+                    handle: { permissions: ['INBOUND', 'ALL'], minRank: 1 },
                   },
                   {
                     path: 'register/:orderNumber',
                     element: <InboundRegister />,
+                    handle: { permissions: ['INBOUND', 'ALL'], minRank: 1 },
                   },
                 ],
                 handle: {
-                  permissions: ['INBOUND', 'ALL'],
+                  permissions: ['DEMO', 'INBOUND', 'ALL'],
                   minRank: 1,
                 },
               },
@@ -151,9 +153,9 @@ export const router = createBrowserRouter([
                 path: 'todo',
                 children: [
                   { index: true, element: <Todo /> },
-                  { path: 'create', element: <TodoCreate /> },
+                  { path: 'create', element: <TodoCreate />, handle: { permissions: ['ALL'], minRank: 1 } },
                   { path: ':id', element: <TodoDetail /> },
-                  { path: ':id/edit', element: <TodoEdit /> },
+                  { path: ':id/edit', element: <TodoEdit />, handle: { permissions: ['ALL'], minRank: 1 } },
                 ],
               },
               {
@@ -163,10 +165,11 @@ export const router = createBrowserRouter([
                   {
                     path: 'register/:orderNumber',
                     element: <OutboundRegister />,
+                    handle: { permissions: ['OUTBOUND', 'ALL'], minRank: 1 },
                   },
                 ],
                 handle: {
-                  permissions: ['OUTBOUND', 'ALL'],
+                  permissions: ['DEMO', 'OUTBOUND', 'ALL'],
                   minRank: 1,
                 },
               },
@@ -183,12 +186,12 @@ export const router = createBrowserRouter([
                 path: 'purchase-order',
                 children: [
                   { index: true, element: <PurchaseOrder /> },
-                  { path: ':orderNumber/edit', element: <PurchaseOrderEdit /> },
-                  { path: 'create', element: <PurchaseOrderPost /> },
-                  { path: ':id/edit', element: <PurchaseOrderEdit /> },
+                  { path: ':orderNumber/edit', element: <PurchaseOrderEdit />, handle: { permissions: ['PLACE_ORDER', 'ALL'], minRank: 1 } },
+                  { path: 'create', element: <PurchaseOrderPost />, handle: { permissions: ['PLACE_ORDER', 'ALL'], minRank: 1 } },
+                  { path: ':id/edit', element: <PurchaseOrderEdit />, handle: { permissions: ['PLACE_ORDER', 'ALL'], minRank: 1 } },
                 ],
                 handle: {
-                  permissions: ['PLACE_ORDER', 'ALL'],
+                  permissions: ['DEMO', 'PLACE_ORDER', 'ALL'],
                   minRank: 1,
                 },
               },
@@ -200,10 +203,10 @@ export const router = createBrowserRouter([
                 path: 'receive-order',
                 children: [
                   { index: true, element: <ReceiveOrder /> },
-                  { path: 'post', element: <ReceiveOrderPost /> },
+                  { path: 'post', element: <ReceiveOrderPost />, handle: { permissions: ['RECEIVE_ORDER', 'ALL'], minRank: 1 } },
                 ],
                 handle: {
-                  permissions: ['RECEIVE_ORDER', 'ALL'],
+                  permissions: ['DEMO', 'RECEIVE_ORDER', 'ALL'],
                   minRank: 1,
                 },
               },

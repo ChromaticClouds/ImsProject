@@ -56,6 +56,9 @@ public class E2eDataSeeder implements ApplicationRunner {
     @Value("${e2e.seed.employee-eid}")
     private String employeeEid;
 
+    @Value("${e2e.seed.demo-eid}")
+    private String demoEid;
+
     @Value("${e2e.seed.password-reset-email-domain}")
     private String emailDomain;
 
@@ -70,6 +73,7 @@ public class E2eDataSeeder implements ApplicationRunner {
         seedUser(firstAdminEid, "E2E 총괄관리자", UserRank.FIRST_ADMIN, UserRole.ALL);
         seedUser(secondAdminEid, "E2E 창고관리자", UserRank.SECOND_ADMIN, UserRole.ALL);
         seedUser(employeeEid, "E2E 사원", UserRank.EMPLOYEE, UserRole.NONE);
+        seedUser(demoEid, "E2E 포트폴리오 데모", UserRank.EMPLOYEE, UserRole.DEMO);
         seedPurchaseOrderFixture();
     }
 

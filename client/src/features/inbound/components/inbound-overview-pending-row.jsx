@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { InboundPendingItemsDropdown } from './inbound-pending-items-dropdown';
 import { useInboundItems } from '../hooks/use-inbound-items';
 import { LoadingState } from '@/components/common/loading-state.jsx';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
 
 /**
  * @typedef {Object} InboundRow
@@ -26,6 +27,7 @@ export function InboundOverviewPendingRow(props) {
   const { row, loading = false, onError } = props; // ⭐ 핵심: 구조분해를 내부에서
 
   const nav = useNavigate();
+  const user = useAuthStore((s) => s.user);
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen((v) => !v);
@@ -110,9 +112,11 @@ export function InboundOverviewPendingRow(props) {
 
 
       <td>
-        <button disabled={loading} onClick={goRegister}>
-          등록
-        </button>
+        {user?.userRole === 'DEMO' ? null : (
+          <button disabled={loading} onClick={goRegister}>
+            등록
+          </button>
+        )}
       </td>
     </tr>
   );

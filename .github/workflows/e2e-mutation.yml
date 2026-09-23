@@ -90,8 +90,29 @@ jobs:
         env:
           E2E_BASE_URL: http://127.0.0.1:4173
           E2E_SECOND_ADMIN_EID: E2E-SECOND-ADMIN
+          E2E_DEMO_EID: E2E-DEMO
           E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
         run: pnpm run e2e:mutation
+
+
+      - name: Verify demo database invariant
+        if: always()
+        run: |
+          set -euo pipefail
+
+          result="$(
+            docker compose -f compose.e2e.yml exec -T \
+              -e MYSQL_PWD="$E2E_DB_PASSWORD" \
+              mysql mysql \
+              -u"$E2E_DB_USER" \
+              "$E2E_DB_NAME" \
+              --batch \
+              --skip-column-names \
+              -e "SELECT COUNT(*) FROM orders o JOIN \`user\` u ON u.id = o.user_id WHERE u.eid = 'E2E-DEMO';"
+          )"
+
+          test "$result" = "0"
+          echo "Demo account DB invariant verified: no orders were created."
 
       - name: Verify purchase order DB invariant
         if: success()

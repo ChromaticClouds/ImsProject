@@ -2,6 +2,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { LoadingState } from '@/components/common/loading-state.jsx';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,8 @@ export const TodoDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const isDemo = user?.userRole === 'DEMO';
 
   const { data: todo, isLoading } = useQuery({
     queryKey: ['todo', id],

@@ -232,6 +232,7 @@ function OutboundPendingItemsDropdown({ items }) {
  */
 export function OutboundPendingRow({ row, loading, onError }) {
   const nav = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const [isOpen, setIsOpen] = useState(false);
 
   const wrapRef = useRef(/** @type {HTMLDivElement | null} */ (null));
@@ -297,6 +298,7 @@ export function OutboundPendingRow({ row, loading, onError }) {
   }, [isOpen]);
 
   const statusText = row.statusText ?? '출고 대기';
+  const isDemo = user?.userRole === 'DEMO';
 
   return (
     <tr
@@ -380,6 +382,7 @@ export function OutboundPendingRow({ row, loading, onError }) {
 
       {/* 등록 */}
       <td className="py-3 text-center">
+        {isDemo ? null : (
         <Button
           size="sm"
           className="gap-2"
@@ -397,6 +400,7 @@ export function OutboundPendingRow({ row, loading, onError }) {
           <PlusCircle className="h-4 w-4" />
           등록
         </Button>
+        )}
       </td>
     </tr>
   );

@@ -6,5 +6,6 @@ public enum UserRole {
     INBOUND,
     RECEIVE_ORDER,
     OUTBOUND,
-    ALL;
+    ALL,
+    DEMO;
 }

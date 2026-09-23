@@ -72,6 +72,7 @@ public class UserController {
     }
 
     @PatchMapping("change-password")
+    @PreAuthorize("!hasAuthority('PERM_DEMO')")
     public ResponseEntity<ApiResponse<Void>> patchUserPassword(
         @RequestBody PasswordChangeRequest request,
         @AuthenticationPrincipal UserPrincipal user

@@ -28,11 +28,15 @@ import { Logo } from '@/assets/logo.jsx';
 import { Card } from '@/components/ui/card.js';
 import { Link, useLocation } from 'react-router-dom';
 import { UserMenu } from '@/components/common/user-menu.jsx';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
+import { isDemoUser } from '@/features/auth/utils/is-demo-user.js';
 import { useEffect } from 'react';
 
 export const AppSidebar = () => {
   const { state, isMobile, setOpenMobile } = useSidebar();
   const { pathname } = useLocation();
+  const user = useAuthStore((s) => s.user);
+  const isDemo = isDemoUser(user);
   const isCollapsed = state === 'collapsed';
 
   useEffect(() => {
@@ -80,7 +84,7 @@ export const AppSidebar = () => {
           <SidebarGroupLabel>재고 관리</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {SIDEBAR_PRODUCT_ITEMS.map((item) => (
+              {SIDEBAR_PRODUCT_ITEMS.filter((item) => !(isDemo && item.url === '/dashboard/adjust')).map((item) => (
                 <AppSidebarLink
 
                   key={item.title}
@@ -108,7 +112,7 @@ export const AppSidebar = () => {
                 Icon={UsersIcon}
                 children={[
                   { title: '조직도', url: '/dashboard/user/group' },
-                  { title: '사용자 설정', url: '/dashboard/user/setting' },
+                  ...(!isDemo ? [{ title: '사용자 설정', url: '/dashboard/user/setting' }] : []),
                 ]}
               />
             </SidebarMenu>

@@ -25,8 +25,8 @@ import { AppDialog } from '@/components/common/app-dialog.jsx';
 /**
  * @typedef {object} VendorDetailHeaderProps
  * @property {VendorDetail} vendor
- * @property {() => void} onEdit
- * @property {() => Promise<void>} onDelete
+ * @property {(() => void)=} onEdit
+ * @property {(() => Promise<void>)=} onDelete
  * @property {boolean} isSubmitting
  */
 
@@ -55,16 +55,19 @@ export const VendorDetailHeader = ({
       }
       description={VENDOR_DESCRIPTION[vendor.type]}
       asideDecoration={
+        onEdit || onDelete ? (
         <div className='flex shrink-0 gap-2 items-end'>
-          <Button
-            variant='secondary'
-            className='border'
-            onClick={onEdit}
-          >
-            <PencilIcon />
-            <span>수정</span>
-          </Button>
-          <AppDialog
+          {onEdit ? (
+            <Button
+              variant='secondary'
+              className='border'
+              onClick={onEdit}
+            >
+              <PencilIcon />
+              <span>수정</span>
+            </Button>
+          ) : null}
+          {onDelete ? <AppDialog
             title='거래처 삭제'
             description='해당 거래처를 삭제하시겠습니까?'
             action={onDelete}
@@ -80,8 +83,9 @@ export const VendorDetailHeader = ({
               <TrashIcon />
               <span>삭제</span>
             </Button>
-          </AppDialog>
+          </AppDialog> : null}
         </div>
+        ) : null
       }
     />
   );

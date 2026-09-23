@@ -89,6 +89,7 @@ export const ROLE_LABEL = {
   OUTBOUND: '출고',
   RECEIVE_ORDER: '수주',
   ALL: '전체 권한',
+  DEMO: '포트폴리오 데모 (읽기 전용)',
 };
 
 // ------------ 히스토리에 필요한 것 

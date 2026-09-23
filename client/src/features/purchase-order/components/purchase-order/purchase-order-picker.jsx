@@ -12,9 +12,13 @@ import { ClockIcon, CheckCircleIcon, NotebookPenIcon } from 'lucide-react';
 import { useShallow } from 'zustand/shallow';
 import { useNavigate } from 'react-router-dom';
 import { usePoParamStore } from '@/features/purchase-order/stores/use-po-param-store.js';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
+import { isDemoUser } from '@/features/auth/utils/is-demo-user.js';
 
 export const PurchaseOrderPicker = () => {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const isDemo = isDemoUser(user);
 
   const [view, setView] = usePoParamStore(
     useShallow((s) => [s.view, s.setView]),
@@ -42,13 +46,15 @@ export const PurchaseOrderPicker = () => {
             전송 완료 내역
           </Button>
         </div>
-        <Button
-          className='gap-2'
-          onClick={() => navigate('create')}
-        >
-          <NotebookPenIcon className='w-5 h-5' />
-          발주서 작성
-        </Button>
+        {!isDemo ? (
+          <Button
+            className='gap-2'
+            onClick={() => navigate('create')}
+          >
+            <NotebookPenIcon className='w-5 h-5' />
+            발주서 작성
+          </Button>
+        ) : null}
       </div>
     </section>
   );

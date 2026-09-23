@@ -30,6 +30,8 @@ import { usePoListContext } from '@/features/purchase-order/providers/po-list-pr
 import { PoProductDetail } from '@/features/purchase-order/components/purchase-order/po-product-detail.jsx';
 import { PoDeleteDialog } from '@/features/purchase-order/components/purchase-order/po-delete-dialog.jsx';
 import { Spinner } from '@/components/ui/spinner.js';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
+import { isDemoUser } from '@/features/auth/utils/is-demo-user.js';
 
 /** @param {number | string | null | undefined} n */
 const formatNumber = (n) => Number(n || 0).toLocaleString();
@@ -61,6 +63,8 @@ const StatusIcon = ({ status }) => {
 
 export const PurchaseOrderList = () => {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const isDemo = isDemoUser(user);
 
   const { toggle, isSelected } = usePurchaseOrderSelectionStore();
 
@@ -69,7 +73,11 @@ export const PurchaseOrderList = () => {
 
   const isSentView = view === 'SENT';
 
-  const TABLE_HEADER = isSentView
+  const TABLE_HEADER = isDemo
+    ? (isSentView
+      ? ['', '상태', '발주일', '발주번호', '납기일', '품목 수', '공급처', '단가총액']
+      : ['', '상태', '발주일', '발주번호', '납기일', '품목 수', '공급처', '단가총액'])
+    : isSentView
     ? [
         '',
         '상태',
@@ -126,7 +134,7 @@ export const PurchaseOrderList = () => {
             return (
               <TableRow key={`${c.orderNumber}-${c.vendorId ?? 'v'}`}>
                 <TableCell className='text-center'>
-                  {isSentView ? null : (
+                  {isSentView || isDemo ? null : (
                     <Checkbox
                       checked={isSelected(c.orderNumber)}
                       onCheckedChange={(checked) =>

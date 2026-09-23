@@ -3,6 +3,10 @@ import { expect, test } from '@playwright/test';
 const EID = process.env.E2E_EID;
 const PASSWORD = process.env.E2E_PASSWORD;
 
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\const EID = process.env.E2E_EID;
+const PASSWORD = process.env.E2E_PASSWORD;
+');
+
 async function login(page) {
   await page.goto('/login');
   await page.getByLabel('사원번호').fill(EID);

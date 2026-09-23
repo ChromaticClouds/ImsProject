@@ -49,7 +49,7 @@ test.describe('production rank restrictions', () => {
       await login(page);
       await page.goto(path);
       await expect(page).toHaveURL(/\/dashboard(?:\/)?$/);
-      await expect(page.getByText('메인 페이지', { exact: true })).toBeVisible();
+      await expect(page.getByRole('main').getByText('메인 페이지', { exact: true })).toBeVisible();
     });
   }
 });

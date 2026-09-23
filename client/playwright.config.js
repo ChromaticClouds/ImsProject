@@ -7,6 +7,7 @@ const authFile = path.resolve('playwright/.auth/demo.json');
 
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: ['**/*.mutation.spec.js'],
   timeout: 30_000,
   expect: {
     timeout: 10_000,

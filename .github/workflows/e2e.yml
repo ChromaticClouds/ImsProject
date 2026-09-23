@@ -94,6 +94,7 @@ jobs:
             '- Allowed routes / read APIs: covered',
             '- Mutation routes: redirect checks covered',
             '- Mutation APIs: expected 403 covered',
+            '- Mutation spec files: excluded from Production workflow',
             '- Business mutations: not executed successfully',
             '- Database verification: not run',
           ];

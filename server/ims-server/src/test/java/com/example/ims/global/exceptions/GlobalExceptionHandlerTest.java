@@ -89,4 +89,16 @@ class GlobalExceptionHandlerTest {
         assertEquals("emails[0]: must be a well-formed email address", response.getBody().getMessage());
     }
 
+
+    @Test
+    void illegalArgumentExceptionReturnsInternalServerError() {
+        RefreshTokenCookieStore refreshTokenCookieStore = mock(RefreshTokenCookieStore.class);
+        GlobalExceptionHandler handler = new GlobalExceptionHandler(refreshTokenCookieStore);
+
+        var response = handler.handle(new IllegalArgumentException("기간 필수"));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(GlobalError.UNEXPECTED_ERROR, response.getBody().getMessage());
+    }
+
 }

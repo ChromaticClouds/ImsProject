@@ -1,0 +1,75 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${E2E_DB_NAME:?E2E_DB_NAME is required}
+      MYSQL_USER: ${E2E_DB_USER:?E2E_DB_USER is required}
+      MYSQL_PASSWORD: ${E2E_DB_PASSWORD:?E2E_DB_PASSWORD is required}
+      MYSQL_ROOT_PASSWORD: ${E2E_DB_ROOT_PASSWORD:?E2E_DB_ROOT_PASSWORD is required}
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    tmpfs:
+      - /var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: ./server/ims-server
+      dockerfile: ./Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: e2e
+      PORT: 8080
+
+      DB_URL: jdbc:mysql://mysql:3306/${E2E_DB_NAME}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+      DB_USER: ${E2E_DB_USER}
+      DB_PASS: ${E2E_DB_PASSWORD}
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_USER: default
+      REDIS_PASS:
+
+      JWT_SECRET: ${E2E_JWT_SECRET:?E2E_JWT_SECRET is required}
+      RESEND_API_KEY: ${E2E_RESEND_API_KEY:?E2E_RESEND_API_KEY is required}
+      RESEND_FROM_EMAIL: ${E2E_RESEND_FROM_EMAIL:?E2E_RESEND_FROM_EMAIL is required}
+
+      CLIENT_BASE_URL: http://127.0.0.1:4173
+      FRONTEND_ORIGIN: http://127.0.0.1:4173
+
+      AUTH_COOKIE_SECURE: "false"
+      AUTH_COOKIE_SAME_SITE: Lax
+
+      STORAGE_PROVIDER: local
+      UPLOAD_DIR: /tmp/uploads
+
+      E2E_SEED_ENABLED: "true"
+      E2E_SEED_PASSWORD: ${E2E_TEST_PASSWORD:?E2E_TEST_PASSWORD is required}
+      E2E_FIRST_ADMIN_EID: ${E2E_FIRST_ADMIN_EID:-E2E-FIRST-ADMIN}
+      E2E_SECOND_ADMIN_EID: ${E2E_SECOND_ADMIN_EID:-E2E-SECOND-ADMIN}
+      E2E_EMPLOYEE_EID: ${E2E_EMPLOYEE_EID:-E2E-EMPLOYEE}
+      E2E_EMAIL_DOMAIN: ${E2E_EMAIL_DOMAIN:-e2e.invalid}

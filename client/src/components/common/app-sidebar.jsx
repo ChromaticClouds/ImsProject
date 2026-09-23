@@ -112,7 +112,7 @@ export const AppSidebar = () => {
                 Icon={UsersIcon}
                 children={[
                   { title: '조직도', url: '/dashboard/user/group' },
-                  { title: '사용자 설정', url: '/dashboard/user/setting' },
+                  ...(!isDemo ? [{ title: '사용자 설정', url: '/dashboard/user/setting' }] : []),
                 ]}
               />
             </SidebarMenu>

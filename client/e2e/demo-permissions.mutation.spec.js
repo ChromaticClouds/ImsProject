@@ -25,7 +25,7 @@ test('DEMO account is read-only in the disposable environment', async ({ page, c
   await page.locator('input[name="eid"]').fill(EID);
   await page.locator('input[name="password"]').fill(PASSWORD);
   await page.getByRole('button', { name: '로그인' }).click();
-  await expect(page).toHaveURL(/\\/dashboard(?:\\/)?$/);
+  await expect(page).toHaveURL(/\/dashboard(?:\/)?$/);
 
   const allowedRoutes = [
     '/dashboard',
@@ -43,43 +43,8 @@ test('DEMO account is read-only in the disposable environment', async ({ page, c
 
   for (const route of allowedRoutes) {
     await page.goto(route);
-    await expect(page).toHaveURL(new RegExp(route.replaceAll('/', '\\/') + '(?:\\\\?.*)?    ['/api/product?page=1', undefined],
-    ['/api/purchase-orders', undefined],
-    ['/api/inbounds/pending?from=2026-01-01&to=2026-12-31&page=0&size=20', undefined],
-    ['/api/outbounds/pending/summary?from=2026-01-01&to=2026-12-31&page=0&size=20', undefined],
-    ['/api/order/receive', undefined],
-    ['/api/vendor', undefined],
-    ['/api/notice/list?page=1', undefined],
-    ['/api/history/brands?type=SOJU', undefined],
-    ['/api/stats/types', undefined],
-  ];
-
-  for (const [url, options] of reads) {
-    const response = await context.request.get(url, options);
-    expect(response.ok(), 'GET ' + url).toBeTruthy();
-  }
-
-  await expectStatus(context.request, 'post', '/api/purchase/order/post', { data: {} });
-  await expectStatus(context.request, 'patch', '/api/purchase-orders/PLA-DEMO-DENY', { data: {} });
-  await expectStatus(context.request, 'delete', '/api/purchase-orders/PLA-DEMO-DENY');
-  await expectStatus(context.request, 'post', '/api/purchase-orders/PLA-DEMO-DENY/send');
-  await expectStatus(context.request, 'post', '/api/purchase-orders/send', { data: { orderNumbers: [] } });
-  await expectStatus(context.request, 'patch', '/api/inbounds/orders/by-number/PLA-DEMO-DENY/complete', { data: {} });
-  await expectStatus(context.request, 'patch', '/api/outbounds/orders/by-number/REC-DEMO-DENY/complete', { data: {} });
-  await expectStatus(context.request, 'post', '/api/adjust', { data: {} });
-  await expectStatus(context.request, 'post', '/api/vendor', { data: {} });
-  await expectStatus(context.request, 'put', '/api/vendor/999999', { data: {} });
-  await expectStatus(context.request, 'delete', '/api/vendor/999999');
-  await expectStatus(context.request, 'patch', '/api/user/permission/999999', { data: {} });
-  await expectStatus(context.request, 'patch', '/api/user/change-password', { data: {} });
-  await expectStatus(context.request, 'patch', '/api/todo/999999/toggle');
-  await expectStatus(context.request, 'put', '/api/todo/999999', { data: {} });
-  await expectStatus(context.request, 'delete', '/api/todo/999999');
-  await expectStatus(context.request, 'post', '/api/invitation', { data: {} });
-  await expectStatus(context.request, 'post', '/api/order/post', { data: {} });
-  await expectStatus(context.request, 'patch', '/api/order/PLA-DEMO-DENY/manager', { data: {} });
-});
-));
+    const escaped = route.replaceAll('/', '\\/');
+    await expect(page).toHaveURL(new RegExp(escaped + '(?:\\?.*)?$'));
   }
 
   const deniedRoutes = [
@@ -101,23 +66,23 @@ test('DEMO account is read-only in the disposable environment', async ({ page, c
 
   for (const route of deniedRoutes) {
     await page.goto(route);
-    await expect(page).toHaveURL(/\\/dashboard(?:\\/)?$/);
+    await expect(page).toHaveURL(/\/dashboard(?:\/)?$/);
   }
 
   const reads = [
-    ['/api/product?page=1', undefined],
-    ['/api/purchase-orders', undefined],
-    ['/api/inbounds/pending?from=2026-01-01&to=2026-12-31&page=0&size=20', undefined],
-    ['/api/outbounds/pending/summary?from=2026-01-01&to=2026-12-31&page=0&size=20', undefined],
-    ['/api/order/receive', undefined],
-    ['/api/vendor', undefined],
-    ['/api/notice/list?page=1', undefined],
-    ['/api/history/brands?type=SOJU', undefined],
-    ['/api/stats/types', undefined],
+    '/api/product?page=1',
+    '/api/purchase-orders',
+    '/api/inbounds/pending?from=2026-01-01&to=2026-12-31&page=0&size=20',
+    '/api/outbounds/pending/summary?from=2026-01-01&to=2026-12-31&page=0&size=20',
+    '/api/order/receive',
+    '/api/vendor',
+    '/api/notice/list?page=1',
+    '/api/history/brands?type=SOJU',
+    '/api/stats/types',
   ];
 
-  for (const [url, options] of reads) {
-    const response = await context.request.get(url, options);
+  for (const url of reads) {
+    const response = await context.request.get(url);
     expect(response.ok(), 'GET ' + url).toBeTruthy();
   }
 

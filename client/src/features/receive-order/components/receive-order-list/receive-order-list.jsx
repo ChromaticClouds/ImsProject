@@ -14,6 +14,7 @@ import { CardContent } from '@/components/ui/card.js';
 import { ReceiveOrderDetail } from './receive-order-detail.jsx';
 import { useAssignManager } from '@/features/receive-order/hooks/use-assign-manager.js';
 import { useRoListContext } from '@/features/receive-order/providers/ro-list-provider.jsx';
+import { useAuthStore } from '@/features/auth/stores/use-auth-store.js';
 
 /**
  * 날짜
@@ -37,6 +38,7 @@ const formatDateWithDay = (dateStr) => {
 export const ReceiveOrderList = () => {
   const { content = [] } = useRoListContext();
   const { mutation } = useAssignManager();
+  const user = useAuthStore((s) => s.user);
 
   return (
     <CardContent className='p-0'>
@@ -72,18 +74,22 @@ export const ReceiveOrderList = () => {
                 <TableCell>{formatDateWithDay(o.receiveDate)}</TableCell>
                 <TableCell>
                   <div className='w-full h-full flex justify-center items-center'>
-                    <AssignOutboundManager
-                      manager={{
-                        managerName: o.managerName,
-                        managerId: o.managerId,
-                      }}
-                      onChange={(nextManagerId) =>
-                        mutation.mutate({
-                          orderNumber: o.orderNumber,
-                          managerId: nextManagerId,
-                        })
-                      }
-                    />
+                    {user?.userRole === 'DEMO' ? (
+                      <span className='text-muted-foreground'>읽기 전용</span>
+                    ) : (
+                      <AssignOutboundManager
+                        manager={{
+                          managerName: o.managerName,
+                          managerId: o.managerId,
+                        }}
+                        onChange={(nextManagerId) =>
+                          mutation.mutate({
+                            orderNumber: o.orderNumber,
+                            managerId: nextManagerId,
+                          })
+                        }
+                      />
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

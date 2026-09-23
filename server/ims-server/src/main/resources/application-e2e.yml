@@ -14,4 +14,5 @@ e2e:
     first-admin-eid: ${E2E_FIRST_ADMIN_EID:E2E-FIRST-ADMIN}
     second-admin-eid: ${E2E_SECOND_ADMIN_EID:E2E-SECOND-ADMIN}
     employee-eid: ${E2E_EMPLOYEE_EID:E2E-EMPLOYEE}
+    demo-eid: ${E2E_DEMO_EID:E2E-DEMO}
     password-reset-email-domain: ${E2E_EMAIL_DOMAIN:e2e.invalid}

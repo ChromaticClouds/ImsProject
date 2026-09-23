@@ -88,7 +88,7 @@ export const router = createBrowserRouter([
                   {
                     path: 'setting',
                     element: <UserSetting />,
-                    handle: { permissions: ['DEMO', 'ALL'] minRank: 3 },
+                    handle: { permissions: ['ALL'], minRank: 3 },
                   },
                   { path: 'group', element: <UserGroup /> },
                 ],

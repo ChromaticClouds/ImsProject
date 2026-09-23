@@ -20,9 +20,11 @@ import com.example.ims.features.invitation.exceptions.InvalidInvitationTokenExce
 import com.example.ims.global.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
+@Slf4j
 public class GlobalExceptionHandler {
 
     private final RefreshTokenCookieStore refreshTokenCookieStore;
@@ -51,7 +53,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.fail(e.getMessage()));
         }
 
-        System.out.println(e.getMessage());
+        log.error("Unhandled exception while processing request", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ApiResponse.fail(e.getMessage()));
     }

@@ -93,6 +93,35 @@ jobs:
           E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
         run: pnpm run e2e:mutation
 
+      - name: Verify purchase order DB invariant
+        if: success()
+        run: |
+          set -euo pipefail
+
+          order_number="$(node -p "require('./client/test-results/created-purchase-order.json').orderNumber")"
+          test -n "$order_number"
+          echo "::add-mask::$order_number"
+
+          result="$(
+            docker compose -f compose.e2e.yml exec -T               -e MYSQL_PWD="$E2E_DB_PASSWORD"               mysql mysql               -u"$E2E_DB_USER"               "$E2E_DB_NAME"               --batch               --skip-column-names               -e "SELECT COUNT(*)
+                  FROM orders o
+                  JOIN `user` u ON u.id = o.user_id
+                  JOIN vendor_item vi ON vi.id = o.vendor_item_id
+                  JOIN vendor v ON v.id = vi.vendor_id
+                  JOIN product p ON p.id = vi.product_id
+                  WHERE o.order_number = '$order_number'
+                    AND u.eid = 'E2E-SECOND-ADMIN'
+                    AND o.status IS NULL
+                    AND o.count = 12
+                    AND o.recieve_date > o.order_date
+                    AND v.vendor_name = 'E2E 테스트 공급처'
+                    AND p.name = 'E2E 테스트 소주'
+                    AND vi.purchase_price = 1200;"
+          )"
+
+          test "$result" = "1"
+          echo "Purchase order DB invariant verified for $order_number."
+
       - name: Publish E2E summary
         if: always()
         run: node .github/scripts/summarize-e2e.mjs client/test-results/mutation-results.json "$GITHUB_STEP_SUMMARY"

@@ -54,7 +54,7 @@ const mutationRoutes = [
 ];
 
 const readApis = [
-  '/api/product?page=1',
+  '/api/product/categories',
   '/api/purchase-orders',
   '/api/inbounds/pending?from=2026-01-01&to=2026-12-31&page=0&size=20',
   '/api/outbounds/pending/summary?from=2026-01-01&to=2026-12-31&page=0&size=20',

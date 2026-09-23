@@ -17,12 +17,7 @@ test.describe('production authorized routes', () => {
     test(path, async ({ page }) => {
       await page.goto(path);
       await expect(page).toHaveURL(
-        new RegExp(path + '(?:/)?(?:\\?.*)?
-      );
-    });
-  }
-});
-),
+        new RegExp(path + '(?:/)?(?:\\?.*)?$'),
       );
     });
   }

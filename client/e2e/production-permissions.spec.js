@@ -142,7 +142,7 @@ test.describe('production DEMO permission matrix', () => {
       'post',
       '/api/purchase-orders/send',
       accessToken,
-      { data: { orderNumbers: [] } },
+      { data: { orderNumbers: ['PLA-PRODUCTION-DEMO-DENY'] } },
     );
     await expectStatus(
       context.request,

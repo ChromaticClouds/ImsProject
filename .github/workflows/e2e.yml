@@ -12,6 +12,9 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: production-e2e-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   production-e2e:
     name: Production Playwright smoke tests

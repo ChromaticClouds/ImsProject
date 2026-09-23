@@ -25,6 +25,7 @@ import { RANK_LABEL, ROLE_LABEL } from '@/constants/index.js';
  * Assets
  */
 import { LogOutDialog } from '@/features/auth/components/log-out-dialog.jsx';
+import { isDemoUser } from '@/features/auth/utils/is-demo-user.js';
 import { PasswordChangeDialog } from '@/features/auth/components/password-change-dialog.jsx';
 import { ChevronUpIcon, UserRoundIcon } from 'lucide-react';
 
@@ -38,6 +39,7 @@ export const UserMenu = ({ isCollapsed = false }) => {
   if (!user) return null;
 
   const fallback = user.name?.slice(0, 1) || user.email?.slice(0, 1);
+  const isDemo = isDemoUser(user);
 
   return (
     <Popover
@@ -115,7 +117,7 @@ export const UserMenu = ({ isCollapsed = false }) => {
 
         {/* 액션 */}
         <div className='flex flex-col gap-2 p-2'>
-          <PasswordChangeDialog />
+          {!isDemo ? <PasswordChangeDialog /> : null}
 
           <LogOutDialog />
         </div>

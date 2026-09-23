@@ -5,8 +5,8 @@ const PASSWORD = process.env.E2E_PASSWORD;
 
 async function login(page) {
   await page.goto('/login');
-  await page.getByLabel('사원번호').fill(EID);
-  await page.getByLabel('비밀번호').fill(PASSWORD);
+  await page.locator('input[name="eid"]').fill(EID);
+  await page.locator('input[name="password"]').fill(PASSWORD);
   await page.getByRole('button', { name: '로그인' }).click();
   await expect(page).toHaveURL(/\/dashboard(?:\/)?$/);
 }

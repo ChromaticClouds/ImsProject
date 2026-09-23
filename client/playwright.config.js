@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig } from 'playwright/test';
 
 const baseURL = process.env.E2E_BASE_URL ?? 'https://ims-project-pi.vercel.app';
 

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -25,6 +26,17 @@ import lombok.RequiredArgsConstructor;
 public class GlobalExceptionHandler {
 
     private final RefreshTokenCookieStore refreshTokenCookieStore;
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handle(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldErrors().stream()
+            .map(error -> error.getField() + ": " + error.getDefaultMessage())
+            .reduce((left, right) -> left + ", " + right)
+            .orElse("잘못된 요청입니다.");
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ApiResponse.fail(message));
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handle(AccessDeniedException e) {

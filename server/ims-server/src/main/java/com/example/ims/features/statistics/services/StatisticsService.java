@@ -41,12 +41,14 @@ public class StatisticsService {
     public List<LeadTimeResponse> getVendorLeadTime(
         LocalDate startDate, LocalDate endDate
     ) {
+        validateRange(startDate, endDate);
         return mapper.findLeadTimeByVendor(startDate, endDate);
     }
 
     public List<LeadTimeResponse> getProductLeadTime(
         LocalDate startDate, LocalDate endDate
     ) {
+        validateRange(startDate, endDate);
         return mapper.findLeadTimeByProduct(startDate, endDate);
     }
 
@@ -86,12 +88,16 @@ public class StatisticsService {
         return mapper.searchProducts(keyword.trim(), safeLimit);
     }
 
-    private void validateRange(LocalDate from, LocalDate to) {
+    void validateRange(LocalDate from, LocalDate to) {
+        validateRange(from, to, LocalDate.now(BUSINESS_ZONE));
+    }
+
+    void validateRange(LocalDate from, LocalDate to, LocalDate businessToday) {
         if (from == null || to == null)
             throw new IllegalArgumentException("기간 필수");
         if (from.isAfter(to))
             throw new IllegalArgumentException("시작일이 종료일보다 뒤일 수 없음");
-        if (to.isAfter(LocalDate.now()))
+        if (to.isAfter(businessToday))
             throw new IllegalArgumentException("미래 날짜 선택 불가");
         if (from.plusYears(1).isBefore(to))
             throw new IllegalArgumentException("날짜 설정 범위 한도 초과입니다.");
@@ -206,7 +212,8 @@ public class StatisticsService {
 	
 	public List<StockRotationPoint> getStockRotationTrend(int year, Integer month, Long productId) {
 
-        int thisYear = LocalDate.now().getYear();
+        LocalDate businessToday = LocalDate.now(BUSINESS_ZONE);
+        int thisYear = businessToday.getYear();
         int lastYear = thisYear - 1;
         if (year != thisYear && year != lastYear) throw new IllegalArgumentException("년도 선택 불가");
 
@@ -214,7 +221,7 @@ public class StatisticsService {
 
         if (month == null) {
 
-            int maxMonth = (year == thisYear) ? LocalDate.now().getMonthValue() : 12;
+            int maxMonth = (year == thisYear) ? businessToday.getMonthValue() : 12;
 
             List<StockRotationPoint> out = new ArrayList<>();
 
@@ -222,8 +229,8 @@ public class StatisticsService {
                 LocalDate start = LocalDate.of(year, m, 1);
                 LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
 
-                if (year == thisYear && m == LocalDate.now().getMonthValue()) {
-                    end = LocalDate.now();
+                if (year == thisYear && m == businessToday.getMonthValue()) {
+                    end = businessToday;
                 }
 
                 out.add(calcPoint(productId, start, end, String.format("%02d월", m)));
@@ -239,8 +246,8 @@ public class StatisticsService {
         LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
 
         // 올해+이번달이면 금일까지
-        if (year == thisYear && month == LocalDate.now().getMonthValue()) {
-            monthEnd = LocalDate.now();
+        if (year == thisYear && month == businessToday.getMonthValue()) {
+            monthEnd = businessToday;
         }
 
         // 주별 구간 만들기(월요일~일요일 기준)

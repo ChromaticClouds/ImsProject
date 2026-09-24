@@ -130,8 +130,11 @@ public class StatisticsProvider {
 	  return """
 	    SELECT IFNULL(SUM(o.`count`), 0) AS qty
 	    FROM `orders` o
+	    JOIN vendor_item vi ON vi.id = o.vendor_item_id
+	    JOIN vendor v ON v.id = vi.vendor_id
 	    WHERE o.status = 'INBOUND_COMPLETE'
 	      AND o.recieve_date BETWEEN #{from} AND #{to}
+	      AND v.type = 'Supplier'
 	  """;
 	}
   
@@ -155,8 +158,10 @@ public class StatisticsProvider {
 	  return """
 	    SELECT IFNULL(SUM(o.`count`), 0) AS qty
 	    FROM `orders` o
+	    JOIN vendor v ON v.id = o.seller_vendor_id
 	    WHERE o.status = 'OUTBOUND_COMPLETE'
 	      AND o.order_date BETWEEN #{from} AND #{to}
+	      AND v.type = 'Seller'
 	  """;
 	}
   

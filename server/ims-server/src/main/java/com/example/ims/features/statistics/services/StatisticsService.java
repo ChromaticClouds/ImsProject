@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import java.util.List;
 public class StatisticsService {
 
     private static final long WAREHOUSE_VOLUME_ML = 80_000_000L;
+    private static final ZoneId BUSINESS_ZONE = ZoneId.of("Asia/Seoul");
 
     private final StatisticsMapper mapper;
 

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,6 +21,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PurchaseOrderLoader {
+
+    private static final ZoneId BUSINESS_ZONE = ZoneId.of("Asia/Seoul");
 
     private final OrderRepository orderRepository;
 
@@ -139,7 +142,7 @@ public class PurchaseOrderLoader {
         if (receiveDate == null)
             throw new BuildPoContextException("납기 희망일이 지정되지 않았습니다.");
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(BUSINESS_ZONE);
 
         if (receiveDate.isBefore(today))
             throw new BuildPoContextException("납기 희망일은 오늘 이후 날짜여야 합니다.");

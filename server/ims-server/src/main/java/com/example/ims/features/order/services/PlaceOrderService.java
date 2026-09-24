@@ -20,7 +20,9 @@ import com.example.ims.features.vendor.repositories.VendorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PlaceOrderService {
+
+    private static final ZoneId BUSINESS_ZONE = ZoneId.of("Asia/Seoul");
 
     private final VendorRepository vendorRepository;
     private final VendorItemRepository vendorItemRepository;
@@ -59,7 +63,7 @@ public class PlaceOrderService {
             .orElseThrow(UserNotFoundException::new);
 
         String orderNumber = sequenceGenerator.issuePlaceOrder();
-        LocalDate orderDate = LocalDate.now();
+        LocalDate orderDate = LocalDate.now(BUSINESS_ZONE);
 
         List<Long> vendorItemIds = request.getProducts().stream()
                 .map(PurchasePostItem::getVendorItemId)

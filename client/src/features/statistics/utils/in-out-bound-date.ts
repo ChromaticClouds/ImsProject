@@ -10,8 +10,23 @@ const startOfMonth = (d: Date) => {
   return new Date(d.getFullYear(), d.getMonth(), 1);
 };
 
+export const getKstTodayYmd = (date = new Date()) => {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+
+  const year = parts.find((part) => part.type === 'year')?.value ?? '';
+  const month = parts.find((part) => part.type === 'month')?.value ?? '';
+  const day = parts.find((part) => part.type === 'day')?.value ?? '';
+
+  return `${year}-${month}-${day}`;
+};
+
 const isFutureYmd = (ymd: string) => {
-  const today = toYmd(new Date());
+  const today = getKstTodayYmd();
   return String(ymd) > today;
 };
 

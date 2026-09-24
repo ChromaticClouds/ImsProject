@@ -37,4 +37,4 @@ jobs:
             -H "apikey: ${SUPABASE_SECRET_KEY}" \
             -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
             -H "Content-Type: application/json" \
-            --data '{"limit":1,"offset":0,"sortBy":{"column":"created_at","order":"desc"}}'
+            --data '{"prefix":"","limit":1,"offset":0,"sortBy":{"column":"created_at","order":"desc"}}'

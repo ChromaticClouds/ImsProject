@@ -26,6 +26,7 @@ import {
   fetchStatisticsSearchProducts,
   fetchStatisticsStockRotationTrend,
 } from '@/features/statistics/api/index.js';
+import { getKstTodayYmd } from '@/features/statistics/utils/in-out-bound-date.js';
 import { XIcon } from 'lucide-react';
 import { ChartEmpty } from './chart-empty.jsx';
 import { ChartLoading } from './chart-loading.jsx';
@@ -37,12 +38,13 @@ const turnoverTrendConfig =
   });
 
 function getYearOptions() {
-  const y = new Date().getFullYear();
+  const y = Number(getKstTodayYmd().slice(0, 4));
   return [y, y - 1];
 }
 function getMaxMonthForYear(/** @type {number} */ year) {
-  const now = new Date();
-  return year === now.getFullYear() ? now.getMonth() + 1 : 12;
+  const today = getKstTodayYmd();
+  const currentYear = Number(today.slice(0, 4));
+  return year === currentYear ? Number(today.slice(5, 7)) : 12;
 }
 
 /** @param {{ active?: boolean, payload?: any[] }} props */
@@ -274,7 +276,7 @@ export const StockRotationChart = () => {
                 월 전체(년도 기준)
               </Button>
             </div>
-            {year === new Date().getFullYear() ? (
+            {year === Number(getKstTodayYmd().slice(0, 4)) ? (
               <div className='mt-2 text-xs text-muted-foreground'>
                 올해는 {maxMonth}월까지만 선택 가능합니다.
               </div>

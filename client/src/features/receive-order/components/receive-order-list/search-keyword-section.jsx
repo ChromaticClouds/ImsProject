@@ -17,32 +17,29 @@ import { SearchIcon } from 'lucide-react';
  */
 import { useDebounce } from '@/hooks/use-debounce.js';
 import { useReceiveOrderFilterStore } from '../../stores/use-receive-order-filter-store.js';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 export const SearchKeywordSection = () => {
   const [, setParams] = useSearchParams();
-  const [input, setInput] = useState('');
-  const isInitialRender = useRef(true);
-
+  const search = useReceiveOrderFilterStore((state) => state.search);
   const setKeyword = useReceiveOrderFilterStore((state) => state.setKeyword);
+  const [input, setInput] = useState(search ?? '');
 
   const debounced = useDebounce(input, 500);
+  const normalized = debounced?.trim() || null;
 
   useEffect(() => {
-    setKeyword(debounced?.trim() || null);
+    if (normalized === search) return;
 
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
+    setKeyword(normalized);
 
     setParams((prev) => {
       const next = new URLSearchParams(prev);
       next.set('page', '1');
       return next;
     });
-  }, [debounced, setKeyword, setParams]);
+  }, [normalized, search, setKeyword, setParams]);
 
   return (
     <InputGroup className='w-full md:min-w-[320px] xl:w-100'>

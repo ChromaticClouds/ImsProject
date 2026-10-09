@@ -11,6 +11,7 @@ import com.example.ims.features.inbound.mapper.InboundQueryMapper;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -205,20 +206,10 @@ public class InboundQueryService {
             throw new IllegalArgumentException("입고 완료 작업자 인증 정보가 없습니다. orderNumber=" + on);
         }
 
-        // 4) history_lot 생성
-        HistoryLot lot = new HistoryLot();
-        lot.setUserId(actorUserId);
-        lot.setOrderNumber(on);
-        lot.setStatus("INBOUND");
-        lot.setMemo(req != null && StringUtils.hasText(req.getMemo()) ? req.getMemo().trim() : null);
-
-        int lotInserted = mapper.insertHistoryLot(lot);
-        if (lotInserted != 1 || lot.getId() == null) {
-            throw new IllegalStateException("history_lot 생성 실패");
-        }
-        Long lotId = lot.getId();
-
-        // 5) history + stock + (중요) qty_changed 판정/세팅
+        // Resolve and validate every item before acquiring stock locks. Keep the
+        // resolved mapping for processing; never discover new product IDs later.
+        Map<Long, Long> productIdsByVendorItem = new HashMap<>();
+        List<CompletionItem> items = new ArrayList<>();
         for (InboundCompleteOrderRow r : rows) {
             if (r == null) {
                 throw new IllegalStateException("입고 완료 대상 행이 비어 있습니다. orderNumber=" + on);
@@ -252,26 +243,44 @@ public class InboundQueryService {
                 throw new IllegalArgumentException("입고 수량은 1 이상이어야 합니다. orderId=" + orderId);
             }
 
-            // ✅ 배지용: 입고수량 != 발주수량이면 qty_changed=1
-            if (orderId != null && orderId > 0 && receivedQty != orderCount) {
-                mapper.markQtyChangedByOrderId(orderId);
-            }
-
-            // productId
-            Long productId = mapper.selectProductIdByVendorItemId(vendorItemId);
+            Long productId = productIdsByVendorItem.computeIfAbsent(vendorItemId, mapper::selectProductIdByVendorItemId);
             if (productId == null || productId <= 0) {
                 throw new IllegalArgumentException("productId 없음. vendorItemId=" + vendorItemId);
             }
+            items.add(new CompletionItem(orderId, vendorItemId, productId, orderCount, receivedQty));
+        }
 
-            // 현재 재고를 product_id 기준으로 잠그고 모든 입출고/조정의 단일 기준으로 사용한다.
+        // The upsert also locks: acquire all rows sequentially in ascending ID
+        // order, once per product, before changing quantities or writing history.
+        Map<Long, Integer> stockCounts = new HashMap<>();
+        for (Long productId : items.stream().map(CompletionItem::productId).distinct().sorted().toList()) {
             mapper.ensureStockRow(productId);
             Integer currentStock = mapper.selectStockCountForUpdate(productId);
             if (currentStock == null) {
                 throw new IllegalStateException("재고 행을 조회할 수 없습니다. productId=" + productId);
             }
+            stockCounts.put(productId, currentStock);
+        }
 
-            int beforeCount = currentStock;
-            int afterCount = Math.addExact(beforeCount, receivedQty);
+        HistoryLot lot = new HistoryLot();
+        lot.setUserId(actorUserId);
+        lot.setOrderNumber(on);
+        lot.setStatus("INBOUND");
+        lot.setMemo(req != null && StringUtils.hasText(req.getMemo()) ? req.getMemo().trim() : null);
+        int lotInserted = mapper.insertHistoryLot(lot);
+        if (lotInserted != 1 || lot.getId() == null) {
+            throw new IllegalStateException("history_lot 생성 실패");
+        }
+        Long lotId = lot.getId();
+
+        for (CompletionItem item : items) {
+            Long productId = item.productId();
+            if (item.orderId() != null && item.orderId() > 0 && item.receivedQty() != item.orderCount()) {
+                mapper.markQtyChangedByOrderId(item.orderId());
+            }
+
+            int beforeCount = stockCounts.get(productId);
+            int afterCount = Math.addExact(beforeCount, item.receivedQty());
 
             int stockUpdated = mapper.updateStockCount(productId, afterCount);
             if (stockUpdated != 1) {
@@ -279,11 +288,12 @@ public class InboundQueryService {
             }
 
             int historyInserted = mapper.insertHistoryRow(
-                lotId, vendorItemId, productId, beforeCount, afterCount
+                lotId, item.vendorItemId(), productId, beforeCount, afterCount
             );
             if (historyInserted != 1) {
                 throw new IllegalStateException("재고 이력 생성 실패. productId=" + productId);
             }
+            stockCounts.put(productId, afterCount);
         }
 
         // 6) orders 상태를 완료로 변경
@@ -298,6 +308,8 @@ public class InboundQueryService {
 
         return updated;
     }
+
+    private record CompletionItem(Long orderId, Long vendorItemId, Long productId, int orderCount, int receivedQty) {}
 
 
 

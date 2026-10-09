@@ -95,5 +95,15 @@ jobs:
       - name: Test server
         run: bash ./gradlew test
 
+      - name: Test stock locking against MySQL
+        run: bash ./gradlew mysqlIntegrationTest
+
+      - name: Upload server test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-test-reports
+          path: server/ims-server/build/reports/tests/
+
       - name: Build server container
         run: docker build --tag ims-server:ci .

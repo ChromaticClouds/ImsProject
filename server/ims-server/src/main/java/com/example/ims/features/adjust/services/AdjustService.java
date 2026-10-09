@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,15 +62,17 @@ public class AdjustService {
         List<Long> ids = request.products().stream()
             .map(AdjustItem::id)
             .distinct()
+            .sorted()
             .toList();
 
-        List<Stock> stocks = stockRepository.findByProductIdIn(ids);
-
-        Map<Long, Stock> stockMap = stocks.stream()
-            .collect(Collectors.toMap(
-                s -> s.getProduct().getId(),
-                Function.identity()
-            ));
+        // 입출고 완료와 같은 productId 순서로 단건 잠금을 모두 얻은 뒤 처리한다.
+        // IN 쿼리의 실행 계획이나 반환 순서는 실제 잠금 순서를 보장하지 않는다.
+        Map<Long, Stock> stockMap = new HashMap<>();
+        for (Long id : ids) {
+            Stock stock = stockRepository.findByProductIdForUpdate(id)
+                .orElseThrow(StockNotFoundException::new);
+            stockMap.put(id, stock);
+        }
 
         Map<Long, Integer> projectedCounts = new HashMap<>();
         List<AdjustmentPlan> plans = new ArrayList<>();

@@ -73,6 +73,18 @@ public class OutboundQueryService {
     List<OutboundCompleteOrderRow> orders = mapper.selectOrdersForOutboundComplete(on);
     if (orders == null || orders.isEmpty()) throw new IllegalArgumentException("출고 대기 주문이 없습니다: " + on);
 
+    // 재고 행 잠금 순서를 productId 오름차순으로 통일한다.
+    // 주문마다 품목 순서가 달라도 같은 순서로 잠가야 서로 반대 순서로 기다리는 교착이 생기지 않는다.
+    orders.stream()
+        .filter(r -> r != null && r.getProductId() != null && r.getProductId() > 0)
+        .map(OutboundCompleteOrderRow::getProductId)
+        .distinct()
+        .sorted()
+        .forEach(id -> {
+          mapper.ensureStockRow(id);
+          mapper.selectStockCountForUpdate(id);
+        });
+
     HistoryLot lot = new HistoryLot();
     lot.setUserId(actorUserId);
     lot.setOrderNumber(on);

@@ -199,6 +199,19 @@ public class InboundQueryService {
             throw new IllegalArgumentException("입고 완료 대상이 없습니다(이미 완료됐거나 발주번호 없음): " + on);
         }
 
+        // 재고 행 잠금 순서를 productId 오름차순으로 통일한다.
+        // 주문마다 품목 순서가 달라도 같은 순서로 잠가야 서로 반대 순서로 기다리는 교착이 생기지 않는다.
+        rows.stream()
+            .filter(r -> r != null && r.getVendorItemId() != null && r.getVendorItemId() > 0)
+            .map(r -> mapper.selectProductIdByVendorItemId(r.getVendorItemId()))
+            .filter(id -> id != null && id > 0)
+            .distinct()
+            .sorted()
+            .forEach(id -> {
+                mapper.ensureStockRow(id);
+                mapper.selectStockCountForUpdate(id);
+            });
+
         // 3) history_lot userId는 인증된 완료 작업자만 사용한다.
         Long actorUserId = loginUserId;
         if (actorUserId == null || actorUserId <= 0) {

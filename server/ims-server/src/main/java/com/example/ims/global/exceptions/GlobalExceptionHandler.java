@@ -58,6 +58,18 @@ public class GlobalExceptionHandler {
             .body(ApiResponse.fail(e.getMessage()));
     }
 
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> handle(BusinessException e) {
+        if (e.getHttpStatus() == null) {
+            // 상태를 지정하지 않은 예외는 이전과 같이 처리한다.
+            return handle((Exception) e);
+        }
+
+        log.warn("Business exception ({}): {}", e.getHttpStatus().value(), e.getMessage());
+        return ResponseEntity.status(e.getHttpStatus())
+            .body(ApiResponse.fail(e.getMessage()));
+    }
+
     private boolean containsAccessDenied(Throwable throwable) {
         while (throwable != null) {
             if (throwable instanceof AccessDeniedException) {

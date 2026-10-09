@@ -141,7 +141,8 @@ public class PurchaseOrderService {
         mapper.deleteByOrderNumber(orderNumber);
     }
 
-    @Transactional
+    // 이 메서드에서 DB를 바꾸는 것은 마지막 상태 변경 한 문장뿐이다.
+    // 트랜잭션으로 묶으면 메일 호출 동안 DB 연결만 오래 잡으므로 걸지 않는다(bulkSend와 같다).
     public void sendOne(String orderNumber) throws ResendException {
         PurchaseOrderContext ctx = loader.load(orderNumber);
         PurchaseOrderPdfContent content = pdfService.buildDto(ctx);

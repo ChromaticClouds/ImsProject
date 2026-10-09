@@ -3,6 +3,7 @@ package com.example.ims.features.adjust.services;
 import com.example.ims.features.adjust.dto.AdjustItem;
 import com.example.ims.features.adjust.dto.AdjustRequest;
 import com.example.ims.features.adjust.enums.AdjustType;
+import com.example.ims.features.adjust.exceptions.InvalidAdjustRequestException;
 import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.auth.exceptions.UserNotFoundException;
 import com.example.ims.features.history.entities.History;
@@ -42,18 +43,18 @@ public class AdjustService {
     @Transactional
     public void adjustProducts(Long userId, AdjustRequest request) {
         if (request == null || request.type() == null) {
-            throw new IllegalArgumentException("재고조정 유형은 필수입니다.");
+            throw new InvalidAdjustRequestException("재고조정 유형은 필수입니다.");
         }
         if (request.products() == null || request.products().isEmpty()) {
-            throw new IllegalArgumentException("조정할 품목을 1개 이상 선택해야 합니다.");
+            throw new InvalidAdjustRequestException("조정할 품목을 1개 이상 선택해야 합니다.");
         }
 
         for (AdjustItem item : request.products()) {
             if (item == null || item.id() == null || item.id() <= 0) {
-                throw new IllegalArgumentException("유효한 조정 품목 ID가 필요합니다.");
+                throw new InvalidAdjustRequestException("유효한 조정 품목 ID가 필요합니다.");
             }
             if (item.adjustCount() == null || item.adjustCount() <= 0) {
-                throw new IllegalArgumentException("조정 수량은 1 이상이어야 합니다.");
+                throw new InvalidAdjustRequestException("조정 수량은 1 이상이어야 합니다.");
             }
         }
 
@@ -134,7 +135,7 @@ public class AdjustService {
                 ? Math.addExact(before, adjustCount)
                 : Math.subtractExact(before, adjustCount);
         } catch (ArithmeticException exception) {
-            throw new IllegalArgumentException("재고 수량이 허용 범위를 초과합니다.", exception);
+            throw new InvalidAdjustRequestException("재고 수량이 허용 범위를 초과합니다.", exception);
         }
     }
 

@@ -7,6 +7,7 @@ import com.example.ims.features.order.repositories.OrderRepository;
 import com.example.ims.features.purchaseorder.dto.LoadGroupResult;
 import com.example.ims.features.purchaseorder.dto.PurchaseOrderContext;
 import com.example.ims.features.purchaseorder.exception.BuildPoContextException;
+import com.example.ims.features.purchaseorder.exception.PurchaseOrderAlreadySentException;
 import com.example.ims.features.vendor.dto.Vendor;
 import com.example.ims.features.vendor.entities.VendorItem;
 import lombok.RequiredArgsConstructor;
@@ -97,6 +98,10 @@ public class PurchaseOrderLoader {
         List<Order> orders
     ) {
         if (orders.isEmpty()) throw new OrderNotFoundException();
+
+        // 전송 전 주문은 status가 null이다. 하나라도 값이 있으면 이미 전송된 발주서이므로 메일을 다시 보내지 않는다.
+        if (orders.stream().anyMatch(order -> order.getStatus() != null))
+            throw new PurchaseOrderAlreadySentException();
 
         List<VendorItem> items = orders.stream()
             .map(Order::getVendorItem)

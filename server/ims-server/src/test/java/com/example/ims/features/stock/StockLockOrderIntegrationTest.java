@@ -14,6 +14,9 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
+import java.util.concurrent.CountDownLatch;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +56,7 @@ class StockLockOrderIntegrationTest extends MySqlIntegrationTest {
     @Autowired OutboundQueryService outbound;
     @Autowired InboundQueryService inbound;
     @Autowired AdjustService adjust;
+    @Autowired PlatformTransactionManager transactions;
 
     @BeforeEach
     void seed() {
@@ -156,6 +160,44 @@ class StockLockOrderIntegrationTest extends MySqlIntegrationTest {
         }
         assertEquals(3, orderStatusCount("OUT-X", "OUTBOUND_COMPLETE"));
         assertEquals(3, orderStatusCount("IN-Y", "INBOUND_COMPLETE"));
+    }
+
+    @Test
+    void existingStockCompletionDoesNotWaitForAnotherProductsInsertEndLock() throws Exception {
+        outboundRow(90, "OUT-DISJOINT", B);
+        inboundRow(91, "IN-DISJOINT", C);
+        CountDownLatch locked = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        Future<?> holder = pool.submit(() -> new TransactionTemplate(transactions).executeWithoutResult(status -> {
+            jdbc.update("INSERT INTO stock (product_id, `count`) VALUES (?, 0) "
+                + "ON DUPLICATE KEY UPDATE product_id = VALUES(product_id)", A);
+            locked.countDown();
+            try {
+                if (!release.await(20, TimeUnit.SECONDS)) throw new IllegalStateException("test lock was not released");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
+            }
+        }));
+        try {
+            assertTrue(locked.await(10, TimeUnit.SECONDS));
+            Future<?> completion = pool.submit(() -> {
+                outbound.completeByOrderNumberAndWriteHistory("OUT-DISJOINT", null, ACTOR);
+                inbound.markCompleteByOrderNumberAndWriteHistory("IN-DISJOINT", null, ACTOR);
+            });
+            // 이전의 무조건 upsert는 holder가 가진 stock 인덱스 끝 잠금을 기다린다.
+            // 기존 재고만 사용하는 작업은 holder를 해제하기 전에 끝나야 한다.
+            completion.get(5, TimeUnit.SECONDS);
+            assertEquals(99, stockCount(B));
+            assertEquals(101, stockCount(C));
+            assertEquals(1, orderStatusCount("OUT-DISJOINT", "OUTBOUND_COMPLETE"));
+            assertEquals(1, orderStatusCount("IN-DISJOINT", "INBOUND_COMPLETE"));
+        } finally {
+            release.countDown();
+            holder.get(10, TimeUnit.SECONDS);
+            pool.shutdownNow();
+        }
     }
 
     @RepeatedTest(10)

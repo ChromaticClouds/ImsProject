@@ -52,6 +52,19 @@ class InboundQueryServiceUnitTest {
     }
 
     @Test
+    void existingStockSkipsInsertAndUsesTheLockedCount() {
+        InboundQueryMapper mapper = successfulMapper();
+        when(mapper.selectOrdersForInboundCompleteByOrderNumber("PLA-001")).thenReturn(List.of(row(1L, 101L)));
+        when(mapper.selectProductIdByVendorItemId(101L)).thenReturn(201L);
+        when(mapper.stockRowExists(201L)).thenReturn(true);
+        when(mapper.markInboundCompleteByOrderNumber("PLA-001", 7L)).thenReturn(1);
+        new InboundQueryService(mapper).markCompleteByOrderNumberAndWriteHistory("PLA-001", null, 7L);
+        verify(mapper, never()).ensureStockRow(anyLong());
+        verify(mapper).selectStockCountForUpdate(201L);
+        verify(mapper).updateStockCount(201L, 15);
+    }
+
+    @Test
     void invalidLaterMappingOrQuantityIsRejectedBeforeAnyStockLockOrHistoryWrite() {
         for (boolean invalidMapping : List.of(true, false)) {
             InboundQueryMapper mapper = mock(InboundQueryMapper.class);

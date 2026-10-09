@@ -99,7 +99,8 @@ public class OutboundQueryService {
     // in ascending ID order, before processing any item.
     Map<Long, Integer> stockCounts = new HashMap<>();
     for (Long productId : orders.stream().map(OutboundCompleteOrderRow::getProductId).distinct().sorted().toList()) {
-      mapper.ensureStockRow(productId);
+      // 부재 확인은 비잠금 조회로 하고, 없는 행에만 INSERT 인덱스 잠금을 획득한다.
+      if (!mapper.stockRowExists(productId)) mapper.ensureStockRow(productId);
       Integer count = mapper.selectStockCountForUpdate(productId);
       if (count == null) throw new IllegalStateException("재고 행을 조회할 수 없습니다. productId=" + productId);
       stockCounts.put(productId, count);

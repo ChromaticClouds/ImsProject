@@ -47,6 +47,18 @@ class OutboundQueryServiceUnitTest {
     }
 
     @Test
+    void existingStockSkipsInsertAndUsesTheLockedCount() {
+        OutboundQueryMapper mapper = successfulMapper();
+        when(mapper.selectOrdersForOutboundComplete("REC-001")).thenReturn(List.of(row(1L, 201L)));
+        when(mapper.stockRowExists(201L)).thenReturn(true);
+        when(mapper.markOutboundCompleteByOrderNumber("REC-001")).thenReturn(1);
+        new OutboundQueryService(mapper).completeByOrderNumberAndWriteHistory("REC-001", null, 7L);
+        verify(mapper, never()).ensureStockRow(anyLong());
+        verify(mapper).selectStockCountForUpdate(201L);
+        verify(mapper).updateStockCount(201L, 8);
+    }
+
+    @Test
     void invalidLaterItemIsRejectedBeforeAnyStockLockOrHistoryWrite() {
         for (int invalidField = 0; invalidField < 3; invalidField++) {
             OutboundQueryMapper mapper = mock(OutboundQueryMapper.class);

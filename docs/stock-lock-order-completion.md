@@ -14,7 +14,9 @@ PR #46 댓글 https://github.com/ChromaticClouds/ImsProject/pull/46#issuecomment
 - [x] 실제 MySQL 테스트에 역순 출고/출고, 입고/입고, 입출고 교차 처리 각 10회, 3개 품목 경합, 없는 재고행 동시 생성, 중복 품목, 수량 변경 배지, 잘못된 수량, 재고 부족, 오버플로, 이력 저장 예외와 주문 상태 변경 불일치의 전체 롤백을 추가한다.
 - [x] CI에 MySQL 테스트를 필수 단계로 추가하고 보고서를 보관한다. Docker와 전용 DB가 모두 없으면 이 단계는 실패하며 조용히 생략하지 않는다.
 - [x] 다른 재고 변경 경로와 INSERT 경합을 조사한다. 아래 후속 작업은 이번 변경의 범위 밖이다.
-- [ ] 서버 단위 테스트 및 MySQL 통합 테스트의 최종 실행 결과 확인.
+- [x] 서버 단위 테스트 45개 및 실제 MySQL 통합 테스트 39개 통과. 서버 컨테이너 빌드와 클라이언트 CI도 통과했다.
+
+검증한 소스 커밋: `fc9561a`. [CI 실행 결과](https://github.com/ChromaticClouds/ImsProject/actions/runs/37924984443). Linux, Java 21.0.12, Testcontainers MySQL 8.4에서 실행했다. 로컬 Windows는 Java 의존성 경로의 `AccessDeniedException`으로 테스트를 실행하지 못했으며, 위 결과는 Linux CI의 실제 실행 결과다.
 
 ## 실행
 
@@ -46,6 +48,8 @@ export IMS_IT_DB_PASSWORD=''
 동시성 테스트는 실행 장벽과 수량 UPDATE의 지연 트리거를 이용해 요청을 겹치게 한다. 품목 사이에 다른 재고행을 두어 인덱스 경합이 역순 잠금 문제를 가리는 가능성을 줄인다. 최종 수량뿐 아니라 각 품목의 before/after 이력 연속성과 주문 상태를 검증한다. 테스트 자체에 트랜잭션을 걸지 않아 실제 서비스 트랜잭션의 커밋/롤백을 검사한다.
 
 ## 후속 작업 및 잔여 위험
+
+아래 범위는 [후속 이슈 #48](https://github.com/ChromaticClouds/ImsProject/issues/48)로 추적한다.
 
 1. `AdjustService.adjustProducts`는 `StockRepository.findByProductIdIn`의 단일 `IN` 쿼리에 `PESSIMISTIC_WRITE`를 사용한다. 순차적인 productId 잠금 순서를 명시하지 않는다. 정렬된 ID별 잠금과 입출고/조정 교차 MySQL 테스트를 후속 변경에서 추가해야 한다. 쿼리 결과의 ORDER BY만으로 실제 잠금 순서를 가정하지 않는다.
 2. 입고 수량 수정 및 완료 처리의 주문행/재고행 잠금 순서, 품목 연결 변경/삭제와 외래키 잠금도 전체적으로 검토할 필요가 있다. 이번 변경은 재고행 간 순서만 통일한다.

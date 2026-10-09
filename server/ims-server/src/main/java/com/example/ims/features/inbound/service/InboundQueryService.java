@@ -254,7 +254,9 @@ public class InboundQueryService {
         // order, once per product, before changing quantities or writing history.
         Map<Long, Integer> stockCounts = new HashMap<>();
         for (Long productId : items.stream().map(CompletionItem::productId).distinct().sorted().toList()) {
-            mapper.ensureStockRow(productId);
+            // 기존 행의 no-op upsert도 INSERT 인덱스 잠금을 잡아 다른 품목을 막는다.
+            // 없는 행에만 upsert한다. 먼저 FOR UPDATE로 부재를 확인하면 동시 생성의 gap-lock 교착이 생길 수 있다.
+            if (!mapper.stockRowExists(productId)) mapper.ensureStockRow(productId);
             Integer currentStock = mapper.selectStockCountForUpdate(productId);
             if (currentStock == null) {
                 throw new IllegalStateException("재고 행을 조회할 수 없습니다. productId=" + productId);

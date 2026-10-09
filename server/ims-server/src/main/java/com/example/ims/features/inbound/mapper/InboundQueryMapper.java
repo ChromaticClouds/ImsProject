@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.UpdateProvider;
 
@@ -122,6 +123,10 @@ public interface InboundQueryMapper {
   List<InboundCompleteOrderRow> selectOrdersForInboundCompleteByOrderNumber(
       @Param("orderNumber") String orderNumber
   );
+
+  // 존재 확인은 잠그지 않는다. 수량은 반드시 이후 FOR UPDATE의 최신 값만 사용한다.
+  @Select("SELECT EXISTS (SELECT 1 FROM stock WHERE product_id = #{productId})")
+  boolean stockRowExists(@Param("productId") Long productId);
 
   @InsertProvider(type = InboundQuerySqlProvider.class, method = "ensureStockRow")
   int ensureStockRow(@Param("productId") Long productId);

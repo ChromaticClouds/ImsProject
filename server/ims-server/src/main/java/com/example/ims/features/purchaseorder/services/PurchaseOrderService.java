@@ -15,6 +15,8 @@ import com.example.ims.features.inbound.dto.InboundSafeStockRow;
 import com.example.ims.features.inbound.dto.PageMeta;
 import com.example.ims.features.purchaseorder.dto.*;
 import com.example.ims.features.purchaseorder.enums.PurchaseOrderSendFailStage;
+import com.example.ims.features.purchaseorder.exception.PurchaseOrderSendInProgressException;
+import com.example.ims.features.purchaseorder.services.PurchaseOrderDispatchService.Claim;
 import com.example.ims.features.purchaseorder.mappers.PurchaseOrderMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class PurchaseOrderService {
     private final PurchaseOrderPdfService pdfService;
     private final PurchaseOrderLoader loader;
     private final PurchaseOrderMailSender mailSender;
+    private final PurchaseOrderDispatchService dispatches;
 
     @Transactional(readOnly = true)
     public PurchaseOrderListResponse list(String view, String keyword, LocalDate from, LocalDate to, Integer page, Integer size) {
@@ -141,17 +144,33 @@ public class PurchaseOrderService {
         mapper.deleteByOrderNumber(orderNumber);
     }
 
-    // 이 메서드에서 DB를 바꾸는 것은 마지막 상태 변경 한 문장뿐이다.
+    // 이 메서드에서 DB를 바꾸는 것은 발송 이력과 마지막 상태 변경 각각 한 문장씩이다.
     // 트랜잭션으로 묶으면 메일 호출 동안 DB 연결만 오래 잡으므로 걸지 않는다(bulkSend와 같다).
     public void sendOne(String orderNumber) throws ResendException {
         PurchaseOrderContext ctx = loader.load(orderNumber);
-        PurchaseOrderPdfContent content = pdfService.buildDto(ctx);
-        byte[] pdf = pdfService.generate(content);
 
-        String html = PurchaseOrderHtmlTemplate.render(ctx, content);
+        Claim claim = dispatches.claim(orderNumber, PurchaseOrderMailSender.idempotencyKey(ctx));
+        if (claim == Claim.IN_PROGRESS) throw new PurchaseOrderSendInProgressException();
 
-        mailSender.sendPurchaseOrder(ctx, html, pdf);
+        if (claim == Claim.ALREADY_SENT) {
+            // 메일은 이미 나갔는데 주문 상태 변경만 실패했던 건이다. 메일은 다시 보내지 않고 상태만 맞춘다.
+            markSentExactly(ctx);
+            return;
+        }
 
+        try {
+            PurchaseOrderPdfContent content = pdfService.buildDto(ctx);
+            byte[] pdf = pdfService.generate(content);
+
+            String html = PurchaseOrderHtmlTemplate.render(ctx, content);
+
+            mailSender.sendPurchaseOrder(ctx, html, pdf);
+        } catch (ResendException | RuntimeException e) {
+            dispatches.markFailed(orderNumber, e.getMessage());
+            throw e;
+        }
+
+        dispatches.markSent(orderNumber);
         markSentExactly(ctx);
     }
 
@@ -166,23 +185,47 @@ public class PurchaseOrderService {
         );
 
         for (PurchaseOrderContext ctx : load.contexts()) {
-            PurchaseOrderPdfContent content;
-            byte[] pdf;
+            Claim claim;
 
             try {
-                content = pdfService.buildDto(ctx);
-                pdf = pdfService.generate(content);
+                claim = dispatches.claim(ctx.orderNumber(), PurchaseOrderMailSender.idempotencyKey(ctx));
             } catch (Exception e) {
-                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.PDF, e.getMessage()));
+                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.LOAD, e.getMessage()));
                 continue;
             }
 
-            try {
-                String html = PurchaseOrderHtmlTemplate.render(ctx, content);
-                mailSender.sendPurchaseOrder(ctx, html, pdf);
-            } catch (Exception e) {
-                failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.MAIL, e.getMessage()));
+            if (claim == Claim.IN_PROGRESS) {
+                failed.add(new SendGroupResult.Fail(
+                    ctx.orderNumber(),
+                    PurchaseOrderSendFailStage.LOAD,
+                    new PurchaseOrderSendInProgressException().getMessage()
+                ));
                 continue;
+            }
+
+            if (claim == Claim.ACQUIRED) {
+                PurchaseOrderPdfContent content;
+                byte[] pdf;
+
+                try {
+                    content = pdfService.buildDto(ctx);
+                    pdf = pdfService.generate(content);
+                } catch (Exception e) {
+                    dispatches.markFailed(ctx.orderNumber(), e.getMessage());
+                    failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.PDF, e.getMessage()));
+                    continue;
+                }
+
+                try {
+                    String html = PurchaseOrderHtmlTemplate.render(ctx, content);
+                    mailSender.sendPurchaseOrder(ctx, html, pdf);
+                } catch (Exception e) {
+                    dispatches.markFailed(ctx.orderNumber(), e.getMessage());
+                    failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.MAIL, e.getMessage()));
+                    continue;
+                }
+
+                dispatches.markSent(ctx.orderNumber());
             }
 
             try {

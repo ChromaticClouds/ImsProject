@@ -11,10 +11,13 @@ import com.example.ims.features.purchaseorder.dto.PurchaseOrderPdfContent;
 import com.example.ims.features.purchaseorder.dto.SendGroupResult;
 import com.example.ims.features.purchaseorder.enums.PurchaseOrderSendFailStage;
 import com.example.ims.features.purchaseorder.exception.BuildPoContextException;
+import com.example.ims.features.purchaseorder.exception.PurchaseOrderSendInProgressException;
+import com.example.ims.features.purchaseorder.services.PurchaseOrderDispatchService.Claim;
 import com.example.ims.features.purchaseorder.mappers.PurchaseOrderMapper;
 import com.example.ims.features.vendor.dto.Vendor;
 import com.example.ims.features.vendor.entities.VendorItem;
 import com.resend.core.exception.ResendException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +42,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -52,6 +56,12 @@ class PurchaseOrderServiceUnitTest {
     @Mock PurchaseOrderLoader loader;
     @Mock PurchaseOrderMailSender mailSender;
     @Mock OrderRepository orderRepository;
+    @Mock PurchaseOrderDispatchService dispatches;
+
+    @BeforeEach
+    void claimsByDefault() {
+        lenient().when(dispatches.claim(anyString(), anyString())).thenReturn(Claim.ACQUIRED);
+    }
 
     @Test
     @DisplayName("Given 단일 발주번호 When 전송 성공 Then Context, PDF, 메일, 상태 변경이 순서대로 수행된다")
@@ -239,8 +249,123 @@ class PurchaseOrderServiceUnitTest {
         verify(mapper, never()).markSentByOrderNumber("PLA-MAIL-FAIL");
     }
 
+    @Test
+    @DisplayName("Given 다른 요청이 전송 중 When 단건 전송 Then PDF·메일·상태 변경을 하지 않고 거부한다")
+    void sendOne_GivenSendInProgress_WhenSend_ThenRejectsWithoutSending() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext ctx = context("PLA-BUSY", "vendor@test.com");
+
+        when(loader.load("PLA-BUSY")).thenReturn(ctx);
+        when(dispatches.claim(eq("PLA-BUSY"), anyString())).thenReturn(Claim.IN_PROGRESS);
+
+        assertThrows(PurchaseOrderSendInProgressException.class, () -> service.sendOne("PLA-BUSY"));
+
+        verifyNoInteractions(pdfService, mailSender);
+        verify(mapper, never()).markSentByOrderNumber(anyString());
+    }
+
+    @Test
+    @DisplayName("Given 메일은 이미 나갔고 주문 상태만 미반영 When 단건 전송 Then 메일 없이 주문 상태만 맞춘다")
+    void sendOne_GivenAlreadyDispatched_WhenSend_ThenOnlyMarksOrders() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext ctx = context("PLA-DONE", "vendor@test.com");
+
+        when(loader.load("PLA-DONE")).thenReturn(ctx);
+        when(dispatches.claim(eq("PLA-DONE"), anyString())).thenReturn(Claim.ALREADY_SENT);
+        when(mapper.markSentByOrderNumber("PLA-DONE")).thenReturn(1);
+
+        service.sendOne("PLA-DONE");
+
+        verifyNoInteractions(pdfService, mailSender);
+        verify(mapper).markSentByOrderNumber("PLA-DONE");
+    }
+
+    @Test
+    @DisplayName("Given 메일 전송 실패 When 단건 전송 Then 발송 이력을 FAILED로 남기고 오류를 그대로 던진다")
+    void sendOne_GivenMailFailure_WhenSend_ThenRecordsFailureAndRethrows() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext ctx = context("PLA-FAIL", "vendor@test.com");
+        PurchaseOrderPdfContent content = content(ctx);
+
+        when(loader.load("PLA-FAIL")).thenReturn(ctx);
+        when(pdfService.buildDto(ctx)).thenReturn(content);
+        when(pdfService.generate(content)).thenReturn(new byte[] {1});
+        doThrow(new ResendException("mail down"))
+            .when(mailSender).sendPurchaseOrder(eq(ctx), anyString(), any());
+
+        assertThrows(ResendException.class, () -> service.sendOne("PLA-FAIL"));
+
+        verify(dispatches).markFailed("PLA-FAIL", "mail down");
+        verify(dispatches, never()).markSent(anyString());
+        verify(mapper, never()).markSentByOrderNumber(anyString());
+    }
+
+    @Test
+    @DisplayName("Given 전송 성공 When 단건 전송 Then 메일 뒤 이력을 SENT로 바꾸고 그다음 주문 상태를 바꾼다")
+    void sendOne_GivenSuccess_WhenSend_ThenMarksDispatchBeforeOrders() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext ctx = context("PLA-ORDER", "vendor@test.com");
+        PurchaseOrderPdfContent content = content(ctx);
+
+        when(loader.load("PLA-ORDER")).thenReturn(ctx);
+        when(pdfService.buildDto(ctx)).thenReturn(content);
+        when(pdfService.generate(content)).thenReturn(new byte[] {1});
+        when(mapper.markSentByOrderNumber("PLA-ORDER")).thenReturn(1);
+
+        service.sendOne("PLA-ORDER");
+
+        InOrder inOrder = inOrder(mailSender, dispatches, mapper);
+        inOrder.verify(mailSender).sendPurchaseOrder(eq(ctx), anyString(), any());
+        inOrder.verify(dispatches).markSent("PLA-ORDER");
+        inOrder.verify(mapper).markSentByOrderNumber("PLA-ORDER");
+    }
+
+    @Test
+    @DisplayName("Given 일괄 전송 중 한 건이 전송 중 When 전송 Then 그 건만 LOAD 실패로 보고하고 나머지는 계속 보낸다")
+    void bulkSend_GivenOneInProgress_WhenSend_ThenOthersStillSent() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext busy = context("PLA-BUSY", "vendor@test.com");
+        PurchaseOrderContext ok = context("PLA-OK", "vendor@test.com");
+        PurchaseOrderPdfContent okContent = content(ok);
+
+        when(loader.loadGroup(List.of("PLA-BUSY", "PLA-OK")))
+            .thenReturn(new LoadGroupResult(List.of(busy, ok), List.of()));
+        when(dispatches.claim(eq("PLA-BUSY"), anyString())).thenReturn(Claim.IN_PROGRESS);
+        when(pdfService.buildDto(ok)).thenReturn(okContent);
+        when(pdfService.generate(okContent)).thenReturn(new byte[] {1});
+        when(mapper.markSentByOrderNumber("PLA-OK")).thenReturn(1);
+
+        SendGroupResult result = service.bulkSend(List.of("PLA-BUSY", "PLA-OK"));
+
+        assertEquals(List.of("PLA-OK"), result.success().stream().map(SendGroupResult.Success::orderNumber).toList());
+        assertEquals(1, result.failed().size());
+        assertEquals("PLA-BUSY", result.failed().getFirst().orderNumber());
+        assertEquals(PurchaseOrderSendFailStage.LOAD, result.failed().getFirst().stage());
+        verify(pdfService, never()).buildDto(busy);
+    }
+
+    @Test
+    @DisplayName("Given 일괄 전송 중 메일 실패 When 전송 Then 그 건의 발송 이력을 FAILED로 남긴다")
+    void bulkSend_GivenMailFailure_WhenSend_ThenRecordsFailure() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext ctx = context("PLA-MAIL", "vendor@test.com");
+        PurchaseOrderPdfContent content = content(ctx);
+
+        when(loader.loadGroup(List.of("PLA-MAIL"))).thenReturn(new LoadGroupResult(List.of(ctx), List.of()));
+        when(pdfService.buildDto(ctx)).thenReturn(content);
+        when(pdfService.generate(content)).thenReturn(new byte[] {1});
+        doThrow(new ResendException("mail down"))
+            .when(mailSender).sendPurchaseOrder(eq(ctx), anyString(), any());
+
+        SendGroupResult result = service.bulkSend(List.of("PLA-MAIL"));
+
+        assertEquals(PurchaseOrderSendFailStage.MAIL, result.failed().getFirst().stage());
+        verify(dispatches).markFailed("PLA-MAIL", "mail down");
+        verify(dispatches, never()).markSent(anyString());
+    }
+
     private PurchaseOrderService serviceWith(PurchaseOrderLoader purchaseOrderLoader) {
-        return new PurchaseOrderService(mapper, pdfService, purchaseOrderLoader, mailSender);
+        return new PurchaseOrderService(mapper, pdfService, purchaseOrderLoader, mailSender, dispatches);
     }
 
     private PurchaseOrderContext context(String orderNumber, String vendorEmail) {

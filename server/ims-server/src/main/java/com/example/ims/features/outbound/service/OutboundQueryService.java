@@ -2,6 +2,8 @@ package com.example.ims.features.outbound.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,17 +75,7 @@ public class OutboundQueryService {
     List<OutboundCompleteOrderRow> orders = mapper.selectOrdersForOutboundComplete(on);
     if (orders == null || orders.isEmpty()) throw new IllegalArgumentException("출고 대기 주문이 없습니다: " + on);
 
-    HistoryLot lot = new HistoryLot();
-    lot.setUserId(actorUserId);
-    lot.setOrderNumber(on);
-    lot.setMemo(StringUtils.hasText(memo) ? memo.trim() : null);
-
-    int lotInserted = mapper.insertHistoryLot(lot);
-    if (lotInserted != 1 || lot.getId() == null || lot.getId() <= 0) {
-      throw new IllegalStateException("history_lot 생성 실패");
-    }
-    Long lotId = lot.getId();
-
+    // Validate every item before acquiring any stock lock or writing history.
     for (OutboundCompleteOrderRow r : orders) {
       if (r == null) throw new IllegalStateException("출고 완료 대상 행이 비어 있습니다. orderNumber=" + on);
 
@@ -101,11 +93,32 @@ public class OutboundQueryService {
         throw new IllegalArgumentException("출고 수량은 1 이상이어야 합니다. productId=" + productId);
       }
 
+    }
+
+    // The upsert also acquires locks: execute both statements once per product,
+    // in ascending ID order, before processing any item.
+    Map<Long, Integer> stockCounts = new HashMap<>();
+    for (Long productId : orders.stream().map(OutboundCompleteOrderRow::getProductId).distinct().sorted().toList()) {
       mapper.ensureStockRow(productId);
-      Integer before = mapper.selectStockCountForUpdate(productId);
-      if (before == null) throw new IllegalStateException("재고 행을 조회할 수 없습니다. productId=" + productId);
-      int beforeCount = before;
-      
+      Integer count = mapper.selectStockCountForUpdate(productId);
+      if (count == null) throw new IllegalStateException("재고 행을 조회할 수 없습니다. productId=" + productId);
+      stockCounts.put(productId, count);
+    }
+
+    HistoryLot lot = new HistoryLot();
+    lot.setUserId(actorUserId);
+    lot.setOrderNumber(on);
+    lot.setMemo(StringUtils.hasText(memo) ? memo.trim() : null);
+    int lotInserted = mapper.insertHistoryLot(lot);
+    if (lotInserted != 1 || lot.getId() == null || lot.getId() <= 0) {
+      throw new IllegalStateException("history_lot 생성 실패");
+    }
+    Long lotId = lot.getId();
+
+    for (OutboundCompleteOrderRow r : orders) {
+      Long productId = r.getProductId();
+      int qty = r.getOrderQty();
+      int beforeCount = stockCounts.get(productId);
 
       int afterCount = Math.subtractExact(beforeCount, qty);
       if (afterCount < 0) throw new IllegalArgumentException("재고 부족: productId=" + productId);
@@ -119,6 +132,7 @@ public class OutboundQueryService {
 
       int stockUpdated = mapper.updateStockCount(productId, afterCount);
       if (stockUpdated != 1) throw new IllegalStateException("재고 갱신 실패. productId=" + productId);
+      stockCounts.put(productId, afterCount);
     }
 
     int updated = mapper.markOutboundCompleteByOrderNumber(on);

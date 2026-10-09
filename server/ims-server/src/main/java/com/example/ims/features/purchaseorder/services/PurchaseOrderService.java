@@ -17,6 +17,7 @@ import com.example.ims.features.purchaseorder.dto.*;
 import com.example.ims.features.purchaseorder.enums.PurchaseOrderSendFailStage;
 import com.example.ims.features.purchaseorder.exception.PurchaseOrderSendInProgressException;
 import com.example.ims.features.purchaseorder.services.PurchaseOrderDispatchService.Claim;
+import com.example.ims.features.purchaseorder.services.PurchaseOrderDispatchService.ClaimResult;
 import com.example.ims.features.purchaseorder.mappers.PurchaseOrderMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -149,10 +150,10 @@ public class PurchaseOrderService {
     public void sendOne(String orderNumber) throws ResendException {
         PurchaseOrderContext ctx = loader.load(orderNumber);
 
-        Claim claim = dispatches.claim(orderNumber, PurchaseOrderMailSender.idempotencyKey(ctx));
-        if (claim == Claim.IN_PROGRESS) throw new PurchaseOrderSendInProgressException();
+        ClaimResult claim = dispatches.claim(orderNumber, PurchaseOrderMailSender.idempotencyKey(ctx));
+        if (claim.claim() == Claim.IN_PROGRESS) throw new PurchaseOrderSendInProgressException();
 
-        if (claim == Claim.ALREADY_SENT) {
+        if (claim.claim() == Claim.ALREADY_SENT) {
             // 메일은 이미 나갔는데 주문 상태 변경만 실패했던 건이다. 메일은 다시 보내지 않고 상태만 맞춘다.
             markSentExactly(ctx);
             return;
@@ -166,11 +167,11 @@ public class PurchaseOrderService {
 
             mailSender.sendPurchaseOrder(ctx, html, pdf);
         } catch (ResendException | RuntimeException e) {
-            dispatches.markFailed(orderNumber, e.getMessage());
+            dispatches.markFailed(orderNumber, claim.attempt(), e.getMessage());
             throw e;
         }
 
-        dispatches.markSent(orderNumber);
+        dispatches.markSent(orderNumber, claim.attempt());
         markSentExactly(ctx);
     }
 
@@ -185,7 +186,7 @@ public class PurchaseOrderService {
         );
 
         for (PurchaseOrderContext ctx : load.contexts()) {
-            Claim claim;
+            ClaimResult claim;
 
             try {
                 claim = dispatches.claim(ctx.orderNumber(), PurchaseOrderMailSender.idempotencyKey(ctx));
@@ -194,7 +195,7 @@ public class PurchaseOrderService {
                 continue;
             }
 
-            if (claim == Claim.IN_PROGRESS) {
+            if (claim.claim() == Claim.IN_PROGRESS) {
                 failed.add(new SendGroupResult.Fail(
                     ctx.orderNumber(),
                     PurchaseOrderSendFailStage.LOAD,
@@ -203,7 +204,7 @@ public class PurchaseOrderService {
                 continue;
             }
 
-            if (claim == Claim.ACQUIRED) {
+            if (claim.claim() == Claim.ACQUIRED) {
                 PurchaseOrderPdfContent content;
                 byte[] pdf;
 
@@ -211,7 +212,7 @@ public class PurchaseOrderService {
                     content = pdfService.buildDto(ctx);
                     pdf = pdfService.generate(content);
                 } catch (Exception e) {
-                    dispatches.markFailed(ctx.orderNumber(), e.getMessage());
+                    dispatches.markFailed(ctx.orderNumber(), claim.attempt(), e.getMessage());
                     failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.PDF, e.getMessage()));
                     continue;
                 }
@@ -220,12 +221,12 @@ public class PurchaseOrderService {
                     String html = PurchaseOrderHtmlTemplate.render(ctx, content);
                     mailSender.sendPurchaseOrder(ctx, html, pdf);
                 } catch (Exception e) {
-                    dispatches.markFailed(ctx.orderNumber(), e.getMessage());
+                    dispatches.markFailed(ctx.orderNumber(), claim.attempt(), e.getMessage());
                     failed.add(new SendGroupResult.Fail(ctx.orderNumber(), PurchaseOrderSendFailStage.MAIL, e.getMessage()));
                     continue;
                 }
 
-                dispatches.markSent(ctx.orderNumber());
+                dispatches.markSent(ctx.orderNumber(), claim.attempt());
             }
 
             try {
@@ -242,12 +243,15 @@ public class PurchaseOrderService {
     private void markSentExactly(PurchaseOrderContext context) {
         int expected = context.orders().size();
         int updated = mapper.markSentByOrderNumber(context.orderNumber());
-        if (updated != expected) {
-            throw new IllegalStateException(
-                "발주 상태 변경 행 수가 일치하지 않습니다. orderNumber=" + context.orderNumber()
-                    + ", expected=" + expected + ", actual=" + updated
-            );
-        }
+        if (updated == expected) return;
+
+        // 같은 발주서를 동시에 처리한 다른 요청이 먼저 상태를 바꿨다면, 남은 미전송 행이 없어 이미 원하는 상태다.
+        if (mapper.countUnsentByOrderNumber(context.orderNumber()) == 0) return;
+
+        throw new IllegalStateException(
+            "발주 상태 변경 행 수가 일치하지 않습니다. orderNumber=" + context.orderNumber()
+                + ", expected=" + expected + ", actual=" + updated
+        );
     }
 
     @Transactional

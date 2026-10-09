@@ -38,6 +38,16 @@ public class PurchaseOrderDispatchService {
         IN_PROGRESS
     }
 
+    /**
+     * 선점 결과. ACQUIRED일 때만 attempt가 의미 있고, 이 번호가 이후 SENT·FAILED 전이의 소유 증표다.
+     * 그사이 다른 요청이 재선점하면 번호가 달라져, 밀려난 요청은 후속 요청의 상태를 바꾸지 못한다.
+     */
+    public record ClaimResult(Claim claim, int attempt) {
+        static ClaimResult acquired(int attempt) { return new ClaimResult(Claim.ACQUIRED, attempt); }
+        static ClaimResult alreadySent() { return new ClaimResult(Claim.ALREADY_SENT, 0); }
+        static ClaimResult inProgress() { return new ClaimResult(Claim.IN_PROGRESS, 0); }
+    }
+
     private final PurchaseOrderDispatchRepository repository;
     private final Clock clock;
 
@@ -51,46 +61,51 @@ public class PurchaseOrderDispatchService {
         this.clock = clock;
     }
 
-    public Claim claim(String orderNumber, String idempotencyKey) {
+    public ClaimResult claim(String orderNumber, String idempotencyKey) {
         LocalDateTime now = LocalDateTime.now(clock);
 
         if (repository.insertIfAbsent(orderNumber, idempotencyKey, now) == 1) {
-            return Claim.ACQUIRED;
+            return ClaimResult.acquired(1);
         }
 
         PurchaseOrderDispatch existing = repository.findByOrderNumber(orderNumber).orElse(null);
-        if (existing == null) return Claim.IN_PROGRESS;
-        if (existing.getStatus() == PurchaseOrderDispatchStatus.SENT) return Claim.ALREADY_SENT;
+        if (existing == null) return ClaimResult.inProgress();
+        if (existing.getStatus() == PurchaseOrderDispatchStatus.SENT) return ClaimResult.alreadySent();
 
+        int nextAttempt = existing.getAttempts() + 1;
         int reclaimed = repository.reclaim(
             orderNumber,
             idempotencyKey,
             now,
             now.minus(STALE_AFTER),
+            existing.getAttempts(),
+            nextAttempt,
             PurchaseOrderDispatchStatus.SENDING,
             PurchaseOrderDispatchStatus.FAILED
         );
 
-        return reclaimed == 1 ? Claim.ACQUIRED : Claim.IN_PROGRESS;
+        return reclaimed == 1 ? ClaimResult.acquired(nextAttempt) : ClaimResult.inProgress();
     }
 
-    public void markSent(String orderNumber) {
+    public void markSent(String orderNumber, int attempt) {
         int updated = repository.markSent(
             orderNumber,
+            attempt,
             LocalDateTime.now(clock),
             PurchaseOrderDispatchStatus.SENT,
             PurchaseOrderDispatchStatus.SENDING
         );
         if (updated != 1) {
-            log.warn("Dispatch was not in SENDING when marking SENT. orderNumber={}", orderNumber);
+            log.warn("Dispatch is no longer owned by attempt {} when marking SENT. orderNumber={}", attempt, orderNumber);
         }
     }
 
     /** 실패 기록 자체가 실패해도 원래 오류를 가리지 않도록 예외를 던지지 않는다. */
-    public void markFailed(String orderNumber, String reason) {
+    public void markFailed(String orderNumber, int attempt, String reason) {
         try {
             repository.markFailed(
                 orderNumber,
+                attempt,
                 truncate(reason),
                 LocalDateTime.now(clock),
                 PurchaseOrderDispatchStatus.FAILED,

@@ -35,17 +35,22 @@ public interface PurchaseOrderDispatchRepository extends JpaRepository<PurchaseO
         @Param("now") LocalDateTime now
     );
 
-    /** 실패했거나 오래 멈춘 SENDING 건만 다시 선점한다. 1이면 선점 성공. */
+    /**
+     * 실패했거나 오래 멈춘 SENDING 건만 다시 선점한다. 1이면 선점 성공.
+     * 읽어 둔 시도 번호(observedAttempts)와 같을 때만 갱신하므로, 그사이 다른 요청이 먼저
+     * 선점했다면 0이 된다.
+     */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Transactional
     @Query("""
         update PurchaseOrderDispatch d
            set d.status = :sending,
-               d.attempts = d.attempts + 1,
+               d.attempts = :nextAttempts,
                d.idempotencyKey = :idempotencyKey,
                d.lastError = null,
                d.updatedAt = :now
          where d.orderNumber = :orderNumber
+           and d.attempts = :observedAttempts
            and (d.status = :failed or (d.status = :sending and d.updatedAt < :staleBefore))
         """)
     int reclaim(
@@ -53,19 +58,23 @@ public interface PurchaseOrderDispatchRepository extends JpaRepository<PurchaseO
         @Param("idempotencyKey") String idempotencyKey,
         @Param("now") LocalDateTime now,
         @Param("staleBefore") LocalDateTime staleBefore,
+        @Param("observedAttempts") int observedAttempts,
+        @Param("nextAttempts") int nextAttempts,
         @Param("sending") PurchaseOrderDispatchStatus sending,
         @Param("failed") PurchaseOrderDispatchStatus failed
     );
 
+    /** 자신이 선점한 시도(attempts)일 때만 SENT로 바꾼다. 밀려난 이전 요청은 후속 요청의 상태를 바꾸지 못한다. */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Transactional
     @Query("""
         update PurchaseOrderDispatch d
            set d.status = :sent, d.sentAt = :now, d.updatedAt = :now, d.lastError = null
-         where d.orderNumber = :orderNumber and d.status = :sending
+         where d.orderNumber = :orderNumber and d.attempts = :attempt and d.status = :sending
         """)
     int markSent(
         @Param("orderNumber") String orderNumber,
+        @Param("attempt") int attempt,
         @Param("now") LocalDateTime now,
         @Param("sent") PurchaseOrderDispatchStatus sent,
         @Param("sending") PurchaseOrderDispatchStatus sending
@@ -76,10 +85,11 @@ public interface PurchaseOrderDispatchRepository extends JpaRepository<PurchaseO
     @Query("""
         update PurchaseOrderDispatch d
            set d.status = :failed, d.lastError = :lastError, d.updatedAt = :now
-         where d.orderNumber = :orderNumber and d.status = :sending
+         where d.orderNumber = :orderNumber and d.attempts = :attempt and d.status = :sending
         """)
     int markFailed(
         @Param("orderNumber") String orderNumber,
+        @Param("attempt") int attempt,
         @Param("lastError") String lastError,
         @Param("now") LocalDateTime now,
         @Param("failed") PurchaseOrderDispatchStatus failed,

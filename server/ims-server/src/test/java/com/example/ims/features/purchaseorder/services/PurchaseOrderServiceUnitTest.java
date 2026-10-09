@@ -13,6 +13,7 @@ import com.example.ims.features.purchaseorder.enums.PurchaseOrderSendFailStage;
 import com.example.ims.features.purchaseorder.exception.BuildPoContextException;
 import com.example.ims.features.purchaseorder.exception.PurchaseOrderSendInProgressException;
 import com.example.ims.features.purchaseorder.services.PurchaseOrderDispatchService.Claim;
+import com.example.ims.features.purchaseorder.services.PurchaseOrderDispatchService.ClaimResult;
 import com.example.ims.features.purchaseorder.mappers.PurchaseOrderMapper;
 import com.example.ims.features.vendor.dto.Vendor;
 import com.example.ims.features.vendor.entities.VendorItem;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
@@ -60,7 +62,7 @@ class PurchaseOrderServiceUnitTest {
 
     @BeforeEach
     void claimsByDefault() {
-        lenient().when(dispatches.claim(anyString(), anyString())).thenReturn(Claim.ACQUIRED);
+        lenient().when(dispatches.claim(anyString(), anyString())).thenReturn(new ClaimResult(Claim.ACQUIRED, 1));
     }
 
     @Test
@@ -99,6 +101,7 @@ class PurchaseOrderServiceUnitTest {
         when(pdfService.buildDto(ctx)).thenReturn(content);
         when(pdfService.generate(content)).thenReturn(pdf);
         when(mapper.markSentByOrderNumber("PLA-ROW-MISMATCH")).thenReturn(0);
+        when(mapper.countUnsentByOrderNumber("PLA-ROW-MISMATCH")).thenReturn(1);
 
         assertThrows(
             IllegalStateException.class,
@@ -256,7 +259,7 @@ class PurchaseOrderServiceUnitTest {
         PurchaseOrderContext ctx = context("PLA-BUSY", "vendor@test.com");
 
         when(loader.load("PLA-BUSY")).thenReturn(ctx);
-        when(dispatches.claim(eq("PLA-BUSY"), anyString())).thenReturn(Claim.IN_PROGRESS);
+        when(dispatches.claim(eq("PLA-BUSY"), anyString())).thenReturn(new ClaimResult(Claim.IN_PROGRESS, 0));
 
         assertThrows(PurchaseOrderSendInProgressException.class, () -> service.sendOne("PLA-BUSY"));
 
@@ -271,7 +274,7 @@ class PurchaseOrderServiceUnitTest {
         PurchaseOrderContext ctx = context("PLA-DONE", "vendor@test.com");
 
         when(loader.load("PLA-DONE")).thenReturn(ctx);
-        when(dispatches.claim(eq("PLA-DONE"), anyString())).thenReturn(Claim.ALREADY_SENT);
+        when(dispatches.claim(eq("PLA-DONE"), anyString())).thenReturn(new ClaimResult(Claim.ALREADY_SENT, 0));
         when(mapper.markSentByOrderNumber("PLA-DONE")).thenReturn(1);
 
         service.sendOne("PLA-DONE");
@@ -295,8 +298,8 @@ class PurchaseOrderServiceUnitTest {
 
         assertThrows(ResendException.class, () -> service.sendOne("PLA-FAIL"));
 
-        verify(dispatches).markFailed("PLA-FAIL", "mail down");
-        verify(dispatches, never()).markSent(anyString());
+        verify(dispatches).markFailed("PLA-FAIL", 1, "mail down");
+        verify(dispatches, never()).markSent(anyString(), anyInt());
         verify(mapper, never()).markSentByOrderNumber(anyString());
     }
 
@@ -316,7 +319,7 @@ class PurchaseOrderServiceUnitTest {
 
         InOrder inOrder = inOrder(mailSender, dispatches, mapper);
         inOrder.verify(mailSender).sendPurchaseOrder(eq(ctx), anyString(), any());
-        inOrder.verify(dispatches).markSent("PLA-ORDER");
+        inOrder.verify(dispatches).markSent("PLA-ORDER", 1);
         inOrder.verify(mapper).markSentByOrderNumber("PLA-ORDER");
     }
 
@@ -330,7 +333,7 @@ class PurchaseOrderServiceUnitTest {
 
         when(loader.loadGroup(List.of("PLA-BUSY", "PLA-OK")))
             .thenReturn(new LoadGroupResult(List.of(busy, ok), List.of()));
-        when(dispatches.claim(eq("PLA-BUSY"), anyString())).thenReturn(Claim.IN_PROGRESS);
+        when(dispatches.claim(eq("PLA-BUSY"), anyString())).thenReturn(new ClaimResult(Claim.IN_PROGRESS, 0));
         when(pdfService.buildDto(ok)).thenReturn(okContent);
         when(pdfService.generate(okContent)).thenReturn(new byte[] {1});
         when(mapper.markSentByOrderNumber("PLA-OK")).thenReturn(1);
@@ -360,8 +363,60 @@ class PurchaseOrderServiceUnitTest {
         SendGroupResult result = service.bulkSend(List.of("PLA-MAIL"));
 
         assertEquals(PurchaseOrderSendFailStage.MAIL, result.failed().getFirst().stage());
-        verify(dispatches).markFailed("PLA-MAIL", "mail down");
-        verify(dispatches, never()).markSent(anyString());
+        verify(dispatches).markFailed("PLA-MAIL", 1, "mail down");
+        verify(dispatches, never()).markSent(anyString(), anyInt());
+    }
+
+    @Test
+    @DisplayName("Given 다른 요청이 먼저 주문 상태를 바꿈 When 단건 전송 Then 남은 미전송 행이 없으면 성공으로 본다")
+    void sendOne_GivenOrdersAlreadyMarkedByConcurrentRequest_WhenSend_ThenSucceeds() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext ctx = context("PLA-RACE", "vendor@test.com");
+        PurchaseOrderPdfContent content = content(ctx);
+
+        when(loader.load("PLA-RACE")).thenReturn(ctx);
+        when(pdfService.buildDto(ctx)).thenReturn(content);
+        when(pdfService.generate(content)).thenReturn(new byte[] {1});
+        when(mapper.markSentByOrderNumber("PLA-RACE")).thenReturn(0);
+        when(mapper.countUnsentByOrderNumber("PLA-RACE")).thenReturn(0);
+
+        service.sendOne("PLA-RACE");
+
+        verify(mapper).countUnsentByOrderNumber("PLA-RACE");
+    }
+
+    @Test
+    @DisplayName("Given SENT 복구 중 다른 요청이 먼저 주문 상태를 바꿈 When 단건 전송 Then 오류 없이 끝난다")
+    void sendOne_GivenAlreadyDispatchedAndOrdersMarkedMeanwhile_WhenSend_ThenSucceeds() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext ctx = context("PLA-RECOVER", "vendor@test.com");
+
+        when(loader.load("PLA-RECOVER")).thenReturn(ctx);
+        when(dispatches.claim(eq("PLA-RECOVER"), anyString())).thenReturn(new ClaimResult(Claim.ALREADY_SENT, 0));
+        when(mapper.markSentByOrderNumber("PLA-RECOVER")).thenReturn(0);
+        when(mapper.countUnsentByOrderNumber("PLA-RECOVER")).thenReturn(0);
+
+        service.sendOne("PLA-RECOVER");
+
+        verifyNoInteractions(pdfService, mailSender);
+    }
+
+    @Test
+    @DisplayName("Given 재선점으로 시도 번호가 3 When 전송 Then 그 번호로만 SENT·FAILED를 기록한다")
+    void sendOne_GivenReclaimedAttempt_WhenSend_ThenTerminalUpdatesUseThatAttempt() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext ctx = context("PLA-ATTEMPT", "vendor@test.com");
+        PurchaseOrderPdfContent content = content(ctx);
+
+        when(loader.load("PLA-ATTEMPT")).thenReturn(ctx);
+        when(dispatches.claim(eq("PLA-ATTEMPT"), anyString())).thenReturn(new ClaimResult(Claim.ACQUIRED, 3));
+        when(pdfService.buildDto(ctx)).thenReturn(content);
+        when(pdfService.generate(content)).thenReturn(new byte[] {1});
+        when(mapper.markSentByOrderNumber("PLA-ATTEMPT")).thenReturn(1);
+
+        service.sendOne("PLA-ATTEMPT");
+
+        verify(dispatches).markSent("PLA-ATTEMPT", 3);
     }
 
     private PurchaseOrderService serviceWith(PurchaseOrderLoader purchaseOrderLoader) {

@@ -28,6 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.inOrder;
+import org.mockito.ArgumentCaptor;
+import com.example.ims.features.history.entities.History;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +49,7 @@ class AdjustServiceUnitTest {
         Stock stock = stock(10L, 5);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user(1L)));
-        when(stockRepository.findByProductIdIn(List.of(10L))).thenReturn(List.of(stock));
+        when(stockRepository.findByProductIdForUpdate(10L)).thenReturn(Optional.of(stock));
 
         AdjustRequest request = request(AdjustType.MINUS, 6);
 
@@ -64,7 +67,7 @@ class AdjustServiceUnitTest {
         Stock stock = stock(10L, Integer.MAX_VALUE);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user(1L)));
-        when(stockRepository.findByProductIdIn(List.of(10L))).thenReturn(List.of(stock));
+        when(stockRepository.findByProductIdForUpdate(10L)).thenReturn(Optional.of(stock));
 
         AdjustRequest request = request(AdjustType.PLUS, 1);
 
@@ -84,7 +87,7 @@ class AdjustServiceUnitTest {
         vendorItem.setProduct(stock.getProduct());
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user(1L)));
-        when(stockRepository.findByProductIdIn(List.of(10L))).thenReturn(List.of(stock));
+        when(stockRepository.findByProductIdForUpdate(10L)).thenReturn(Optional.of(stock));
         when(vendorItemRepository.findByProductId(10L)).thenReturn(Optional.of(vendorItem));
 
         service.adjustProducts(1L, request(AdjustType.MINUS, 5));
@@ -103,7 +106,7 @@ class AdjustServiceUnitTest {
             assertThrows(InvalidAdjustRequestException.class, () -> service.adjustProducts(1L, request));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
-        verify(stockRepository, never()).findByProductIdIn(any());
+        verify(stockRepository, never()).findByProductIdForUpdate(any());
     }
 
     @Test
@@ -112,7 +115,7 @@ class AdjustServiceUnitTest {
         AdjustRequest request = new AdjustRequest(List.of(), AdjustType.PLUS, null, "memo");
 
         assertThrows(InvalidAdjustRequestException.class, () -> service.adjustProducts(1L, request));
-        verify(stockRepository, never()).findByProductIdIn(any());
+        verify(stockRepository, never()).findByProductIdForUpdate(any());
     }
 
     @Test
@@ -121,7 +124,7 @@ class AdjustServiceUnitTest {
         AdjustRequest request = new AdjustRequest(List.of(item(0)), AdjustType.PLUS, null, "memo");
 
         assertThrows(InvalidAdjustRequestException.class, () -> service.adjustProducts(1L, request));
-        verify(stockRepository, never()).findByProductIdIn(any());
+        verify(stockRepository, never()).findByProductIdForUpdate(any());
     }
 
     @Test
@@ -129,7 +132,7 @@ class AdjustServiceUnitTest {
         AdjustService service = service();
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user(1L)));
-        when(stockRepository.findByProductIdIn(List.of(10L))).thenReturn(List.of());
+        when(stockRepository.findByProductIdForUpdate(10L)).thenReturn(Optional.empty());
 
         StockNotFoundException exception = assertThrows(
             StockNotFoundException.class,
@@ -137,6 +140,35 @@ class AdjustServiceUnitTest {
         );
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    @Test
+    void reversedAndDuplicateItemsLockOnceInAscendingOrderBeforeWriting() {
+        Stock a = stock(10L, 100);
+        Stock b = stock(30L, 100);
+        VendorItem va = new VendorItem();
+        va.setProduct(a.getProduct());
+        VendorItem vb = new VendorItem();
+        vb.setProduct(b.getProduct());
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user(1L)));
+        when(stockRepository.findByProductIdForUpdate(10L)).thenReturn(Optional.of(a));
+        when(stockRepository.findByProductIdForUpdate(30L)).thenReturn(Optional.of(b));
+        when(vendorItemRepository.findByProductId(10L)).thenReturn(Optional.of(va));
+        when(vendorItemRepository.findByProductId(30L)).thenReturn(Optional.of(vb));
+        AdjustItem first = new AdjustItem(30L, "상품", "브랜드", "종류", 100, 100, 200, null, 1);
+        service().adjustProducts(1L, new AdjustRequest(List.of(first, item(2), item(3)), AdjustType.MINUS, null, "memo"));
+
+        var order = inOrder(stockRepository, historyLotRepository, historyRepository);
+        order.verify(stockRepository).findByProductIdForUpdate(10L);
+        order.verify(stockRepository).findByProductIdForUpdate(30L);
+        order.verify(historyLotRepository).save(any());
+        ArgumentCaptor<List<History>> histories = ArgumentCaptor.forClass(List.class);
+        order.verify(historyRepository).saveAll(histories.capture());
+        verify(stockRepository).findByProductIdForUpdate(10L);
+        assertEquals(95, a.getCount());
+        assertEquals(99, b.getCount());
+        assertEquals(List.of(100, 100, 98), histories.getValue().stream().map(History::getBeforeCount).toList());
+        assertEquals(List.of(99, 98, 95), histories.getValue().stream().map(History::getAfterCount).toList());
     }
 
     private AdjustItem item(int count) {

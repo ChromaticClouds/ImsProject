@@ -1,6 +1,10 @@
 package com.example.ims.features.stock;
 
 import com.example.ims.features.inbound.service.InboundQueryService;
+import com.example.ims.features.adjust.services.AdjustService;
+import com.example.ims.features.adjust.dto.AdjustItem;
+import com.example.ims.features.adjust.dto.AdjustRequest;
+import com.example.ims.features.adjust.enums.AdjustType;
 import com.example.ims.features.outbound.service.OutboundQueryService;
 import com.example.ims.features.inbound.dto.PendingUpdateRequest;
 import com.example.ims.support.MySqlIntegrationTest;
@@ -48,6 +52,7 @@ class StockLockOrderIntegrationTest extends MySqlIntegrationTest {
     @Autowired JdbcTemplate jdbc;
     @Autowired OutboundQueryService outbound;
     @Autowired InboundQueryService inbound;
+    @Autowired AdjustService adjust;
 
     @BeforeEach
     void seed() {
@@ -151,6 +156,52 @@ class StockLockOrderIntegrationTest extends MySqlIntegrationTest {
         }
         assertEquals(3, orderStatusCount("OUT-X", "OUTBOUND_COMPLETE"));
         assertEquals(3, orderStatusCount("IN-Y", "INBOUND_COMPLETE"));
+    }
+
+    @RepeatedTest(10)
+    void adjustmentsInOppositeOrderPreserveHistoryAndStock() throws Exception {
+        assertNoFailure(runConcurrently(
+            () -> adjust.adjustProducts(ACTOR, adjustment(List.of(A, B, C), AdjustType.PLUS)),
+            () -> adjust.adjustProducts(ACTOR, adjustment(List.of(C, B, A), AdjustType.PLUS))));
+        for (long product : List.of(A, B, C)) assertEquals(102, stockCount(product));
+        assertHistoryChain(1, 2);
+    }
+
+    @RepeatedTest(10)
+    void adjustmentAndOutboundInOppositeOrderPreserveHistoryAndStock() throws Exception {
+        assertNoFailure(runConcurrently(
+            () -> adjust.adjustProducts(ACTOR, adjustment(List.of(C, B, A), AdjustType.MINUS)),
+            () -> outbound.completeByOrderNumberAndWriteHistory("OUT-X", null, ACTOR)));
+        for (long product : List.of(A, B, C)) assertEquals(98, stockCount(product));
+        assertHistoryChain(-1, 2);
+        assertEquals(3, orderStatusCount("OUT-X", "OUTBOUND_COMPLETE"));
+    }
+
+    @RepeatedTest(10)
+    void adjustmentAndInboundInOppositeOrderPreserveHistoryAndStock() throws Exception {
+        assertNoFailure(runConcurrently(
+            () -> adjust.adjustProducts(ACTOR, adjustment(List.of(C, B, A), AdjustType.PLUS)),
+            () -> inbound.markCompleteByOrderNumberAndWriteHistory("IN-X", null, ACTOR)));
+        for (long product : List.of(A, B, C)) assertEquals(102, stockCount(product));
+        assertHistoryChain(1, 2);
+        assertEquals(3, orderStatusCount("IN-X", "INBOUND_COMPLETE"));
+    }
+
+    @Test
+    void adjustmentFailureOnLaterProductLeavesNoWrites() {
+        jdbc.update("UPDATE stock SET `count` = 0 WHERE product_id = ?", C);
+        assertThrows(RuntimeException.class,
+            () -> adjust.adjustProducts(ACTOR, adjustment(List.of(A, B, C), AdjustType.MINUS)));
+        assertEquals(100, stockCount(A));
+        assertEquals(100, stockCount(B));
+        assertEquals(0, stockCount(C));
+        for (long product : List.of(A, B, C)) assertTrue(historyCounts(product).isEmpty());
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM history_lot WHERE status = 'ADJUST'", Integer.class));
+    }
+
+    private AdjustRequest adjustment(List<Long> products, AdjustType type) {
+        return new AdjustRequest(products.stream().map(id ->
+            new AdjustItem(id, "품목", "브랜드", "종류", 100, 100, 200, null, 1)).toList(), type, null, "lock-test");
     }
 
     @Test

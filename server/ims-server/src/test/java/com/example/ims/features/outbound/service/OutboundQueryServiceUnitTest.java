@@ -67,6 +67,7 @@ class OutboundQueryServiceUnitTest {
     void missingLockedStockStopsBeforeWritingHistory() {
         OutboundQueryMapper mapper = mock(OutboundQueryMapper.class);
         when(mapper.selectOrdersForOutboundComplete("REC-001")).thenReturn(List.of(row(1L, 201L)));
+        when(mapper.selectStockCountForUpdate(201L)).thenReturn(null);
         assertThrows(IllegalStateException.class,
             () -> new OutboundQueryService(mapper).completeByOrderNumberAndWriteHistory("REC-001", null, 7L));
         verify(mapper, never()).insertHistoryLot(any());

@@ -74,6 +74,7 @@ class InboundQueryServiceUnitTest {
         when(mapper.selectOrdersForInboundCompleteByOrderNumber("PLA-001")).thenReturn(List.of(row(1L, 101L)));
         when(mapper.selectOrderCountById(1L)).thenReturn(5);
         when(mapper.selectProductIdByVendorItemId(101L)).thenReturn(201L);
+        when(mapper.selectStockCountForUpdate(201L)).thenReturn(null);
         assertThrows(IllegalStateException.class,
             () -> new InboundQueryService(mapper).markCompleteByOrderNumberAndWriteHistory("PLA-001", null, 7L));
         verify(mapper, never()).insertHistoryLot(any());

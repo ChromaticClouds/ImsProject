@@ -67,5 +67,6 @@ tasks.register('mysqlIntegrationTest', Test) {
 	testClassesDirs = sourceSets.test.output.classesDirs
 	classpath = sourceSets.test.runtimeClasspath
 	useJUnitPlatform { includeTags 'mysql' }
+	testLogging { exceptionFormat = 'full' }
 	shouldRunAfter tasks.named('test')
 }

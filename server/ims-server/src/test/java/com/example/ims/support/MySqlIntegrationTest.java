@@ -56,7 +56,11 @@ public abstract class MySqlIntegrationTest {
                 if (!DockerClientFactory.instance().isDockerAvailable()) {
                     throw new IllegalStateException("MySQL integration tests require Docker or IMS_IT_JDBC_URL (dedicated ims_lock_it_* database).");
                 }
-                container = new MySQLContainer("mysql:8.4");
+                // These tests create triggers to reproduce contention and inject
+                // rollback failures. Permit trigger creation by the test DB user
+                // when MySQL binary logging is enabled (test container only).
+                container = new MySQLContainer("mysql:8.4")
+                    .withCommand("--log-bin-trust-function-creators=1");
                 container.start();
             }
         }

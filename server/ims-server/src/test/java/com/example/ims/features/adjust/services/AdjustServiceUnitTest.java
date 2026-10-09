@@ -3,12 +3,14 @@ package com.example.ims.features.adjust.services;
 import com.example.ims.features.adjust.dto.AdjustItem;
 import com.example.ims.features.adjust.dto.AdjustRequest;
 import com.example.ims.features.adjust.enums.AdjustType;
+import com.example.ims.features.adjust.exceptions.InvalidAdjustRequestException;
 import com.example.ims.features.auth.entities.User;
 import com.example.ims.features.history.repostories.HistoryLotRepository;
 import com.example.ims.features.history.repostories.HistoryRepository;
 import com.example.ims.features.product.entities.Product;
 import com.example.ims.features.stock.entities.Stock;
 import com.example.ims.features.stock.exceptions.StockEmptyException;
+import com.example.ims.features.stock.exceptions.StockNotFoundException;
 import com.example.ims.features.stock.repositories.StockRepository;
 import com.example.ims.features.user.repositories.UserRepository;
 import com.example.ims.features.vendor.entities.VendorItem;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +50,9 @@ class AdjustServiceUnitTest {
 
         AdjustRequest request = request(AdjustType.MINUS, 6);
 
-        assertThrows(StockEmptyException.class, () -> service.adjustProducts(1L, request));
+        StockEmptyException exception =
+            assertThrows(StockEmptyException.class, () -> service.adjustProducts(1L, request));
+        assertEquals(HttpStatus.CONFLICT, exception.getHttpStatus());
         assertEquals(5, stock.getCount());
         verify(historyLotRepository, never()).save(any());
         verify(historyRepository, never()).saveAll(any());
@@ -63,7 +68,9 @@ class AdjustServiceUnitTest {
 
         AdjustRequest request = request(AdjustType.PLUS, 1);
 
-        assertThrows(IllegalArgumentException.class, () -> service.adjustProducts(1L, request));
+        InvalidAdjustRequestException exception =
+            assertThrows(InvalidAdjustRequestException.class, () -> service.adjustProducts(1L, request));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
         assertEquals(Integer.MAX_VALUE, stock.getCount());
         verify(historyLotRepository, never()).save(any());
         verify(historyRepository, never()).saveAll(any());
@@ -85,6 +92,55 @@ class AdjustServiceUnitTest {
         assertEquals(0, stock.getCount());
         verify(historyLotRepository).save(any());
         verify(historyRepository).saveAll(any());
+    }
+
+    @Test
+    void missingAdjustTypeIsBadRequest() {
+        AdjustService service = service();
+        AdjustRequest request = new AdjustRequest(List.of(item(1)), null, null, "memo");
+
+        InvalidAdjustRequestException exception =
+            assertThrows(InvalidAdjustRequestException.class, () -> service.adjustProducts(1L, request));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
+        verify(stockRepository, never()).findByProductIdIn(any());
+    }
+
+    @Test
+    void emptyProductsIsBadRequest() {
+        AdjustService service = service();
+        AdjustRequest request = new AdjustRequest(List.of(), AdjustType.PLUS, null, "memo");
+
+        assertThrows(InvalidAdjustRequestException.class, () -> service.adjustProducts(1L, request));
+        verify(stockRepository, never()).findByProductIdIn(any());
+    }
+
+    @Test
+    void nonPositiveCountIsBadRequest() {
+        AdjustService service = service();
+        AdjustRequest request = new AdjustRequest(List.of(item(0)), AdjustType.PLUS, null, "memo");
+
+        assertThrows(InvalidAdjustRequestException.class, () -> service.adjustProducts(1L, request));
+        verify(stockRepository, never()).findByProductIdIn(any());
+    }
+
+    @Test
+    void unknownStockIsNotFound() {
+        AdjustService service = service();
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user(1L)));
+        when(stockRepository.findByProductIdIn(List.of(10L))).thenReturn(List.of());
+
+        StockNotFoundException exception = assertThrows(
+            StockNotFoundException.class,
+            () -> service.adjustProducts(1L, request(AdjustType.PLUS, 1))
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
+    }
+
+    private AdjustItem item(int count) {
+        return new AdjustItem(10L, "상품", "브랜드", "종류", 5, 100, 200, null, count);
     }
 
     private AdjustService service() {

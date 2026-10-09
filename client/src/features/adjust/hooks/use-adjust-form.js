@@ -18,6 +18,7 @@ import { toast } from 'sonner';
  */
 import { adjustProducts } from '../api/index.js';
 import { HTTPError } from 'ky';
+import { readErrorMessage } from '@/services/api/read-error-message.js';
 import { ERROR } from '@/services/error.js';
 import { useQueryClient } from '@tanstack/react-query';
 import { formatToIsoDate } from '@/features/receive-order/utils/format-date.js';
@@ -60,9 +61,7 @@ export const useAdjustForm = () => {
         return form;
       } catch (err) {
         if (err instanceof HTTPError) {
-          return toast.error(
-            (await err.response.json()?.message) || ERROR.SERVER_ERROR,
-          );
+          return toast.error(await readErrorMessage(err, ERROR.SERVER_ERROR));
         }
 
         toast.error(ERROR.SERVER_ERROR);

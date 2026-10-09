@@ -101,4 +101,26 @@ class GlobalExceptionHandlerTest {
         assertEquals(GlobalError.REQUEST_PROCESSING_ERROR, response.getBody().getMessage());
     }
 
+
+    @Test
+    void businessExceptionWithStatusUsesThatStatusAndMessage() {
+        RefreshTokenCookieStore refreshTokenCookieStore = mock(RefreshTokenCookieStore.class);
+        GlobalExceptionHandler handler = new GlobalExceptionHandler(refreshTokenCookieStore);
+
+        var response = handler.handle(new BusinessException("재고가 부족합니다.", HttpStatus.CONFLICT));
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("재고가 부족합니다.", response.getBody().getMessage());
+    }
+
+    @Test
+    void businessExceptionWithoutStatusKeepsInternalServerError() {
+        RefreshTokenCookieStore refreshTokenCookieStore = mock(RefreshTokenCookieStore.class);
+        GlobalExceptionHandler handler = new GlobalExceptionHandler(refreshTokenCookieStore);
+
+        var response = handler.handle(new BusinessException("상태가 지정되지 않은 예외"));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("상태가 지정되지 않은 예외", response.getBody().getMessage());
+    }
 }

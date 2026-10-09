@@ -6,12 +6,18 @@ import com.example.ims.features.purchaseorder.dto.PurchaseOrderContext;
 import com.example.ims.features.purchaseorder.dto.PurchaseOrderPdfContent;
 import com.example.ims.features.vendor.entities.VendorItem;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,9 +83,33 @@ public class PurchaseOrderPdfService {
             builder.toStream(os);
             builder.run();
 
-            return os.toByteArray();
+            return stabilize(os.toByteArray(), content.orderNumber());
         } catch (Exception e) {
             throw new RuntimeException("발주서 PDF 생성 실패", e);
+        }
+    }
+
+    /**
+     * 같은 내용이면 같은 바이트가 나오게 한다.
+     * 렌더러가 PDF에 생성 시각과 문서 ID(시간 기반)를 매번 새로 넣는데, 메일을 다시 보낼 때
+     * 같은 멱등 키로 첨부가 달라지면 메일 제공자가 요청을 거부하기 때문이다.
+     */
+    private static byte[] stabilize(byte[] pdf, String orderNumber) throws Exception {
+        try (PDDocument document = PDDocument.load(pdf);
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            PDDocumentInformation info = document.getDocumentInformation();
+            info.setCreationDate(null);
+            info.setModificationDate(null);
+
+            byte[] digest = MessageDigest.getInstance("MD5")
+                .digest(orderNumber.getBytes(StandardCharsets.UTF_8));
+            COSArray id = new COSArray();
+            id.add(new COSString(digest));
+            id.add(new COSString(digest));
+            document.getDocument().setDocumentID(id);
+
+            document.save(out);
+            return out.toByteArray();
         }
     }
 }

@@ -80,6 +80,9 @@ public interface PurchaseOrderMapper {
     @Update("UPDATE orders SET status='INBOUND_PENDING' WHERE order_number = #{orderNumber} AND status IS NULL")
     int markSentByOrderNumber(@Param("orderNumber") String orderNumber);
 
+    @Select("SELECT COUNT(*) FROM orders WHERE order_number = #{orderNumber} AND status IS NULL")
+    int countUnsentByOrderNumber(@Param("orderNumber") String orderNumber);
+
     @Update({
         "<script>",
         "UPDATE orders SET status='INBOUND_PENDING' WHERE status IS NULL AND order_number IN",

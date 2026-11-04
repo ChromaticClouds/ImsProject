@@ -15,7 +15,7 @@ concurrency:
 jobs:
   storage-health-check:
     name: Query Supabase Storage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

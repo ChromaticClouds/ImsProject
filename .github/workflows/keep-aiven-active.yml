@@ -15,7 +15,7 @@ concurrency:
 jobs:
   database-health-check:
     name: Query database through the API
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:
       KEEP_ALIVE_URL: ${{ vars.KEEP_ALIVE_URL || 'https://imsproject-vanl.onrender.com/api/health/database' }}

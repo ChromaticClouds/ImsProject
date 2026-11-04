@@ -226,7 +226,18 @@ public class PurchaseOrderService {
                     continue;
                 }
 
-                dispatches.markSent(ctx.orderNumber(), claim.attempt());
+                // 메일은 이미 나갔다. 발송 완료 기록이 실패해도 일괄 전송 전체를 멈추지 않고 이 건만 SEND 실패로 남긴다.
+                // 이력은 SENDING으로 남고, 5분 뒤 재전송이 같은 멱등 키로 넘겨받는다.
+                try {
+                    dispatches.markSent(ctx.orderNumber(), claim.attempt());
+                } catch (Exception e) {
+                    failed.add(new SendGroupResult.Fail(
+                        ctx.orderNumber(),
+                        PurchaseOrderSendFailStage.SEND,
+                        "메일은 발송됐지만 발송 기록을 저장하지 못했습니다: " + e.getMessage()
+                    ));
+                    continue;
+                }
             }
 
             try {

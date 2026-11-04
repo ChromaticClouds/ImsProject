@@ -368,6 +368,34 @@ class PurchaseOrderServiceUnitTest {
     }
 
     @Test
+    @DisplayName("Given 일괄 전송 중 한 건의 발송 완료 기록이 DB 오류 When 전송 Then 그 건만 SEND 실패로 남기고 나머지는 계속 보낸다")
+    void bulkSend_GivenMarkSentFails_WhenSend_ThenOnlyThatOrderFailsAndOthersContinue() throws Exception {
+        PurchaseOrderService service = serviceWith(loader);
+        PurchaseOrderContext broken = context("PLA-LEDGER", "vendor@test.com");
+        PurchaseOrderContext ok = context("PLA-NEXT", "vendor@test.com");
+        PurchaseOrderPdfContent brokenContent = content(broken);
+        PurchaseOrderPdfContent okContent = content(ok);
+
+        when(loader.loadGroup(List.of("PLA-LEDGER", "PLA-NEXT")))
+            .thenReturn(new LoadGroupResult(List.of(broken, ok), List.of()));
+        when(pdfService.buildDto(broken)).thenReturn(brokenContent);
+        when(pdfService.buildDto(ok)).thenReturn(okContent);
+        when(pdfService.generate(any())).thenReturn(new byte[] {1});
+        doThrow(new IllegalStateException("db down")).when(dispatches).markSent("PLA-LEDGER", 1);
+        when(mapper.markSentByOrderNumber("PLA-NEXT")).thenReturn(1);
+
+        SendGroupResult result = service.bulkSend(List.of("PLA-LEDGER", "PLA-NEXT"));
+
+        assertEquals(List.of("PLA-NEXT"), result.success().stream().map(SendGroupResult.Success::orderNumber).toList());
+        assertEquals(1, result.failed().size());
+        assertEquals("PLA-LEDGER", result.failed().getFirst().orderNumber());
+        assertEquals(PurchaseOrderSendFailStage.SEND, result.failed().getFirst().stage());
+        verify(mailSender).sendPurchaseOrder(eq(broken), anyString(), any());
+        verify(mapper, never()).markSentByOrderNumber("PLA-LEDGER");
+        verify(dispatches, never()).markFailed(eq("PLA-LEDGER"), anyInt(), anyString());
+    }
+
+    @Test
     @DisplayName("Given 다른 요청이 먼저 주문 상태를 바꿈 When 단건 전송 Then 남은 미전송 행이 없으면 성공으로 본다")
     void sendOne_GivenOrdersAlreadyMarkedByConcurrentRequest_WhenSend_ThenSucceeds() throws Exception {
         PurchaseOrderService service = serviceWith(loader);

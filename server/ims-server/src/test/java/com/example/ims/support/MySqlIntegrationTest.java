@@ -30,7 +30,9 @@ import org.testcontainers.mysql.MySQLContainer;
     "spring.data.redis.password=",
     "resend.api-key=re_integration_test",
     "resend.from-email=test@example.com",
-    "jwt.secret=integration-test-secret-integration-test-secret-0123456789"
+    "jwt.secret=integration-test-secret-integration-test-secret-0123456789",
+    // 주기 작업이 테스트 데이터를 바꾸지 않게 끈다. 상태 일치화는 테스트에서 직접 호출한다.
+    "ims.dispatch.reconcile.enabled=false"
 })
 @Tag("mysql")
 public abstract class MySqlIntegrationTest {

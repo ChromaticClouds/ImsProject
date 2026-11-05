@@ -36,7 +36,23 @@ public class PurchaseOrderLoader {
         if (orders.isEmpty())
             throw new BuildPoContextException("해당 주문번호의 발주 데이터가 없습니다.");
 
-        return validateAndBuild(orderNumber, orders);
+        return validateAndBuild(orderNumber, orders, true);
+    }
+
+    /**
+     * 이미 메일이 나간 발주서의 상태 일치화용. {@link #load}와 같지만 납기 희망일이 지났는지는 보지 않는다.
+     * 보낸 뒤 납기일이 지나도 멱등 키(보낸 내용)는 그대로 비교할 수 있어야 하기 때문이다.
+     */
+    public PurchaseOrderContext loadForReconcile(String orderNumber) {
+        if (orderNumber == null || !orderNumber.startsWith("PLA-"))
+            throw new OrderNotFoundException(orderNumber);
+
+        List<Order> orders = orderRepository.findAllByOrderNumber(orderNumber);
+
+        if (orders.isEmpty())
+            throw new BuildPoContextException("해당 주문번호의 발주 데이터가 없습니다.");
+
+        return validateAndBuild(orderNumber, orders, false);
     }
 
     public LoadGroupResult loadGroup(List<String> orderNumbers) {
@@ -77,7 +93,7 @@ public class PurchaseOrderLoader {
             List<Order> orders = entry.getValue();
 
             try {
-                contexts.add(validateAndBuild(no, orders));
+                contexts.add(validateAndBuild(no, orders, true));
             } catch (RuntimeException e) {
                 failed.add(new LoadGroupResult.Fail(no, e.getMessage()));
             }
@@ -95,7 +111,8 @@ public class PurchaseOrderLoader {
 
     private PurchaseOrderContext validateAndBuild(
         String orderNumber,
-        List<Order> orders
+        List<Order> orders,
+        boolean requireFutureReceiveDate
     ) {
         if (orders.isEmpty()) throw new OrderNotFoundException();
 
@@ -149,7 +166,7 @@ public class PurchaseOrderLoader {
 
         LocalDate today = LocalDate.now(BUSINESS_ZONE);
 
-        if (receiveDate.isBefore(today))
+        if (requireFutureReceiveDate && receiveDate.isBefore(today))
             throw new BuildPoContextException("납기 희망일은 오늘 이후 날짜여야 합니다.");
 
         String receiveDateStr =

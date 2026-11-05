@@ -1,6 +1,7 @@
 package com.example.ims.features.purchaseorder.mappers;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.*;
@@ -82,6 +83,19 @@ public interface PurchaseOrderMapper {
 
     @Select("SELECT COUNT(*) FROM orders WHERE order_number = #{orderNumber} AND status IS NULL")
     int countUnsentByOrderNumber(@Param("orderNumber") String orderNumber);
+
+    /** 발송 이력은 SENT인데 주문 행이 아직 미전송(NULL)인 발주번호. 상태 일치화 대상이다. */
+    @Select({
+        "SELECT d.order_number FROM purchase_order_dispatch d",
+        "WHERE d.status = 'SENT' AND d.sent_at < #{sentBefore}",
+        "  AND EXISTS (SELECT 1 FROM orders o WHERE o.order_number = d.order_number AND o.status IS NULL)",
+        "ORDER BY d.sent_at",
+        "LIMIT #{limit}"
+    })
+    List<String> selectSentButUnmarkedOrderNumbers(
+        @Param("sentBefore") LocalDateTime sentBefore,
+        @Param("limit") int limit
+    );
 
     @Update({
         "<script>",
